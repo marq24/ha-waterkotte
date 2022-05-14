@@ -1,0 +1,10 @@
+{
+  "domain": "waterkotte_heatpump",
+  "name": "Waterkotte Heatpump",
+  "documentation": "https://github.com/pattisonmichael/waterkotte-heatpump",
+  "issue_tracker": "https://github.com/pattisonmichael/waterkotte-heatpump/issues",
+  "dependencies": [],
+  "config_flow": true,
+  "codeowners": ["@pattisonmichael"],
+  "requirements": []
+}

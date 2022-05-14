@@ -1,0 +1,10 @@
+{
+  "_template": "gh:oncleben31/cookiecutter-homeassistant-custom-component",
+  "class_name_prefix": "WaterkotteHeatpump",
+  "domain_name": "waterkotte_heatpump",
+  "friendly_name": "Waterkotte Heatpump",
+  "github_user": "pattisonmichael",
+  "project_name": "waterkotte-heatpump",
+  "test_suite": "yes",
+  "version": "0.0.0"
+}
