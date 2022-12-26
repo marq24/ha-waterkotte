@@ -4,8 +4,13 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
+from custom_components.waterkotte_heatpump.pywaterkotte.ecotouch import EcotouchTag
+
+# from custom_components.pywaterkotte import pywaterkotte
+# from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
-from .const import CONF_PASSWORD
+
+from .const import CONF_HOST, CONF_PASSWORD
 from .const import CONF_USERNAME
 from .const import DOMAIN
 from .const import PLATFORMS
@@ -15,7 +20,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for waterkotte_heatpump."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
+    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     def __init__(self):
         """Initialize."""
@@ -31,7 +36,9 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             valid = await self._test_credentials(
-                user_input[CONF_USERNAME], user_input[CONF_PASSWORD]
+                user_input[CONF_USERNAME],
+                user_input[CONF_PASSWORD],
+                user_input[CONF_HOST],
             )
             if valid:
                 return self.async_create_entry(
@@ -54,18 +61,33 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
-                {vol.Required(CONF_USERNAME): str, vol.Required(CONF_PASSWORD): str}
+                {
+                    vol.Required(CONF_HOST): str,
+                    vol.Required(CONF_USERNAME, default="waterkotte"): str,
+                    vol.Required(CONF_PASSWORD, default="waterkotte"): str,
+                }
             ),
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password):
+    async def _test_credentials(self, username, password, host):
         """Return true if credentials is valid."""
         try:
+            # # session = async_create_clientsession(self.hass)
+            # client = Ecotouch(host)
+            # await client.login(username, password)
+            # ret = await client.read_value(EcotouchTag.DATE_DAY)
+            # # print(ret)
+            # return ret["status"] == "E_OK"
+            # # await client.async_get_data()
+
             session = async_create_clientsession(self.hass)
-            client = WaterkotteHeatpumpApiClient(username, password, session)
-            await client.async_get_data()
+            client = WaterkotteHeatpumpApiClient(host, username, password, session)
+            await client.login()
+            await client.async_read_value(EcotouchTag.DATE_DAY)
+            # print(ret)
             return True
+
         except Exception:  # pylint: disable=broad-except
             pass
         return False

@@ -6,7 +6,9 @@
         "description": "If you need help with the configuration have a look here: https://github.com/pattisonmichael/waterkotte-heatpump",
         "data": {
           "username": "Username",
-          "password": "Password"
+          "password": "Password",
+          "host": "Host or IP",
+          "polling_interval": "Polling Interval in seconds"
         }
       }
     },

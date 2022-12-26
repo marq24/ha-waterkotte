@@ -17,11 +17,12 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .api import WaterkotteHeatpumpApiClient
-from .const import CONF_PASSWORD
+from .const import CONF_HOST, CONF_PASSWORD
 from .const import CONF_USERNAME
 from .const import DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
+from .const import SENSORS
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
@@ -41,9 +42,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     username = entry.data.get(CONF_USERNAME)
     password = entry.data.get(CONF_PASSWORD)
+    host = entry.data.get(CONF_HOST)
 
     session = async_get_clientsession(hass)
-    client = WaterkotteHeatpumpApiClient(username, password, session)
+    client = WaterkotteHeatpumpApiClient(host, username, password, session)
 
     coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
@@ -59,6 +61,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass.async_add_job(
                 hass.config_entries.async_forward_entry_setup(entry, platform)
             )
+    # for sensor in SENSORS:
+    #     coordinator.platforms.append(sensor)
+    #     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, sensor))
 
     entry.add_update_listener(async_reload_entry)
     return True
@@ -74,6 +79,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
     ) -> None:
         """Initialize."""
         self.api = client
+        self.data = []
         self.platforms = []
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
@@ -81,7 +87,9 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Update data via library."""
         try:
-            return await self.api.async_get_data()
+            await self.api.login()
+            self.data = await self.api.async_get_data()
+            return self.data
         except Exception as exception:
             raise UpdateFailed() from exception
 

@@ -4,5 +4,8 @@
   "python.pythonPath": "venv/bin/python",
   "files.associations": {
     "*.yaml": "home-assistant"
-  }
+  },
+  "python.analysis.extraPaths": [
+    "./custom_components/pywaterkotte/pywaterkotte"
+  ]
 }

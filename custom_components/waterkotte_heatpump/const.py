@@ -3,7 +3,7 @@
 NAME = "Waterkotte Heatpump"
 DOMAIN = "waterkotte_heatpump"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.0"
+VERSION = "0.0.1"
 
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/pattisonmichael/waterkotte-heatpump/issues"
@@ -19,12 +19,14 @@ BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
 PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
-
+SENSORS = ["heating", "cooling", "water"]
 
 # Configuration and options
 CONF_ENABLED = "enabled"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
+CONF_HOST = "host"
+CONF_POLLING_INTERVAL = "polling_interval"
 
 # Defaults
 DEFAULT_NAME = DOMAIN

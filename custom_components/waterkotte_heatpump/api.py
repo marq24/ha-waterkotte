@@ -1,10 +1,13 @@
 """Sample API Client."""
+from typing import Sequence
 import asyncio
 import logging
 import socket
 
 import aiohttp
 import async_timeout
+from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
+
 
 TIMEOUT = 10
 
@@ -16,17 +19,55 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 class WaterkotteHeatpumpApiClient:
     def __init__(
-        self, username: str, password: str, session: aiohttp.ClientSession
+        self, host: str, username: str, password: str, session: aiohttp.ClientSession
     ) -> None:
         """Sample API Client."""
         self._username = username
-        self._passeword = password
+        self._password = password
         self._session = session
+        self._host = host
+        self._client = Ecotouch(host)
+
+        # # session = async_create_clientsession(self.hass)
+        # client = Ecotouch(host)
+        # await client.login(username, password)
+        # ret = await client.read_value(EcotouchTag.DATE_DAY)
+        # # print(ret)
+        # return ret["status"] == "E_OK"
+        # # await client.async_get_data()
+
+    async def login(self) -> None:
+        """Login to the API."""
+        if self._client.auth_cookies is None:
+            await self._client.login(self._username, self._password)
+        # return ret
 
     async def async_get_data(self) -> dict:
         """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        return await self.api_wrapper("get", url)
+        tags = [
+            EcotouchTag.ENABLE_COOLING,
+            EcotouchTag.ENABLE_HEATING,
+            EcotouchTag.ENABLE_PV,
+            EcotouchTag.ENABLE_WARMWATER,
+            EcotouchTag.STATE_WATER,
+            EcotouchTag.STATE_COOLING,
+            EcotouchTag.STATE_SOURCEPUMP,
+            EcotouchTag.STATUS_HEATING,
+            EcotouchTag.STATUS_WATER,
+            EcotouchTag.STATUS_COOLING,
+        ]
+        ret = await self._client.read_values(tags)
+        return ret
+
+    async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
+        """Get data from the API."""
+        ret = await self._client.read_values(tags)
+        return ret
+
+    async def async_read_value(self, tag: EcotouchTag) -> dict:
+        """Get data from the API."""
+        ret = await self._client.read_value(tag)
+        return ret
 
     async def async_set_title(self, value: str) -> None:
         """Get data from the API."""
