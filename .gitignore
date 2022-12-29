@@ -4,4 +4,5 @@ pythonenv*
 .coverage
 venv
 .venv
-custom_components/pywaterkotte
+custom_components/pywaterkotte/*
+custom_components/pywaterkott*
