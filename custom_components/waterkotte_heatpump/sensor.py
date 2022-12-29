@@ -2,67 +2,75 @@
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-from .const import DEFAULT_NAME
+# from .const import DEFAULT_NAME
+
+
+# from .const import ICON
+# from .const import SENSOR
+
+from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM
 from .const import DOMAIN
-from .const import ICON
-from .const import SENSOR
-from .entity import WaterkotteHeatpumpEntity
+
+#  from .const import UnitOfTemperature
+# from .entity import WaterkotteHeatpumpEntity
 import logging
 from .pywaterkotte.ecotouch import EcotouchTag
 from homeassistant.const import (
-    ATTR_ATTRIBUTION,
+    #    ATTR_ATTRIBUTION,
     DEGREE,
-    DEVICE_CLASS_HUMIDITY,
+    #    DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_PRESSURE,
     DEVICE_CLASS_TEMPERATURE,
-    LENGTH_KILOMETERS,
+    #    LENGTH_KILOMETERS,
     PRESSURE_HPA,
     SPEED_KILOMETERS_PER_HOUR,
     TEMP_CELSIUS,
-    TIME_SECONDS,
+    #    TIME_SECONDS,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 
 # Sensor types are defined as:
-#   variable -> [0]title, [1]device_class, [2]units, [3]icon, [4]enabled_by_default
+#   variable -> [0]title, [1]device_class, [2]units, [3]icon, [4]disabled_by_default, [5]options
 SENSOR_TYPES = {
     "enable_cooling": [
         "enable_cooling",
+        DEVICE_CLASS_ENUM,
         None,
-        None,
-        "mdi:weather-partly-cloudy",
-        False,
+        "mdi:snowflake-thermometer",
+        True,
+        ENUM_ONOFFAUTO,
     ],
     "enable_heating": [
         "Enable Heating",
-        None,
+        DEVICE_CLASS_ENUM,
         None,
         "mdi:weather-partly-cloudy",
-        False,
+        True,
+        ENUM_ONOFFAUTO,
     ],
     "enable_pv": [
         "Enable PV",
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
-        "mdi:temperature-celsius",
-        False,
+        "mdi:solar-power",
+        True,
     ],
     "enable_warmwater": [
         "Enable Warmwater",
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
-        "mdi:temperature-celsius",
-        False,
+        "mdi:water-thermometer",
+        True,
     ],
     "state_water": ["State Water", DEVICE_CLASS_PRESSURE, PRESSURE_HPA, None, False],
     "state_cooling": [
         "State Cooling",
         None,
         SPEED_KILOMETERS_PER_HOUR,
-        "mdi:weather-windy",
-        False,
+        "mdi:snowflake-thermometer",
+        True,
     ],
     "state_sourcepumpe": [
         "State Source Pump",
@@ -76,18 +84,149 @@ SENSOR_TYPES = {
         None,
         SPEED_KILOMETERS_PER_HOUR,
         "mdi:weather-windy",
-        False,
+        True,
     ],
-    "status_water": ["Status Water", None, "kg/m^2", "mdi:weather-rainy", False],
+    "status_water": ["Status Water", None, "kg/m^2", "mdi:weather-rainy", True],
     "status_cooling": [
         "Status Cooling",
         None,
         "%",
         "mdi:weather-rainy",
+        True,
+    ],
+    "temperature_outside": [
+        "Temperature Outside",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_outside_1h": [
+        "Temperature Outside 1h",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_outside_24h": [
+        "Temperature Outside 24h",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_source_in": [
+        "Temperature Source In",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_source_out": [
+        "Temperature Source Out",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_evaporation": [
+        "Temperature Evaporation",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_suction": [
+        "Temperature Suction",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_return_set": [
+        "Temperature Return Set",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_return": [
+        "Temperature Return",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_flow": [
+        "Temperature Flow",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_condensation": [
+        "Temperature Condensation",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_storage": [
+        "Temperature Storage",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_room": [
+        "Temperature Room",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+    ],
+    "temperature_room_1h": [
+        "Temperature Room 1h",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+    ],
+    "temperature_water": [
+        "Temperature Water",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+    ],
+    "temperature_pool": [
+        "Temperature Pool",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+    ],
+    "temperature_solar": [
+        "Temperature Solar",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+    ],
+    "temperature_solar_flow": [
+        "Temperature Solar Flow",
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
         False,
     ],
 }
 
+
+"""
+    PRESSURE_EVAPORATION = TagData(["A8"], "bar")
+    PRESSURE_CONDENSATION = TagData(["A15"], "bar")
+    POSITION_EXPANSION_VALVE = TagData(["A23"], "?°C") """
 
 # async def async_setup_entry(hass, entry, async_add_devices):
 #    """Setup sensor platform."""
@@ -156,19 +295,69 @@ class WaterkotteHeatpumpSensor(Entity):
             result = self._coordinator.data[EcotouchTag.STATUS_HEATING]["value"]
         elif self._type == "status_water":
             result = self._coordinator.data[EcotouchTag.STATUS_WATER]["value"]
+        elif self._type == "temperature_outside":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE]["value"]
+        elif self._type == "temperature_outside_1h":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE_1H]["value"]
+        elif self._type == "temperature_outside_24h":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE_24H][
+                "value"
+            ]
+        elif self._type == "temperature_source_in":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOURCE_IN]["value"]
+        elif self._type == "temperature_source_out":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOURCE_OUT]["value"]
+        elif self._type == "temperature_evaporation":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_EVAPORATION][
+                "value"
+            ]
+        elif self._type == "temperature_suction":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SUCTION]["value"]
+        elif self._type == "temperature_return_set":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_RETURN_SET]["value"]
+        elif self._type == "temperature_return":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_RETURN]["value"]
+        elif self._type == "temperature_flow":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_FLOW]["value"]
+        elif self._type == "temperature_condenstation":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_CONDENSATION][
+                "value"
+            ]
+        elif self._type == "temperature_storage":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_STORAGE]["value"]
+        elif self._type == "temperature_room":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_ROOM]["value"]
+        elif self._type == "temperature_room_1h":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_ROOM_1H]["value"]
+        elif self._type == "temperature_water":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_WATER]["value"]
+        elif self._type == "temperature_solar":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOLAR]["value"]
+        elif self._type == "temperature_sloar_flow":
+            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOLAR_FLOW]["value"]
         else:
-            result = "missing"
+            result = "unavailable"
+        if result is True:
+            result = "on"
+        elif result is False:
+            result = "off"
         return result
 
     @property
     def icon(self):
         """Return the icon of the sensor."""
-        return ICON
+        return SENSOR_TYPES[self._type][3]
+        # return ICON
 
     @property
     def device_class(self):
         """Return the device class of the sensor."""
         return SENSOR_TYPES[self._type][1]
+
+    @property
+    def entity_registry_enabled_default(self):
+        """Return the entity_registry_enabled_default of the sensor."""
+        return SENSOR_TYPES[self._type][4]
 
     @property
     def unique_id(self):

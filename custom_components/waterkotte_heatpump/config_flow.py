@@ -62,7 +62,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_HOST): str,
+                    vol.Required(CONF_HOST, default="wp.knx.pattison.de"): str,
                     vol.Required(CONF_USERNAME, default="waterkotte"): str,
                     vol.Required(CONF_PASSWORD, default="waterkotte"): str,
                 }

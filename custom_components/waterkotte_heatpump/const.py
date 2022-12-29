@@ -13,7 +13,15 @@ ICON = "mdi:format-quote-close"
 
 # Device classes
 BINARY_SENSOR_DEVICE_CLASS = "connectivity"
+DEVICE_CLASS_ENUM = "enum"
 
+# States
+STATE_AUTO = "auto"
+STATE_MANUAL = "manual"
+STATE_ON = "on"
+STATE_OFF = "off"
+# # #### Enum Options ####
+ENUM_ONOFFAUTO = [STATE_ON, STATE_OFF, STATE_AUTO]
 # Platforms
 BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"

@@ -22,9 +22,10 @@ from .const import CONF_USERNAME
 from .const import DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
-from .const import SENSORS
 
-SCAN_INTERVAL = timedelta(seconds=30)
+# from .const import SENSORS
+
+SCAN_INTERVAL = timedelta(seconds=60)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -45,7 +46,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     host = entry.data.get(CONF_HOST)
 
     session = async_get_clientsession(hass)
-    client = WaterkotteHeatpumpApiClient(host, username, password, session)
+    client = WaterkotteHeatpumpApiClient(host, username, password, session, hass)
 
     coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()

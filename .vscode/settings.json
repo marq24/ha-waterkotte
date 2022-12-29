@@ -1,5 +1,5 @@
 {
-  "python.linting.pylintEnabled": true,
+  "python.linting.pylintEnabled": false,
   "python.linting.enabled": true,
   "python.pythonPath": "venv/bin/python",
   "files.associations": {
@@ -7,5 +7,7 @@
   },
   "python.analysis.extraPaths": [
     "./custom_components/pywaterkotte/pywaterkotte"
-  ]
+  ],
+  "python.linting.prospectorEnabled": false,
+  "python.linting.flake8Enabled": true
 }

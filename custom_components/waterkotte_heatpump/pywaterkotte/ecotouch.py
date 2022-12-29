@@ -1,10 +1,14 @@
-from typing import Any, Callable, Collection, List, NamedTuple, Sequence, Tuple
-from unittest import case
-import requests
+from typing import Any, Callable, Collection, NamedTuple, Sequence, Tuple  # , List
+
+# from unittest import case
 import re
+
 from enum import Enum
 from datetime import datetime, timedelta
-#import random
+import requests
+
+
+# import random
 import aiohttp
 
 MAX_NO_TAGS = 20
@@ -83,18 +87,20 @@ def _parse_time(self, e_vals, *other_args):
     dt = datetime(*vals)
     return dt + timedelta(days=1) if next_day else dt
 
+
 def _parse_state(self, value, *other_args):
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
-    #assert isinstance(value[ecotouch_tag],int)
-    if value[ecotouch_tag] == '0':
-        return 'off'
-    elif value[ecotouch_tag] == '1':
-        return 'auto'
-    elif value[ecotouch_tag] == '2':
-        return 'manual'
+    # assert isinstance(value[ecotouch_tag],int)
+    if value[ecotouch_tag] == "0":
+        return "off"
+    elif value[ecotouch_tag] == "1":
+        return "auto"
+    elif value[ecotouch_tag] == "2":
+        return "manual"
     else:
-        return 'Error'
+        return "Error"
+
 
 def _write_time(tag, value, et_values):
     assert isinstance(value, datetime)
@@ -120,6 +126,7 @@ class TagData(NamedTuple):
     read_function: Callable = _parse_value_default
     write_function: Callable = _write_value_default
     bit: int = None
+
 
 class EcotouchTag(TagData, Enum):
     TEMPERATURE_OUTSIDE = TagData(["A1"], "°C")
@@ -202,11 +209,11 @@ class EcotouchTag(TagData, Enum):
     OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
     OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
     OPERATING_HOURS_SOLAR = TagData(["I22"])
-    ENABLE_HEATING = TagData(["I30"],read_function=_parse_state)
-    ENABLE_COOLING = TagData(["I31"],read_function=_parse_state)
-    ENABLE_WARMWATER = TagData(["I32"],read_function=_parse_state)
-    ENABLE_POOL = TagData(["I33"],read_function=_parse_state)
-    ENABLE_PV = TagData(["I41"],read_function=_parse_state)
+    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state)
+    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state)
+    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state)
+    ENABLE_POOL = TagData(["I33"], read_function=_parse_state)
+    ENABLE_PV = TagData(["I41"], read_function=_parse_state)
     STATE_SOURCEPUMP = TagData(["I51"], bit=0)
     STATE_HEATINGPUMP = TagData(["I51"], bit=1)
     STATE_EVD = TagData(["I51"], bit=2)
@@ -237,8 +244,6 @@ class EcotouchTag(TagData, Enum):
     MANUAL_4WAYVALVE = TagData(["I1299"])
     MANUAL_MULTIEXT = TagData(["I1319"])
 
-
-
     def __hash__(self) -> int:
         return hash(self.name)
 
@@ -264,18 +269,21 @@ class Ecotouch:
     # performs a login. Has to be called before any other method.
     async def login(self, username="waterkotte", password="waterkotte"):
         args = {"username": username, "password": password}
-        #r = requests.get("http://%s/cgi/login" % self.hostname, params=args)
+        self.username = username
+        self.password = password
+        # r = requests.get("http://%s/cgi/login" % self.hostname, params=args)
         async with aiohttp.ClientSession() as session:
             r = await session.get("http://%s/cgi/login" % self.hostname, params=args)
             async with r:
                 assert r.status == 200
-                #r = await resp.text()
-                
+                # r = await resp.text()
+
                 print(await r.text())
                 print(r.status)
                 if self.get_status_response(await r.text()) != "S_OK":
                     raise StatusException(
-                        "Fehler beim Login: Status:%s" % self.get_status_response(await r.text())
+                        "Fehler beim Login: Status:%s"
+                        % self.get_status_response(await r.text())
                     )
                 self.auth_cookies = r.cookies
 
@@ -301,37 +309,42 @@ class Ecotouch:
     async def read_values(self, tags: Sequence[EcotouchTag]):
         # create flat list of ecotouch tags to be read
         e_tags = list(set([etag for tag in tags for etag in tag.tags]))
-        e_values,e_status = await self._read_tags(e_tags)
+        e_values, e_status = await self._read_tags(e_tags)
 
         result = {}
-        #result_status = {}
+        # result_status = {}
         for tag in tags:
-            #tag2=tag._replace(status=e_status[tag.tags[0]])
-            #tag.status[0]=e_status[tag.tags[0]]
+            # tag2=tag._replace(status=e_status[tag.tags[0]])
+            # tag.status[0]=e_status[tag.tags[0]]
             # if len(tag.status)==0:
             #     tag.status.append(e_status[tag.tags[0]])
             # else:
             #     tag.status.clear()
             #     tag.status.append(e_status[tag.tags[0]] + str(random.randint(1,10)))
-            #result_status[tag] = e_status[tag.tags[0]] + str(random.randint(1,10))
-           #tag.status=e_status[tag.tags[0]]
+            # result_status[tag] = e_status[tag.tags[0]] + str(random.randint(1,10))
+            # tag.status=e_status[tag.tags[0]]
             e_inactive = False
             for tag_status in tag.tags:
-                if e_status[tag_status]=="E_INACTIVE":
+                if e_status[tag_status] == "E_INACTIVE":
                     e_inactive = True
-            if e_inactive == False:
+            if e_inactive is False:
                 val = tag.read_function(tag, e_values, tag.bit)
             else:
                 val = None
-            result[tag] = {'value':val, 'status':e_status[tag_status]}
+            result[tag] = {"value": val, "status": e_status[tag_status]}
         return result
+
     #
     # reads a list of ecotouch tags
     #
-    async def _read_tags(self, tags: Sequence[EcotouchTag], results={},results_status={}):
-        
+    async def _read_tags(
+        self, tags: Sequence[EcotouchTag], results={}, results_status={}
+    ):
+
         if len(tags) > MAX_NO_TAGS:
-            results, results_status = self._read_tags(tags[MAX_NO_TAGS:], results, results_status)
+            results, results_status = await self._read_tags(
+                tags[MAX_NO_TAGS:], results, results_status
+            )
         tags = tags[:MAX_NO_TAGS]
 
         args = {}
@@ -344,41 +357,46 @@ class Ecotouch:
         #     cookies=self.auth_cookies,
         # )
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
-            async with session.get("http://%s/cgi/readTags" % self.hostname,params=args) as resp:
+            async with session.get(
+                "http://%s/cgi/readTags" % self.hostname, params=args
+            ) as resp:
                 r = await resp.text()
-                #print(r)
-        for tag in tags:
-            match = re.search(
-                r"#%s\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)" % tag,
-                #r.text,
-                r,
-                re.MULTILINE,
-            )
-            if match is None:
-                match = re.search(
-                r"#%s\tE_INACTIVETAG" % tag,
-                #r.text,
-                r,
-                re.MULTILINE,
-                )
-                val_status="E_INACTIVE"
-                #print("Tag: %s is inactive!", tag)
-                if match is None:
-                    raise Exception(tag + " tag not found in response")
-                
-            if 'val_status' in locals():
-                results_status[tag] = "E_INACTIVE"
-                results[tag] = None
-            else:
-                results_status[tag] = "E_OK"
-                results[tag] =  match.group("value")
-                #tag.status.append="E_OK"
-                #val_status = val_status if 'val_status' in locals() else match.group("status")
-                #tag = tag._replace(status=val_status)
-            
-            #results[tag] = val_str
-            
-            #results[tag].status = val_status
+                # print(r)
+                if r == "#E_NEED_LOGIN\n":
+                    res = await self.login(self.username, self.password)
+                    return
+                for tag in tags:
+                    match = re.search(
+                        r"#%s\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)" % tag,
+                        # r.text,
+                        r,
+                        re.MULTILINE,
+                    )
+                    if match is None:
+                        match = re.search(
+                            r"#%s\tE_INACTIVETAG" % tag,
+                            # r.text,
+                            r,
+                            re.MULTILINE,
+                        )
+                        val_status = "E_INACTIVE"
+                        # print("Tag: %s is inactive!", tag)
+                        if match is None:
+                            raise Exception(tag + " tag not found in response")
+
+                    if "val_status" in locals():
+                        results_status[tag] = "E_INACTIVE"
+                        results[tag] = None
+                    else:
+                        results_status[tag] = "E_OK"
+                        results[tag] = match.group("value")
+                        # tag.status.append="E_OK"
+                        # val_status = val_status if 'val_status' in locals() else match.group("status")
+                        # tag = tag._replace(status=val_status)
+
+                    # results[tag] = val_str
+
+                    # results[tag].status = val_status
         return results, results_status
 
     #
