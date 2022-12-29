@@ -6,6 +6,7 @@ https://github.com/pattisonmichael/waterkotte-heatpump
 """
 import asyncio
 import logging
+import re
 from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
@@ -22,12 +23,14 @@ from .const import CONF_USERNAME
 from .const import DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
-
+from .pywaterkotte.ecotouch import EcotouchTag
 # from .const import SENSORS
 
 SCAN_INTERVAL = timedelta(seconds=60)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+tags = []
 
 
 async def async_setup(hass: HomeAssistant, config: Config):
@@ -46,7 +49,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     host = entry.data.get(CONF_HOST)
 
     session = async_get_clientsession(hass)
-    client = WaterkotteHeatpumpApiClient(host, username, password, session, hass)
+    client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
 
     coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
@@ -67,6 +70,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     #     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, sensor))
 
     entry.add_update_listener(async_reload_entry)
+    x = 0
+    tags.clear()
+    for entity in hass.data["entity_registry"].entities:
+        if (
+           hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
+           and hass.data["entity_registry"].entities[entity].disabled is False):
+            x += 1
+            print(entity)
+            match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+            if match:
+                print(match.groups()[0].upper())
+                if EcotouchTag[match.groups()[0].upper()]:
+                    print(EcotouchTag[match.groups()[0].upper()])
+                    tags.append(EcotouchTag[match.groups()[0].upper()])
+    print(x)
+    print(tags)
     return True
 
 

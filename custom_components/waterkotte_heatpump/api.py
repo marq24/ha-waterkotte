@@ -24,17 +24,17 @@ class WaterkotteHeatpumpApiClient:
         username: str,
         password: str,
         session: aiohttp.ClientSession,
-        hass: str,
+        tags: str,
     ) -> None:
         """Sample API Client."""
         self._username = username
         self._password = password
         self._session = session
         self._host = host
-        self._hass = hass
+        # self._hass = hass
         self._client = Ecotouch(host)
-        self._entities = []
-        self._tags = []
+        # self._entities = []
+        self._tags = tags
         # # session = async_create_clientsession(self.hass)
         # client = Ecotouch(host)
         # await client.login(username, password)
@@ -47,27 +47,27 @@ class WaterkotteHeatpumpApiClient:
         """Login to the API."""
         if self._client.auth_cookies is None:
             await self._client.login(self._username, self._password)
-        x = 0
-        self._tags.clear()
-        for entity in self._hass.data["entity_registry"].entities:
-            if (
-                self._hass.data["entity_registry"].entities[entity].platform
-                == "waterkotte_heatpump"
-                and self._hass.data["entity_registry"].entities[entity].disabled
-                is False
-            ):
-                x += 1
-                print(entity)
-                self._entities.append(entity)
-                match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-                if match:
-                    print(match.groups()[0].upper())
-                    if EcotouchTag[match.groups()[0].upper()]:
-                        print(EcotouchTag[match.groups()[0].upper()])
-                        self._tags.append(EcotouchTag[match.groups()[0].upper()])
-        print(x)
-        print(self._entities)
-        print(self._tags)
+        # x = 0
+        # self._tags.clear()
+        # for entity in self._hass.data["entity_registry"].entities:
+        #     if (
+        #         self._hass.data["entity_registry"].entities[entity].platform
+        #         == "waterkotte_heatpump"
+        #         and self._hass.data["entity_registry"].entities[entity].disabled
+        #         is False
+        #     ):
+        #         x += 1
+        #         print(entity)
+        #         self._entities.append(entity)
+        #         match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+        #         if match:
+        #             print(match.groups()[0].upper())
+        #             if EcotouchTag[match.groups()[0].upper()]:
+        #                 print(EcotouchTag[match.groups()[0].upper()])
+        #                 self._tags.append(EcotouchTag[match.groups()[0].upper()])
+        # print(x)
+        # print(self._entities)
+        # print(self._tags)
         # return ret
 
     async def async_get_data(self) -> dict:
