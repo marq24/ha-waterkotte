@@ -320,7 +320,7 @@ class WaterkotteHeatpumpSensor(Entity):
                 result = self._coordinator.data[EcotouchTag.TEMPERATURE_RETURN]["value"]
             elif self._type == "temperature_flow":
                 result = self._coordinator.data[EcotouchTag.TEMPERATURE_FLOW]["value"]
-            elif self._type == "temperature_condenstation":
+            elif self._type == "temperature_condensation":
                 result = self._coordinator.data[EcotouchTag.TEMPERATURE_CONDENSATION][
                     "value"
                 ]

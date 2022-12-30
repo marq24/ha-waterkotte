@@ -12,7 +12,7 @@ import requests
 # import random
 import aiohttp
 
-MAX_NO_TAGS = 20
+MAX_NO_TAGS = 10
 
 
 class StatusException(Exception):
@@ -363,11 +363,20 @@ class Ecotouch:
             results = {}
         if results_status is None:
             results_status = {}
-        if len(tags) > MAX_NO_TAGS:
+
+        while len(tags) > MAX_NO_TAGS:
             results, results_status = await self._read_tags(
-                tags[MAX_NO_TAGS:], results, results_status
-            )
-        tags = tags[:MAX_NO_TAGS]
+                tags[:MAX_NO_TAGS], results, results_status)
+            tags = tags[MAX_NO_TAGS:]
+        # if len(tags) > 0:
+        #     results, results_status = await self._read_tags(
+        #         tags, results, results_status)
+
+        # if len(tags) > MAX_NO_TAGS:
+        #     results, results_status = await self._read_tags(
+        #         tags[MAX_NO_TAGS:], results, results_status
+        #     )
+        # tags = tags[:MAX_NO_TAGS]
 
         args = {}
         args["n"] = len(tags)
