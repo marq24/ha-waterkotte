@@ -26,14 +26,15 @@ from .const import STARTUP_MESSAGE
 from .pywaterkotte.ecotouch import EcotouchTag
 # from .const import SENSORS
 
-SCAN_INTERVAL = timedelta(seconds=60)
+SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 tags = []
+firstRun = True
 
 
-async def async_setup(hass: HomeAssistant, config: Config):
+async def async_setup(hass: HomeAssistant, config: Config):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -49,6 +50,27 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     host = entry.data.get(CONF_HOST)
 
     session = async_get_clientsession(hass)
+
+    # for sensor in SENSORS:
+    #     coordinator.platforms.append(sensor)
+    #     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, sensor))
+
+    # x = 0
+    tags.clear()
+    for entity in hass.data["entity_registry"].entities:
+        if (
+           hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
+           and hass.data["entity_registry"].entities[entity].disabled is False):
+            # x += 1
+            print(entity)
+            match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+            if match:
+                print(match.groups()[0].upper())
+                if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
+                    # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
+                    tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
+    # print(x)
+    # print(tags)
     client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
 
     coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
@@ -58,34 +80,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         raise ConfigEntryNotReady
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
-
     for platform in PLATFORMS:
         if entry.options.get(platform, True):
             coordinator.platforms.append(platform)
             hass.async_add_job(
                 hass.config_entries.async_forward_entry_setup(entry, platform)
             )
-    # for sensor in SENSORS:
-    #     coordinator.platforms.append(sensor)
-    #     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, sensor))
-
     entry.add_update_listener(async_reload_entry)
-    x = 0
-    tags.clear()
-    for entity in hass.data["entity_registry"].entities:
-        if (
-           hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
-           and hass.data["entity_registry"].entities[entity].disabled is False):
-            x += 1
-            print(entity)
-            match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-            if match:
-                print(match.groups()[0].upper())
-                if EcotouchTag[match.groups()[0].upper()]:
-                    print(EcotouchTag[match.groups()[0].upper()])
-                    tags.append(EcotouchTag[match.groups()[0].upper()])
-    print(x)
-    print(tags)
+
     return True
 
 
@@ -106,6 +108,9 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Update data via library."""
+        # if firstRun:
+        #     firstRun = False
+        #     await async_reload_entry(hass,)
         try:
             await self.api.login()
             self.data = await self.api.async_get_data()

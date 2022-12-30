@@ -3,7 +3,7 @@ from typing import Sequence
 import asyncio
 import logging
 import socket
-import re
+# import re
 import aiohttp
 import async_timeout
 from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
@@ -18,6 +18,8 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 
 class WaterkotteHeatpumpApiClient:
+    """ Waterkotte Heatpump API Client Class """
+
     def __init__(
         self,
         host: str,
@@ -47,27 +49,7 @@ class WaterkotteHeatpumpApiClient:
         """Login to the API."""
         if self._client.auth_cookies is None:
             await self._client.login(self._username, self._password)
-        # x = 0
-        # self._tags.clear()
-        # for entity in self._hass.data["entity_registry"].entities:
-        #     if (
-        #         self._hass.data["entity_registry"].entities[entity].platform
-        #         == "waterkotte_heatpump"
-        #         and self._hass.data["entity_registry"].entities[entity].disabled
-        #         is False
-        #     ):
-        #         x += 1
-        #         print(entity)
-        #         self._entities.append(entity)
-        #         match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-        #         if match:
-        #             print(match.groups()[0].upper())
-        #             if EcotouchTag[match.groups()[0].upper()]:
-        #                 print(EcotouchTag[match.groups()[0].upper()])
-        #                 self._tags.append(EcotouchTag[match.groups()[0].upper()])
-        # print(x)
-        # print(self._entities)
-        # print(self._tags)
+
         # return ret
 
     async def async_get_data(self) -> dict:
@@ -122,11 +104,16 @@ class WaterkotteHeatpumpApiClient:
         await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
 
     async def api_wrapper(
-        self, method: str, url: str, data: dict = {}, headers: dict = {}
+        # self, method: str, url: str, data: dict = {}, headers: dict = {}
+        self, method: str, url: str, data=None, headers=None
     ) -> dict:
         """Get information from the API."""
+        if data is None:
+            data = {}
+        if headers is None:
+            headers = {}
         try:
-            async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
+            async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):  # pylint: disable=unexpected-keyword-arg
                 # async with async_timeout.timeout(TIMEOUT):
                 if method == "get":
                     response = await self._session.get(url, headers=headers)

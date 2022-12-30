@@ -1,3 +1,4 @@
+""" pyecotouch main module"""
 from typing import Any, Callable, Collection, NamedTuple, Sequence, Tuple  # , List
 
 # from unittest import case
@@ -15,23 +16,27 @@ MAX_NO_TAGS = 20
 
 
 class StatusException(Exception):
-    pass
+    """A Status Exception."""
+    # pass
 
 
 class InvalidResponseException(Exception):
-    pass
+    """A InvalidResponseException."""
+    # pass
 
 
 class InvalidValueException(Exception):
-    pass
+    """A InvalidValueException."""
+    # pass
 
 
 class EcotouchTag:
-    pass
+    """A Dummy Class."""
+    # pass
 
 
 # default method that reads a value based on a single tag
-def _parse_value_default(self: EcotouchTag, vals, bitnum=None, *other_args):
+def _parse_value_default(self: EcotouchTag, vals, bitnum=None, *other_args):  # pylint: disable=unused-argument,keyword-arg-before-vararg
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
     assert ecotouch_tag[0] in ["A", "I", "D"]
@@ -56,7 +61,8 @@ def _parse_value_default(self: EcotouchTag, vals, bitnum=None, *other_args):
             return False
         else:
             raise InvalidValueException(
-                "%s is not a valid value for %s" % (val, ecotouch_tag)
+                # "%s is not a valid value for %s" % (val, ecotouch_tag)
+                f"{val} is not a valid value for {ecotouch_tag}"
             )
 
 
@@ -76,7 +82,7 @@ def _write_value_default(self, value, et_values):
         et_values[ecotouch_tag] = str(int(value * 10))
 
 
-def _parse_time(self, e_vals, *other_args):
+def _parse_time(self, e_vals, *other_args):  # pylint: disable=unused-argument
     vals = [int(e_vals[tag]) for tag in self.tags]
     vals[0] = vals[0] + 2000
     next_day = False
@@ -88,7 +94,7 @@ def _parse_time(self, e_vals, *other_args):
     return dt + timedelta(days=1) if next_day else dt
 
 
-def _parse_state(self, value, *other_args):
+def _parse_state(self, value, *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
     # assert isinstance(value[ecotouch_tag],int)
@@ -120,6 +126,7 @@ def _write_time(tag, value, et_values):
 
 
 class TagData(NamedTuple):
+    """ TagData Class """
     tags: Collection[str]
     unit: str = None
     writeable: bool = False
@@ -128,7 +135,8 @@ class TagData(NamedTuple):
     bit: int = None
 
 
-class EcotouchTag(TagData, Enum):
+class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
+    """ EcotouchTag Class """
     TEMPERATURE_OUTSIDE = TagData(["A1"], "°C")
     HOLIDAY_ENABLED = TagData(["D420"], writeable=True)
     HOLIDAY_START_TIME = TagData(
@@ -252,13 +260,17 @@ class EcotouchTag(TagData, Enum):
 # Class to control Waterkotte Ecotouch heatpumps.
 #
 class Ecotouch:
+    """ Ecotouch Class """
     auth_cookies = None
 
     def __init__(self, host):
         self.hostname = host
+        self.username = 'waterkotte'
+        self.password = 'waterkotte'
 
     # extracts statuscode from response
     def get_status_response(self, r):
+        """ get_status_response """
         match = re.search(r"^#([A-Z_]+)", r, re.MULTILINE)
         if match is None:
             raise InvalidResponseException(
@@ -268,12 +280,14 @@ class Ecotouch:
 
     # performs a login. Has to be called before any other method.
     async def login(self, username="waterkotte", password="waterkotte"):
+        """ Login to Heat Pump """
         args = {"username": username, "password": password}
         self.username = username
         self.password = password
         # r = requests.get("http://%s/cgi/login" % self.hostname, params=args)
         async with aiohttp.ClientSession() as session:
-            r = await session.get("http://%s/cgi/login" % self.hostname, params=args)
+            # r = await session.get("http://%s/cgi/login" % self.hostname, params=args)
+            r = await session.get(f"http://{self.hostname}/cgi/login", params=args)
             async with r:
                 assert r.status == 200
                 # r = await resp.text()
@@ -282,18 +296,19 @@ class Ecotouch:
                 print(r.status)
                 if self.get_status_response(await r.text()) != "S_OK":
                     raise StatusException(
-                        "Fehler beim Login: Status:%s"
-                        % self.get_status_response(await r.text())
+                        f"Fehler beim Login: Status:{self.get_status_response(await r.text())}"
                     )
                 self.auth_cookies = r.cookies
 
     async def read_value(self, tag: EcotouchTag):
+        """ Read a value from Tag """
         res = await self.read_values([tag])
         if tag in res:
             return res[tag]
         return None
 
     def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
+        """ Write values to Tag """
         to_write = {}
         for k, v in kv_pairs:
             if not k.writeable:
@@ -304,9 +319,11 @@ class Ecotouch:
             self._write_tag(k, v)
 
     def write_value(self, tag, value):
+        """ Write a value """
         self.write_values([(tag, value)])
 
     async def read_values(self, tags: Sequence[EcotouchTag]):
+        """ Async read values """
         # create flat list of ecotouch tags to be read
         e_tags = list(set([etag for tag in tags for etag in tag.tags]))
         e_values, e_status = await self._read_tags(e_tags)
@@ -331,16 +348,21 @@ class Ecotouch:
                 val = tag.read_function(tag, e_values, tag.bit)
             else:
                 val = None
-            result[tag] = {"value": val, "status": e_status[tag_status]}
+            result[tag] = {"value": val, "status": e_status[tag_status]}  # pylint: disable=undefined-loop-variable
         return result
 
     #
     # reads a list of ecotouch tags
     #
     async def _read_tags(
-        self, tags: Sequence[EcotouchTag], results={}, results_status={}
+        # self, tags: Sequence[EcotouchTag], results={}, results_status={}
+        self, tags: Sequence[EcotouchTag], results=None, results_status=None
     ):
-
+        """ async read tags """
+        if results is None:
+            results = {}
+        if results_status is None:
+            results_status = {}
         if len(tags) > MAX_NO_TAGS:
             results, results_status = await self._read_tags(
                 tags[MAX_NO_TAGS:], results, results_status
@@ -350,20 +372,21 @@ class Ecotouch:
         args = {}
         args["n"] = len(tags)
         for i in range(len(tags)):
-            args["t%d" % (i + 1)] = tags[i]
+            args[f"t{(i + 1)}"] = tags[i]
         # r = requests.get(
         #     "http://%s/cgi/readTags" % self.hostname,
         #     params=args,
         #     cookies=self.auth_cookies,
         # )
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
+
             async with session.get(
-                "http://%s/cgi/readTags" % self.hostname, params=args
+                f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
                 r = await resp.text()
                 # print(r)
                 if r == "#E_NEED_LOGIN\n":
-                    res = await self.login(self.username, self.password)
+                    res = await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
                     return
                 for tag in tags:
                     match = re.search(
@@ -379,7 +402,7 @@ class Ecotouch:
                             r,
                             re.MULTILINE,
                         )
-                        val_status = "E_INACTIVE"
+                        val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                         # print("Tag: %s is inactive!", tag)
                         if match is None:
                             raise Exception(tag + " tag not found in response")
@@ -403,9 +426,10 @@ class Ecotouch:
     # writes <value> into the tag <tag>
     #
     def _write_tag(self, tag: EcotouchTag, value):
+        """ write tag """
         args = {"n": 1, "returnValue": "true", "t1": tag, "v1": value}
         r = requests.get(
-            "http://%s/cgi/writeTags" % self.hostname,
+            f"http://{self.hostname}/cgi/writeTags",
             params=args,
             cookies=self.auth_cookies,
         )

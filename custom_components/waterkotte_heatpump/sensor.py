@@ -1,4 +1,5 @@
 """Sensor platform for Waterkotte Heatpump."""
+import logging
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
@@ -8,13 +9,9 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 # from .const import ICON
 # from .const import SENSOR
 
-from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM
-from .const import DOMAIN
-
 #  from .const import UnitOfTemperature
 # from .entity import WaterkotteHeatpumpEntity
-import logging
-from .pywaterkotte.ecotouch import EcotouchTag
+
 from homeassistant.const import (
     #    ATTR_ATTRIBUTION,
     DEGREE,
@@ -27,6 +24,9 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     #    TIME_SECONDS,
 )
+
+from .pywaterkotte.ecotouch import EcotouchTag
+from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -256,7 +256,7 @@ async def async_setup_entry(
 class WaterkotteHeatpumpSensor(Entity):
     """waterkotte_heatpump Sensor class."""
 
-    def __init__(self, entry_data, hass_data, sensor_type):
+    def __init__(self, entry_data, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
         # self._connector = hass_data[DWDWEATHER_DATA]
         self._coordinator = hass_data
@@ -274,73 +274,76 @@ class WaterkotteHeatpumpSensor(Entity):
     def state(self):
         """Return the state of the sensor."""
         result = ""
-        print(self._coordinator.data)
-        if self._type == "enable_heating":
-            result = self._coordinator.data[EcotouchTag.ENABLE_HEATING]["value"]
-        elif self._type == "enable_cooling":
-            result = self._coordinator.data[EcotouchTag.ENABLE_COOLING]["value"]
-        elif self._type == "enable_warmwater":
-            result = self._coordinator.data[EcotouchTag.ENABLE_WARMWATER]["value"]
-        elif self._type == "enable_pv":
-            result = self._coordinator.data[EcotouchTag.ENABLE_PV]["value"]
-        elif self._type == "state_cooling":
-            result = self._coordinator.data[EcotouchTag.STATE_COOLING]["value"]
-        elif self._type == "state_sourcepump":
-            result = self._coordinator.data[EcotouchTag.STATE_SOURCEPUMP]["value"]
-        elif self._type == "state_water":
-            result = self._coordinator.data[EcotouchTag.STATE_WATER]["value"]
-        elif self._type == "status_cooling":
-            result = self._coordinator.data[EcotouchTag.STATUS_COOLING]["value"]
-        elif self._type == "status_heating":
-            result = self._coordinator.data[EcotouchTag.STATUS_HEATING]["value"]
-        elif self._type == "status_water":
-            result = self._coordinator.data[EcotouchTag.STATUS_WATER]["value"]
-        elif self._type == "temperature_outside":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE]["value"]
-        elif self._type == "temperature_outside_1h":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE_1H]["value"]
-        elif self._type == "temperature_outside_24h":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE_24H][
-                "value"
-            ]
-        elif self._type == "temperature_source_in":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOURCE_IN]["value"]
-        elif self._type == "temperature_source_out":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOURCE_OUT]["value"]
-        elif self._type == "temperature_evaporation":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_EVAPORATION][
-                "value"
-            ]
-        elif self._type == "temperature_suction":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SUCTION]["value"]
-        elif self._type == "temperature_return_set":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_RETURN_SET]["value"]
-        elif self._type == "temperature_return":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_RETURN]["value"]
-        elif self._type == "temperature_flow":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_FLOW]["value"]
-        elif self._type == "temperature_condenstation":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_CONDENSATION][
-                "value"
-            ]
-        elif self._type == "temperature_storage":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_STORAGE]["value"]
-        elif self._type == "temperature_room":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_ROOM]["value"]
-        elif self._type == "temperature_room_1h":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_ROOM_1H]["value"]
-        elif self._type == "temperature_water":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_WATER]["value"]
-        elif self._type == "temperature_solar":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOLAR]["value"]
-        elif self._type == "temperature_sloar_flow":
-            result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOLAR_FLOW]["value"]
-        else:
-            result = "unavailable"
-        if result is True:
-            result = "on"
-        elif result is False:
-            result = "off"
+        # print(self._coordinator.data)
+        try:
+            if self._type == "enable_heating":
+                result = self._coordinator.data[EcotouchTag.ENABLE_HEATING]["value"]
+            elif self._type == "enable_cooling":
+                result = self._coordinator.data[EcotouchTag.ENABLE_COOLING]["value"]
+            elif self._type == "enable_warmwater":
+                result = self._coordinator.data[EcotouchTag.ENABLE_WARMWATER]["value"]
+            elif self._type == "enable_pv":
+                result = self._coordinator.data[EcotouchTag.ENABLE_PV]["value"]
+            elif self._type == "state_cooling":
+                result = self._coordinator.data[EcotouchTag.STATE_COOLING]["value"]
+            elif self._type == "state_sourcepump":
+                result = self._coordinator.data[EcotouchTag.STATE_SOURCEPUMP]["value"]
+            elif self._type == "state_water":
+                result = self._coordinator.data[EcotouchTag.STATE_WATER]["value"]
+            elif self._type == "status_cooling":
+                result = self._coordinator.data[EcotouchTag.STATUS_COOLING]["value"]
+            elif self._type == "status_heating":
+                result = self._coordinator.data[EcotouchTag.STATUS_HEATING]["value"]
+            elif self._type == "status_water":
+                result = self._coordinator.data[EcotouchTag.STATUS_WATER]["value"]
+            elif self._type == "temperature_outside":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE]["value"]
+            elif self._type == "temperature_outside_1h":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE_1H]["value"]
+            elif self._type == "temperature_outside_24h":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_OUTSIDE_24H][
+                    "value"
+                ]
+            elif self._type == "temperature_source_in":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOURCE_IN]["value"]
+            elif self._type == "temperature_source_out":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOURCE_OUT]["value"]
+            elif self._type == "temperature_evaporation":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_EVAPORATION][
+                    "value"
+                ]
+            elif self._type == "temperature_suction":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_SUCTION]["value"]
+            elif self._type == "temperature_return_set":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_RETURN_SET]["value"]
+            elif self._type == "temperature_return":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_RETURN]["value"]
+            elif self._type == "temperature_flow":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_FLOW]["value"]
+            elif self._type == "temperature_condenstation":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_CONDENSATION][
+                    "value"
+                ]
+            elif self._type == "temperature_storage":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_STORAGE]["value"]
+            elif self._type == "temperature_room":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_ROOM]["value"]
+            elif self._type == "temperature_room_1h":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_ROOM_1H]["value"]
+            elif self._type == "temperature_water":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_WATER]["value"]
+            elif self._type == "temperature_solar":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOLAR]["value"]
+            elif self._type == "temperature_sloar_flow":
+                result = self._coordinator.data[EcotouchTag.TEMPERATURE_SOLAR_FLOW]["value"]
+            else:
+                result = "unavailable"
+            if result is True:
+                result = "on"
+            elif result is False:
+                result = "off"
+        except KeyError:
+            return "unavailable"
         return result
 
     @property
