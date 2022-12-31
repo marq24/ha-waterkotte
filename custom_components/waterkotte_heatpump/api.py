@@ -36,7 +36,7 @@ class WaterkotteHeatpumpApiClient:
         # self._hass = hass
         self._client = Ecotouch(host)
         # self._entities = []
-        self._tags = tags
+        self.tags = tags
         # # session = async_create_clientsession(self.hass)
         # client = Ecotouch(host)
         # await client.login(username, password)
@@ -44,6 +44,14 @@ class WaterkotteHeatpumpApiClient:
         # # print(ret)
         # return ret["status"] == "E_OK"
         # # await client.async_get_data()
+
+    @property
+    def tags(self):
+        return self.__tags
+
+    @tags.setter
+    def tags(self, tags):
+        self.__tags = tags
 
     async def login(self) -> None:
         """Login to the API."""
@@ -85,7 +93,7 @@ class WaterkotteHeatpumpApiClient:
         #     EcotouchTag.TEMPERATURE_SOLAR,
         #     EcotouchTag.TEMPERATURE_SOLAR_FLOW,
         # ]
-        ret = await self._client.read_values(self._tags)
+        ret = await self._client.read_values(self.tags)
         return ret
 
     async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:

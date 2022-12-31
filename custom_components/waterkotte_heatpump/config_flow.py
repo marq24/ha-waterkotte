@@ -82,7 +82,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # # await client.async_get_data()
 
             session = async_create_clientsession(self.hass)
-            client = WaterkotteHeatpumpApiClient(host, username, password, session)
+            client = WaterkotteHeatpumpApiClient(host, username, password, session, None)
             await client.login()
             await client.async_read_value(EcotouchTag.DATE_DAY)
             # print(ret)

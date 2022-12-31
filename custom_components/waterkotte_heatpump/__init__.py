@@ -31,7 +31,6 @@ SCAN_INTERVAL = timedelta(seconds=30)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 tags = []
-firstRun = True
 
 
 async def async_setup(hass: HomeAssistant, config: Config):  # pylint: disable=unused-argument
@@ -50,27 +49,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     host = entry.data.get(CONF_HOST)
 
     session = async_get_clientsession(hass)
-
-    # for sensor in SENSORS:
-    #     coordinator.platforms.append(sensor)
-    #     hass.async_add_job(hass.config_entries.async_forward_entry_setup(entry, sensor))
-
-    # x = 0
-    tags.clear()
-    for entity in hass.data["entity_registry"].entities:
-        if (
-           hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
-           and hass.data["entity_registry"].entities[entity].disabled is False):
-            # x += 1
-            print(entity)
-            match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-            if match:
-                print(match.groups()[0].upper())
-                if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
-                    # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
-                    tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
-    # print(x)
-    # print(tags)
     client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
 
     coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
@@ -88,6 +66,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             )
     entry.add_update_listener(async_reload_entry)
 
+    tags.clear()
+    for entity in hass.data["entity_registry"].entities:
+        if (
+           hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
+           and hass.data["entity_registry"].entities[entity].disabled is False):
+            # x += 1
+            print(entity)
+            match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+            if match:
+                print(match.groups()[0].upper())
+                if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
+                    # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
+                    tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
+    # print(x)
+    # print(tags)
+    client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
     return True
 
 
@@ -103,16 +97,30 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         self.api = client
         self.data = []
         self.platforms = []
+        self.__hass = hass
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
         """Update data via library."""
-        # if firstRun:
-        #     firstRun = False
-        #     await async_reload_entry(hass,)
         try:
             await self.api.login()
+            if len(self.api.tags) == 0:
+                tags = []
+                for entity in self.__hass.data["entity_registry"].entities:
+                    if (
+                            self.__hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
+                            and self.__hass.data["entity_registry"].entities[entity].disabled is False):
+                        # x += 1
+                        print(entity)
+                        match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+                        if match:
+                            print(match.groups()[0].upper())
+                            if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
+                                # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
+                                tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
+                self.api.tags = tags
+
             self.data = await self.api.async_get_data()
             return self.data
         except Exception as exception:
