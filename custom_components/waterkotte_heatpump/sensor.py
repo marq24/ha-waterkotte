@@ -27,7 +27,7 @@ from homeassistant.const import (
 )
 
 from .pywaterkotte.ecotouch import EcotouchTag
-from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM, DOMAIN, NAME
+from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM, DOMAIN, NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -436,7 +436,7 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_ad
     # print(entry)
     async_add_entities(
         [
-            WaterkotteHeatpumpSensor(entry.data, hass_data, sensor_type)
+            WaterkotteHeatpumpSensor(entry, hass_data, sensor_type)
             for sensor_type in SENSOR_TYPES
         ],
         # False,
@@ -447,7 +447,7 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_ad
 class WaterkotteHeatpumpSensor(Entity):
     """waterkotte_heatpump Sensor class."""
 
-    def __init__(self, entry_data, hass_data, sensor_type):  # pylint: disable=unused-argument
+    def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
         # self._connector = hass_data[DWDWEATHER_DATA]
         self._coordinator = hass_data
@@ -455,6 +455,12 @@ class WaterkotteHeatpumpSensor(Entity):
         self._type = sensor_type
         self._name = f"{SENSOR_TYPES[self._type][0]} {DOMAIN}"
         self._unique_id = f"{SENSOR_TYPES[self._type][0]}_{DOMAIN}"
+        self._entry_data = entry.data
+        # self._config = list(self.hass.data['waterkotte_heatpump'].values())[0].config_entry.data
+        # self._fw = self._config["fw"]
+        # self._bios = self._config["bios"]
+        # self._ip = self._config["ip"]
+        self._device_id = entry.entry_id
         # self._name = f"{DOMAIN}_{SENSOR_TYPES[self._type][0]}"
         # self._unique_id = f"{DOMAIN}_{SENSOR_TYPES[self._type][0]}"
 
@@ -608,16 +614,21 @@ class WaterkotteHeatpumpSensor(Entity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return the device info."""
+        # ip = "123"
         return DeviceInfo(
+            id=DOMAIN,
             identifiers={
                 # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN
-                 # , self.unique_id
-                 )
+                #                (DOMAIN
+                # , self.unique_id
+                #                )
+                (DOMAIN, "123"),
+                ("IP", self._entry_data['ip']),
+                ('device', self._device_id)
             },
             name=NAME,
             manufacturer=NAME,
             model="modelstr",
-            sw_version="verstr",
+            sw_version=f"{self._entry_data['fw']} BIOS:{self._entry_data['bios']}",
             # via_device=(hue.DOMAIN, self.api.bridgeid),
         )

@@ -35,7 +35,9 @@ CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
 CONF_HOST = "host"
 CONF_POLLING_INTERVAL = "polling_interval"
-
+CONF_IP = "ip"
+CONF_BIOS = "bios"
+CONF_FW = "fw"
 # Defaults
 DEFAULT_NAME = DOMAIN
 

@@ -47,6 +47,7 @@ class WaterkotteHeatpumpApiClient:
 
     @property
     def tags(self):
+        """ getter for Tags """
         return self.__tags
 
     @tags.setter

@@ -1,0 +1,364 @@
+{
+  "version": 1,
+  "minor_version": 4,
+  "key": "core.device_registry",
+  "data": {
+    "devices": [
+      {
+        "aliases": [],
+        "area_id": null,
+        "config_entries": [
+          "11ad2e46df7e3aebfb65cc9e331ada6c"
+        ],
+        "configuration_url": null,
+        "connections": [],
+        "disabled_by": null,
+        "entry_type": null,
+        "hw_version": null,
+        "id": "77e2cdbef7c2dab4b92ce1b60d0fa875",
+        "identifiers": [
+          "waterkotte_heatpump"
+        ],
+        "manufacturer": "Waterkotte Heatpump",
+        "model": "modelstr",
+        "name_by_user": null,
+        "name": "Waterkotte Heatpump",
+        "sw_version": "verstr",
+        "via_device_id": null
+      },
+      {
+        "aliases": [],
+        "area_id": null,
+        "config_entries": [
+          "11ad2e46df7e3aebfb65cc9e331ada6c"
+        ],
+        "configuration_url": null,
+        "connections": [],
+        "disabled_by": null,
+        "entry_type": null,
+        "hw_version": null,
+        "id": "d92f9bc0d115269ff1a604b1cb5b1b1f",
+        "identifiers": [
+          [
+            "waterkotte_heatpump",
+            "11ad2e46df7e3aebfb65cc9e331ada6c"
+          ]
+        ],
+        "manufacturer": "Waterkotte Heatpump",
+        "model": "0.0.1",
+        "name_by_user": null,
+        "name": "Waterkotte Heatpump",
+        "sw_version": null,
+        "via_device_id": null
+      }
+    ],
+    "deleted_devices": [
+      {
+        "config_entries": [
+          "459bb47a45d26ae1781e51a089d6a2a5"
+        ],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "cae69b29c0323408b308ae9ef4d37033",
+        "orphaned_timestamp": null
+      },
+      {
+        "config_entries": [
+          "459bb47a45d26ae1781e51a089d6a2a5"
+        ],
+        "connections": [],
+        "identifiers": [
+          [
+            "waterkotte_heatpump",
+            "459bb47a45d26ae1781e51a089d6a2a5"
+          ]
+        ],
+        "id": "892a21331af786fb8e2065bd2376a1cc",
+        "orphaned_timestamp": null
+      },
+      {
+        "config_entries": [
+          "459bb47a45d26ae1781e51a089d6a2a5"
+        ],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "73161657eab1848999bccc1b2bdb0400",
+        "orphaned_timestamp": null
+      },
+      {
+        "config_entries": [],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "5f4f518655a6079055cc91f7d73aa70c",
+        "orphaned_timestamp": 1672579220.231871
+      },
+      {
+        "config_entries": [],
+        "connections": [],
+        "identifiers": [
+          [
+            "waterkotte_heatpump",
+            "a28ab750b44ca8f425db9eab81b826e5"
+          ]
+        ],
+        "id": "e7a11681c7f22c597a08879654fef102",
+        "orphaned_timestamp": 1672579220.231871
+      },
+      {
+        "config_entries": [],
+        "connections": [],
+        "identifiers": [
+          [
+            "waterkotte_heatpump",
+            "d0264f16deb49bea3531009972c38c73"
+          ]
+        ],
+        "id": "60d3e02c9912c09b47133f0012c49677",
+        "orphaned_timestamp": 1672579240.2477367
+      },
+      {
+        "config_entries": [
+          "459bb47a45d26ae1781e51a089d6a2a5"
+        ],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "07853e117a7897b631b8f48476985cc4",
+        "orphaned_timestamp": null
+      },
+      {
+        "config_entries": [
+          "8ef291b78c8a1c7261b8eaddd9ed07c3"
+        ],
+        "connections": [],
+        "identifiers": [
+          [
+            "waterkotte_heatpump",
+            "8ef291b78c8a1c7261b8eaddd9ed07c3"
+          ]
+        ],
+        "id": "54c945c860fd5380b8cf9ba2d55e4e28",
+        "orphaned_timestamp": null
+      },
+      {
+        "config_entries": [
+          "8ef291b78c8a1c7261b8eaddd9ed07c3"
+        ],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "2a61132a7f89b0159e2da6d7b6b6003d",
+        "orphaned_timestamp": null
+      },
+      {
+        "config_entries": [
+          "8ef291b78c8a1c7261b8eaddd9ed07c3"
+        ],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "80467a84b8347dc1231471844e90db95",
+        "orphaned_timestamp": null
+      },
+      {
+        "config_entries": [],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "57f1f4ce6913a8fd32003a4507e786be",
+        "orphaned_timestamp": 1672586649.3532474
+      },
+      {
+        "config_entries": [],
+        "connections": [],
+        "identifiers": [
+          [
+            "waterkotte_heatpump",
+            "f048022c9cb215c76cd8853823cf5035"
+          ]
+        ],
+        "id": "524cb47cabdb0bc9dc68f872e65c0a1b",
+        "orphaned_timestamp": 1672586649.3532474
+      },
+      {
+        "config_entries": [],
+        "connections": [],
+        "identifiers": [
+          [
+            "w",
+            "a",
+            "t",
+            "e",
+            "r",
+            "k",
+            "o",
+            "t",
+            "t",
+            "e",
+            "_",
+            "h",
+            "e",
+            "a",
+            "t",
+            "p",
+            "u",
+            "m",
+            "p"
+          ]
+        ],
+        "id": "ee4c82916a27687dc36299eaa48ddbb7",
+        "orphaned_timestamp": 1672586649.3532474
+      }
+    ]
+  }
+}

@@ -19,14 +19,14 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_HOST, CONF_PASSWORD
-from .const import CONF_USERNAME
+from .const import CONF_USERNAME, CONF_POLLING_INTERVAL
 from .const import DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
 from .pywaterkotte.ecotouch import EcotouchTag
 # from .const import SENSORS
 
-SCAN_INTERVAL = timedelta(seconds=30)
+SCAN_INTERVAL = timedelta(seconds=60)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -44,10 +44,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
-    host = entry.data.get(CONF_HOST)
-
+    username = entry.options.get(CONF_USERNAME, entry.data.get(CONF_USERNAME))
+    password = entry.options.get(CONF_PASSWORD, entry.data.get(CONF_PASSWORD))
+    host = entry.options.get(CONF_HOST, entry.data.get(CONF_HOST))
+    SCAN_INTERVAL = entry.options.get(CONF_POLLING_INTERVAL, timedelta(seconds=60))
     session = async_get_clientsession(hass)
     client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
 

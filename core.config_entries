@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "core.config_entries",
+  "data": {
+    "entries": [
+      {
+        "entry_id": "06c19ec7c440aadf1ee24c8adaff2d90",
+        "version": 1,
+        "domain": "sun",
+        "title": "Sun",
+        "data": {},
+        "options": {},
+        "pref_disable_new_entities": false,
+        "pref_disable_polling": false,
+        "source": "import",
+        "unique_id": null,
+        "disabled_by": null
+      },
+      {
+        "entry_id": "990a0b1bb5341bae9da3556dd089b68b",
+        "version": 1,
+        "domain": "radio_browser",
+        "title": "Radio Browser",
+        "data": {},
+        "options": {},
+        "pref_disable_new_entities": false,
+        "pref_disable_polling": false,
+        "source": "onboarding",
+        "unique_id": null,
+        "disabled_by": null
+      },
+      {
+        "entry_id": "11ad2e46df7e3aebfb65cc9e331ada6c",
+        "version": 1,
+        "domain": "waterkotte_heatpump",
+        "title": "waterkotte",
+        "data": {
+          "host": "wp.knx.pattison.de",
+          "username": "waterkotte",
+          "password": "waterkotte",
+          "ip": "192.168.50.10"
+        },
+        "options": {},
+        "pref_disable_new_entities": false,
+        "pref_disable_polling": false,
+        "source": "user",
+        "unique_id": null,
+        "disabled_by": null
+      }
+    ]
+  }
+}

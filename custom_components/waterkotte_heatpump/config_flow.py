@@ -1,17 +1,19 @@
 """Adds config flow for Waterkotte Heatpump."""
 import voluptuous as vol
+
+from socket import gethostbyname
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from custom_components.waterkotte_heatpump.pywaterkotte.ecotouch import EcotouchTag
 
+
 # from custom_components.pywaterkotte import pywaterkotte
 # from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 
-from .const import CONF_HOST, CONF_PASSWORD
-from .const import CONF_USERNAME
+from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW
 from .const import DOMAIN
 from .const import PLATFORMS
 
@@ -25,6 +27,9 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize."""
         self._errors = {}
+        self._ip = ""
+        self._bios = ""
+        self._firmware = ""
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -41,6 +46,9 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_HOST],
             )
             if valid:
+                user_input[CONF_IP] = self._ip
+                user_input[CONF_BIOS] = self._bios
+                user_input[CONF_FW] = self._firmware
                 return self.async_create_entry(
                     title=user_input[CONF_USERNAME], data=user_input
                 )
@@ -80,11 +88,18 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # # print(ret)
             # return ret["status"] == "E_OK"
             # # await client.async_get_data()
-
+            self._ip = gethostbyname(host)
             session = async_create_clientsession(self.hass)
             client = WaterkotteHeatpumpApiClient(host, username, password, session, None)
             await client.login()
-            await client.async_read_value(EcotouchTag.DATE_DAY)
+            # await client.async_read_value(EcotouchTag.DATE_DAY)
+            inittag = [
+                EcotouchTag.VERSION_BIOS,
+                EcotouchTag.VERSION_CONTROLLER,
+                EcotouchTag.VERSION_CONTROLLER_BUILD]
+            ret = await client.async_read_values(inittag)
+            self._bios = f"{str(ret[EcotouchTag.VERSION_BIOS]['value'])[0]}.{str(ret[EcotouchTag.VERSION_BIOS]['value'])[1:3]}"
+            self._firmware = f"0{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[0]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[1:3]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[3:]}-{str(ret[EcotouchTag.VERSION_CONTROLLER_BUILD]['value'])}"
             # print(ret)
             return True
 
@@ -111,14 +126,26 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
             self.options.update(user_input)
             return await self._update_options()
 
+        data_schema = vol.Schema(
+            {
+                vol.Required(x, default=self.options.get(x, True)): bool
+                for x in sorted(PLATFORMS)
+            })
+        data_schema = data_schema.extend(
+            {
+                vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 30)): int,
+                vol.Required(
+                    CONF_USERNAME,
+                    default=self.options.get(CONF_USERNAME),
+                    msg="Username"): str,
+                vol.Required(
+                    CONF_PASSWORD,
+                    default=self.options.get(CONF_USERNAME),
+                    description="Password"): str,
+            })
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(x, default=self.options.get(x, True)): bool
-                    for x in sorted(PLATFORMS)
-                }
-            ),
+            data_schema=data_schema,
         )
 
     async def _update_options(self):
