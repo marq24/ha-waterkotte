@@ -13,7 +13,7 @@ from custom_components.waterkotte_heatpump.pywaterkotte.ecotouch import Ecotouch
 # from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 
-from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW
+from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_ID, CONF_SERIES
 from .const import DOMAIN
 from .const import PLATFORMS
 
@@ -30,6 +30,9 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._ip = ""
         self._bios = ""
         self._firmware = ""
+        self._ID = ""
+        self._series = ""
+        self._serial = ""
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -49,6 +52,9 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_IP] = self._ip
                 user_input[CONF_BIOS] = self._bios
                 user_input[CONF_FW] = self._firmware
+                user_input[CONF_SERIES] = self._series
+                user_input[CONF_SERIAL] = self._serial
+                user_input[CONF_ID] = self._ID
                 return self.async_create_entry(
                     title=user_input[CONF_USERNAME], data=user_input
                 )
@@ -96,10 +102,16 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             inittag = [
                 EcotouchTag.VERSION_BIOS,
                 EcotouchTag.VERSION_CONTROLLER,
-                EcotouchTag.VERSION_CONTROLLER_BUILD]
+                EcotouchTag.VERSION_CONTROLLER_BUILD,
+                EcotouchTag.INFO_ID,
+                EcotouchTag.INFO_SERIAL,
+                EcotouchTag.INFO_SERIES]
             ret = await client.async_read_values(inittag)
             self._bios = f"{str(ret[EcotouchTag.VERSION_BIOS]['value'])[0]}.{str(ret[EcotouchTag.VERSION_BIOS]['value'])[1:3]}"
             self._firmware = f"0{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[0]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[1:3]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[3:]}-{str(ret[EcotouchTag.VERSION_CONTROLLER_BUILD]['value'])}"
+            self._ID = str(ret[EcotouchTag.INFO_ID]['value'])
+            self._series = str(ret[EcotouchTag.INFO_SERIES]['value'])
+            self._serial = str(ret[EcotouchTag.INFO_SERIAL]['value'])
             # print(ret)
             return True
 
