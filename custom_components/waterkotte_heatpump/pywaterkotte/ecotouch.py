@@ -88,6 +88,14 @@ def _parse_series(self, e_vals, *other_args):  # pylint: disable=unused-argument
     return aI105[int(e_vals["I105"])] if e_vals["I105"] else ""
 
 
+def _parse_bios(self, e_vals, *other_args):  # pylint: disable=unused-argument
+    return f"{str(e_vals['I3'])[0]}.{str(e_vals['I3'])[1:3]}"
+
+
+def _parse_fw(self, e_vals, *other_args):  # pylint: disable=unused-argument
+    return f"0{str(e_vals['I1'])[0]}.{str(e_vals['I1'])[1:3]}.{str(e_vals['I1'])[3:]}-{str(e_vals['I2'])}"
+
+
 def _parse_id(self, e_vals, *other_args):  # pylint: disable=unused-argument
     # pylint: disable=invalid-name,line-too-long
     aI110 = ["Ai1 5005.4", "Ai1 5006.4", "Ai1 5007.4", "Ai1 5008.4", "Ai1+ 5006.3", "Ai1+ 5007.3", "Ai1+ 5009.3", "Ai1+ 5011.3", "Ai1+ 5006.3 (1x230V)",
@@ -265,9 +273,11 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPCHANGE_COOLING_PV = TagData(["A683"], "°C")
     TEMPCHANGE_WARMWATER_PV = TagData(["A684"], "°C")
     TEMPCHANGE_POOL_PV = TagData(["A685"], "°C")
-    VERSION_CONTROLLER = TagData(["I1"])
-    VERSION_CONTROLLER_BUILD = TagData(["I2"])
-    VERSION_BIOS = TagData(["I3"])
+    VERSION_CONTROLLER = TagData(["I1", "I2"],
+                                 writeable=False,
+                                 read_function=_parse_fw,)
+    # VERSION_CONTROLLER_BUILD = TagData(["I2"])
+    VERSION_BIOS = TagData(["I3"], writeable=False, read_function=_parse_bios)
     DATE_DAY = TagData(["I5"])
     DATE_MONTH = TagData(["I6"])
     DATE_YEAR = TagData(["I7"])

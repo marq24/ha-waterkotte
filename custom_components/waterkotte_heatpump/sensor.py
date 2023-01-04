@@ -1,6 +1,6 @@
 """Sensor platform for Waterkotte Heatpump."""
 import logging
-from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
+# from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
@@ -28,7 +28,7 @@ from homeassistant.const import (
 )
 from .entity import WaterkotteHeatpumpEntity
 from .pywaterkotte.ecotouch import EcotouchTag
-from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM, DOMAIN, NAME, CONF_FW, CONF_BIOS, CONF_IP
+from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM, DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -320,33 +320,33 @@ SENSOR_TYPES = {
         "mdi:gauge",
         False,
     ],
-    "version_controller": [
-        "Version Controller",
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
-        "mdi:gauge",
-        False,
-        None,
-        EntityCategory.DIAGNOSTIC,
-    ],
-    "version_controller_build": [
-        "Version Controller Build",
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
-        "mdi:gauge",
-        False,
-        None,
-        EntityCategory.DIAGNOSTIC,
-    ],
-    "version_bios": [
-        "Version BIOS",
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
-        "mdi:gauge",
-        False,
-        None,
-        EntityCategory.DIAGNOSTIC,
-    ],
+    # "version_controller": [
+    #     "Version Controller",
+    #     DEVICE_CLASS_PRESSURE,
+    #     PRESSURE_BAR,
+    #     "mdi:gauge",
+    #     False,
+    #     None,
+    #     EntityCategory.DIAGNOSTIC,
+    # ],
+    # "version_controller_build": [
+    #     "Version Controller Build",
+    #     DEVICE_CLASS_PRESSURE,
+    #     PRESSURE_BAR,
+    #     "mdi:gauge",
+    #     False,
+    #     None,
+    #     EntityCategory.DIAGNOSTIC,
+    # ],
+    # "version_bios": [
+    #     "Version BIOS",
+    #     DEVICE_CLASS_PRESSURE,
+    #     PRESSURE_BAR,
+    #     "mdi:gauge",
+    #     False,
+    #     None,
+    #     EntityCategory.DIAGNOSTIC,
+    # ],
 
 }
 """
@@ -430,7 +430,7 @@ SENSOR_TYPES = {
 # async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_entities) -> None:
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_devices) -> None:
     """Set up the Waterkotte sensor platform."""
-    hass_data = hass.data[DOMAIN][entry.entry_id]
+    # hass_data = hass.data[DOMAIN][entry.entry_id]
     _LOGGER.debug("Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
     # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_condensation")])
@@ -560,12 +560,12 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
                 result = self._coordinator.data[EcotouchTag.PERCENT_SOURCE_PUMP]["value"]
             elif self._type == "percent_compressor":
                 result = self._coordinator.data[EcotouchTag.PERCENT_COMPRESSOR]["value"]
-            elif self._type == "version_controller":
-                result = self._coordinator.data[EcotouchTag.VERSION_CONTROLLER]["value"]
-            elif self._type == "version_controller_build":
-                result = self._coordinator.data[EcotouchTag.VERSION_CONTROLLER_BUILD]["value"]
-            elif self._type == "version_bios":
-                result = self._coordinator.data[EcotouchTag.VERSION_BIOS]["value"]
+            # elif self._type == "version_controller":
+            #     result = self._coordinator.data[EcotouchTag.VERSION_CONTROLLER]["value"]
+            # elif self._type == "version_controller_build":
+            #     result = self._coordinator.data[EcotouchTag.VERSION_CONTROLLER_BUILD]["value"]
+            # elif self._type == "version_bios":
+            #     result = self._coordinator.data[EcotouchTag.VERSION_BIOS]["value"]
 
             else:
                 result = "unavailable"

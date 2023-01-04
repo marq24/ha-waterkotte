@@ -102,13 +102,15 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             inittag = [
                 EcotouchTag.VERSION_BIOS,
                 EcotouchTag.VERSION_CONTROLLER,
-                EcotouchTag.VERSION_CONTROLLER_BUILD,
+                # EcotouchTag.VERSION_CONTROLLER_BUILD,
                 EcotouchTag.INFO_ID,
                 EcotouchTag.INFO_SERIAL,
                 EcotouchTag.INFO_SERIES]
             ret = await client.async_read_values(inittag)
-            self._bios = f"{str(ret[EcotouchTag.VERSION_BIOS]['value'])[0]}.{str(ret[EcotouchTag.VERSION_BIOS]['value'])[1:3]}"
-            self._firmware = f"0{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[0]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[1:3]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[3:]}-{str(ret[EcotouchTag.VERSION_CONTROLLER_BUILD]['value'])}"
+            self._bios = ret[EcotouchTag.VERSION_BIOS]['value']
+            # self._bios = f"{str(ret[EcotouchTag.VERSION_BIOS]['value'])[0]}.{str(ret[EcotouchTag.VERSION_BIOS]['value'])[1:3]}"
+            # self._firmware = f"0{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[0]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[1:3]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[3:]}-{str(ret[EcotouchTag.VERSION_CONTROLLER_BUILD]['value'])}"
+            self._firmware = ret[EcotouchTag.VERSION_CONTROLLER]
             self._ID = str(ret[EcotouchTag.INFO_ID]['value'])
             self._series = str(ret[EcotouchTag.INFO_SERIES]['value'])
             self._serial = str(ret[EcotouchTag.INFO_SERIAL]['value'])

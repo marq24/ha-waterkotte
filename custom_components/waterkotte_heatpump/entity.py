@@ -22,13 +22,13 @@ class WaterkotteHeatpumpEntity(CoordinatorEntity):
 
     @property
     def device_info(self):
-        ip = self.config_entry.data['ip'] if type(self.config_entry) is ConfigEntry else self.config_entry.config_entry.data['ip']  # pylint: disable=line-too-long,invalid-name
-        serial = self.config_entry.data['serial'] if type(self.config_entry) is ConfigEntry else self.config_entry.config_entry.data['serial']  # pylint: disable=line-too-long
-        device = self.config_entry.entry_id if type(self.config_entry) is ConfigEntry else self.config_entry.config_entry.entry_id  # pylint: disable=line-too-long
-        series = self.config_entry.data['series'] if type(self.config_entry) is ConfigEntry else self.config_entry.config_entry.data['series']  # pylint: disable=line-too-long
-        deviceid = self.config_entry.data['id'] if type(self.config_entry) is ConfigEntry else self.config_entry.config_entry.data['id']  # pylint: disable=line-too-long
-        fw = self.config_entry.data['fw'] if type(self.config_entry) is ConfigEntry else self.config_entry.config_entry.data['fw']  # pylint: disable=line-too-long,invalid-name
-        bios = self.config_entry.data['bios'] if type(self.config_entry) is ConfigEntry else self.config_entry.config_entry.data['bios']  # pylint: disable=line-too-long
+        ip = self.config_entry.data['ip'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['ip']  # pylint: disable=line-too-long,invalid-name
+        serial = self.config_entry.data['serial'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['serial']  # pylint: disable=line-too-long
+        device = self.config_entry.entry_id if isinstance(self.config_entry, ConfigEntry)else self.config_entry.config_entry.entry_id  # pylint: disable=line-too-long
+        series = self.config_entry.data['series'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['series']  # pylint: disable=line-too-long
+        deviceid = self.config_entry.data['id'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['id']  # pylint: disable=line-too-long
+        fw = self.config_entry.data['fw'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['fw']  # pylint: disable=line-too-long,invalid-name
+        bios = self.config_entry.data['bios'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['bios']  # pylint: disable=line-too-long
         return {
             "identifiers": {
                 (DOMAIN, self.unique_id),
