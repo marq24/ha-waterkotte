@@ -13,47 +13,64 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 #  from .const import UnitOfTemperature
 
 
-from homeassistant.const import (
-    #    ATTR_ATTRIBUTION,
-    DEGREE,
-    #    DEVICE_CLASS_HUMIDITY,
-    DEVICE_CLASS_PRESSURE,
-    DEVICE_CLASS_TEMPERATURE,
-    #    LENGTH_KILOMETERS,
-    PRESSURE_HPA,
-    PRESSURE_BAR,
-    SPEED_KILOMETERS_PER_HOUR,
-    TEMP_CELSIUS,
-    #    TIME_SECONDS,
-)
+# from homeassistant.const import (
+#    ATTR_ATTRIBUTION,
+# DEGREE,
+#    DEVICE_CLASS_HUMIDITY,
+# DEVICE_CLASS_PRESSURE,
+# DEVICE_CLASS_TEMPERATURE,
+#    LENGTH_KILOMETERS,
+# PRESSURE_HPA,
+# PRESSURE_BAR,
+# SPEED_KILOMETERS_PER_HOUR,
+# TEMP_CELSIUS,
+#    TIME_SECONDS,
+# )
 from .entity import WaterkotteHeatpumpEntity
 from .pywaterkotte.ecotouch import EcotouchTag
-from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM, DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
+from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
 
 
 # Sensor types are defined as:
-#   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]disabled_by_default, [6]options, [7]entity_category
+#   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category
 SENSOR_TYPES = {
     "enable_cooling": [
-        "enable_cooling",
+        "Enable Cooling",
         EcotouchTag.ENABLE_COOLING,
         DEVICE_CLASS_ENUM,
         None,
         "mdi:snowflake-thermometer",
         True,
-        ENUM_ONOFFAUTO,
+        ENUM_OFFAUTOMANUAL,
     ],
-
     "enable_heating": [
-        "enable_cooling",
-        EcotouchTag.ENABLE_COOLING,
+        "Enable Heating",
+        EcotouchTag.ENABLE_HEATING,
         DEVICE_CLASS_ENUM,
         None,
-        "mdi:snowflake-thermometer",
+        "mdi:weather-partly-cloudy",
         True,
-        ENUM_ONOFFAUTO,
+        ENUM_OFFAUTOMANUAL,
+    ],
+    "enable_pv": [
+        "Enable PV",
+        EcotouchTag.ENABLE_PV,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:solar-power",
+        False,
+        ENUM_OFFAUTOMANUAL,
+    ],
+    "enable_warmwater": [
+        "Enable Warmwater",
+        EcotouchTag.ENABLE_WARMWATER,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:water-thermometer",
+        True,
+        ENUM_OFFAUTOMANUAL,
     ],
 }
 """
@@ -179,13 +196,17 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
 
     @property
     def options(self) -> list[str]:
-        return ["off", "auto", "manual"]
+        # return ["off", "auto", "manual"]
+        return SENSOR_TYPES[self._type][6]
 
     async def async_select_option(self, option: str) -> None:  # pylint: disable=unused-argument
         """Turn on the switch."""
-        print(option)
-        # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-        await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], option)
+        try:
+            print(option)
+            # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
+            await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], option)
+        except ValueError:
+            return "unavailable"
 
     @ property
     def icon(self):

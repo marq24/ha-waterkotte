@@ -28,13 +28,13 @@ from homeassistant.const import (
 )
 from .entity import WaterkotteHeatpumpEntity
 from .pywaterkotte.ecotouch import EcotouchTag
-from .const import ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM, DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
+from .const import DOMAIN  # ENUM_ONOFFAUTO, DEVICE_CLASS_ENUM,  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
 
 
 # Sensor types are defined as:
-#   variable -> [0]title, [1]device_class, [2]units, [3]icon, [4]disabled_by_default, [5]options, [6]entity_category
+#   variable -> [0]title, [1]device_class, [2]units, [3]icon, [4]enabled_by_default, [5]options, [6]entity_category
 SENSOR_TYPES = {
     # "enable_cooling": [
     #     "enable_cooling",

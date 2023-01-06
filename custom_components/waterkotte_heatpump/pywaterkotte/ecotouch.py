@@ -160,7 +160,7 @@ def _parse_time(self, e_vals, *other_args):  # pylint: disable=unused-argument
         vals[3] = 0
         next_day = True
 
-    dt = datetime(*vals)
+    dt = datetime(*vals)  # pylint: disable=invalid-name
     return dt + timedelta(days=1) if next_day else dt
 
 
@@ -360,7 +360,7 @@ class Ecotouch:
         self.password = 'waterkotte'
 
     # extracts statuscode from response
-    def get_status_response(self, r):
+    def get_status_response(self, r):  # pylint: disable=invalid-name
         """ get_status_response """
         match = re.search(r"^#([A-Z_]+)", r, re.MULTILINE)
         if match is None:
@@ -378,7 +378,7 @@ class Ecotouch:
         # r = requests.get("http://%s/cgi/login" % self.hostname, params=args)
         async with aiohttp.ClientSession() as session:
             # r = await session.get("http://%s/cgi/login" % self.hostname, params=args)
-            r = await session.get(f"http://{self.hostname}/cgi/login", params=args)
+            r = await session.get(f"http://{self.hostname}/cgi/login", params=args)  # pylint: disable=invalid-name
             async with r:
                 assert r.status == 200
                 # r = await resp.text()
@@ -408,9 +408,10 @@ class Ecotouch:
             k.write_function(k, v, to_write)
             #####
             res = await self._write_tag(k[0][0], to_write[k[0][0]])
-            if res[k[0][0]]['status'] == "S_OK":
-                val = k.read_function(k, {k[0][0]: res[k[0][0]]['value']}, k.bit)
-                result[k[0][0]] = ({'status': res[k[0][0]]['status'], 'value': val})
+            if res is not None:
+                if res[k[0][0]]['status'] == "S_OK":
+                    val = k.read_function(k, {k[0][0]: res[k[0][0]]['value']}, k.bit)
+                    result[k[0][0]] = ({'status': res[k[0][0]]['status'], 'value': val})
 
         # for k, v in to_write.items():  # pylint: disable=invalid-name
         #     res = await self._write_tag(k, v)
@@ -499,7 +500,7 @@ class Ecotouch:
             async with session.get(
                 f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
-                r = await resp.text()
+                r = await resp.text()  # pylint: disable=invalid-name
                 # print(r)
                 if r == "#E_NEED_LOGIN\n":
                     res = await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
@@ -550,13 +551,13 @@ class Ecotouch:
             async with session.get(
                 f"http://{self.hostname}/cgi/writeTags", params=args
             ) as resp:
-                r = await resp.text()
+                r = await resp.text()  # pylint: disable=invalid-name
                 # print(r)
                 if r == "#E_NEED_LOGIN\n":
                     await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
                     res = await self._write_tag(tag, value)
                     return res
-                match = re.search(f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)", r, re.MULTILINE)
+                match = re.search(f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)", r, re.MULTILINE)  # pylint: disable=anomalous-backslash-in-string
                 # match = re.search(r"(?:^\d+\t)(\-?\d+)", r, re.MULTILINE)
                 if match is not None:
                     result[tag] = {"value": match.group(2), "status": match.group(1)}
