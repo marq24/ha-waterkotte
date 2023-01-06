@@ -36,36 +36,36 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1]device_class, [2]units, [3]icon, [4]disabled_by_default, [5]options, [6]entity_category
 SENSOR_TYPES = {
-    "enable_cooling": [
-        "enable_cooling",
-        DEVICE_CLASS_ENUM,
-        None,
-        "mdi:snowflake-thermometer",
-        True,
-        ENUM_ONOFFAUTO,
-    ],
-    "enable_heating": [
-        "Enable Heating",
-        DEVICE_CLASS_ENUM,
-        None,
-        "mdi:weather-partly-cloudy",
-        True,
-        ENUM_ONOFFAUTO,
-    ],
-    "enable_pv": [
-        "Enable PV",
-        DEVICE_CLASS_TEMPERATURE,
-        TEMP_CELSIUS,
-        "mdi:solar-power",
-        True,
-    ],
-    "enable_warmwater": [
-        "Enable Warmwater",
-        DEVICE_CLASS_TEMPERATURE,
-        TEMP_CELSIUS,
-        "mdi:water-thermometer",
-        True,
-    ],
+    # "enable_cooling": [
+    #     "enable_cooling",
+    #     DEVICE_CLASS_ENUM,
+    #     None,
+    #     "mdi:snowflake-thermometer",
+    #     True,
+    #     ENUM_ONOFFAUTO,
+    # ],
+    # "enable_heating": [
+    #     "Enable Heating",
+    #     DEVICE_CLASS_ENUM,
+    #     None,
+    #     "mdi:weather-partly-cloudy",
+    #     True,
+    #     ENUM_ONOFFAUTO,
+    # ],
+    # "enable_pv": [
+    #     "Enable PV",
+    #     DEVICE_CLASS_TEMPERATURE,
+    #     TEMP_CELSIUS,
+    #     "mdi:solar-power",
+    #     True,
+    # ],
+    # "enable_warmwater": [
+    #     "Enable Warmwater",
+    #     DEVICE_CLASS_TEMPERATURE,
+    #     TEMP_CELSIUS,
+    #     "mdi:water-thermometer",
+    #     True,
+    # ],
     "state_water": ["State Water", DEVICE_CLASS_PRESSURE, PRESSURE_HPA, None, False],
     "state_cooling": [
         "State Cooling",
@@ -421,11 +421,6 @@ SENSOR_TYPES = {
     MANUAL_4WAYVALVE = TagData(["I1299"])
     MANUAL_MULTIEXT = TagData(["I1319"]) """
 
-
-# async def async_setup_entry(hass, entry, async_add_devices):
-#    """Setup sensor platform."""
-#    coordinator = hass.data[DOMAIN][entry.entry_id]
-#    async_add_devices([WaterkotteHeatpumpSensor(coordinator, entry)])
 
 # async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_entities) -> None:
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_devices) -> None:

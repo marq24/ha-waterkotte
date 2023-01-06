@@ -6,7 +6,7 @@ import re
 import math
 from enum import Enum
 from datetime import datetime, timedelta
-import requests
+# import requests
 
 
 # import random
@@ -64,6 +64,7 @@ def _parse_value_default(self: EcotouchTag, vals, bitnum=None, *other_args):  # 
                 # "%s is not a valid value for %s" % (val, ecotouch_tag)
                 f"{val} is not a valid value for {ecotouch_tag}"
             )
+    return None
 
 
 def _write_value_default(self, value, et_values):
@@ -177,6 +178,18 @@ def _parse_state(self, value, *other_args):  # pylint: disable=unused-argument
         return "Error"
 
 
+def _write_state(self, value, et_values):
+    assert len(self.tags) == 1
+    ecotouch_tag = self.tags[0]
+    assert ecotouch_tag[0] in ["I"]
+    if value == "off":
+        et_values[ecotouch_tag] = "0"
+    elif value == "auto":
+        et_values[ecotouch_tag] = "1"
+    elif value == "manual":
+        et_values[ecotouch_tag] = "2"
+
+
 def _write_time(tag, value, et_values):
     assert isinstance(value, datetime)
     vals = [
@@ -288,11 +301,11 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
     OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
     OPERATING_HOURS_SOLAR = TagData(["I22"])
-    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state)
-    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state)
-    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state)
-    ENABLE_POOL = TagData(["I33"], read_function=_parse_state)
-    ENABLE_PV = TagData(["I41"], read_function=_parse_state)
+    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_POOL = TagData(["I33"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_PV = TagData(["I41"], read_function=_parse_state, write_function=_write_state, writeable=True)
     STATE_SOURCEPUMP = TagData(["I51"], bit=0)
     STATE_HEATINGPUMP = TagData(["I51"], bit=1)
     STATE_EVD = TagData(["I51"], bit=2)
@@ -385,20 +398,30 @@ class Ecotouch:
             return res[tag]
         return None
 
-    def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
+    async def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
         """ Write values to Tag """
         to_write = {}
-        for k, v in kv_pairs:
+        result = {}
+        for k, v in kv_pairs:  # pylint: disable=invalid-name
             if not k.writeable:
                 raise InvalidValueException("tried to write to an readonly field")
             k.write_function(k, v, to_write)
+            #####
+            res = await self._write_tag(k[0][0], to_write[k[0][0]])
+            if res[k[0][0]]['status'] == "S_OK":
+                val = k.read_function(k, {k[0][0]: res[k[0][0]]['value']}, k.bit)
+                result[k[0][0]] = ({'status': res[k[0][0]]['status'], 'value': val})
 
-        for k, v in to_write.items():
-            self._write_tag(k, v)
+        # for k, v in to_write.items():  # pylint: disable=invalid-name
+        #     res = await self._write_tag(k, v)
+        #     if res['status'] == "S_OK":
+        #         val= k.read_function(k, v, k.bit)
+        #         result.update({'status': res['status'], 'value': val})
+        return result
 
-    def write_value(self, tag, value):
+    async def write_value(self, tag, value):
         """ Write a value """
-        self.write_values([(tag, value)])
+        return await self.write_values([(tag, value)])
 
     async def read_values(self, tags: Sequence[EcotouchTag]):
         """ Async read values """
@@ -418,14 +441,20 @@ class Ecotouch:
             #     tag.status.append(e_status[tag.tags[0]] + str(random.randint(1,10)))
             # result_status[tag] = e_status[tag.tags[0]] + str(random.randint(1,10))
             # tag.status=e_status[tag.tags[0]]
-            e_inactive = False
+            # e_inactive = False
             for tag_status in tag.tags:
                 if e_status[tag_status] == "E_INACTIVE":
-                    e_inactive = True
-            if e_inactive is False:
-                val = tag.read_function(tag, e_values, tag.bit)
-            else:
-                val = None
+                    if e_values[tag.tags[0]] is not None:
+                        val = e_values[tag.tags[0]]
+                    else:
+                        val = None
+                else:
+                    val = tag.read_function(tag, e_values, tag.bit)
+            #         e_inactive = True
+            # if e_inactive is False:
+            #     val = tag.read_function(tag, e_values, tag.bit)
+            # else:
+            #     val = None
             result[tag] = {"value": val, "status": e_status[tag_status]}  # pylint: disable=undefined-loop-variable
         return result
 
@@ -512,13 +541,25 @@ class Ecotouch:
     #
     # writes <value> into the tag <tag>
     #
-    def _write_tag(self, tag: EcotouchTag, value):
+    async def _write_tag(self, tag: EcotouchTag, value):
         """ write tag """
-        args = {"n": 1, "returnValue": "true", "t1": tag, "v1": value}
-        r = requests.get(
-            f"http://{self.hostname}/cgi/writeTags",
-            params=args,
-            cookies=self.auth_cookies,
-        )
-        val_str = re.search(r"(?:^\d+\t)(\-?\d+)", r.text, re.MULTILINE).group(1)
-        return val_str
+        args = {"n": 1, "returnValue": "true", "t1": tag, "v1": value, 'rnd': str(datetime.timestamp(datetime.now()))}
+        result = {}
+        async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
+
+            async with session.get(
+                f"http://{self.hostname}/cgi/writeTags", params=args
+            ) as resp:
+                r = await resp.text()
+                # print(r)
+                if r == "#E_NEED_LOGIN\n":
+                    await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
+                    res = await self._write_tag(tag, value)
+                    return res
+                match = re.search(f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)", r, re.MULTILINE)
+                # match = re.search(r"(?:^\d+\t)(\-?\d+)", r, re.MULTILINE)
+                if match is not None:
+                    result[tag] = {"value": match.group(2), "status": match.group(1)}
+                    return result
+                    # return match.group(1)
+                return None

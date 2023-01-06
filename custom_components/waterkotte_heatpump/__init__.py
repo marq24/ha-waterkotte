@@ -126,6 +126,13 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         except Exception as exception:
             raise UpdateFailed() from exception
 
+    async def async_write_tag(self, tag: EcotouchTag, value):
+        """ Update single data """
+        res = await self.api.async_write_value(tag, value)
+        print(res)
+        self.data[tag]['value'] = res[tag.tags[0]]['value']
+        # self.data[result[0]]
+
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""

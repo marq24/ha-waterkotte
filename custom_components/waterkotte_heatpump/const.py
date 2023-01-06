@@ -26,8 +26,10 @@ ENUM_ONOFFAUTO = [STATE_ON, STATE_OFF, STATE_AUTO]
 BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
-PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
+SELECT = "select"
+PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH, SELECT]
 SENSORS = ["heating", "cooling", "water"]
+
 
 # Configuration and options
 CONF_ENABLED = "enabled"

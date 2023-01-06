@@ -107,6 +107,13 @@ class WaterkotteHeatpumpApiClient:
         ret = await self._client.read_value(tag)
         return ret
 
+    async def async_write_value(self, tag: EcotouchTag, value):
+        """ Write data to API """
+        res = await self._client.write_value(tag, value)
+        return res
+        # if res is not None:
+        #     self.tags[tag] = res
+
     async def async_set_title(self, value: str) -> None:
         """Get data from the API."""
         url = "https://jsonplaceholder.typicode.com/posts/1"
