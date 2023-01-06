@@ -63,7 +63,7 @@ class WaterkotteHeatpumpEntity(CoordinatorEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
         return {
-            "attribution": ATTRIBUTION,
+            # "attribution": ATTRIBUTION,
             "id": str(self.coordinator.data.get("id")),
             "integration": DOMAIN,
         }

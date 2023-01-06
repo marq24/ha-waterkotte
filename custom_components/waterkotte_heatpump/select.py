@@ -162,23 +162,15 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
 
     def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
-        # super().__init__(self, hass_data)
         self._coordinator = hass_data
 
         self._type = sensor_type
-        self._name = f"{SENSOR_TYPES[self._type][0]} {DOMAIN}"
+        # self._name = f"{SENSOR_TYPES[self._type][0]} {DOMAIN}"
+        self._name = f"{SENSOR_TYPES[self._type][0]}"
         self._unique_id = f"{SENSOR_TYPES[self._type][0]}_{DOMAIN}"
         self._entry_data = entry.data
-        # self._config = list(self.hass.data['waterkotte_heatpump'].values())[0].config_entry.data
-        # self._fw = self._config["fw"]
-        # self._bios = self._config["bios"]
-        # self._ip = self._config["ip"]
         self._device_id = entry.entry_id
-        # self._name = f"{DOMAIN}_{SENSOR_TYPES[self._type][0]}"
-        # self._unique_id = f"{DOMAIN}_{SENSOR_TYPES[self._type][0]}"
         super().__init__(hass_data, entry)
-        # super(coordi, self).__init__(self, hass_data)
-        # super(entry,self).__init__(self, hass_data)
 
     @ property
     def name(self):

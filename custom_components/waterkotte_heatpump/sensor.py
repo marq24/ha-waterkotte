@@ -36,36 +36,6 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1]device_class, [2]units, [3]icon, [4]enabled_by_default, [5]options, [6]entity_category
 SENSOR_TYPES = {
-    # "enable_cooling": [
-    #     "enable_cooling",
-    #     DEVICE_CLASS_ENUM,
-    #     None,
-    #     "mdi:snowflake-thermometer",
-    #     True,
-    #     ENUM_ONOFFAUTO,
-    # ],
-    # "enable_heating": [
-    #     "Enable Heating",
-    #     DEVICE_CLASS_ENUM,
-    #     None,
-    #     "mdi:weather-partly-cloudy",
-    #     True,
-    #     ENUM_ONOFFAUTO,
-    # ],
-    # "enable_pv": [
-    #     "Enable PV",
-    #     DEVICE_CLASS_TEMPERATURE,
-    #     TEMP_CELSIUS,
-    #     "mdi:solar-power",
-    #     True,
-    # ],
-    # "enable_warmwater": [
-    #     "Enable Warmwater",
-    #     DEVICE_CLASS_TEMPERATURE,
-    #     TEMP_CELSIUS,
-    #     "mdi:water-thermometer",
-    #     True,
-    # ],
     "state_water": ["State Water", DEVICE_CLASS_PRESSURE, PRESSURE_HPA, None, False],
     "state_cooling": [
         "State Cooling",
@@ -320,33 +290,6 @@ SENSOR_TYPES = {
         "mdi:gauge",
         False,
     ],
-    # "version_controller": [
-    #     "Version Controller",
-    #     DEVICE_CLASS_PRESSURE,
-    #     PRESSURE_BAR,
-    #     "mdi:gauge",
-    #     False,
-    #     None,
-    #     EntityCategory.DIAGNOSTIC,
-    # ],
-    # "version_controller_build": [
-    #     "Version Controller Build",
-    #     DEVICE_CLASS_PRESSURE,
-    #     PRESSURE_BAR,
-    #     "mdi:gauge",
-    #     False,
-    #     None,
-    #     EntityCategory.DIAGNOSTIC,
-    # ],
-    # "version_bios": [
-    #     "Version BIOS",
-    #     DEVICE_CLASS_PRESSURE,
-    #     PRESSURE_BAR,
-    #     "mdi:gauge",
-    #     False,
-    #     None,
-    #     EntityCategory.DIAGNOSTIC,
-    # ],
 
 }
 """
@@ -425,26 +368,13 @@ SENSOR_TYPES = {
 # async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_entities) -> None:
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_devices) -> None:
     """Set up the Waterkotte sensor platform."""
-    # hass_data = hass.data[DOMAIN][entry.entry_id]
+
     _LOGGER.debug("Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_condensation")])
-    # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_evaporation")])
     async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 
-    # print(entry)
-    # async_add_entities(
-    #     [
-    #         WaterkotteHeatpumpSensor(entry, hass_data, sensor_type)
-    #         for sensor_type in SENSOR_TYPES
-    #     ],
-    # False,
-    # )
 
-
-# class WaterkotteHeatpumpSensor(WaterkotteHeatpumpEntity):
-# class WaterkotteHeatpumpSensor(Entity):
 class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     """waterkotte_heatpump Sensor class."""
 
@@ -454,19 +384,12 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         self._coordinator = hass_data
 
         self._type = sensor_type
-        self._name = f"{SENSOR_TYPES[self._type][0]} {DOMAIN}"
+        self._name = f"{SENSOR_TYPES[self._type][0]}"
         self._unique_id = f"{SENSOR_TYPES[self._type][0]}_{DOMAIN}"
         self._entry_data = entry.data
-        # self._config = list(self.hass.data['waterkotte_heatpump'].values())[0].config_entry.data
-        # self._fw = self._config["fw"]
-        # self._bios = self._config["bios"]
-        # self._ip = self._config["ip"]
         self._device_id = entry.entry_id
-        # self._name = f"{DOMAIN}_{SENSOR_TYPES[self._type][0]}"
-        # self._unique_id = f"{DOMAIN}_{SENSOR_TYPES[self._type][0]}"
+
         super().__init__(hass_data, entry)
-        # super(coordi, self).__init__(self, hass_data)
-        # super(entry,self).__init__(self, hass_data)
 
     @ property
     def name(self):
@@ -614,25 +537,3 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     def should_poll(self) -> bool:
         """Entities do not individually poll."""
         return False
-
-    # @property
-    # def device_info(self) -> DeviceInfo:
-    #     """Return the device info."""
-    #     # ip = "123"
-    #     return DeviceInfo(
-    #         id=DOMAIN,
-    #         identifiers={
-    #             # Serial numbers are unique identifiers within a specific domain
-    #             #                (DOMAIN
-    #             # , self.unique_id
-    #             #                )
-    #             (DOMAIN, self._device_id),
-    #             ("IP", self._entry_data['ip']),
-    #             ('device', self._device_id)
-    #         },
-    #         name=NAME,
-    #         manufacturer=NAME,
-    #         model="modelstr",
-    #         sw_version=f"{self._entry_data['fw']} BIOS:{self._entry_data['bios']}",
-    #         # via_device=(hue.DOMAIN, self.api.bridgeid),
-    #     )
