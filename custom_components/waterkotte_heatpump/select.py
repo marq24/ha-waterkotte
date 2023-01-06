@@ -44,6 +44,7 @@ SENSOR_TYPES = {
         "mdi:snowflake-thermometer",
         True,
         ENUM_OFFAUTOMANUAL,
+        None,
     ],
     "enable_heating": [
         "Enable Heating",
@@ -53,6 +54,7 @@ SENSOR_TYPES = {
         "mdi:weather-partly-cloudy",
         True,
         ENUM_OFFAUTOMANUAL,
+        None,
     ],
     "enable_pv": [
         "Enable PV",
@@ -62,6 +64,7 @@ SENSOR_TYPES = {
         "mdi:solar-power",
         False,
         ENUM_OFFAUTOMANUAL,
+        None,
     ],
     "enable_warmwater": [
         "Enable Warmwater",
@@ -71,6 +74,7 @@ SENSOR_TYPES = {
         "mdi:water-thermometer",
         True,
         ENUM_OFFAUTOMANUAL,
+        None,
     ],
 }
 """
@@ -179,10 +183,13 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
 
     @property
     def current_option(self) -> str | None:
-        sensor = SENSOR_TYPES[self._type]
-        value = self._coordinator.data[sensor[1]]["value"]
-        if value is None or value == "":
-            value = 'unknown'
+        try:
+            sensor = SENSOR_TYPES[self._type]
+            value = self._coordinator.data[sensor[1]]["value"]
+            if value is None or value == "":
+                value = 'unknown'
+        except KeyError:
+            value = "unknown"
         return value
         # return "auto"
 
@@ -194,7 +201,7 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
     async def async_select_option(self, option: str) -> None:  # pylint: disable=unused-argument
         """Turn on the switch."""
         try:
-            print(option)
+            # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], option)
         except ValueError:

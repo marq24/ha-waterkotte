@@ -478,12 +478,6 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
                 result = self._coordinator.data[EcotouchTag.PERCENT_SOURCE_PUMP]["value"]
             elif self._type == "percent_compressor":
                 result = self._coordinator.data[EcotouchTag.PERCENT_COMPRESSOR]["value"]
-            # elif self._type == "version_controller":
-            #     result = self._coordinator.data[EcotouchTag.VERSION_CONTROLLER]["value"]
-            # elif self._type == "version_controller_build":
-            #     result = self._coordinator.data[EcotouchTag.VERSION_CONTROLLER_BUILD]["value"]
-            # elif self._type == "version_bios":
-            #     result = self._coordinator.data[EcotouchTag.VERSION_BIOS]["value"]
 
             else:
                 result = "unavailable"

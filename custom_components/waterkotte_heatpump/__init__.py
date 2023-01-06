@@ -113,7 +113,8 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                             and self.__hass.data["entity_registry"].entities[entity].disabled is False):
                         # x += 1
                         print(entity)
-                        match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+                        # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+                        match = re.search(r"^.*\.(.*)", entity)
                         if match:
                             print(match.groups()[0].upper())
                             if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object

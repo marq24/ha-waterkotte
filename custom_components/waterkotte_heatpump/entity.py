@@ -39,7 +39,7 @@ class WaterkotteHeatpumpEntity(CoordinatorEntity):
             "name": series,
             "model": deviceid,
             "manufacturer": NAME,
-            "sw_version": f"{fw} BIOS:{bios}",
+            "sw_version": f"{fw} BIOS: {bios}",
         }
         # return DeviceInfo(
         #     id=DOMAIN,
