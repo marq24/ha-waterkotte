@@ -391,6 +391,23 @@ class Ecotouch:
                     )
                 self.auth_cookies = r.cookies
 
+    async def logout(self):
+        """ Logout function """
+        async with aiohttp.ClientSession() as session:
+            # r = await session.get("http://%s/cgi/login" % self.hostname, params=args)
+            r = await session.get(f"http://{self.hostname}/cgi/logout")  # pylint: disable=invalid-name
+            async with r:
+                # assert r.status == 200
+                # r = await resp.text()
+
+                print(await r.text())
+                print(r.status)
+                # if self.get_status_response(await r.text()) != "S_OK":
+                #     raise StatusException(
+                #         f"Fehler beim Logout: Status:{self.get_status_response(await r.text())}"
+                #     )
+                self.auth_cookies = None
+
     async def read_value(self, tag: EcotouchTag):
         """ Read a value from Tag """
         res = await self.read_values([tag])
@@ -514,22 +531,29 @@ class Ecotouch:
                     )
                     if match is None:
                         match = re.search(
-                            r"#%s\tE_INACTIVETAG" % tag,
+                            # r"#%s\tE_INACTIVETAG" % tag,
+                            f"#{tag}\tE_INACTIVETAG",
                             # r.text,
                             r,
                             re.MULTILINE,
                         )
-                        val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
+                        # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                         # print("Tag: %s is inactive!", tag)
                         if match is None:
                             raise Exception(tag + " tag not found in response")
 
-                    if "val_status" in locals():
+                        # if val_status == "E_INACTIVE":
                         results_status[tag] = "E_INACTIVE"
                         results[tag] = None
                     else:
                         results_status[tag] = "E_OK"
                         results[tag] = match.group("value")
+                    # if "val_status" in locals():
+                    #     results_status[tag] = "E_INACTIVE"
+                    #     results[tag] = None
+                    # else:
+                    #     results_status[tag] = "E_OK"
+                    #     results[tag] = match.group("value")
                         # tag.status.append="E_OK"
                         # val_status = val_status if 'val_status' in locals() else match.group("status")
                         # tag = tag._replace(status=val_status)

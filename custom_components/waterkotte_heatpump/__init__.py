@@ -72,16 +72,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
            hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
            and hass.data["entity_registry"].entities[entity].disabled is False):
             # x += 1
-            print(entity)
-            match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-            if match:
-                print(match.groups()[0].upper())
-                if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
-                    # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
-                    tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
+
+            # r"#%s\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)" % tag,
+            # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
+            # if match:
+            #     print(match.groups()[0].upper())
+            #     if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
+            #         # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
+            #         tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
+            tag = hass.data["entity_registry"].entities[entity].unique_id
+            print(f"__init__.async_setup_entry Entity: {entity} Tag: {tag}")
+            tags.append(EcotouchTag[tag.upper()])
     # print(x)
     # print(tags)
+
     client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
+    if len(tags) > 0:
+        await coordinator.async_refresh()
     return True
 
 
@@ -112,17 +119,34 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                             self.__hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
                             and self.__hass.data["entity_registry"].entities[entity].disabled is False):
                         # x += 1
-                        print(entity)
+                        # print(entity)
+                        tag = self.__hass.data["entity_registry"].entities[entity].unique_id
+                        print(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-                        match = re.search(r"^.*\.(.*)", entity)
-                        if match:
-                            print(match.groups()[0].upper())
-                            if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
+                        # match = re.search(r"^.*\.(.*)", entity)
+                        if tag is not None:
+                            # print(match.groups()[0].upper())
+                            if EcotouchTag[tag.upper()]:  # pylint: disable=unsubscriptable-object
                                 # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
-                                tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
+                                tags.append(EcotouchTag[tag.upper()])  # pylint: disable=unsubscriptable-object
+                        # match = re.search(r"^.*\.(.*)", entity)
+                        # if match:
+                        #     print(match.groups()[0].upper())
+                        #     if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
+                        #         # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
+                        #         tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
                 self.api.tags = tags
 
-            self.data = await self.api.async_get_data()
+            tagdatas = await self.api.async_get_data()
+            if self.data is None:
+                self.data = {}
+            for key in tagdatas:
+                print(f"{key}:{tagdatas[key]}")
+                if tagdatas[key]['status'] == "E_OK":
+                    # self.data.update(tagdatas[key])
+                    # self.data.update({key:tagdatas[key]})
+                    self.data[key] = tagdatas[key]
+                    # self.data =
             return self.data
         except Exception as exception:
             raise UpdateFailed() from exception
@@ -138,6 +162,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
+
     unloaded = all(
         await asyncio.gather(
             *[
@@ -150,6 +175,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if unloaded:
         hass.data[DOMAIN].pop(entry.entry_id)
 
+    await coordinator.api._client.logout()
     return unloaded
 
 

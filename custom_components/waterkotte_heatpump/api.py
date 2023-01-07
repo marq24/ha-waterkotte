@@ -57,7 +57,12 @@ class WaterkotteHeatpumpApiClient:
     async def login(self) -> None:
         """Login to the API."""
         if self._client.auth_cookies is None:
-            await self._client.login(self._username, self._password)
+            try:
+                await self._client.login(self._username, self._password)
+            except Exception as exception:
+                print(exception)
+                await self._client.logout()
+                await self._client.login(self._username, self._password)
 
         # return ret
 
