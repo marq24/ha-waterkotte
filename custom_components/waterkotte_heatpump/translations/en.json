@@ -25,7 +25,12 @@
         "data": {
           "binary_sensor": "Binary sensor enabled",
           "sensor": "Sensor enabled",
-          "switch": "Switch enabled"
+          "switch": "Switch enabled",
+          "select": "Select enabled",
+          "username": "Username",
+          "password": "Password",
+          "host": "Host or IP",
+          "polling_interval": "Polling Interval in seconds"
         }
       }
     }

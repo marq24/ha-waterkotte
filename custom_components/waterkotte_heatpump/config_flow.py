@@ -15,7 +15,7 @@ from .api import WaterkotteHeatpumpApiClient
 
 from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME
 from .const import CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_ID, CONF_SERIES
-from .const import DOMAIN, PLATFORMS
+from .const import DOMAIN, PLATFORMS, SELECT, SENSOR, BINARY_SENSOR
 
 
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -126,7 +126,10 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry):
         """Initialize HACS options flow."""
         self.config_entry = config_entry
-        self.options = dict(config_entry.options)
+        if len(dict(config_entry.options)) == 0:
+            self.options = dict(config_entry.data)
+        else:
+            self.options = dict(config_entry.options)
 
     async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
         """Manage the options."""
@@ -140,21 +143,32 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
 
         data_schema = vol.Schema(
             {
-                vol.Required(x, default=self.options.get(x, True)): bool
-                for x in sorted(PLATFORMS)
-            })
-        data_schema = data_schema.extend(
-            {
+                vol.Required(BINARY_SENSOR, default=self.options.get(BINARY_SENSOR, True)): bool,
+                vol.Required(SENSOR, default=self.options.get(SENSOR, True)): bool,
+                vol.Required(SELECT, default=self.options.get(SELECT, True)): bool,
                 vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 30)): int,
-                vol.Required(
-                    CONF_USERNAME,
-                    default=self.options.get(CONF_USERNAME),
-                    msg="Username"): str,
-                vol.Required(
-                    CONF_PASSWORD,
-                    default=self.options.get(CONF_USERNAME),
-                    description="Password"): str,
+                vol.Required(CONF_USERNAME, default=self.options.get(CONF_USERNAME)): str,
+                vol.Required(CONF_PASSWORD, default=self.options.get(CONF_USERNAME)): str,
             })
+
+###
+        # data_schema = vol.Schema(
+        #     {
+        #         vol.Required(x, default=self.options.get(x, True)): bool
+        #         for x in sorted(PLATFORMS)
+        #     })
+        # data_schema = data_schema.extend(
+        #     {
+        #         vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 30)): int,
+        #         vol.Required(
+        #             CONF_USERNAME,
+        #             default=self.options.get(CONF_USERNAME),
+        #             msg="Username"): str,
+        #         vol.Required(
+        #             CONF_PASSWORD,
+        #             default=self.options.get(CONF_USERNAME),
+        #             description="Password"): str,
+        #     })
         return self.async_show_form(
             step_id="user",
             data_schema=data_schema,
