@@ -94,7 +94,7 @@ def _parse_bios(self, e_vals, *other_args):  # pylint: disable=unused-argument
 
 
 def _parse_fw(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    return f"0{str(e_vals['I1'])[0]}.{str(e_vals['I1'])[1:3]}.{str(e_vals['I1'])[3:]}-{str(e_vals['I2'])}"
+    return f"0{str(e_vals['I1'])[0]}.{str(e_vals['I1'])[1:3]}.{str(e_vals['I1'])[3:]}-{str(e_vals['I2'])}"  # pylint: disable=line-too-long
 
 
 def _parse_id(self, e_vals, *other_args):  # pylint: disable=unused-argument
@@ -203,8 +203,13 @@ def _write_time(tag, value, et_values):
             value.second,
         ]
     ]
+    # check if result is the same
     for i in range(len(tag.tags)):
         et_values[tag.tags[i]] = vals[i]
+    print(et_values)
+    for i, tags in enumerate(tag.tags):
+        et_values[tags] = vals[i]
+    print(et_values)
 
 
 class TagData(NamedTuple):
@@ -301,11 +306,11 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
     OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
     OPERATING_HOURS_SOLAR = TagData(["I22"])
-    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_POOL = TagData(["I33"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_PV = TagData(["I41"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state, write_function=_write_state, writeable=True)  # pylint: disable=line-too-long
+    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state, write_function=_write_state, writeable=True)  # pylint: disable=line-too-long
+    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state, write_function=_write_state, writeable=True)  # pylint: disable=line-too-long
+    ENABLE_POOL = TagData(["I33"], read_function=_parse_state, write_function=_write_state, writeable=True)  # pylint: disable=line-too-long
+    ENABLE_PV = TagData(["I41"], read_function=_parse_state, write_function=_write_state, writeable=True)  # pylint: disable=line-too-long
     STATE_SOURCEPUMP = TagData(["I51"], bit=0)
     STATE_HEATINGPUMP = TagData(["I51"], bit=1)
     STATE_EVD = TagData(["I51"], bit=2)
@@ -497,12 +502,6 @@ class Ecotouch:
         #     results, results_status = await self._read_tags(
         #         tags, results, results_status)
 
-        # if len(tags) > MAX_NO_TAGS:
-        #     results, results_status = await self._read_tags(
-        #         tags[MAX_NO_TAGS:], results, results_status
-        #     )
-        # tags = tags[:MAX_NO_TAGS]
-
         args = {}
         args["n"] = len(tags)
         for i in range(len(tags)):
@@ -520,12 +519,11 @@ class Ecotouch:
                 r = await resp.text()  # pylint: disable=invalid-name
                 # print(r)
                 if r == "#E_NEED_LOGIN\n":
-                    res = await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
-                    return
+                    await self.login(self.username, self.password)
+                    return results, results_status
                 for tag in tags:
                     match = re.search(
-                        r"#%s\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)" % tag,
-                        # r.text,
+                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",  # pylint: disable=anomalous-backslash-in-string
                         r,
                         re.MULTILINE,
                     )
@@ -533,7 +531,6 @@ class Ecotouch:
                         match = re.search(
                             # r"#%s\tE_INACTIVETAG" % tag,
                             f"#{tag}\tE_INACTIVETAG",
-                            # r.text,
                             r,
                             re.MULTILINE,
                         )
@@ -548,19 +545,7 @@ class Ecotouch:
                     else:
                         results_status[tag] = "E_OK"
                         results[tag] = match.group("value")
-                    # if "val_status" in locals():
-                    #     results_status[tag] = "E_INACTIVE"
-                    #     results[tag] = None
-                    # else:
-                    #     results_status[tag] = "E_OK"
-                    #     results[tag] = match.group("value")
-                        # tag.status.append="E_OK"
-                        # val_status = val_status if 'val_status' in locals() else match.group("status")
-                        # tag = tag._replace(status=val_status)
 
-                    # results[tag] = val_str
-
-                    # results[tag].status = val_status
         return results, results_status
 
     #
@@ -568,7 +553,13 @@ class Ecotouch:
     #
     async def _write_tag(self, tag: EcotouchTag, value):
         """ write tag """
-        args = {"n": 1, "returnValue": "true", "t1": tag, "v1": value, 'rnd': str(datetime.timestamp(datetime.now()))}
+        args = {
+            "n": 1,
+            "returnValue": "true",
+            "t1": tag,
+            "v1": value,
+            'rnd': str(datetime.timestamp(datetime.now()))
+        }
         result = {}
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
