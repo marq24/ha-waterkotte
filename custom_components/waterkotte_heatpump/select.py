@@ -159,7 +159,8 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         self._type = sensor_type
         # self._name = f"{SENSOR_TYPES[self._type][0]} {DOMAIN}"
         self._name = f"{SENSOR_TYPES[self._type][0]}"
-        self._unique_id = f"{SENSOR_TYPES[self._type][0]}_{DOMAIN}"
+        # self._unique_id = f"{SENSOR_TYPES[self._type][0]}_{DOMAIN}"
+        self._unique_id = self._type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         super().__init__(hass_data, entry)

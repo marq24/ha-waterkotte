@@ -27,7 +27,7 @@ from .pywaterkotte.ecotouch import EcotouchTag
 # from .const import SENSORS
 
 SCAN_INTERVAL = timedelta(seconds=60)
-
+COORDINATOR = None
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 tags = []
@@ -40,6 +40,8 @@ async def async_setup(hass: HomeAssistant, config: Config):  # pylint: disable=u
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
+    global SCAN_INTERVAL  # pylint: disable=global-statement
+    global COORDINATOR  # pylint: disable=global-statement
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
@@ -50,8 +52,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     SCAN_INTERVAL = entry.options.get(CONF_POLLING_INTERVAL, timedelta(seconds=60))
     session = async_get_clientsession(hass)
     client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
-
-    coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
+    if COORDINATOR is not None:
+        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client, data=COORDINATOR.data)
+    else:
+        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -89,6 +93,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
     if len(tags) > 0:
         await coordinator.async_refresh()
+    COORDINATOR = coordinator
     return True
 
 
@@ -99,10 +104,11 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         client: WaterkotteHeatpumpApiClient,
+        data=[]
     ) -> None:
         """Initialize."""
         self.api = client
-        self.data = []
+        self.data = data
         self.platforms = []
         self.__hass = hass
 
@@ -124,7 +130,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                         print(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
                         # match = re.search(r"^.*\.(.*)", entity)
-                        if tag is not None:
+                        if tag is not None and tag.upper() in EcotouchTag.__members__:
                             # print(match.groups()[0].upper())
                             if EcotouchTag[tag.upper()]:  # pylint: disable=unsubscriptable-object
                                 # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
@@ -141,20 +147,20 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
             if self.data is None:
                 self.data = {}
             for key in tagdatas:
-                print(f"{key}:{tagdatas[key]}")
+                # print(f"{key}:{tagdatas[key]}")
                 if tagdatas[key]['status'] == "E_OK":
                     # self.data.update(tagdatas[key])
                     # self.data.update({key:tagdatas[key]})
                     self.data[key] = tagdatas[key]
                     # self.data =
             return self.data
-        except Exception as exception:
+        except UpdateFailed as exception:
             raise UpdateFailed() from exception
 
     async def async_write_tag(self, tag: EcotouchTag, value):
         """ Update single data """
         res = await self.api.async_write_value(tag, value)
-        print(res)
+        # print(res)
         self.data[tag]['value'] = res[tag.tags[0]]['value']
         # self.data[result[0]]
 
