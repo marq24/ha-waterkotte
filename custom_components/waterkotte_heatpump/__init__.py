@@ -53,7 +53,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     session = async_get_clientsession(hass)
     client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
     if COORDINATOR is not None:
-        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client, data=COORDINATOR.data)
+        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(
+            hass,
+            client=client,
+            data=COORDINATOR.data
+        )
     else:
         coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
     await coordinator.async_refresh()
@@ -104,11 +108,14 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         client: WaterkotteHeatpumpApiClient,
-        data=[]
+        data=None
     ) -> None:
         """Initialize."""
         self.api = client
-        self.data = data
+        if data is None:
+            self.data = []
+        else:
+            self.data = data
         self.platforms = []
         self.__hass = hass
 

@@ -13,9 +13,9 @@ from custom_components.waterkotte_heatpump.pywaterkotte.ecotouch import Ecotouch
 # from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 
-from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_ID, CONF_SERIES
-from .const import DOMAIN
-from .const import PLATFORMS
+from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME
+from .const import CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_ID, CONF_SERIES
+from .const import DOMAIN, PLATFORMS
 
 
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -30,7 +30,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._ip = ""
         self._bios = ""
         self._firmware = ""
-        self._ID = ""
+        self._ID = ""  # pylint: disable=invalid-name
         self._series = ""
         self._serial = ""
 
@@ -108,8 +108,6 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 EcotouchTag.INFO_SERIES]
             ret = await client.async_read_values(inittag)
             self._bios = ret[EcotouchTag.VERSION_BIOS]['value']
-            # self._bios = f"{str(ret[EcotouchTag.VERSION_BIOS]['value'])[0]}.{str(ret[EcotouchTag.VERSION_BIOS]['value'])[1:3]}"
-            # self._firmware = f"0{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[0]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[1:3]}.{str(ret[EcotouchTag.VERSION_CONTROLLER]['value'])[3:]}-{str(ret[EcotouchTag.VERSION_CONTROLLER_BUILD]['value'])}"
             self._firmware = ret[EcotouchTag.VERSION_CONTROLLER]['value']
             self._ID = str(ret[EcotouchTag.INFO_ID]['value'])
             self._series = str(ret[EcotouchTag.INFO_SERIES]['value'])
