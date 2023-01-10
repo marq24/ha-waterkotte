@@ -2,7 +2,7 @@
 import logging
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
-from homeassistant.const import ATTR_FRIENDLY_NAME
+# from homeassistant.const import ATTR_FRIENDLY_NAME
 
 # from .const import DOMAIN
 from .entity import WaterkotteHeatpumpEntity
@@ -133,6 +133,16 @@ SENSOR_TYPES = {
         None,
         "mdi:weather-partly-cloudy",
         False,
+        None,
+        None,
+    ],
+    "holiday_enabled": [
+        "Holiday Mode",
+        EcotouchTag.HOLIDAY_ENABLED,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        None,
+        True,
         None,
         None,
     ],
@@ -269,6 +279,12 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
     @ property
     def icon(self):
         """Return the icon of the sensor."""
+        if SENSOR_TYPES[self._type][4] is None:
+            sensor = SENSOR_TYPES[self._type]
+            if self._type == "holiday_enabled" and self._coordinator.data[sensor[1]]["value"] is True:
+                return "mdi:calendar-check"
+            else:
+                return "mdi:calendar-blank"
         return SENSOR_TYPES[self._type][4]
         # return ICON
 

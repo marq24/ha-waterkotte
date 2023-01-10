@@ -24,6 +24,7 @@ from .const import DOMAIN
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
 from .pywaterkotte.ecotouch import EcotouchTag
+from . import service as waterkotteservice
 # from .const import SENSORS
 
 SCAN_INTERVAL = timedelta(seconds=60)
@@ -98,6 +99,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if len(tags) > 0:
         await coordinator.async_refresh()
     COORDINATOR = coordinator
+
+    service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
+
+    hass.services.async_register(DOMAIN, 'set_holiday', service.set_holiday)
     return True
 
 

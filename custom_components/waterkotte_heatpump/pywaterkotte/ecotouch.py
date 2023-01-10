@@ -1,5 +1,5 @@
 """ pyecotouch main module"""
-from typing import Any, Callable, Collection, NamedTuple, Sequence, Tuple  # , List
+from typing import Any, Callable, Collection, NamedTuple, Sequence, Tuple, List  # , List
 
 # from unittest import case
 import re
@@ -204,12 +204,11 @@ def _write_time(tag, value, et_values):
         ]
     ]
     # check if result is the same
-    for i in range(len(tag.tags)):
-        et_values[tag.tags[i]] = vals[i]
-    print(et_values)
+    # for i in range(len(tag.tags)):
+    #     et_values[tag.tags[i]] = vals[i]
+    # print(et_values)
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
-    print(et_values)
 
 
 class TagData(NamedTuple):
@@ -429,11 +428,19 @@ class Ecotouch:
                 raise InvalidValueException("tried to write to an readonly field")
             k.write_function(k, v, to_write)
             #####
-            res = await self._write_tag(k[0][0], to_write[k[0][0]])
+            res = await self._write_tag(to_write.keys(), to_write.values())
+            # res = await self._write_tag(k[0][0], to_write[k[0][0]])
             if res is not None:
-                if res[k[0][0]]['status'] == "S_OK":
-                    val = k.read_function(k, {k[0][0]: res[k[0][0]]['value']}, k.bit)
-                    result[k[0][0]] = ({'status': res[k[0][0]]['status'], 'value': val})
+                all_ok = True
+                for value in res[1]:
+                    if res[1][value] != "E_OK":
+                        all_ok = False
+                if all_ok:
+                    val = k.read_function(k, res[0], k.bit)
+                    result[k[0][0]] = ({'status': res[1][value], 'value': val})
+                # if res[k[0][0]]['status'] == "S_OK":
+                #     val = k.read_function(k, {k[0][0]: res[k[0][0]]['value']}, k.bit)
+                #     result[k[0][0]] = ({'status': res[k[0][0]]['status'], 'value': val})
 
         # for k, v in to_write.items():  # pylint: disable=invalid-name
         #     res = await self._write_tag(k, v)
@@ -551,16 +558,31 @@ class Ecotouch:
     #
     # writes <value> into the tag <tag>
     #
-    async def _write_tag(self, tag: EcotouchTag, value):
+    async def _write_tag(self, tags: List[str], value: List[Any]):
         """ write tag """
-        args = {
-            "n": 1,
-            "returnValue": "true",
-            "t1": tag,
-            "v1": value,
-            'rnd': str(datetime.timestamp(datetime.now()))
-        }
-        result = {}
+        args = {}
+        args["n"] = len(tags)
+        args["returnValue"] = "true"
+        args['rnd'] = str(datetime.timestamp(datetime.now()))
+        # for i in range(len(tags)):
+        #    args[f"t{(i + 1)}"] = tags[i]
+        # for i in range(len(tag.tags)):
+        #     et_values[tag.tags[i]] = vals[i]
+        # print(et_values)
+        for i, tag in enumerate(tags):
+            args[f"t{i+1}"] = tag
+            args[f"v{i+1}"] = list(value)[i]
+
+        # args = {
+        #     "n": 1,
+        #     "returnValue": "true",
+        #     "t1": tag,
+        #     "v1": value,
+        #     'rnd': str(datetime.timestamp(datetime.now()))
+        # }
+        # result = {}
+        results = {}
+        results_status = {}
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
             async with session.get(
@@ -570,12 +592,40 @@ class Ecotouch:
                 # print(r)
                 if r == "#E_NEED_LOGIN\n":
                     await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
-                    res = await self._write_tag(tag, value)
+                    res = await self._write_tag(tags, value)
                     return res
-                match = re.search(f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)", r, re.MULTILINE)  # pylint: disable=anomalous-backslash-in-string
-                # match = re.search(r"(?:^\d+\t)(\-?\d+)", r, re.MULTILINE)
-                if match is not None:
-                    result[tag] = {"value": match.group(2), "status": match.group(1)}
-                    return result
-                    # return match.group(1)
-                return None
+###
+                for tag in tags:
+                    match = re.search(
+                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",  # pylint: disable=anomalous-backslash-in-string
+                        r,
+                        re.MULTILINE,
+                    )
+                    if match is None:
+                        match = re.search(
+                            # r"#%s\tE_INACTIVETAG" % tag,
+                            f"#{tag}\tE_INACTIVETAG",
+                            r,
+                            re.MULTILINE,
+                        )
+                        # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
+                        # print("Tag: %s is inactive!", tag)
+                        if match is None:
+                            raise Exception(tag + " tag not found in response")
+
+                        # if val_status == "E_INACTIVE":
+                        results_status[tag] = "E_INACTIVE"
+                        results[tag] = None
+                    else:
+                        results_status[tag] = "E_OK"
+                        results[tag] = match.group("value")
+
+            return results, results_status
+
+            # match = re.search(f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)", r, re.MULTILINE)  # pylint: disable=anomalous-backslash-in-string
+            # # match = re.search(r"(?:^\d+\t)(\-?\d+)", r, re.MULTILINE)
+            # if match is not None:
+            #     result[tag] = {"value": match.group(2), "status": match.group(1)}
+            #     return result
+            #     # return match.group(1)
+            # return None
