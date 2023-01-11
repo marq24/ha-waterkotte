@@ -164,6 +164,20 @@ def _parse_time(self, e_vals, *other_args):  # pylint: disable=unused-argument
     return dt + timedelta(days=1) if next_day else dt
 
 
+def _parse_status(self, value, *other_args):  # pylint: disable=unused-argument
+    assert len(self.tags) == 1
+    ecotouch_tag = self.tags[0]
+    # assert isinstance(value[ecotouch_tag],int)
+    if value[ecotouch_tag] == "0":
+        return "off"
+    elif value[ecotouch_tag] == "1":
+        return "on"
+    elif value[ecotouch_tag] == "2":
+        return "disabled"
+    else:
+        return "Error"
+
+
 def _parse_state(self, value, *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
@@ -325,9 +339,9 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     ALARM = TagData(["I52"])
     INTERRUPTIONS = TagData(["I53"])
     STATE_SERVICE = TagData(["I135"])
-    STATUS_HEATING = TagData(["I37"])
-    STATUS_COOLING = TagData(["I38"])
-    STATUS_WATER = TagData(["I39"])
+    STATUS_HEATING = TagData(["I137"], read_function=_parse_status)
+    STATUS_COOLING = TagData(["I138"], read_function=_parse_status)
+    STATUS_WATER = TagData(["I139"], read_function=_parse_status)
     INFO_SERIES = TagData(["I105"], read_function=_parse_series)
     INFO_ID = TagData(["I110"], read_function=_parse_id)
     INFO_SERIAL = TagData(
@@ -346,6 +360,24 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     MANUAL_COOLVALVE = TagData(["I1297"])
     MANUAL_4WAYVALVE = TagData(["I1299"])
     MANUAL_MULTIEXT = TagData(["I1319"])
+
+    # SERVICE_HEATING = TagData(["D251"])
+    # SERVICE_COOLING = TagData(["D252"])
+    # SERVICE_WATER = TagData(["D117"])
+    # SERVICE_HEATING_D23 = TagData(["D23"])
+    # SERVICE_HEATING_D24 = TagData(["D24"])
+    # SERVICE_WATER_D118 = TagData(["D118"])
+    # SERVICE_OPMODE = TagData(["I136"])
+    # RAW_D430 = TagData(["D430"])  # animation
+    # RAW_D28 = TagData(["D28"])  # ?QE
+    # RAW_D879 = TagData(["D879"])  # ?RMH
+    # MODE_HEATING_PUMP = TagData(["A522"])
+    # MODE_HEATING = TagData(["A530"])
+    # MODE_HEATING_EXTERNAL = TagData(["A528"])
+    # MODE_COOLING = TagData(["A532"])
+    # MODE_WATER = TagData(["A534"])
+    # MODE_POOL = TagData(["A536"])
+    # MODE_SOLAR = TagData(["A538"])
 
     def __hash__(self) -> int:
         return hash(self.name)

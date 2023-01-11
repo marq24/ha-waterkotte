@@ -41,7 +41,7 @@ SENSOR_TYPES = {
         "Status Heating",
         EcotouchTag.STATUS_HEATING,
         None,
-        SPEED_KILOMETERS_PER_HOUR,
+        None,
         "mdi:weather-windy",
         True,
         None,
@@ -51,7 +51,7 @@ SENSOR_TYPES = {
         "Status Water",
         EcotouchTag.STATUS_WATER,
         None,
-        "kg/m^2",
+        None,
         "mdi:weather-rainy",
         True,
         None,
@@ -61,7 +61,7 @@ SENSOR_TYPES = {
         "Status Cooling",
         EcotouchTag.STATUS_COOLING,
         None,
-        "%",
+        None,
         "mdi:weather-rainy",
         True,
         None,
@@ -407,14 +407,62 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    "state_service": [
+        "State Service",
+        EcotouchTag.STATE_SERVICE,
+        DEVICE_CLASS_DATE,
+        PRESSURE_BAR,
+        None,
+        True,
+        None,
+        None,
+    ],
+    "temperature_heating_set": [
+        "Temperature Heating Demand",
+        EcotouchTag.TEMPERATURE_HEATING_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_heating_set2": [
+        "Temperature Heating Temperatur(set2)",
+        EcotouchTag.TEMPERATURE_HEATING_SET2,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_cooling_set": [
+        "Temperature Cooling Demand",
+        EcotouchTag.TEMPERATURE_COOLING_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_cooling_set2": [
+        "Temperature Cooling Temperatur(set2)",
+        EcotouchTag.TEMPERATURE_COOLING_SET2,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
 
 }
 """
 
-    TEMPERATURE_HEATING_SET = TagData(["A31"], "°C")
-    TEMPERATURE_HEATING_SET2 = TagData(["A32"], "°C")
-    TEMPERATURE_COOLING_SET = TagData(["A34"], "°C")
-    TEMPERATURE_COOLING_SET2 = TagData(["A35"], "°C")
+    MODE_SOLAR = TagData(["A538"])
+
     TEMPERATURE_WATER_SETPOINT = TagData(["A37"], "°C", writeable=True)
     TEMPERATURE_WATER_SETPOINT2 = TagData(["A38"], "°C", writeable=True)
     TEMPERATURE_POOL_SETPOINT = TagData(["A40"], "°C", writeable=True)
@@ -446,17 +494,9 @@ SENSOR_TYPES = {
     OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
     OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
     OPERATING_HOURS_SOLAR = TagData(["I22"])
-    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state)
-    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state)
-    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state)
-    ENABLE_POOL = TagData(["I33"], read_function=_parse_state)
-    ENABLE_PV = TagData(["I41"], read_function=_parse_state)
+
     ALARM = TagData(["I52"])
     INTERRUPTIONS = TagData(["I53"])
-    STATE_SERVICE = TagData(["I135"])
-    STATUS_HEATING = TagData(["I37"])
-    STATUS_COOLING = TagData(["I38"])
-    STATUS_WATER = TagData(["I39"])
     ADAPT_HEATING = TagData(["I263"], writeable=True)
     MANUAL_HEATINGPUMP = TagData(["I1270"])
     MANUAL_SOURCEPUMP = TagData(["I1281"])
@@ -504,7 +544,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     @ property
     def state(self):
         """Return the state of the sensor."""
-        result = ""
+        # result = ""
         # print(self._coordinator.data)
         try:
             sensor = SENSOR_TYPES[self._type]

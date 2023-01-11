@@ -146,25 +146,12 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+
+
 }
 """
-    STATE_SOURCEPUMP = TagData(["I51"], bit=0)
-    STATE_HEATINGPUMP = TagData(["I51"], bit=1)
-    STATE_EVD = TagData(["I51"], bit=2)
-    STATE_COMPRESSOR = TagData(["I51"], bit=3)
-    STATE_COMPRESSOR2 = TagData(["I51"], bit=4)
-    STATE_EXTERNAL_HEATER = TagData(["I51"], bit=5)
-    STATE_ALARM = TagData(["I51"], bit=6)
-    STATE_COOLING = TagData(["I51"], bit=7)
-    STATE_WATER = TagData(["I51"], bit=8)
-    STATE_POOL = TagData(["I51"], bit=9)
-    STATE_SOLAR = TagData(["I51"], bit=10)
-    STATE_COOLING4WAY = TagData(["I51"], bit=11)
 
-    TEMPERATURE_HEATING_SET = TagData(["A31"], "°C")
-    TEMPERATURE_HEATING_SET2 = TagData(["A32"], "°C")
-    TEMPERATURE_COOLING_SET = TagData(["A34"], "°C")
-    TEMPERATURE_COOLING_SET2 = TagData(["A35"], "°C")
+
     TEMPERATURE_WATER_SETPOINT = TagData(["A37"], "°C", writeable=True)
     TEMPERATURE_WATER_SETPOINT2 = TagData(["A38"], "°C", writeable=True)
     TEMPERATURE_POOL_SETPOINT = TagData(["A40"], "°C", writeable=True)
