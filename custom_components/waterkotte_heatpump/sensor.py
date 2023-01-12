@@ -457,11 +457,89 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    "compressor_power": [
+        "Compressor Power",
+        EcotouchTag.COMPRESSOR_POWER,
+        None,
+        None,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_norm_outdoor": [
+        "Temperature norm outdoor",
+        EcotouchTag.NVI_NORM_AUSSEN,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_norm_heating_circle": [
+        "Temperature norm heating circle",
+        EcotouchTag.NVI_HEIZKREIS_NORM,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_heating_limit": [
+        "Temperature heating limit",
+        EcotouchTag.NVI_T_HEIZGRENZE,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_heating_limit_target": [
+        "Temperature heating limit target",
+        EcotouchTag.NVI_T_HEIZGRENZE_SOLL,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_max_heating": [
+        "Limit for setpoint (Max.)",
+        EcotouchTag.MAX_VL_TEMP,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_out_begin": [
+        "Temperature enable Cooling",
+        EcotouchTag.COOL_ENABLE_TEMP,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_cooling": [
+        "Temperature Cooling",
+        EcotouchTag.NVI_SOLL_KUEHLEN,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
 
 }
 """
-
-    MODE_SOLAR = TagData(["A538"])
 
     TEMPERATURE_WATER_SETPOINT = TagData(["A37"], "°C", writeable=True)
     TEMPERATURE_WATER_SETPOINT2 = TagData(["A38"], "°C", writeable=True)
@@ -469,26 +547,9 @@ SENSOR_TYPES = {
     TEMPERATURE_POOL_SETPOINT2 = TagData(["A41"], "°C", writeable=True)
     COMPRESSOR_POWER = TagData(["A50"], "?°C")
 
-    HYSTERESIS_HEATING = TagData(["A61"], "?")
-
-    NVI_NORM_AUSSEN = TagData(["A91"], "?")
-    NVI_HEIZKREIS_NORM = TagData(["A92"], "?")
-    NVI_T_HEIZGRENZE = TagData(["A93"], "?°C")
-    NVI_T_HEIZGRENZE_SOLL = TagData(["A94"], "?°C")
-    MAX_VL_TEMP = TagData(["A95"], "°C")
+    HYSTERESIS_HEATING = TagData(["A61"], "?") # Hysteresis setpoint
     TEMP_SET_0_DEG = TagData(["A97"], "°C")
-    COOL_ENABLE_TEMP = TagData(["A108"], "°C")
-    NVI_SOLL_KUEHLEN = TagData(["A109"], "°C")
-    TEMPCHANGE_HEATING_PV = TagData(["A682"], "°C")
-    TEMPCHANGE_COOLING_PV = TagData(["A683"], "°C")
-    TEMPCHANGE_WARMWATER_PV = TagData(["A684"], "°C")
-    TEMPCHANGE_POOL_PV = TagData(["A685"], "°C")
 
-    DATE_DAY = TagData(["I5"])
-    DATE_MONTH = TagData(["I6"])
-    DATE_YEAR = TagData(["I7"])
-    TIME_HOUR = TagData(["I8"])
-    TIME_MINUTE = TagData(["I9"])
     OPERATING_HOURS_COMPRESSOR_1 = TagData(["I10"])
     OPERATING_HOURS_COMPRESSOR_2 = TagData(["I14"])
     OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
