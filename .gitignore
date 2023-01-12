@@ -8,3 +8,4 @@ custom_components/pywaterkotte/*
 custom_components/pywaterkott*
 core.*
 waterkotte_heatpump/pywaterkotte/*
+waterkotte_heatpump/pywaterkotte.old/*
