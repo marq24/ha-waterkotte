@@ -85,7 +85,8 @@ def _write_value_default(self, value, et_values):
 
 def _parse_series(self, e_vals, *other_args):  # pylint: disable=unused-argument
     # pylint: disable=invalid-name,line-too-long
-    aI105 = ["Custom", "Ai1", "Ai1+", "AiQE", "DS 5023", "DS 5027Ai", "DS 5051", "DS 5050T", "DS 5110T", "DS 5240", "DS 6500", "DS 502xAi", "DS 505x", "DS 505xT", "DS 51xxT", "DS 509x", "DS 51xx", "EcoTouch Ai1 Geo", "EcoTouch DS 5027 Ai", "EnergyDock", "Basic Line Ai1 Geo", "EcoTouch DS 5018 Ai", "EcoTouch DS 5050T", "EcoTouch DS 5112.5 DT", "EcoTouch 5029 Ai", "DS 6500 D (Duo)", "ET 6900 Q", "EcoTouch Geo Inverter", "EcoTouch 5110TWR", "EcoTouch 5240TWR", "EcoTouch 5240T", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Ai QL / WP QL", "WPQL-K", "EcoTouch Ai1 Air", "EcoTouch Ai1 Air", "EcoTouch MB 7010", "EcoTouch DA 5018 Ai", "EcoTouch Air LCI", "EcoTouch Ai1 Air K1.1", "EcoTouch DA 5018 Ai K1.1", "EcoTouch Ai1 Air K2", "EcoTouch DA 5018 Ai K2", "EcoTouch Ai1 Air 2018", "Basic Line Ai1 Air", "Basic Line Split", "Basic Line Split W", "EcoTouch Ai1 Air LC S", "EcoTouch Air Kaskade", "EcoTouch Ai1 Air K1.2", "EcoTouch DA 5018 Ai K1.2", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+    aI105 = ["Custom", "Ai1", "Ai1+", "AiQE", "DS 5023", "DS 5027Ai", "DS 5051", "DS 5050T", "DS 5110T", "DS 5240", "DS 6500", "DS 502xAi", "DS 505x", "DS 505xT", "DS 51xxT", "DS 509x", "DS 51xx", "EcoTouch Ai1 Geo", "EcoTouch DS 5027 Ai", "EnergyDock", "Basic Line Ai1 Geo", "EcoTouch DS 5018 Ai", "EcoTouch DS 5050T", "EcoTouch DS 5112.5 DT", "EcoTouch 5029 Ai", "DS 6500 D (Duo)", "ET 6900 Q", "EcoTouch Geo Inverter", "EcoTouch 5110TWR", "EcoTouch 5240TWR", "EcoTouch 5240T", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Ai QL / WP QL", "WPQL-K", "EcoTouch Ai1 Air", "EcoTouch Ai1 Air", "EcoTouch MB 7010", "EcoTouch DA 5018 Ai", "EcoTouch Air LCI", "EcoTouch Ai1 Air K1.1", "EcoTouch DA 5018 Ai K1.1", "EcoTouch Ai1 Air K2", "EcoTouch DA 5018 Ai K2", "EcoTouch Ai1 Air 2018", "Basic Line Ai1 Air", "Basic Line Split", "Basic Line Split W",
+             "EcoTouch Ai1 Air LC S", "EcoTouch Air Kaskade", "EcoTouch Ai1 Air K1.2", "EcoTouch DA 5018 Ai K1.2", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
     return aI105[int(e_vals["I105"])] if e_vals["I105"] else ""
 
 
@@ -505,13 +506,16 @@ class Ecotouch:
             # tag.status=e_status[tag.tags[0]]
             # e_inactive = False
             for tag_status in tag.tags:
-                if e_status[tag_status] == "E_INACTIVE":
-                    if e_values[tag.tags[0]] is not None:
-                        val = e_values[tag.tags[0]]
+                try:
+                    if e_status[tag_status] == "E_INACTIVE":
+                        if e_values[tag.tags[0]] is not None:
+                            val = e_values[tag.tags[0]]
+                        else:
+                            val = None
                     else:
-                        val = None
-                else:
-                    val = tag.read_function(tag, e_values, tag.bit)
+                        val = tag.read_function(tag, e_values, tag.bit)
+                except KeyError:
+                    val = None
             #         e_inactive = True
             # if e_inactive is False:
             #     val = tag.read_function(tag, e_values, tag.bit)
