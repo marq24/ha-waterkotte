@@ -15,7 +15,7 @@ from .api import WaterkotteHeatpumpApiClient
 
 from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME
 from .const import CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_ID, CONF_SERIES
-from .const import DOMAIN, PLATFORMS, SELECT, SENSOR, BINARY_SENSOR
+from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR
 
 
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -146,29 +146,11 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required(BINARY_SENSOR, default=self.options.get(BINARY_SENSOR, True)): bool,
                 vol.Required(SENSOR, default=self.options.get(SENSOR, True)): bool,
                 vol.Required(SELECT, default=self.options.get(SELECT, True)): bool,
-                vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 30)): int,
+                vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 30)): int,  # pylint: disable=line-too-long
                 vol.Required(CONF_USERNAME, default=self.options.get(CONF_USERNAME)): str,
                 vol.Required(CONF_PASSWORD, default=self.options.get(CONF_USERNAME)): str,
             })
 
-###
-        # data_schema = vol.Schema(
-        #     {
-        #         vol.Required(x, default=self.options.get(x, True)): bool
-        #         for x in sorted(PLATFORMS)
-        #     })
-        # data_schema = data_schema.extend(
-        #     {
-        #         vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 30)): int,
-        #         vol.Required(
-        #             CONF_USERNAME,
-        #             default=self.options.get(CONF_USERNAME),
-        #             msg="Username"): str,
-        #         vol.Required(
-        #             CONF_PASSWORD,
-        #             default=self.options.get(CONF_USERNAME),
-        #             description="Password"): str,
-        #     })
         return self.async_show_form(
             step_id="user",
             data_schema=data_schema,

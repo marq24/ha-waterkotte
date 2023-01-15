@@ -544,16 +544,8 @@ SENSOR_TYPES = {
     TEMPERATURE_WATER_SETPOINT2 = TagData(["A38"], "°C", writeable=True)
     TEMPERATURE_POOL_SETPOINT = TagData(["A40"], "°C", writeable=True)
     TEMPERATURE_POOL_SETPOINT2 = TagData(["A41"], "°C", writeable=True)
-    COMPRESSOR_POWER = TagData(["A50"], "?°C")
-
     HYSTERESIS_HEATING = TagData(["A61"], "?") # Hysteresis setpoint
     TEMP_SET_0_DEG = TagData(["A97"], "°C")
-
-    OPERATING_HOURS_COMPRESSOR_1 = TagData(["I10"])
-    OPERATING_HOURS_COMPRESSOR_2 = TagData(["I14"])
-    OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
-    OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
-    OPERATING_HOURS_SOLAR = TagData(["I22"])
 
     ALARM = TagData(["I52"])
     INTERRUPTIONS = TagData(["I53"])
