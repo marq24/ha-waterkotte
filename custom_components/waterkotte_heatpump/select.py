@@ -155,6 +155,7 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         self._unique_id = self._type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
+        hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
 
     @ property
@@ -171,6 +172,8 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
                 value = 'unknown'
         except KeyError:
             value = "unknown"
+        except TypeError:
+            return None
         return value
         # return "auto"
 
@@ -187,6 +190,11 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], option)
         except ValueError:
             return "unavailable"
+
+    @property
+    def tag(self):
+        """Return a unique ID to use for this entity."""
+        return SENSOR_TYPES[self._type][1]
 
     @ property
     def icon(self):

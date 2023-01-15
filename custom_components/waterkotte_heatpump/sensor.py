@@ -594,13 +594,18 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         self._unique_id = self._type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-
+        hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
 
     @ property
     def name(self):
         """Return the name of the sensor."""
         return self._name
+
+    @property
+    def tag(self):
+        """Return a unique ID to use for this entity."""
+        return SENSOR_TYPES[self._type][1]
 
     @ property
     def state(self):
@@ -614,7 +619,8 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
                 value = 'unknown'
         except KeyError:
             value = "unknown"
-
+        except TypeError:
+            return "unknown"
         if value is True:
             value = "on"
         elif value is False:

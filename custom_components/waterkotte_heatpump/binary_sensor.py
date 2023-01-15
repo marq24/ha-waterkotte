@@ -136,16 +136,16 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "holiday_enabled": [
-        "Holiday Mode",
-        EcotouchTag.HOLIDAY_ENABLED,
-        BinarySensorDeviceClass.RUNNING,
-        None,
-        None,
-        True,
-        None,
-        None,
-    ],
+    # "holiday_enabled": [
+    #     "Holiday Mode",
+    #     EcotouchTag.HOLIDAY_ENABLED,
+    #     BinarySensorDeviceClass.RUNNING,
+    #     None,
+    #     None,
+    #     True,
+    #     None,
+    #     None,
+    # ],
 
 
 }
@@ -240,9 +240,14 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         self._unique_id = self._type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-
+        hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
         # self._attr_capability_attributes[ATTR_FRIENDLY_NAME] = self._name
+
+    @property
+    def tag(self):
+        """Return a tag to use for this entity."""
+        return SENSOR_TYPES[self._type][1]
 
     @ property
     def name(self):
@@ -261,6 +266,8 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         except KeyError:
             value = None
             print(value)
+        except TypeError:
+            return None
         return value
 
     @ property
@@ -268,10 +275,16 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
             sensor = SENSOR_TYPES[self._type]
-            if self._type == "holiday_enabled" and self._coordinator.data[sensor[1]]["value"] is True:
-                return "mdi:calendar-check"
-            else:
-                return "mdi:calendar-blank"
+            try:
+                if self._type == "holiday_enabled" and 'value' in self._coordinator.data[sensor[1]]:
+                    if self._coordinator.data[sensor[1]]["value"] is True:
+                        return "mdi:calendar-check"
+                    else:
+                        return "mdi:calendar-blank"
+                else:
+                    return None
+            except KeyError:
+                print(f"KeyError in Binary_sensor.icon: should have value? data:{self._coordinator.data[sensor[1]]}")
         return SENSOR_TYPES[self._type][4]
         # return ICON
 
