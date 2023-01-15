@@ -70,16 +70,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hw_version=entry.options.get(CONF_ID, entry.data.get(CONF_ID)),
     )
 
-    device = DeviceInfo(
-        id=deviceEntry.id,
-        identifiers=deviceEntry.identifiers,
-        name=deviceEntry.name,
-        manufacturer=deviceEntry.manufacturer,
-        model=deviceEntry.model,
-        sw_version=deviceEntry.sw_version,
-        suggested_area=deviceEntry.suggested_area,
-        hw_version=deviceEntry.hw_version,
-    )
+    # device = DeviceInfo(
+    #     id=deviceEntry.id,
+    #     identifiers=deviceEntry.identifiers,
+    #     name=deviceEntry.name,
+    #     manufacturer=deviceEntry.manufacturer,
+    #     model=deviceEntry.model,
+    #     sw_version=deviceEntry.sw_version,
+    #     suggested_area=deviceEntry.suggested_area,
+    #     hw_version=deviceEntry.hw_version,
+    # )
 
     ###
     username = entry.options.get(CONF_USERNAME, entry.data.get(CONF_USERNAME))
@@ -93,10 +93,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass,
             client=client,
             data=COORDINATOR.data,
-            device=device
         )
     else:
-        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client, device=device)
+        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
     # await coordinator.async_refresh() ##Needed?
 
     if not coordinator.last_update_success:
@@ -128,8 +127,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         self,
         hass: HomeAssistant,
         client: WaterkotteHeatpumpApiClient,
-        data=None,
-        device=None
+        data=None
     ) -> None:
         """Initialize."""
         self.api = client
@@ -140,7 +138,6 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         self.platforms = []
         self.__hass = hass
         self.alltags = {}
-        self.device = device
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
