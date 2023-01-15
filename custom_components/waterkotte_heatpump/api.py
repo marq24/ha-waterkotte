@@ -59,7 +59,7 @@ class WaterkotteHeatpumpApiClient:
         if self._client.auth_cookies is None:
             try:
                 await self._client.login(self._username, self._password)
-            except Exception as exception:
+            except Exception as exception:  # pylint: disable=broad-except
                 print(exception)
                 await self._client.logout()
                 await self._client.login(self._username, self._password)

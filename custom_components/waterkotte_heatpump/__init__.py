@@ -52,12 +52,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # explisitly set the Title here
     entry.title = TITLE
     # Setup Device
-    fw = entry.options.get(CONF_IP, entry.data.get(CONF_IP))
+    fw = entry.options.get(CONF_IP, entry.data.get(CONF_IP))  # pylint: disable=invalid-name
     bios = entry.options.get(CONF_BIOS, entry.data.get(CONF_BIOS))
 
     device_registry = dr.async_get(hass)
 
-    deviceEntry = device_registry.async_get_or_create(
+    deviceEntry = device_registry.async_get_or_create(  # pylint: disable=invalid-name
         config_entry_id=entry.entry_id,
         identifiers={
             ('DOMAIN', DOMAIN),
@@ -70,6 +70,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         sw_version=f"{fw} BIOS: {bios}",
         hw_version=entry.options.get(CONF_ID, entry.data.get(CONF_ID)),
     )
+
     device = DeviceInfo(
         id=deviceEntry.id,
         identifiers=deviceEntry.identifiers,
