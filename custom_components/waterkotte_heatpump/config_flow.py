@@ -56,7 +56,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_SERIAL] = self._serial
                 user_input[CONF_ID] = self._ID
                 return self.async_create_entry(
-                    title=user_input[CONF_USERNAME], data=user_input
+                    title=TITLE, data=user_input
                 )
             else:
                 self._errors["base"] = "auth"
@@ -76,7 +76,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_HOST, default="wp.knx.pattison.de"): str,
+                    vol.Required(CONF_HOST, default=""): str,
                     vol.Required(CONF_USERNAME, default="waterkotte"): str,
                     vol.Required(CONF_PASSWORD, default="waterkotte"): str,
                 }
