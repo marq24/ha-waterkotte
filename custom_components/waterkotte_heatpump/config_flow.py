@@ -15,7 +15,7 @@ from .api import WaterkotteHeatpumpApiClient
 
 from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME
 from .const import CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_ID, CONF_SERIES
-from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR
+from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR, TITLE
 
 
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -159,5 +159,5 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
     async def _update_options(self):
         """Update config entry options."""
         return self.async_create_entry(
-            title=self.config_entry.data.get(CONF_USERNAME), data=self.options
+            title=TITLE, data=self.options
         )

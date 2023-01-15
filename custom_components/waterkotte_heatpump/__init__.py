@@ -49,8 +49,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-    # explisitly set the Title here
-    entry.title = TITLE
+
     # Setup Device
     fw = entry.options.get(CONF_IP, entry.data.get(CONF_IP))  # pylint: disable=invalid-name
     bios = entry.options.get(CONF_BIOS, entry.data.get(CONF_BIOS))
