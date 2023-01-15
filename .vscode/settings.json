@@ -9,5 +9,6 @@
     "./custom_components/pywaterkotte/pywaterkotte"
   ],
   "python.linting.prospectorEnabled": false,
-  "python.linting.flake8Enabled": false
+  "python.linting.flake8Enabled": false,
+  "git.repositoryScanMaxDepth": -1
 }
