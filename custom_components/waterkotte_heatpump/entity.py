@@ -1,9 +1,9 @@
 """WaterkotteHeatpumpEntity class"""
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.config_entries import ConfigEntry
+# from homeassistant.config_entries import ConfigEntry
 # from .const import ATTRIBUTION
 from .const import DOMAIN
-from .const import NAME
+# from .const import NAME
 # from .const import VERSION
 
 SENSOR_TYPES = []
@@ -22,6 +22,11 @@ class WaterkotteHeatpumpEntity(CoordinatorEntity):
         """Return a unique ID to use for this entity."""
         return self.config_entry.data['serial']
         # return self.config_entry.entry_id
+
+    @property
+    def has_entity_name(self) -> bool:
+        """Return true."""
+        return True
 
     @property
     def device_info(self):

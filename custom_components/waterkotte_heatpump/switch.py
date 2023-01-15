@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # Sensor types are defined as:
-#   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category
+#   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category  #pylint: disable=line-too-long
 SENSOR_TYPES = {
     "holiday_enabled": [
         "Holiday Mode",
@@ -64,8 +64,8 @@ class WaterkotteHeatpumpBinarySwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     def __del__(self):
         try:
             del self._coordinator[self._unique_id]
-        except:
-            return
+        except Exception:  # pylint: disable=broad-except
+            pass
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""

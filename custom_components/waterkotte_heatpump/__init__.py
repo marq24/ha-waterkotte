@@ -21,8 +21,8 @@ from homeassistant.helpers.entity_registry import async_get as getEntityRegistry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
 from .api import WaterkotteHeatpumpApiClient
-from .const import CONF_HOST, CONF_PASSWORD, CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
-from .const import CONF_USERNAME, CONF_POLLING_INTERVAL
+from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
+from .const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL
 from .const import DOMAIN, NAME
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
@@ -84,8 +84,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         },
         manufacturer=NAME,
         suggested_area="Basement",
-        name=entry.options.get(CONF_SERIES, entry.data.get(CONF_SERIES)),
-        model=entry.options.get(CONF_ID, entry.data.get(CONF_ID)),
+        name=NAME,
+        model=entry.options.get(CONF_SERIES, entry.data.get(CONF_SERIES)),
         sw_version=f"{fw} BIOS: {bios}",
         hw_version=entry.options.get(CONF_ID, entry.data.get(CONF_ID)),
     )
@@ -133,8 +133,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # await hass.async_block_till_done()
     # await coordinator.async_refresh()
     # service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
-    print("after block_till_done")
-    print(coordinator.alltags)
+    # print("after block_till_done")
+    # print(coordinator.alltags)
 
     # device_id = None
     # for device in hass.data["device_registry"].devices:
@@ -212,8 +212,8 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
             if len(self.api.tags) == 0:
                 tags = []
                 for entity in self.__hass.data["entity_registry"].entities:
-                    if (
-                            self.__hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
+                    if (  # pylint: disable=line-too-long
+                            self.__hass.data["entity_registry"].entities[entity].platform == DOMAIN
                             and self.__hass.data["entity_registry"].entities[entity].disabled is False):
                         # x += 1
                         # print(entity)
