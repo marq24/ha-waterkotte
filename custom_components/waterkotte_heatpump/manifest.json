@@ -9,6 +9,6 @@
     "@pattisonmichael"
   ],
   "requirements": ["git+https://github.com/pattisonmichael/pywaterkotte.git#pywaterkotte==0.0.3"],
-  "version": "0.0.1",
+  "version": "0.0.3",
   "iot_class": "local_polling"
 }
