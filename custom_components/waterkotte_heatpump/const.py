@@ -4,7 +4,7 @@ NAME = "Waterkotte Heatpump"
 DOMAIN = "waterkotte_heatpump"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.0.1"
-
+TITLE = "Waterkotte"
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/pattisonmichael/waterkotte-heatpump/issues"
 

@@ -23,7 +23,7 @@ from homeassistant.helpers import device_registry as dr
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
 from .const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL
-from .const import DOMAIN, NAME
+from .const import DOMAIN, NAME, TITLE
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
 from .pywaterkotte.ecotouch import EcotouchTag
@@ -49,35 +49,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
-
+    # explisitly set the Title here
+    entry.title = TITLE
     # Setup Device
-        # ip = self.config_entry.data['ip'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['ip']  # pylint: disable=line-too-long,invalid-name
-        # serial = self.config_entry.data['serial'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['serial']  # pylint: disable=line-too-long
-        # device = self.config_entry.entry_id if isinstance(self.config_entry, ConfigEntry)else self.config_entry.config_entry.entry_id  # pylint: disable=line-too-long
-        # series = self.config_entry.data['series'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['series']  # pylint: disable=line-too-long
-        # deviceid = self.config_entry.data['id'] if isinstance(self.config_entry, ConfigEntry) else self.config_entry.config_entry.data['id']  # pylint: disable=line-too-long
     fw = entry.options.get(CONF_IP, entry.data.get(CONF_IP))
     bios = entry.options.get(CONF_BIOS, entry.data.get(CONF_BIOS))
-    # return {
-    #     "identifiers": {
-    #         # (DOMAIN, self.unique_id),
-    #         ('DOMAIN', DOMAIN),
-    #         ('IP', ip),
-    #         ('device', device),
-    #         ('serial', serial)
-    #     },
-    #     "name": series,
-    #     "model": deviceid,
-    #     "manufacturer": NAME,
-    #     "sw_version": f"{fw} BIOS: {bios}",
-    #     "aliases": {DOMAIN: DOMAIN},
-    # }
 
     device_registry = dr.async_get(hass)
 
     deviceEntry = device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        # connections={(dr.CONNECTION_NETWORK_MAC, config.mac)},
         identifiers={
             ('DOMAIN', DOMAIN),
             ('IP', entry.options.get(CONF_IP, entry.data.get(CONF_IP)))
@@ -98,7 +79,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         sw_version=deviceEntry.sw_version,
         suggested_area=deviceEntry.suggested_area,
         hw_version=deviceEntry.hw_version,
-        # via_device=(hue.DOMAIN, self.api.bridgeid),
     )
 
     ###
@@ -130,49 +110,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             await hass.config_entries.async_forward_entry_setup(entry, platform)
             # )
     entry.add_update_listener(async_reload_entry)
-    # await hass.async_block_till_done()
-    # await coordinator.async_refresh()
-    # service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
-    # print("after block_till_done")
-    # print(coordinator.alltags)
 
-    # device_id = None
-    # for device in hass.data["device_registry"].devices:
-    #     if ("DOMAIN", DOMAIN) in hass.data["device_registry"].devices[device].identifiers:
-    #         device_id = device
-    #         break
-    # if device_id is not None:
-    #     active_entities = async_entries_for_device(getEntityRegistry(hass), device_id)  # '4527b40d9f947efbcd4f61594497f6ea'
-    #     print("active entities")
-    #     print(active_entities)
-    #     tags.clear()
-    #     for ent in active_entities:
-    #         tags.append(coordinator.alltags[ent.unique_id])
-    # else:
-    #     print("Couldn't find Device_Id")
-
-    # tags.clear()
-    # for entity in hass.data["entity_registry"].entities:
-    #     if (
-    #        hass.data["entity_registry"].entities[entity].platform == "waterkotte_heatpump"
-    #        and hass.data["entity_registry"].entities[entity].disabled is False):
-    #         # x += 1
-
-    #         # r"#%s\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)" % tag,
-    #         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-    #         # if match:
-    #         #     print(match.groups()[0].upper())
-    #         #     if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
-    #         #         # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
-    #         #         tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
-    #         tag = hass.data["entity_registry"].entities[entity].unique_id
-    #         print(f"__init__.async_setup_entry Entity: {entity} Tag: {tag}")
-    #         tags.append(EcotouchTag[tag.upper()])
-    # print(x)
-    # print(tags)
-    # print("after loop")
-    # print(coordinator.alltags)
-    # client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
     if len(tags) > 0:
         await coordinator.async_refresh()
     COORDINATOR = coordinator
