@@ -7,7 +7,7 @@ from .const import DOMAIN
 # from .const import ICON
 # from .const import SWITCH
 from .entity import WaterkotteHeatpumpEntity
-from .pywaterkotte.ecotouch import EcotouchTag
+from pywaterkotte.ecotouch import EcotouchTag
 # from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)

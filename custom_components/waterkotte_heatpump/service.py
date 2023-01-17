@@ -1,6 +1,6 @@
 # from .const import DOMAIN
 import datetime
-from .pywaterkotte.ecotouch import EcotouchTag
+from pywaterkotte.ecotouch import EcotouchTag
 ATTR_NAME = "name"
 DEFAULT_NAME = "World"
 

@@ -27,7 +27,7 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 #    TIME_SECONDS,
 # )
 from .entity import WaterkotteHeatpumpEntity
-from .pywaterkotte.ecotouch import EcotouchTag
+from pywaterkotte.ecotouch import EcotouchTag
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)

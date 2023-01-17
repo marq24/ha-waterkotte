@@ -8,7 +8,6 @@ import asyncio
 import logging
 import re
 from datetime import timedelta
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
@@ -20,13 +19,14 @@ from homeassistant.helpers.entity_registry import async_entries_for_device
 from homeassistant.helpers.entity_registry import async_get as getEntityRegistry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
+from pywaterkotte.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
 from .const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL
 from .const import DOMAIN, NAME, TITLE
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
-from .pywaterkotte.ecotouch import EcotouchTag
+
 from . import service as waterkotteservice
 # from .const import SENSORS
 
