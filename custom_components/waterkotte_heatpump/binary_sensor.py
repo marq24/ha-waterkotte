@@ -5,8 +5,9 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 # from homeassistant.const import ATTR_FRIENDLY_NAME
 
 # from .const import DOMAIN
-from .entity import WaterkotteHeatpumpEntity
 from pywaterkotte.ecotouch import EcotouchTag
+from .entity import WaterkotteHeatpumpEntity
+
 # from pywaterkotte.ecotouch import EcotouchTag
 from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
@@ -14,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # Sensor types are defined as:
-#   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category
+#   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
 SENSOR_TYPES = {
     "state_sourcepump": [
         "Sourcepump",
@@ -284,7 +285,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
                 else:
                     return None
             except KeyError:
-                print(f"KeyError in Binary_sensor.icon: should have value? data:{self._coordinator.data[sensor[1]]}")
+                print(f"KeyError in Binary_sensor.icon: should have value? data:{self._coordinator.data[sensor[1]]}")  # pylint: disable=line-too-long
         return SENSOR_TYPES[self._type][4]
         # return ICON
 

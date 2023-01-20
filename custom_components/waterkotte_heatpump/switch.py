@@ -2,12 +2,11 @@
 import logging
 from homeassistant.components.switch import SwitchEntity
 
-# from .const import DEFAULT_NAME
-from .const import DOMAIN
-# from .const import ICON
-# from .const import SWITCH
-from .entity import WaterkotteHeatpumpEntity
 from pywaterkotte.ecotouch import EcotouchTag
+from .const import DOMAIN
+
+from .entity import WaterkotteHeatpumpEntity
+
 # from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,14 +37,20 @@ async def async_setup_entry(hass, entry, async_add_devices):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_condensation")])
     # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_evaporation")])
-    async_add_devices([WaterkotteHeatpumpBinarySwitch(entry, coordinator, sensor_type)
-                       for sensor_type in SENSOR_TYPES])
+    async_add_devices(
+        [
+            WaterkotteHeatpumpBinarySwitch(entry, coordinator, sensor_type)
+            for sensor_type in SENSOR_TYPES
+        ]
+    )
 
 
 class WaterkotteHeatpumpBinarySwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     """waterkotte_heatpump switch class."""
 
-    def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
+    def __init__(
+        self, entry, hass_data, sensor_type
+    ):  # pylint: disable=unused-argument
         """Initialize the sensor."""
         self._coordinator = hass_data
 
@@ -114,18 +119,21 @@ class WaterkotteHeatpumpBinarySwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         """Return a unique ID to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 
-    @ property
+    @property
     def name(self):
         """Return the name of the sensor."""
         return self._name
 
-    @ property
+    @property
     def icon(self):
         """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
             sensor = SENSOR_TYPES[self._type]
             try:
-                if self._type == "holiday_enabled" and sensor[1] in self._coordinator.data:
+                if (
+                    self._type == "holiday_enabled"
+                    and sensor[1] in self._coordinator.data
+                ):
                     if self._coordinator.data[sensor[1]]["value"] is True:
                         return "mdi:calendar-check"
                     else:
@@ -133,7 +141,9 @@ class WaterkotteHeatpumpBinarySwitch(WaterkotteHeatpumpEntity, SwitchEntity):
                 else:
                     return None
             except KeyError:
-                print(f"KeyError in switch.icon: should have value? data:{self._coordinator.data[sensor[1]]}")
+                print(
+                    f"KeyError in switch.icon: should have value? data:{self._coordinator.data[sensor[1]]}"
+                )
             except TypeError:
                 return None
         return SENSOR_TYPES[self._type][4]
@@ -144,12 +154,12 @@ class WaterkotteHeatpumpBinarySwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     #     """Return true if the switch is on."""
     #     return self.coordinator.data.get("title", "") == "foo"
 
-    @ property
+    @property
     def entity_registry_enabled_default(self):
         """Return the entity_registry_enabled_default of the sensor."""
         return SENSOR_TYPES[self._type][5]
 
-    @ property
+    @property
     def unique_id(self):
         """Return the unique of the sensor."""
         return self._unique_id

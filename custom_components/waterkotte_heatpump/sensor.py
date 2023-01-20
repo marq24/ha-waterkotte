@@ -26,8 +26,9 @@ from homeassistant.const import (
     TEMP_CELSIUS,
     #    TIME_SECONDS,
 )
-from .entity import WaterkotteHeatpumpEntity
 from pywaterkotte.ecotouch import EcotouchTag
+from .entity import WaterkotteHeatpumpEntity
+
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)

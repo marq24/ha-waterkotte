@@ -56,7 +56,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     device_registry = dr.async_get(hass)
 
-    deviceEntry = device_registry.async_get_or_create(  # pylint: disable=invalid-name
+    device_registry.async_get_or_create(  # pylint: disable=invalid-name
         config_entry_id=entry.entry_id,
         identifiers={
             ('DOMAIN', DOMAIN),

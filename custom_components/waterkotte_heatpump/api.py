@@ -6,7 +6,7 @@ import socket
 # import re
 import aiohttp
 import async_timeout
-from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
+from pywaterkotte.ecotouch import Ecotouch, EcotouchTag
 
 
 TIMEOUT = 10

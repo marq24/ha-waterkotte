@@ -1,8 +1,7 @@
+""" Service to setup time for holiday mode """
 # from .const import DOMAIN
 import datetime
 from pywaterkotte.ecotouch import EcotouchTag
-ATTR_NAME = "name"
-DEFAULT_NAME = "World"
 
 
 class WaterkotteHeatpumpService():
