@@ -1,5 +1,6 @@
 """Sensor platform for Waterkotte Heatpump."""
 import logging
+
 # from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
@@ -14,17 +15,13 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 
 from homeassistant.const import (
-    #    ATTR_ATTRIBUTION,
     DEVICE_CLASS_DATE,
-    #    DEVICE_CLASS_HUMIDITY,
+    DEVICE_CLASS_POWER_FACTOR,
+    PERCENTAGE,
     DEVICE_CLASS_PRESSURE,
     DEVICE_CLASS_TEMPERATURE,
-    #    LENGTH_KILOMETERS,
-    # PRESSURE_HPA,
     PRESSURE_BAR,
-    # SPEED_KILOMETERS_PER_HOUR,
     TEMP_CELSIUS,
-    #    TIME_SECONDS,
 )
 from pywaterkotte.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
@@ -300,8 +297,8 @@ SENSOR_TYPES = {
     "position_expansion_valve": [
         "Position Expansion Valve",
         EcotouchTag.POSITION_EXPANSION_VALVE,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        None,
+        None,
         "mdi:gauge",
         False,
         None,
@@ -310,8 +307,8 @@ SENSOR_TYPES = {
     "power_compressor": [
         "Power Compressor",
         EcotouchTag.POWER_COMPRESSOR,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        DEVICE_CLASS_POWER_FACTOR,
+        PERCENTAGE,
         "mdi:gauge",
         False,
         None,
@@ -320,8 +317,8 @@ SENSOR_TYPES = {
     "power_heating": [
         "Power Heating",
         EcotouchTag.POWER_HEATING,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        DEVICE_CLASS_POWER_FACTOR,
+        PERCENTAGE,
         "mdi:gauge",
         False,
         None,
@@ -330,8 +327,8 @@ SENSOR_TYPES = {
     "power_cooling": [
         "Power Cooling",
         EcotouchTag.POWER_COOLING,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        DEVICE_CLASS_POWER_FACTOR,
+        PERCENTAGE,
         "mdi:gauge",
         False,
         None,
@@ -340,8 +337,8 @@ SENSOR_TYPES = {
     "cop_heating": [
         "COP Heating",
         EcotouchTag.COP_HEATING,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        None,
+        None,
         "mdi:gauge",
         False,
         None,
@@ -350,8 +347,8 @@ SENSOR_TYPES = {
     "cop_cooling": [
         "COP Cooling",
         EcotouchTag.COP_COOLING,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        None,
+        None,
         "mdi:gauge",
         False,
         None,
@@ -360,8 +357,8 @@ SENSOR_TYPES = {
     "percent_heat_circ_pump": [
         "Percent Heat Circ Pump",
         EcotouchTag.PERCENT_HEAT_CIRC_PUMP,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        DEVICE_CLASS_POWER_FACTOR,
+        PERCENTAGE,
         "mdi:gauge",
         False,
         None,
@@ -370,8 +367,8 @@ SENSOR_TYPES = {
     "percent_source_pump": [
         "Percent Source Pump",
         EcotouchTag.PERCENT_SOURCE_PUMP,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        DEVICE_CLASS_POWER_FACTOR,
+        PERCENTAGE,
         "mdi:gauge",
         False,
         None,
@@ -380,8 +377,8 @@ SENSOR_TYPES = {
     "percent_compressor": [
         "Percent Compressor",
         EcotouchTag.PERCENT_COMPRESSOR,
-        DEVICE_CLASS_PRESSURE,
-        PRESSURE_BAR,
+        DEVICE_CLASS_POWER_FACTOR,
+        PERCENTAGE,
         "mdi:gauge",
         False,
         None,
@@ -391,7 +388,7 @@ SENSOR_TYPES = {
         "Holiday start",
         EcotouchTag.HOLIDAY_START_TIME,
         DEVICE_CLASS_DATE,
-        PRESSURE_BAR,
+        None,
         "mdi:calendar-arrow-right",
         True,
         None,
@@ -401,7 +398,7 @@ SENSOR_TYPES = {
         "Holiday end",
         EcotouchTag.HOLIDAY_END_TIME,
         DEVICE_CLASS_DATE,
-        PRESSURE_BAR,
+        None,
         "mdi:calendar-arrow-left",
         True,
         None,
@@ -410,8 +407,8 @@ SENSOR_TYPES = {
     "state_service": [
         "State Service",
         EcotouchTag.STATE_SERVICE,
-        DEVICE_CLASS_DATE,
-        PRESSURE_BAR,
+        None,
+        None,
         None,
         True,
         None,
@@ -537,7 +534,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
 }
 """
 
@@ -564,19 +560,27 @@ SENSOR_TYPES = {
 
 
 # async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_entities) -> None:
-async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_devices) -> None:
+async def async_setup_entry(
+    hass: HomeAssistantType, entry: ConfigType, async_add_devices
+) -> None:
     """Set up the Waterkotte sensor platform."""
 
     _LOGGER.debug("Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, sensor_type)
-                       for sensor_type in SENSOR_TYPES])
+    async_add_devices(
+        [
+            WaterkotteHeatpumpSensor(entry, coordinator, sensor_type)
+            for sensor_type in SENSOR_TYPES
+        ]
+    )
 
 
 class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     """waterkotte_heatpump Sensor class."""
 
-    def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
+    def __init__(
+        self, entry, hass_data, sensor_type
+    ):  # pylint: disable=unused-argument
         """Initialize the sensor."""
         # super().__init__(self, hass_data)
         self._coordinator = hass_data
@@ -589,7 +593,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
 
-    @ property
+    @property
     def name(self):
         """Return the name of the sensor."""
         return self._name
@@ -599,7 +603,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         """Return a unique ID to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 
-    @ property
+    @property
     def state(self):
         """Return the state of the sensor."""
         # result = ""
@@ -608,7 +612,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
             sensor = SENSOR_TYPES[self._type]
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
-                value = 'unknown'
+                value = "unknown"
         except KeyError:
             value = "unknown"
         except TypeError:
@@ -619,33 +623,33 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
             value = "off"
         return value
 
-    @ property
+    @property
     def icon(self):
         """Return the icon of the sensor."""
         return SENSOR_TYPES[self._type][4]
         # return ICON
 
-    @ property
+    @property
     def device_class(self):
         """Return the device class of the sensor."""
         return SENSOR_TYPES[self._type][2]
 
-    @ property
+    @property
     def entity_registry_enabled_default(self):
         """Return the entity_registry_enabled_default of the sensor."""
         return SENSOR_TYPES[self._type][5]
 
-    @ property
+    @property
     def entity_category(self):
         """Return the unit of measurement."""
         return SENSOR_TYPES[self._type][7]
 
-    @ property
+    @property
     def unique_id(self):
         """Return the unique of the sensor."""
         return self._unique_id
 
-    @ property
+    @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
         return SENSOR_TYPES[self._type][3]
@@ -654,7 +658,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         """Schedule a custom update via the common entity update service."""
         await self._coordinator.async_request_refresh()
 
-    @ property
+    @property
     def should_poll(self) -> bool:
         """Entities do not individually poll."""
         return False

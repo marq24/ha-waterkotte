@@ -52,6 +52,17 @@ Not all available sensors are enabled by default.
 
 To set the the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
 
+## Troubleshooting
+
+
+### Sessions
+
+The Heatpump only allows 2 sessions and there is not way to close a session. Sometimes you will get an error about the login. Just wait a few minutes and it should auto correct itself. Session usually time out within about 5 min.
+
+### Stale Data
+
+The Heatpump will not always respond with data. This happens usually after the system changes status, e.g. start/stop the heating. There is not much we can do about this unfortunately. I try to cache the data in possible for a better UX.
+
 ## Credits
 
 This project was generated from [@oncleben31](https://github.com/oncleben31)'s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.
