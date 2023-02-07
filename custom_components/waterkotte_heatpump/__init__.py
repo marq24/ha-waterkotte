@@ -22,12 +22,19 @@ from homeassistant.helpers import device_registry as dr
 from pywaterkotte.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
-from .const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME, CONF_POLLING_INTERVAL
+from .const import (
+    CONF_HOST,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    CONF_POLLING_INTERVAL,
+    CONF_SYSTEMTYPE,
+)
 from .const import DOMAIN, NAME, TITLE
 from .const import PLATFORMS
 from .const import STARTUP_MESSAGE
 
 from . import service as waterkotteservice
+
 # from .const import SENSORS
 
 SCAN_INTERVAL = timedelta(seconds=60)
@@ -37,7 +44,9 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 tags = []
 
 
-async def async_setup(hass: HomeAssistant, config: Config):  # pylint: disable=unused-argument
+async def async_setup(
+    hass: HomeAssistant, config: Config
+):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -51,7 +60,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.info(STARTUP_MESSAGE)
 
     # Setup Device
-    fw = entry.options.get(CONF_IP, entry.data.get(CONF_IP))  # pylint: disable=invalid-name
+    fw = entry.options.get(
+        CONF_IP, entry.data.get(CONF_IP)
+    )  # pylint: disable=invalid-name
     bios = entry.options.get(CONF_BIOS, entry.data.get(CONF_BIOS))
 
     device_registry = dr.async_get(hass)
@@ -59,8 +70,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     device_registry.async_get_or_create(  # pylint: disable=invalid-name
         config_entry_id=entry.entry_id,
         identifiers={
-            ('DOMAIN', DOMAIN),
-            ('IP', entry.options.get(CONF_IP, entry.data.get(CONF_IP)))
+            ("DOMAIN", DOMAIN),
+            ("IP", entry.options.get(CONF_IP, entry.data.get(CONF_IP))),
         },
         manufacturer=NAME,
         suggested_area="Basement",
@@ -87,7 +98,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     host = entry.options.get(CONF_HOST, entry.data.get(CONF_HOST))
     SCAN_INTERVAL = entry.options.get(CONF_POLLING_INTERVAL, timedelta(seconds=60))
     session = async_get_clientsession(hass)
-    client = WaterkotteHeatpumpApiClient(host, username, password, session, tags)
+    system_type = entry.options.get(CONF_SYSTEMTYPE, entry.data.get(CONF_SYSTEMTYPE))
+    client = WaterkotteHeatpumpApiClient(
+        host, username, password, session, tags, systemType=system_type
+    )
     if COORDINATOR is not None:
         coordinator = WaterkotteHeatpumpDataUpdateCoordinator(
             hass,
@@ -116,7 +130,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
 
-    hass.services.async_register(DOMAIN, 'set_holiday', service.set_holiday)
+    hass.services.async_register(DOMAIN, "set_holiday", service.set_holiday)
     return True
 
 
@@ -124,10 +138,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(
-        self,
-        hass: HomeAssistant,
-        client: WaterkotteHeatpumpApiClient,
-        data=None
+        self, hass: HomeAssistant, client: WaterkotteHeatpumpApiClient, data=None
     ) -> None:
         """Initialize."""
         self.api = client
@@ -148,19 +159,32 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                 tags = []
                 for entity in self.__hass.data["entity_registry"].entities:
                     if (  # pylint: disable=line-too-long
-                            self.__hass.data["entity_registry"].entities[entity].platform == DOMAIN
-                            and self.__hass.data["entity_registry"].entities[entity].disabled is False):
+                        self.__hass.data["entity_registry"].entities[entity].platform
+                        == DOMAIN
+                        and self.__hass.data["entity_registry"]
+                        .entities[entity]
+                        .disabled
+                        is False
+                    ):
                         # x += 1
                         # print(entity)
-                        tag = self.__hass.data["entity_registry"].entities[entity].unique_id
+                        tag = (
+                            self.__hass.data["entity_registry"]
+                            .entities[entity]
+                            .unique_id
+                        )
                         print(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
                         # match = re.search(r"^.*\.(.*)", entity)
                         if tag is not None and tag.upper() in EcotouchTag.__members__:
                             # print(match.groups()[0].upper())
-                            if EcotouchTag[tag.upper()]:  # pylint: disable=unsubscriptable-object
+                            if EcotouchTag[  # pylint: disable=unsubscriptable-object
+                                tag.upper()
+                            ]:
                                 # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
-                                tags.append(EcotouchTag[tag.upper()])  # pylint: disable=unsubscriptable-object
+                                tags.append(
+                                    EcotouchTag[tag.upper()]
+                                )  # pylint: disable=unsubscriptable-object
                         # match = re.search(r"^.*\.(.*)", entity)
                         # if match:
                         #     print(match.groups()[0].upper())
@@ -174,7 +198,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                 self.data = {}
             for key in tagdatas:
                 # print(f"{key}:{tagdatas[key]}")
-                if tagdatas[key]['status'] == "E_OK":
+                if tagdatas[key]["status"] == "E_OK":
                     # self.data.update(tagdatas[key])
                     # self.data.update({key:tagdatas[key]})
                     self.data[key] = tagdatas[key]
@@ -184,10 +208,10 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
             raise UpdateFailed() from exception
 
     async def async_write_tag(self, tag: EcotouchTag, value):
-        """ Update single data """
+        """Update single data"""
         res = await self.api.async_write_value(tag, value)
         # print(res)
-        self.data[tag]['value'] = res[tag.tags[0]]['value']
+        self.data[tag]["value"] = res[tag.tags[0]]["value"]
         # self.data[result[0]]
 
 

@@ -46,6 +46,7 @@ CONF_FW = "fw"
 CONF_SERIAL = "serial"
 CONF_SERIES = "series"
 CONF_ID = "id"
+CONF_SYSTEMTYPE = "system_type"
 # Defaults
 DEFAULT_NAME = DOMAIN
 

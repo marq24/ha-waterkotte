@@ -1,4 +1,5 @@
 """Adds config flow for Waterkotte Heatpump."""
+from os import system
 from socket import gethostbyname
 import voluptuous as vol
 
@@ -7,14 +8,27 @@ from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from pywaterkotte.ecotouch import EcotouchTag
+from pywaterkotte.detect import waterkotte_detect, EASYCON, ECOTOUCH
 
 
 # from custom_components.pywaterkotte import pywaterkotte
 # from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 
-from .const import CONF_HOST, CONF_IP, CONF_PASSWORD, CONF_USERNAME
-from .const import CONF_POLLING_INTERVAL, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_ID, CONF_SERIES
+
+from .const import (
+    CONF_POLLING_INTERVAL,
+    CONF_BIOS,
+    CONF_FW,
+    CONF_SERIAL,
+    CONF_ID,
+    CONF_SERIES,
+    CONF_SYSTEMTYPE,
+    CONF_HOST,
+    CONF_IP,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+)
 from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR, TITLE
 
 
@@ -33,6 +47,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._ID = ""  # pylint: disable=invalid-name
         self._series = ""
         self._serial = ""
+        self._system_type = ""
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -55,9 +70,8 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_SERIES] = self._series
                 user_input[CONF_SERIAL] = self._serial
                 user_input[CONF_ID] = self._ID
-                return self.async_create_entry(
-                    title=TITLE, data=user_input
-                )
+                user_input[CONF_SYSTEMTYPE] = self._system_type
+                return self.async_create_entry(title=TITLE, data=user_input)
             else:
                 self._errors["base"] = "auth"
 
@@ -96,7 +110,18 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # # await client.async_get_data()
             self._ip = gethostbyname(host)
             session = async_create_clientsession(self.hass)
-            client = WaterkotteHeatpumpApiClient(host, username, password, session, None)
+            # detect system
+            system_type = await waterkotte_detect(host, username, password)
+            if system_type == ECOTOUCH:
+                print("Detected EcoTouch System")
+            elif system_type == EASYCON:
+                print("Detected EasyCon System")
+            else:
+                print("Could not detect System Type!")
+
+            client = WaterkotteHeatpumpApiClient(
+                host, username, password, session, None, systemType=system_type
+            )
             await client.login()
             # await client.async_read_value(EcotouchTag.DATE_DAY)
             inittag = [
@@ -105,13 +130,15 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 # EcotouchTag.VERSION_CONTROLLER_BUILD,
                 EcotouchTag.INFO_ID,
                 EcotouchTag.INFO_SERIAL,
-                EcotouchTag.INFO_SERIES]
+                EcotouchTag.INFO_SERIES,
+            ]
             ret = await client.async_read_values(inittag)
-            self._bios = ret[EcotouchTag.VERSION_BIOS]['value']
-            self._firmware = ret[EcotouchTag.VERSION_CONTROLLER]['value']
-            self._ID = str(ret[EcotouchTag.INFO_ID]['value'])
-            self._series = str(ret[EcotouchTag.INFO_SERIES]['value'])
-            self._serial = str(ret[EcotouchTag.INFO_SERIAL]['value'])
+            self._bios = ret[EcotouchTag.VERSION_BIOS]["value"]
+            self._firmware = ret[EcotouchTag.VERSION_CONTROLLER]["value"]
+            self._ID = str(ret[EcotouchTag.INFO_ID]["value"])
+            self._series = str(ret[EcotouchTag.INFO_SERIES]["value"])
+            self._serial = str(ret[EcotouchTag.INFO_SERIAL]["value"])
+            self._system_type = system_type
             # print(ret)
             return True
 
@@ -143,13 +170,23 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
 
         data_schema = vol.Schema(
             {
-                vol.Required(BINARY_SENSOR, default=self.options.get(BINARY_SENSOR, True)): bool,
+                vol.Required(
+                    BINARY_SENSOR, default=self.options.get(BINARY_SENSOR, True)
+                ): bool,
                 vol.Required(SENSOR, default=self.options.get(SENSOR, True)): bool,
                 vol.Required(SELECT, default=self.options.get(SELECT, True)): bool,
-                vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 30)): int,  # pylint: disable=line-too-long
-                vol.Required(CONF_USERNAME, default=self.options.get(CONF_USERNAME)): str,
-                vol.Required(CONF_PASSWORD, default=self.options.get(CONF_USERNAME)): str,
-            })
+                vol.Required(
+                    CONF_POLLING_INTERVAL,
+                    default=self.options.get(CONF_POLLING_INTERVAL, 30),
+                ): int,  # pylint: disable=line-too-long
+                vol.Required(
+                    CONF_USERNAME, default=self.options.get(CONF_USERNAME)
+                ): str,
+                vol.Required(
+                    CONF_PASSWORD, default=self.options.get(CONF_USERNAME)
+                ): str,
+            }
+        )
 
         return self.async_show_form(
             step_id="user",
@@ -158,6 +195,4 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
 
     async def _update_options(self):
         """Update config entry options."""
-        return self.async_create_entry(
-            title=TITLE, data=self.options
-        )
+        return self.async_create_entry(title=TITLE, data=self.options)

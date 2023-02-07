@@ -3,11 +3,13 @@ from typing import Sequence
 import asyncio
 import logging
 import socket
+
 # import re
 import aiohttp
 import async_timeout
 from pywaterkotte.ecotouch import Ecotouch, EcotouchTag
-
+from pywaterkotte.easycon import Easycon
+from pywaterkotte.detect import EASYCON, ECOTOUCH
 
 TIMEOUT = 10
 
@@ -18,7 +20,7 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 
 class WaterkotteHeatpumpApiClient:
-    """ Waterkotte Heatpump API Client Class """
+    """Waterkotte Heatpump API Client Class"""
 
     def __init__(
         self,
@@ -27,6 +29,7 @@ class WaterkotteHeatpumpApiClient:
         password: str,
         session: aiohttp.ClientSession,
         tags: str,
+        systemType: str,
     ) -> None:
         """Sample API Client."""
         self._username = username
@@ -34,9 +37,16 @@ class WaterkotteHeatpumpApiClient:
         self._session = session
         self._host = host
         # self._hass = hass
-        self._client = Ecotouch(host)
+        self._systemType = systemType
+        if systemType == ECOTOUCH:
+            self._client = Ecotouch(host)
+        elif systemType == EASYCON:
+            self._client = Easycon(host)
+        else:
+            print("Error unknown System type!")
         # self._entities = []
         self.tags = tags
+
         # # session = async_create_clientsession(self.hass)
         # client = Ecotouch(host)
         # await client.login(username, password)
@@ -47,7 +57,7 @@ class WaterkotteHeatpumpApiClient:
 
     @property
     def tags(self):
-        """ getter for Tags """
+        """getter for Tags"""
         return self.__tags
 
     @tags.setter
@@ -69,36 +79,6 @@ class WaterkotteHeatpumpApiClient:
     async def async_get_data(self) -> dict:
         """Get data from the API."""
 
-        # tags = [
-        #     EcotouchTag.ENABLE_COOLING,
-        #     EcotouchTag.ENABLE_HEATING,
-        #     EcotouchTag.ENABLE_PV,
-        #     EcotouchTag.ENABLE_WARMWATER,
-        #     EcotouchTag.STATE_WATER,
-        #     EcotouchTag.STATE_COOLING,
-        #     EcotouchTag.STATE_SOURCEPUMP,
-        #     EcotouchTag.STATUS_HEATING,
-        #     EcotouchTag.STATUS_WATER,
-        #     EcotouchTag.STATUS_COOLING,
-        #     EcotouchTag.TEMPERATURE_OUTSIDE,
-        #     EcotouchTag.TEMPERATURE_OUTSIDE_1H,
-        #     EcotouchTag.TEMPERATURE_OUTSIDE_24H,
-        #     EcotouchTag.TEMPERATURE_SOURCE_IN,
-        #     EcotouchTag.TEMPERATURE_SOURCE_OUT,
-        #     EcotouchTag.TEMPERATURE_EVAPORATION,
-        #     EcotouchTag.TEMPERATURE_SUCTION,
-        #     EcotouchTag.TEMPERATURE_RETURN_SET,
-        #     EcotouchTag.TEMPERATURE_RETURN,
-        #     EcotouchTag.TEMPERATURE_FLOW,
-        #     EcotouchTag.TEMPERATURE_CONDENSATION,
-        #     EcotouchTag.TEMPERATURE_STORAGE,
-        #     EcotouchTag.TEMPERATURE_ROOM,
-        #     EcotouchTag.TEMPERATURE_ROOM_1H,
-        #     EcotouchTag.TEMPERATURE_WATER,
-        #     EcotouchTag.TEMPERATURE_POOL,
-        #     EcotouchTag.TEMPERATURE_SOLAR,
-        #     EcotouchTag.TEMPERATURE_SOLAR_FLOW,
-        # ]
         ret = await self._client.read_values(self.tags)
         return ret
 
@@ -113,7 +93,7 @@ class WaterkotteHeatpumpApiClient:
         return ret
 
     async def async_write_value(self, tag: EcotouchTag, value):
-        """ Write data to API """
+        """Write data to API"""
         res = await self._client.write_value(tag, value)
         return res
         # if res is not None:
@@ -126,7 +106,11 @@ class WaterkotteHeatpumpApiClient:
 
     async def api_wrapper(
         # self, method: str, url: str, data: dict = {}, headers: dict = {}
-        self, method: str, url: str, data=None, headers=None
+        self,
+        method: str,
+        url: str,
+        data=None,
+        headers=None,
     ) -> dict:
         """Get information from the API."""
         if data is None:
@@ -134,7 +118,9 @@ class WaterkotteHeatpumpApiClient:
         if headers is None:
             headers = {}
         try:
-            async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):  # pylint: disable=unexpected-keyword-arg
+            async with async_timeout.timeout(  # pylint: disable=unexpected-keyword-arg
+                TIMEOUT, loop=asyncio.get_event_loop()
+            ):
                 # async with async_timeout.timeout(TIMEOUT):
                 if method == "get":
                     response = await self._session.get(url, headers=headers)
