@@ -8,7 +8,7 @@
   "codeowners": [
     "@pattisonmichael"
   ],
-  "requirements": ["pywaterkotte2==0.0.5b"],
-  "version": "0.0.7b",
+  "requirements": ["pywaterkotte2==0.0.5b0"],
+  "version": "0.0.7",
   "iot_class": "local_polling"
 }
