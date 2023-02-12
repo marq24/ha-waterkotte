@@ -1015,10 +1015,10 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # D153: Mo | D154: Di | ... D159: So
     TEMPERATURE_WATER_SETPOINT_FOR_SOLAR = TagData(["A169"], "°C", writeable=True)
     # Changeover temperature to extern heating when exceeding T hot water
-    # Umschalttemperatur ext. Wärmeerzeuger bei Überschreitung der T Warmwasser
+    # Umschalttemperatur ext. Waermeerzeuger bei Ueberschreitung der T Warmwasser
     TEMPERATURE_WATER_CHANGEOVER_EXT_HOTWATER = TagData(["A1019"], "°C", writeable=True)
     # Changeover temperature to extern heating when exceeding T flow
-    # Umschalttemperatur ext. Wärmeerzeuger bei Überschreitung der T Vorlauf
+    # Umschalttemperatur ext. Waermeerzeuger bei Ueberschreitung der T Vorlauf
     TEMPERATURE_WATER_CHANGEOVER_EXT_FLOW = TagData(["A1249"], "°C", writeable=True)
     TEMPERATURE_WATER_POWLIMIT_MAX = TagData(["A171"], "%", writeable=True)
     TEMPERATURE_WATER_POWLIMIT_MIN = TagData(["A172"], "%", writeable=True)

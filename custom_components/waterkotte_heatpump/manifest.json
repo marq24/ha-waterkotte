@@ -1,8 +1,8 @@
 {
   "domain": "waterkotte_heatpump",
   "name": "Waterkotte Heatpump",
-  "documentation": "https://github.com/marq24/waterkotte-heatpump",
-  "issue_tracker": "https://github.com/marq24/waterkotte-heatpump/issues",
+  "documentation": "https://github.com/marq24/waterkotte-integration",
+  "issue_tracker": "https://github.com/marq24/waterkotte-integration/issues",
   "dependencies": [],
   "config_flow": true,
   "codeowners": [
@@ -10,6 +10,6 @@
     "@marq24"
   ],
   "requirements": [],
-  "version": "0.0.3",
+  "version": "0.0.1",
   "iot_class": "local_polling"
 }

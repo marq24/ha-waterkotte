@@ -30,7 +30,6 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
 SENSOR_TYPES = {
-
     # status sensors
     "status_heating": [
         "Status Heating",
@@ -62,7 +61,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
     # temperature sensors
     "temperature_outside": [
         "Temperature Outside",
@@ -385,8 +383,8 @@ SENSOR_TYPES = {
         None,
     ],
     "temperature_solar_flow": [
-        "Temperature Solar Flow",
-        EcotouchTag.TEMPERATURE_SOLAR_FLOW,
+        "Temperature Solar Collector Exit",
+        EcotouchTag.TEMPERATURE_SOLAR_EXIT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -394,8 +392,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
-
     # other (none temperature) values...
     "pressure_evaporation": [
         "Pressure Evaporation",
@@ -417,7 +413,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
     # other data...
     "position_expansion_valve": [
         "Position Expansion Valve",
@@ -439,7 +434,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
     "power_electrical": [
         "Power Electrical",
         EcotouchTag.POWER_ELECTRIC,
@@ -520,7 +514,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
     # writeable sensors from here...
     "holiday_start_time": [
         "Holiday start",
@@ -552,7 +545,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    # Kühlung...
+    # Kuehlung...
     # A109
     "temperature_cooling_setpoint": [
         "Temperature Cooling Demand",
@@ -656,7 +649,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
     # A38 - Warmwasser
     "temperature_water_setpoint": [
         "Temperature Hot Water setpoint",
@@ -668,7 +660,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
     # Mischerkreis 1 Heizkennlinie
     # A276
     "temperature_mix1_hc_heatinglimit": [
@@ -725,7 +716,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
     # Mischerkreis 2 Heizkennlinie
     "temperature_mix2_hc_heatinglimit": [
         "Temperature mixing circle 2 heating limit",
@@ -777,7 +767,6 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-
 }
 """
 
