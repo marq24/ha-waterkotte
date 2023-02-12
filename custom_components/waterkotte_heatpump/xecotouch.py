@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 import aiohttp
 import logging
 
-MAX_NO_TAGS = 10
+MAX_NO_TAGS = 75
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -1341,19 +1341,6 @@ class Ecotouch:
             )
             tags = tags[MAX_NO_TAGS:]
 
-        # waterkotte GUI only requests 75 tags in a single call...
-        # so we have to make sure, that we will fulfill this requirement!
-        # args = {}
-        # if(len(tags) <= 75):
-        #    args["n"] = len(tags)
-        #    for i in range(len(tags)):
-        #        args[f"t{(i + 1)}"] = tags[i]
-        # else:
-        #    # ok at least give a warning to the log, that we need a second
-        #    # request here...
-        #    args["n"] = 75
-        #    for i in range(75):
-        #        args[f"t{(i + 1)}"] = tags[i]
         args = {}
         args["n"] = len(tags)
         for i in range(len(tags)):
@@ -1369,7 +1356,7 @@ class Ecotouch:
             async with session.get(
                     f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
-                _LOGGER.error(resp.request_info.url)
+                # _LOGGER.info(resp.request_info.url)
                 r = await resp.text()  # pylint: disable=invalid-name
                 # print(r)
                 if r == "#E_NEED_LOGIN\n":
