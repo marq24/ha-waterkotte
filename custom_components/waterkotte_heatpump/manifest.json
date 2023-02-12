@@ -10,6 +10,6 @@
     "@marq24"
   ],
   "requirements": [],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "iot_class": "local_polling"
 }

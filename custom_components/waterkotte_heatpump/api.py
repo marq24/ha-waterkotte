@@ -39,7 +39,7 @@ class WaterkotteHeatpumpApiClient:
         # self._hass = hass
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = EcotouchAlt(host)
+            self._client = Ecotouch(host)
         elif systemType == EASYCON:
             self._client = Easycon(host)
         else:
