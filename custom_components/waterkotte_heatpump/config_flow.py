@@ -1,21 +1,14 @@
 """Adds config flow for Waterkotte Heatpump."""
-from os import system
+# from os import system
 from socket import gethostbyname
 import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.selector import selector
 
-from pywaterkotte.ecotouch import EcotouchTag
-from pywaterkotte.detect import waterkotte_detect, EASYCON, ECOTOUCH
-
-
-# from custom_components.pywaterkotte import pywaterkotte
-# from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
-from .api import WaterkotteHeatpumpApiClient
-
-
+# import api
 from .const import (
     CONF_POLLING_INTERVAL,
     CONF_BIOS,
@@ -30,6 +23,15 @@ from .const import (
     CONF_USERNAME,
 )
 from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR, TITLE
+
+from .api import WaterkotteHeatpumpApiClient
+from pywaterkotte.ecotouch import EcotouchTag
+from pywaterkotte.detect import waterkotte_detect, EASYCON, ECOTOUCH
+
+# import homeassistant.helpers.config_validation as cv
+
+# from custom_components.pywaterkotte import pywaterkotte
+# from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
 
 
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -62,6 +64,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
                 user_input[CONF_HOST],
+                user_input[CONF_SYSTEMTYPE],
             )
             if valid:
                 user_input[CONF_IP] = self._ip
@@ -93,12 +96,23 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(CONF_HOST, default=""): str,
                     vol.Required(CONF_USERNAME, default="waterkotte"): str,
                     vol.Required(CONF_PASSWORD, default="waterkotte"): str,
+                    vol.Required(CONF_SYSTEMTYPE, default=ECOTOUCH): selector(
+                        {
+                            "select": {
+                                "options": [
+                                    {"label": "EcoTouch Mode", "value": ECOTOUCH},
+                                    {"label": "EasyCon Mode", "value": EASYCON},
+                                ],
+                                "mode": "dropdown",
+                            }
+                        }
+                    ),
                 }
             ),
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password, host):
+    async def _test_credentials(self, username, password, host, systemType):
         """Return true if credentials is valid."""
         try:
             # # session = async_create_clientsession(self.hass)
@@ -108,19 +122,23 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # # print(ret)
             # return ret["status"] == "E_OK"
             # # await client.async_get_data()
-            self._ip = gethostbyname(host)
+            hasPort = host.find(":")
+            if hasPort == -1:
+                self._ip = gethostbyname(host)
+            else:
+                self._ip = gethostbyname(host[:hasPort])
             session = async_create_clientsession(self.hass)
             # detect system
-            system_type = await waterkotte_detect(host, username, password)
-            if system_type == ECOTOUCH:
-                print("Detected EcoTouch System")
-            elif system_type == EASYCON:
-                print("Detected EasyCon System")
-            else:
-                print("Could not detect System Type!")
+            # system_type = await waterkotte_detect(host, username, password)
+            # if system_type == ECOTOUCH:
+            #     print("Detected EcoTouch System")
+            # elif system_type == EASYCON:
+            #     print("Detected EasyCon System")
+            # else:
+            #     print("Could not detect System Type!")
 
             client = WaterkotteHeatpumpApiClient(
-                host, username, password, session, None, systemType=system_type
+                host, username, password, session, None, systemType=systemType
             )
             await client.login()
             # await client.async_read_value(EcotouchTag.DATE_DAY)
@@ -138,7 +156,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             self._ID = str(ret[EcotouchTag.INFO_ID]["value"])
             self._series = str(ret[EcotouchTag.INFO_SERIES]["value"])
             self._serial = str(ret[EcotouchTag.INFO_SERIAL]["value"])
-            self._system_type = system_type
+            self._system_type = systemType
             # print(ret)
             return True
 
@@ -168,13 +186,13 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
             self.options.update(user_input)
             return await self._update_options()
 
-        data_schema = vol.Schema(
+        dataSchema = vol.Schema(
             {
-                vol.Required(
-                    BINARY_SENSOR, default=self.options.get(BINARY_SENSOR, True)
-                ): bool,
-                vol.Required(SENSOR, default=self.options.get(SENSOR, True)): bool,
-                vol.Required(SELECT, default=self.options.get(SELECT, True)): bool,
+                # vol.Required(
+                #     BINARY_SENSOR, default=self.options.get(BINARY_SENSOR, True)
+                # ): bool,
+                # vol.Required(SENSOR, default=self.options.get(SENSOR, True)): bool,
+                # vol.Required(SELECT, default=self.options.get(SELECT, True)): bool,
                 vol.Required(
                     CONF_POLLING_INTERVAL,
                     default=self.options.get(CONF_POLLING_INTERVAL, 30),
@@ -185,12 +203,25 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required(
                     CONF_PASSWORD, default=self.options.get(CONF_USERNAME)
                 ): str,
+                vol.Required(
+                    CONF_SYSTEMTYPE, default=self.options.get(CONF_SYSTEMTYPE)
+                ): selector(
+                    {
+                        "select": {
+                            "options": [
+                                {"label": "EcoTouch Mode", "value": ECOTOUCH},
+                                {"label": "EasyCon Mode", "value": EASYCON},
+                            ],
+                            "mode": "dropdown",
+                        }
+                    }
+                ),
             }
         )
 
         return self.async_show_form(
             step_id="user",
-            data_schema=data_schema,
+            data_schema=dataSchema,
         )
 
     async def _update_options(self):

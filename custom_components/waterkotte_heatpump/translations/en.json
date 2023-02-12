@@ -8,7 +8,8 @@
           "username": "Username",
           "password": "Password",
           "host": "Host or IP",
-          "polling_interval": "Polling Interval in seconds"
+          "polling_interval": "Polling Interval in seconds",
+          "system_type": "System Type"
         }
       }
     },
@@ -30,7 +31,8 @@
           "username": "Username",
           "password": "Password",
           "host": "Host or IP",
-          "polling_interval": "Polling Interval in seconds"
+          "polling_interval": "Polling Interval in seconds",
+          "system_type": "System Type"
         }
       }
     }
