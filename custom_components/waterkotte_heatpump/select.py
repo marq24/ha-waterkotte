@@ -26,7 +26,7 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 # TEMP_CELSIUS,
 #    TIME_SECONDS,
 # )
-from pywaterkotte.ecotouch import EcotouchTag
+from pywaterkotte3.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN

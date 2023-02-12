@@ -5,15 +5,6 @@ import logging
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-# from .const import DEFAULT_NAME
-
-
-# from .const import ICON
-# from .const import SENSOR
-
-#  from .const import UnitOfTemperature
-
-
 from homeassistant.const import (
     DEVICE_CLASS_DATE,
     DEVICE_CLASS_POWER_FACTOR,
@@ -23,23 +14,30 @@ from homeassistant.const import (
     PRESSURE_BAR,
     TEMP_CELSIUS,
 )
-from pywaterkotte.ecotouch import EcotouchTag
+
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorStateClass,
+)
+
+from pywaterkotte3.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
 SENSOR_TYPES = {
+
+    # status sensors
     "status_heating": [
         "Status Heating",
         EcotouchTag.STATUS_HEATING,
         None,
         None,
-        "mdi:weather-windy",
+        "mdi:sun-thermometer",
         True,
         None,
         None,
@@ -49,7 +47,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATUS_WATER,
         None,
         None,
-        "mdi:weather-rainy",
+        "mdi:thermometer-water",
         True,
         None,
         None,
@@ -59,11 +57,13 @@ SENSOR_TYPES = {
         EcotouchTag.STATUS_COOLING,
         None,
         None,
-        "mdi:weather-rainy",
+        "mdi:coolant-temperature",
         True,
         None,
         None,
     ],
+
+    # temperature sensors
     "temperature_outside": [
         "Temperature Outside",
         EcotouchTag.TEMPERATURE_OUTSIDE,
@@ -94,9 +94,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_source_in": [
-        "Temperature Source In",
-        EcotouchTag.TEMPERATURE_SOURCE_IN,
+    "temperature_source_entry": [
+        "Temperature Source Entry",
+        EcotouchTag.TEMPERATURE_SOURCE_ENTRY,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -104,9 +104,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_source_out": [
-        "Temperature Source Out",
-        EcotouchTag.TEMPERATURE_SOURCE_OUT,
+    "temperature_source_exit": [
+        "Temperature Source Exit",
+        EcotouchTag.TEMPERATURE_SOURCE_EXIT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -124,9 +124,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_suction": [
-        "Temperature Suction",
-        EcotouchTag.TEMPERATURE_SUCTION,
+    "temperature_suctionline": [
+        "Temperature Suction Line",
+        EcotouchTag.TEMPERATURE_SUCTION_LINE,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -134,8 +134,8 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_return_set": [
-        "Temperature Return Set",
+    "temperature_return_setpoint": [
+        "Temperature Return Setpoint",
         EcotouchTag.TEMPERATURE_RETURN_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
@@ -174,9 +174,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_storage": [
-        "Temperature Storage",
-        EcotouchTag.TEMPERATURE_STORAGE,
+    "temperature_buffertank": [
+        "Temperature Buffer Tank",
+        EcotouchTag.TEMPERATURE_BUFFERTANK,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -204,13 +204,153 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_water": [
-        "Temperature Water",
+    "temperature_heating": [
+        "Temperature Heating",
+        EcotouchTag.TEMPERATURE_HEATING,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:home-thermometer",
+        True,
+        None,
+        None,
+    ],
+    "temperature_heating_set": [
+        "Demanded Temperature Heating",
+        EcotouchTag.TEMPERATURE_HEATING_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:home-thermometer",
+        True,
+        None,
+        None,
+    ],
+    "temperature_cooling": [
+        "Temperature Cooling",
+        EcotouchTag.TEMPERATURE_COOLING,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:snowflake-thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_cooling_set": [
+        "Demanded Temperature Cooling",
+        EcotouchTag.TEMPERATURE_COOLING_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:snowflake-thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_hotwater": [
+        "Temperature Hot Water",
         EcotouchTag.TEMPERATURE_WATER,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
-        "mdi:thermometer",
+        "mdi:thermometer-water",
         True,
+        None,
+        None,
+    ],
+    "temperature_hotwater_set": [
+        "Demanded Temperature Hot Water",
+        EcotouchTag.TEMPERATURE_WATER_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        True,
+        None,
+        None,
+    ],
+    "temperature_mix1": [
+        "Temperature mixing circle 1",
+        EcotouchTag.TEMPERATURE_MIX1,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        True,
+        None,
+        None,
+    ],
+    "temperature_mix1_y": [
+        "Temperature mixing circle 1 percent",
+        EcotouchTag.TEMPERATURE_MIX1_PERCENT,
+        None,
+        PERCENTAGE,
+        "mdi:gauge",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix1_set": [
+        "Demanded Temperature mixing circle 1",
+        EcotouchTag.TEMPERATURE_MIX1,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        True,
+        None,
+        None,
+    ],
+    "temperature_mix2": [
+        "Temperature mixing circle 2",
+        EcotouchTag.TEMPERATURE_MIX1,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix2_y": [
+        "Temperature mixing circle 2 percent",
+        EcotouchTag.TEMPERATURE_MIX2_PERCENT,
+        None,
+        PERCENTAGE,
+        "mdi:gauge",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix2_set": [
+        "Demanded Temperature mixing circle 2",
+        EcotouchTag.TEMPERATURE_MIX1,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix3": [
+        "Temperature mixing circle 3",
+        EcotouchTag.TEMPERATURE_MIX1,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix3_y": [
+        "Temperature mixing circle 3 percent",
+        EcotouchTag.TEMPERATURE_MIX3_PERCENT,
+        None,
+        PERCENTAGE,
+        "mdi:gauge",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix3_set": [
+        "Demanded Temperature mixing circle 3",
+        EcotouchTag.TEMPERATURE_MIX1,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        False,
         None,
         None,
     ],
@@ -219,7 +359,17 @@ SENSOR_TYPES = {
         EcotouchTag.TEMPERATURE_POOL,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
-        "mdi:thermometer",
+        "mdi:pool-thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_pool_set": [
+        "Demanded Temperature Pool",
+        EcotouchTag.TEMPERATURE_POOL_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:pool-thermometer",
         False,
         None,
         None,
@@ -244,36 +394,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_heating_return": [
-        "Temperature Heating Return",
-        EcotouchTag.TEMPERATURE_HEATING_RETURN,
-        DEVICE_CLASS_TEMPERATURE,
-        TEMP_CELSIUS,
-        "mdi:thermometer",
-        False,
-        None,
-        None,
-    ],
-    "temperature_cooling_return": [
-        "Temperature Cooling Return",
-        EcotouchTag.TEMPERATURE_COOLING_RETURN,
-        DEVICE_CLASS_TEMPERATURE,
-        TEMP_CELSIUS,
-        "mdi:thermometer",
-        False,
-        None,
-        None,
-    ],
-    "temperature2_outside_1h": [  # TEMPERATURE2_OUTSIDE_1H = TagData(["A90"], "°C")
-        "Temperature2 Outside 1h",
-        EcotouchTag.TEMPERATURE2_OUTSIDE_1H,
-        DEVICE_CLASS_TEMPERATURE,
-        TEMP_CELSIUS,
-        "mdi:thermometer",
-        False,
-        None,
-        None,
-    ],
+
+
+    # other (none temperature) values...
     "pressure_evaporation": [
         "Pressure Evaporation",
         EcotouchTag.PRESSURE_EVAPORATION,
@@ -294,6 +417,8 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+
+    # other data...
     "position_expansion_valve": [
         "Position Expansion Valve",
         EcotouchTag.POSITION_EXPANSION_VALVE,
@@ -304,33 +429,44 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "power_compressor": [
-        "Power Compressor",
-        EcotouchTag.POWER_COMPRESSOR,
-        DEVICE_CLASS_POWER_FACTOR,
-        PERCENTAGE,
+    "suction_gas_overheating": [
+        "Suction Gas Overheating",
+        EcotouchTag.SUCTION_GAS_OVERHEATING,
+        None,
+        None,
         "mdi:gauge",
         False,
         None,
         None,
     ],
-    "power_heating": [
-        "Power Heating",
+
+    "power_electrical": [
+        "Power Electrical",
+        EcotouchTag.POWER_ELECTRIC,
+        SensorDeviceClass.POWER,
+        SensorStateClass.MEASUREMENT,
+        "mdi:lightning-bolt",
+        True,
+        None,
+        None,
+    ],
+    "power_thermal": [
+        "Power Thermal",
         EcotouchTag.POWER_HEATING,
-        DEVICE_CLASS_POWER_FACTOR,
-        PERCENTAGE,
-        "mdi:gauge",
-        False,
+        SensorDeviceClass.POWER,
+        SensorStateClass.MEASUREMENT,
+        "mdi:lightning-bolt",
+        True,
         None,
         None,
     ],
     "power_cooling": [
         "Power Cooling",
         EcotouchTag.POWER_COOLING,
-        DEVICE_CLASS_POWER_FACTOR,
-        PERCENTAGE,
-        "mdi:gauge",
-        False,
+        SensorDeviceClass.POWER,
+        SensorStateClass.MEASUREMENT,
+        "mdi:lightning-bolt",
+        True,
         None,
         None,
     ],
@@ -338,9 +474,9 @@ SENSOR_TYPES = {
         "COP Heating",
         EcotouchTag.COP_HEATING,
         None,
-        None,
+        SensorStateClass.MEASUREMENT,
         "mdi:gauge",
-        False,
+        True,
         None,
         None,
     ],
@@ -348,9 +484,9 @@ SENSOR_TYPES = {
         "COP Cooling",
         EcotouchTag.COP_COOLING,
         None,
-        None,
+        SensorStateClass.MEASUREMENT,
         "mdi:gauge",
-        False,
+        True,
         None,
         None,
     ],
@@ -384,6 +520,8 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+
+    # writeable sensors from here...
     "holiday_start_time": [
         "Holiday start",
         EcotouchTag.HOLIDAY_START_TIME,
@@ -414,29 +552,11 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_heating_set": [
-        "Temperature Heating Demand",
-        EcotouchTag.TEMPERATURE_HEATING_SET,
-        DEVICE_CLASS_TEMPERATURE,
-        TEMP_CELSIUS,
-        "mdi:thermometer",
-        False,
-        None,
-        None,
-    ],
-    "temperature_heating_set2": [
-        "Temperature Heating Temperatur(set2)",
-        EcotouchTag.TEMPERATURE_HEATING_SET2,
-        DEVICE_CLASS_TEMPERATURE,
-        TEMP_CELSIUS,
-        "mdi:thermometer",
-        False,
-        None,
-        None,
-    ],
-    "temperature_cooling_set": [
+    # Kühlung...
+    # A109
+    "temperature_cooling_setpoint": [
         "Temperature Cooling Demand",
-        EcotouchTag.TEMPERATURE_COOLING_SET,
+        EcotouchTag.TEMPERATURE_COOLING_SETPOINT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -444,9 +564,10 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_cooling_set2": [
-        "Temperature Cooling Temperatur(set2)",
-        EcotouchTag.TEMPERATURE_COOLING_SET2,
+    # A108
+    "temperature_cooling_outdoor_limit": [
+        "Temperature Cooling Outdoor Limit",
+        EcotouchTag.TEMPERATURE_COOLING_OUTDOOR_LIMIT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -454,19 +575,25 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "compressor_power": [
-        "Compressor Power",
-        EcotouchTag.COMPRESSOR_POWER,
-        None,
-        None,
-        "mdi:thermometer",
-        False,
-        None,
-        None,
-    ],
-    "temperature_norm_outdoor": [
-        "Temperature norm outdoor",
-        EcotouchTag.NVI_NORM_AUSSEN,
+
+    # We should not use the HEATING setpoint directly - adjust
+    # the heat curve instead!
+    #"temperature_heating_setpoint": [
+    #    "Temperature Heating Demand",
+    #    EcotouchTag.TEMPERATURE_HEATING_SETPOINT,
+    #    DEVICE_CLASS_TEMPERATURE,
+    #    TEMP_CELSIUS,
+    #    "mdi:thermometer",
+    #    False,
+    #    None,
+    #    None,
+    #],
+
+    # Heizung - Heizkennlinie
+    # A93
+    "temperature_heating_hc_heatinglimit": [
+        "Temperature heating curve heating limit",
+        EcotouchTag.TEMPERATURE_HEATING_HC_LIMIT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -474,9 +601,10 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_norm_heating_circle": [
-        "Temperature norm heating circle",
-        EcotouchTag.NVI_HEIZKREIS_NORM,
+    # A94
+    "temperature_heating_hc_heatinglimit_target": [
+        "Temperature heating curve heating limit target",
+        EcotouchTag.TEMPERATURE_HEATING_HC_TARGET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -484,9 +612,10 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_heating_limit": [
-        "Temperature heating limit",
-        EcotouchTag.NVI_T_HEIZGRENZE,
+    # A91
+    "temperature_heating_hc_norm_outdoor": [
+        "Temperature heating curve norm outdoor",
+        EcotouchTag.TEMPERATURE_HEATING_HC_OUTDOOR_NORM,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -494,9 +623,10 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_heating_limit_target": [
-        "Temperature heating limit target",
-        EcotouchTag.NVI_T_HEIZGRENZE_SOLL,
+    # A92
+    "temperature_heating_hc_norm_heating_circle": [
+        "Temperature heating curve norm heating circle",
+        EcotouchTag.TEMPERATURE_HEATING_HC_NORM,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -504,9 +634,10 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_max_heating": [
-        "Limit for setpoint (Max.)",
-        EcotouchTag.MAX_VL_TEMP,
+    # A95
+    "temperature_heating_hc_setpoint_max": [
+        "Temperature heating curve Limit for setpoint (Max.)",
+        EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MAX,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -514,9 +645,10 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_out_begin": [
-        "Temperature enable Cooling",
-        EcotouchTag.COOL_ENABLE_TEMP,
+    # A104
+    "temperature_heating_hc_setpoint_min": [
+        "Temperature heating curve Limit for setpoint (Min.)",
+        EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MIN,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -524,9 +656,11 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_cooling": [
-        "Temperature Cooling",
-        EcotouchTag.NVI_SOLL_KUEHLEN,
+
+    # A38 - Warmwasser
+    "temperature_water_setpoint": [
+        "Temperature Hot Water setpoint",
+        EcotouchTag.TEMPERATURE_WATER_SETPOINT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -534,6 +668,116 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+
+    # Mischerkreis 1 Heizkennlinie
+    # A276
+    "temperature_mix1_hc_heatinglimit": [
+        "Temperature mixing circle 1 heating limit",
+        EcotouchTag.TEMPERATURE_MIX1_HC_LIMIT,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    # A277
+    "temperature_mix1_hc_heatinglimit_target": [
+        "Temperature mixing circle 1 heating limit target",
+        EcotouchTag.TEMPERATURE_MIX1_HC_TARGET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    # A274
+    "temperature_mix1_hc_norm_outdoor": [
+        "Temperature mixing circle 1 norm outdoor",
+        EcotouchTag.TEMPERATURE_MIX1_HC_OUTDOOR_NORM,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    # A275
+    "temperature_mix1_hc_norm_heating_circle": [
+        "Temperature mixing circle 1 norm heating circle",
+        EcotouchTag.TEMPERATURE_MIX1_HC_HEATING_NORM,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    # A278
+    "temperature_mix1_hc_setpoint_max": [
+        "Temperature mixing circle 1 Limit for setpoint (Max.)",
+        EcotouchTag.TEMPERATURE_MIX1_HC_MAX,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+
+    # Mischerkreis 2 Heizkennlinie
+    "temperature_mix2_hc_heatinglimit": [
+        "Temperature mixing circle 2 heating limit",
+        EcotouchTag.TEMPERATURE_MIX2_HC_LIMIT,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix2_hc_heatinglimit_target": [
+        "Temperature mixing circle 2 heating limit target",
+        EcotouchTag.TEMPERATURE_MIX2_HC_TARGET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix2_hc_norm_outdoor": [
+        "Temperature mixing circle 2 norm outdoor",
+        EcotouchTag.TEMPERATURE_MIX2_HC_OUTDOOR_NORM,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix2_hc_norm_heating_circle": [
+        "Temperature mixing circle 2 norm heating circle",
+        EcotouchTag.TEMPERATURE_MIX2_HC_HEATING_NORM,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "temperature_mix2_hc_setpoint_max": [
+        "Temperature mixing circle 2 Limit for setpoint (Max.)",
+        EcotouchTag.TEMPERATURE_MIX2_HC_MAX,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+
 }
 """
 

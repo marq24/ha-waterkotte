@@ -7,9 +7,9 @@ import socket
 # import re
 import aiohttp
 import async_timeout
-from pywaterkotte.ecotouch import Ecotouch, EcotouchTag
-from pywaterkotte.easycon import Easycon
-from pywaterkotte.detect import EASYCON, ECOTOUCH
+from pywaterkotte3.ecotouch import Ecotouch, EcotouchTag
+from pywaterkotte3.easycon import Easycon
+from pywaterkotte3.detect import EASYCON, ECOTOUCH
 
 TIMEOUT = 10
 
@@ -39,7 +39,7 @@ class WaterkotteHeatpumpApiClient:
         # self._hass = hass
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = Ecotouch(host)
+            self._client = EcotouchAlt(host)
         elif systemType == EASYCON:
             self._client = Easycon(host)
         else:
