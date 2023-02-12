@@ -1359,7 +1359,6 @@ class Ecotouch:
         for i in range(len(tags)):
             args[f"t{(i + 1)}"] = tags[i]
 
-        _LOGGER.error(args)
         # r = requests.get(
         #     "http://%s/cgi/readTags" % self.hostname,
         #     params=args,
@@ -1370,6 +1369,7 @@ class Ecotouch:
             async with session.get(
                     f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
+                _LOGGER.error(resp.request_info.url)
                 r = await resp.text()  # pylint: disable=invalid-name
                 # print(r)
                 if r == "#E_NEED_LOGIN\n":
