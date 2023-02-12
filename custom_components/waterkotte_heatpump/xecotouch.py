@@ -17,18 +17,18 @@ from datetime import datetime, timedelta
 
 # import requests
 
-
 # import random
 import aiohttp
+import logging
 
 MAX_NO_TAGS = 10
 
+_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 class StatusException(Exception):
     """A Status Exception."""
 
     # pass
-
 
 class InvalidResponseException(Exception):
     """A InvalidResponseException."""
@@ -1359,6 +1359,7 @@ class Ecotouch:
         for i in range(len(tags)):
             args[f"t{(i + 1)}"] = tags[i]
 
+        _LOGGER.error(args)
         # r = requests.get(
         #     "http://%s/cgi/readTags" % self.hostname,
         #     params=args,

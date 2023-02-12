@@ -8,10 +8,10 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 from .xecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
+# from .xecotouch import EcotouchTag
 from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
-
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
