@@ -8,7 +8,6 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 from pywaterkotte3.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
-# from pywaterkotte.ecotouch import EcotouchTag
 from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
