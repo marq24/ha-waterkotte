@@ -1,13 +1,13 @@
 {
   "domain": "waterkotte_heatpump",
   "name": "Waterkotte Heatpump",
-  "documentation": "https://github.com/marquardt24/waterkotte-heatpump",
-  "issue_tracker": "https://github.com/marquardt24/waterkotte-heatpump/issues",
+  "documentation": "https://github.com/marq24/waterkotte-heatpump",
+  "issue_tracker": "https://github.com/marq24/waterkotte-heatpump/issues",
   "dependencies": [],
   "config_flow": true,
   "codeowners": [
     "@pattisonmichael",
-    "@marquardt24"
+    "@marq24"
   ],
   "requirements": ["pywaterkotte2==0.0.5"],
   "version": "0.0.1",
