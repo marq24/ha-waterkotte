@@ -294,7 +294,7 @@ SENSOR_TYPES = {
     ],
     "temperature_mix2": [
         "Temperature mixing circle 2",
-        EcotouchTag.TEMPERATURE_MIX1,
+        EcotouchTag.TEMPERATURE_MIX2,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -314,7 +314,7 @@ SENSOR_TYPES = {
     ],
     "temperature_mix2_set": [
         "Demanded Temperature mixing circle 2",
-        EcotouchTag.TEMPERATURE_MIX1,
+        EcotouchTag.TEMPERATURE_MIX2,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -324,7 +324,7 @@ SENSOR_TYPES = {
     ],
     "temperature_mix3": [
         "Temperature mixing circle 3",
-        EcotouchTag.TEMPERATURE_MIX1,
+        EcotouchTag.TEMPERATURE_MIX3,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -344,7 +344,7 @@ SENSOR_TYPES = {
     ],
     "temperature_mix3_set": [
         "Demanded Temperature mixing circle 3",
-        EcotouchTag.TEMPERATURE_MIX1,
+        EcotouchTag.TEMPERATURE_MIX3,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
