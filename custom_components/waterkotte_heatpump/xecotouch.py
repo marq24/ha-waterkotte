@@ -50,7 +50,7 @@ class EcotouchTag:
 
 # default method that reads a value based on a single tag
 def _parse_value_default(
-    self: EcotouchTag, vals, bitnum=None, *other_args
+        self: EcotouchTag, vals, bitnum=None, *other_args
 ):  # pylint: disable=unused-argument,keyword-arg-before-vararg
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
@@ -1072,8 +1072,8 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     PERCENT_COMPRESSOR = TagData(["A58"], "%")
 
     # keep but not found in Waterkotte GUI
-    TEMPERATURE_COLLECTOR = TagData(["A42"], "°C") # aktuelle Temperatur Kollektor
-    TEMPERATURE_FLOW2 = TagData(["A43"], "°C") #aktuelle Temperatur Vorlauf
+    TEMPERATURE_COLLECTOR = TagData(["A42"], "°C")  # aktuelle Temperatur Kollektor
+    TEMPERATURE_FLOW2 = TagData(["A43"], "°C")  # aktuelle Temperatur Vorlauf
 
     VERSION_CONTROLLER = TagData(
         ["I1", "I2"],
@@ -1323,11 +1323,11 @@ class Ecotouch:
     # reads a list of ecotouch tags
     #
     async def _read_tags(
-        # self, tags: Sequence[EcotouchTag], results={}, results_status={}
-        self,
-        tags: Sequence[EcotouchTag],
-        results=None,
-        results_status=None,
+            # self, tags: Sequence[EcotouchTag], results={}, results_status={}
+            self,
+            tags: Sequence[EcotouchTag],
+            results=None,
+            results_status=None,
     ):
         """async read tags"""
         if results is None:
@@ -1343,12 +1343,12 @@ class Ecotouch:
 
         # waterkotte GUI only requests 75 tags in a single call...
         # so we have to make sure, that we will fulfill this requirement!
-        #args = {}
-        #if(len(tags) <= 75):
+        # args = {}
+        # if(len(tags) <= 75):
         #    args["n"] = len(tags)
         #    for i in range(len(tags)):
         #        args[f"t{(i + 1)}"] = tags[i]
-        #else:
+        # else:
         #    # ok at least give a warning to the log, that we need a second
         #    # request here...
         #    args["n"] = 75
@@ -1367,7 +1367,7 @@ class Ecotouch:
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
             async with session.get(
-                f"http://{self.hostname}/cgi/readTags", params=args
+                    f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
                 # print(r)
@@ -1376,7 +1376,8 @@ class Ecotouch:
                     return results, results_status
                 for tag in tags:
                     match = re.search(
-                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",  # pylint: disable=anomalous-backslash-in-string
+                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                        # pylint: disable=anomalous-backslash-in-string
                         r,
                         re.MULTILINE,
                     )
@@ -1416,8 +1417,8 @@ class Ecotouch:
         #     et_values[tag.tags[i]] = vals[i]
         # print(et_values)
         for i, tag in enumerate(tags):
-            args[f"t{i+1}"] = tag
-            args[f"v{i+1}"] = list(value)[i]
+            args[f"t{i + 1}"] = tag
+            args[f"v{i + 1}"] = list(value)[i]
 
         # args = {
         #     "n": 1,
@@ -1432,7 +1433,7 @@ class Ecotouch:
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
             async with session.get(
-                f"http://{self.hostname}/cgi/writeTags", params=args
+                    f"http://{self.hostname}/cgi/writeTags", params=args
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
                 # print(r)
@@ -1445,7 +1446,8 @@ class Ecotouch:
                 ###
                 for tag in tags:
                     match = re.search(
-                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",  # pylint: disable=anomalous-backslash-in-string
+                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                        # pylint: disable=anomalous-backslash-in-string
                         r,
                         re.MULTILINE,
                     )
