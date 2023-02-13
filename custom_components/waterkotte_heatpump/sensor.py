@@ -12,11 +12,11 @@ from homeassistant.const import (
     DEVICE_CLASS_PRESSURE,
     DEVICE_CLASS_TEMPERATURE,
     PRESSURE_BAR,
-    TEMP_CELSIUS,
+    TEMP_CELSIUS, DEVICE_CLASS_POWER,
+    POWER_KILO_WATT,
 )
 
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
     SensorStateClass,
 )
 
@@ -62,7 +62,7 @@ SENSOR_TYPES = {
         None,
     ],
     # temperature sensors
-    "temperature_outside": [
+    "temp_outside": [
         "Temperature Outside",
         Ecotouch2Tag.TEMPERATURE_OUTSIDE,
         DEVICE_CLASS_TEMPERATURE,
@@ -72,7 +72,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_outside_1h": [
+    "temp_outside_1h": [
         "Temperature Outside 1h",
         Ecotouch2Tag.TEMPERATURE_OUTSIDE_1H,
         DEVICE_CLASS_TEMPERATURE,
@@ -82,7 +82,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_outside_24h": [
+    "temp_outside_24h": [
         "Temperature Outside 24h",
         Ecotouch2Tag.TEMPERATURE_OUTSIDE_24H,
         DEVICE_CLASS_TEMPERATURE,
@@ -92,7 +92,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_source_entry": [
+    "temp_source_entry": [
         "Temperature Source Entry",
         Ecotouch2Tag.TEMPERATURE_SOURCE_ENTRY,
         DEVICE_CLASS_TEMPERATURE,
@@ -102,7 +102,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_source_exit": [
+    "temp_source_exit": [
         "Temperature Source Exit",
         Ecotouch2Tag.TEMPERATURE_SOURCE_EXIT,
         DEVICE_CLASS_TEMPERATURE,
@@ -112,7 +112,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_evaporation": [
+    "temp_evaporation": [
         "Temperature Evaporation",
         Ecotouch2Tag.TEMPERATURE_EVAPORATION,
         DEVICE_CLASS_TEMPERATURE,
@@ -122,7 +122,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_suctionline": [
+    "temp_suctionline": [
         "Temperature Suction Line",
         Ecotouch2Tag.TEMPERATURE_SUCTION_LINE,
         DEVICE_CLASS_TEMPERATURE,
@@ -132,7 +132,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_return_setpoint": [
+    "temp_return_setpoint": [
         "Temperature Return Setpoint",
         Ecotouch2Tag.TEMPERATURE_RETURN_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -142,7 +142,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_return": [
+    "temp_return": [
         "Temperature Return",
         Ecotouch2Tag.TEMPERATURE_RETURN,
         DEVICE_CLASS_TEMPERATURE,
@@ -152,7 +152,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_flow": [
+    "temp_flow": [
         "Temperature Flow",
         Ecotouch2Tag.TEMPERATURE_FLOW,
         DEVICE_CLASS_TEMPERATURE,
@@ -162,7 +162,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_condensation": [
+    "temp_condensation": [
         "Temperature Condensation",
         Ecotouch2Tag.TEMPERATURE_CONDENSATION,
         DEVICE_CLASS_TEMPERATURE,
@@ -172,7 +172,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_buffertank": [
+    "temp_buffertank": [
         "Temperature Buffer Tank",
         Ecotouch2Tag.TEMPERATURE_BUFFERTANK,
         DEVICE_CLASS_TEMPERATURE,
@@ -182,7 +182,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_room": [
+    "temp_room": [
         "Temperature Room",
         Ecotouch2Tag.TEMPERATURE_ROOM,
         DEVICE_CLASS_TEMPERATURE,
@@ -192,7 +192,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_room_1h": [
+    "temp_room_1h": [
         "Temperature Room 1h",
         Ecotouch2Tag.TEMPERATURE_ROOM_1H,
         DEVICE_CLASS_TEMPERATURE,
@@ -202,7 +202,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_heating": [
+    "temp_heating": [
         "Temperature Heating",
         Ecotouch2Tag.TEMPERATURE_HEATING,
         DEVICE_CLASS_TEMPERATURE,
@@ -212,7 +212,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_heating_set": [
+    "temp_heating_set": [
         "Demanded Temperature Heating",
         Ecotouch2Tag.TEMPERATURE_HEATING_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -222,7 +222,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_cooling": [
+    "temp_cooling": [
         "Temperature Cooling",
         Ecotouch2Tag.TEMPERATURE_COOLING,
         DEVICE_CLASS_TEMPERATURE,
@@ -232,7 +232,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_cooling_set": [
+    "temp_cooling_set": [
         "Demanded Temperature Cooling",
         Ecotouch2Tag.TEMPERATURE_COOLING_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -242,7 +242,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_hotwater": [
+    "temp_hotwater": [
         "Temperature Hot Water",
         Ecotouch2Tag.TEMPERATURE_WATER,
         DEVICE_CLASS_TEMPERATURE,
@@ -252,7 +252,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_hotwater_set": [
+    "temp_hotwater_set": [
         "Demanded Temperature Hot Water",
         Ecotouch2Tag.TEMPERATURE_WATER_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -262,7 +262,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix1": [
+    "temp_mix1": [
         "Temperature mixing circle 1",
         Ecotouch2Tag.TEMPERATURE_MIX1,
         DEVICE_CLASS_TEMPERATURE,
@@ -272,7 +272,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix1_y": [
+    "temp_mix1_y": [
         "Temperature mixing circle 1 percent",
         Ecotouch2Tag.TEMPERATURE_MIX1_PERCENT,
         None,
@@ -282,7 +282,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix1_set": [
+    "temp_mix1_set": [
         "Demanded Temperature mixing circle 1",
         Ecotouch2Tag.TEMPERATURE_MIX1_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -292,7 +292,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix2": [
+    "temp_mix2": [
         "Temperature mixing circle 2",
         Ecotouch2Tag.TEMPERATURE_MIX2,
         DEVICE_CLASS_TEMPERATURE,
@@ -302,7 +302,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix2_y": [
+    "temp_mix2_y": [
         "Temperature mixing circle 2 percent",
         Ecotouch2Tag.TEMPERATURE_MIX2_PERCENT,
         None,
@@ -312,7 +312,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix2_set": [
+    "temp_mix2_set": [
         "Demanded Temperature mixing circle 2",
         Ecotouch2Tag.TEMPERATURE_MIX2_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -322,7 +322,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix3": [
+    "temp_mix3": [
         "Temperature mixing circle 3",
         Ecotouch2Tag.TEMPERATURE_MIX3,
         DEVICE_CLASS_TEMPERATURE,
@@ -332,7 +332,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix3_y": [
+    "temp_mix3_y": [
         "Temperature mixing circle 3 percent",
         Ecotouch2Tag.TEMPERATURE_MIX3_PERCENT,
         None,
@@ -342,7 +342,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix3_set": [
+    "temp_mix3_set": [
         "Demanded Temperature mixing circle 3",
         Ecotouch2Tag.TEMPERATURE_MIX3_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -352,7 +352,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_pool": [
+    "temp_pool": [
         "Temperature Pool",
         Ecotouch2Tag.TEMPERATURE_POOL,
         DEVICE_CLASS_TEMPERATURE,
@@ -362,7 +362,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_pool_set": [
+    "temp_pool_set": [
         "Demanded Temperature Pool",
         Ecotouch2Tag.TEMPERATURE_POOL_SET,
         DEVICE_CLASS_TEMPERATURE,
@@ -372,7 +372,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_solar": [
+    "temp_solar": [
         "Temperature Solar",
         Ecotouch2Tag.TEMPERATURE_SOLAR,
         DEVICE_CLASS_TEMPERATURE,
@@ -382,7 +382,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_solar_flow": [
+    "temp_solar_flow": [
         "Temperature Solar Collector Exit",
         Ecotouch2Tag.TEMPERATURE_SOLAR_EXIT,
         DEVICE_CLASS_TEMPERATURE,
@@ -437,8 +437,8 @@ SENSOR_TYPES = {
     "power_electrical": [
         "Power Electrical",
         Ecotouch2Tag.POWER_ELECTRIC,
-        SensorDeviceClass.POWER,
-        SensorStateClass.MEASUREMENT,
+        DEVICE_CLASS_POWER,
+        POWER_KILO_WATT,
         "mdi:lightning-bolt",
         True,
         None,
@@ -447,8 +447,8 @@ SENSOR_TYPES = {
     "power_thermal": [
         "Power Thermal",
         Ecotouch2Tag.POWER_HEATING,
-        SensorDeviceClass.POWER,
-        SensorStateClass.MEASUREMENT,
+        DEVICE_CLASS_POWER,
+        POWER_KILO_WATT,
         "mdi:lightning-bolt",
         True,
         None,
@@ -457,8 +457,8 @@ SENSOR_TYPES = {
     "power_cooling": [
         "Power Cooling",
         Ecotouch2Tag.POWER_COOLING,
-        SensorDeviceClass.POWER,
-        SensorStateClass.MEASUREMENT,
+        DEVICE_CLASS_POWER,
+        POWER_KILO_WATT,
         "mdi:lightning-bolt",
         True,
         None,
@@ -547,7 +547,7 @@ SENSOR_TYPES = {
     ],
     # Kuehlung...
     # A109
-    "temperature_cooling_setpoint": [
+    "temp_cooling_setpoint": [
         "Temperature Cooling Demand",
         Ecotouch2Tag.TEMPERATURE_COOLING_SETPOINT,
         DEVICE_CLASS_TEMPERATURE,
@@ -558,7 +558,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A108
-    "temperature_cooling_outdoor_limit": [
+    "temp_cooling_outdoor_limit": [
         "Temperature Cooling Outdoor Limit",
         Ecotouch2Tag.TEMPERATURE_COOLING_OUTDOOR_LIMIT,
         DEVICE_CLASS_TEMPERATURE,
@@ -571,7 +571,7 @@ SENSOR_TYPES = {
 
     # We should not use the HEATING setpoint directly - adjust
     # the heat curve instead!
-    #"temperature_heating_setpoint": [
+    #"temp_heating_setpoint": [
     #    "Temperature Heating Demand",
     #    EcotouchTag.TEMPERATURE_HEATING_SETPOINT,
     #    DEVICE_CLASS_TEMPERATURE,
@@ -584,7 +584,7 @@ SENSOR_TYPES = {
 
     # Heizung - Heizkennlinie
     # A93
-    "temperature_heating_hc_heatinglimit": [
+    "temp_heating_hc_heatinglimit": [
         "Temperature heating curve heating limit",
         Ecotouch2Tag.TEMPERATURE_HEATING_HC_LIMIT,
         DEVICE_CLASS_TEMPERATURE,
@@ -595,7 +595,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A94
-    "temperature_heating_hc_heatinglimit_target": [
+    "temp_heating_hc_heatinglimit_target": [
         "Temperature heating curve heating limit target",
         Ecotouch2Tag.TEMPERATURE_HEATING_HC_TARGET,
         DEVICE_CLASS_TEMPERATURE,
@@ -606,7 +606,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A91
-    "temperature_heating_hc_norm_outdoor": [
+    "temp_heating_hc_norm_outdoor": [
         "Temperature heating curve norm outdoor",
         Ecotouch2Tag.TEMPERATURE_HEATING_HC_OUTDOOR_NORM,
         DEVICE_CLASS_TEMPERATURE,
@@ -617,7 +617,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A92
-    "temperature_heating_hc_norm_heating_circle": [
+    "temp_heating_hc_norm_heating_circle": [
         "Temperature heating curve norm heating circle",
         Ecotouch2Tag.TEMPERATURE_HEATING_HC_NORM,
         DEVICE_CLASS_TEMPERATURE,
@@ -628,7 +628,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A95
-    "temperature_heating_hc_setpoint_max": [
+    "temp_heating_hc_setpoint_max": [
         "Temperature heating curve Limit for setpoint (Max.)",
         Ecotouch2Tag.TEMPERATURE_HEATING_SETPOINTLIMIT_MAX,
         DEVICE_CLASS_TEMPERATURE,
@@ -639,7 +639,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A104
-    "temperature_heating_hc_setpoint_min": [
+    "temp_heating_hc_setpoint_min": [
         "Temperature heating curve Limit for setpoint (Min.)",
         Ecotouch2Tag.TEMPERATURE_HEATING_SETPOINTLIMIT_MIN,
         DEVICE_CLASS_TEMPERATURE,
@@ -650,7 +650,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A38 - Warmwasser
-    "temperature_water_setpoint": [
+    "temp_water_setpoint": [
         "Temperature Hot Water setpoint",
         Ecotouch2Tag.TEMPERATURE_WATER_SETPOINT,
         DEVICE_CLASS_TEMPERATURE,
@@ -662,7 +662,7 @@ SENSOR_TYPES = {
     ],
     # Mischerkreis 1 Heizkennlinie
     # A276
-    "temperature_mix1_hc_heatinglimit": [
+    "temp_mix1_hc_heatinglimit": [
         "Temperature mixing circle 1 heating limit",
         Ecotouch2Tag.TEMPERATURE_MIX1_HC_LIMIT,
         DEVICE_CLASS_TEMPERATURE,
@@ -673,7 +673,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A277
-    "temperature_mix1_hc_heatinglimit_target": [
+    "temp_mix1_hc_heatinglimit_target": [
         "Temperature mixing circle 1 heating limit target",
         Ecotouch2Tag.TEMPERATURE_MIX1_HC_TARGET,
         DEVICE_CLASS_TEMPERATURE,
@@ -684,7 +684,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A274
-    "temperature_mix1_hc_norm_outdoor": [
+    "temp_mix1_hc_norm_outdoor": [
         "Temperature mixing circle 1 norm outdoor",
         Ecotouch2Tag.TEMPERATURE_MIX1_HC_OUTDOOR_NORM,
         DEVICE_CLASS_TEMPERATURE,
@@ -695,7 +695,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A275
-    "temperature_mix1_hc_norm_heating_circle": [
+    "temp_mix1_hc_norm_heating_circle": [
         "Temperature mixing circle 1 norm heating circle",
         Ecotouch2Tag.TEMPERATURE_MIX1_HC_HEATING_NORM,
         DEVICE_CLASS_TEMPERATURE,
@@ -706,7 +706,7 @@ SENSOR_TYPES = {
         None,
     ],
     # A278
-    "temperature_mix1_hc_setpoint_max": [
+    "temp_mix1_hc_setpoint_max": [
         "Temperature mixing circle 1 Limit for setpoint (Max.)",
         Ecotouch2Tag.TEMPERATURE_MIX1_HC_MAX,
         DEVICE_CLASS_TEMPERATURE,
@@ -717,7 +717,7 @@ SENSOR_TYPES = {
         None,
     ],
     # Mischerkreis 2 Heizkennlinie
-    "temperature_mix2_hc_heatinglimit": [
+    "temp_mix2_hc_heatinglimit": [
         "Temperature mixing circle 2 heating limit",
         Ecotouch2Tag.TEMPERATURE_MIX2_HC_LIMIT,
         DEVICE_CLASS_TEMPERATURE,
@@ -727,7 +727,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix2_hc_heatinglimit_target": [
+    "temp_mix2_hc_heatinglimit_target": [
         "Temperature mixing circle 2 heating limit target",
         Ecotouch2Tag.TEMPERATURE_MIX2_HC_TARGET,
         DEVICE_CLASS_TEMPERATURE,
@@ -737,7 +737,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix2_hc_norm_outdoor": [
+    "temp_mix2_hc_norm_outdoor": [
         "Temperature mixing circle 2 norm outdoor",
         Ecotouch2Tag.TEMPERATURE_MIX2_HC_OUTDOOR_NORM,
         DEVICE_CLASS_TEMPERATURE,
@@ -747,7 +747,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix2_hc_norm_heating_circle": [
+    "temp_mix2_hc_norm_heating_circle": [
         "Temperature mixing circle 2 norm heating circle",
         Ecotouch2Tag.TEMPERATURE_MIX2_HC_HEATING_NORM,
         DEVICE_CLASS_TEMPERATURE,
@@ -757,7 +757,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "temperature_mix2_hc_setpoint_max": [
+    "temp_mix2_hc_setpoint_max": [
         "Temperature mixing circle 2 Limit for setpoint (Max.)",
         Ecotouch2Tag.TEMPERATURE_MIX2_HC_MAX,
         DEVICE_CLASS_TEMPERATURE,
@@ -768,29 +768,6 @@ SENSOR_TYPES = {
         None,
     ],
 }
-"""
-
-    TEMPERATURE_WATER_SETPOINT = TagData(["A37"], "°C", writeable=True)
-    TEMPERATURE_WATER_SETPOINT2 = TagData(["A38"], "°C", writeable=True)
-    TEMPERATURE_POOL_SETPOINT = TagData(["A40"], "°C", writeable=True)
-    TEMPERATURE_POOL_SETPOINT2 = TagData(["A41"], "°C", writeable=True)
-    HYSTERESIS_HEATING = TagData(["A61"], "?") # Hysteresis setpoint
-    TEMP_SET_0_DEG = TagData(["A97"], "°C")
-
-    ALARM = TagData(["I52"])
-    INTERRUPTIONS = TagData(["I53"])
-    ADAPT_HEATING = TagData(["I263"], writeable=True)
-    MANUAL_HEATINGPUMP = TagData(["I1270"])
-    MANUAL_SOURCEPUMP = TagData(["I1281"])
-    MANUAL_SOLARPUMP1 = TagData(["I1287"])
-    MANUAL_SOLARPUMP2 = TagData(["I1289"])
-    MANUAL_TANKPUMP = TagData(["I1291"])
-    MANUAL_VALVE = TagData(["I1293"])
-    MANUAL_POOLVALVE = TagData(["I1295"])
-    MANUAL_COOLVALVE = TagData(["I1297"])
-    MANUAL_4WAYVALVE = TagData(["I1299"])
-    MANUAL_MULTIEXT = TagData(["I1319"]) """
-
 
 # async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_entities) -> None:
 async def async_setup_entry(

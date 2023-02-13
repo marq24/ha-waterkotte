@@ -1329,6 +1329,7 @@ class Ecotouch2:
             results=None,
             results_status=None,
     ):
+        _LOGGER.warning(tags)
         """async read tags"""
         if results is None:
             results = {}
