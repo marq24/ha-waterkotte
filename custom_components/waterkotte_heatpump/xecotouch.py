@@ -21,6 +21,9 @@ from datetime import datetime, timedelta
 import aiohttp
 import logging
 
+ECOTOUCH = "ECOTOUCH"
+EASYCON = "EASYCON"
+
 MAX_NO_TAGS = 75
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)

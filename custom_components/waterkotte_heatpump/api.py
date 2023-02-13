@@ -7,9 +7,8 @@ import socket
 # import re
 import aiohttp
 import async_timeout
-from .xecotouch import Ecotouch2, Ecotouch2Tag
+from .xecotouch import Ecotouch2, Ecotouch2Tag, EASYCON, ECOTOUCH
 from .xeasycon import Easycon2
-from .xdetect import EASYCON, ECOTOUCH
 
 TIMEOUT = 10
 
