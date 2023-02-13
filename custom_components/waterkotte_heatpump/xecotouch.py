@@ -1,4 +1,4 @@
-""" pyecotouch main module"""
+""" xecotouch main module"""
 from typing import (
     Any,
     Callable,
@@ -1170,7 +1170,7 @@ class Ecotouch2Tag(TagData, Enum):  # pylint: disable=function-redefined
 # Class to control Waterkotte Ecotouch heatpumps.
 #
 class Ecotouch2:
-    """Ecotouch Class"""
+    """Ecotouch2 Class"""
 
     auth_cookies = None
 

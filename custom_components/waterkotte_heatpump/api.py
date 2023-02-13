@@ -8,7 +8,7 @@ import socket
 import aiohttp
 import async_timeout
 from .xecotouch import Ecotouch2, Ecotouch2Tag
-from .xeasycon import Easycon
+from .xeasycon import Easycon2
 from .xdetect import EASYCON, ECOTOUCH
 
 TIMEOUT = 10
@@ -41,7 +41,7 @@ class WaterkotteHeatpumpApiClient:
         if systemType == ECOTOUCH:
             self._client = Ecotouch2(host)
         elif systemType == EASYCON:
-            self._client = Easycon(host)
+            self._client = Easycon2(host)
         else:
             print("Error unknown System type!")
         # self._entities = []

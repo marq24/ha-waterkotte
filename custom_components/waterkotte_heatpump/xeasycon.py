@@ -1,4 +1,4 @@
-""" Class to interact with Easycon sytem """
+""" Class to interact with Easycon system """
 import xml.etree.ElementTree as ET
 from .xecotouch import (  # pylint: disable=import-error
     Ecotouch2,
@@ -13,8 +13,8 @@ from .xecotouch import (  # pylint: disable=import-error
 )
 
 
-class Easycon(Ecotouch2):
-    """Base Easycon Class, inherits from ecotouch"""
+class Easycon2(Ecotouch2):
+    """Base Easycon2 Class, inherits from xecotouch"""
 
     async def login(
         self, username="waterkotte", password="waterkotte"
