@@ -28,9 +28,10 @@ BINARY_SENSOR = "binary_sensor"
 SENSOR = "sensor"
 SWITCH = "switch"
 SELECT = "select"
+NUMBER = "number"
 # TEXT = "text"
 # PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH, SELECT]
-PLATFORMS = [BINARY_SENSOR, SELECT, SENSOR, SWITCH]
+PLATFORMS = [BINARY_SENSOR, SELECT, SENSOR, SWITCH]  # , NUMBER
 SENSORS = ["heating", "cooling", "water"]
 
 
