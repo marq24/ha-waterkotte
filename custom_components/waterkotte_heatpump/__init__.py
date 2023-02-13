@@ -174,7 +174,6 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                             .unique_id
                         )
                         print(f"Entity: {entity} Tag: {tag.upper()}")
-                        _LOGGER.warning(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
                         # match = re.search(r"^.*\.(.*)", entity)
 
