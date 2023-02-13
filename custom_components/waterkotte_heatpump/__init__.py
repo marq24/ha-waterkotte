@@ -174,6 +174,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                             .unique_id
                         )
                         print(f"Entity: {entity} Tag: {tag.upper()}")
+                        _LOGGER.warning(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
                         # match = re.search(r"^.*\.(.*)", entity)
                         if tag is not None and tag.upper() in Ecotouch2Tag.__members__:
@@ -191,6 +192,8 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                         #     if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
                         #         # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
                         #         tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
+                        else:
+                            _LOGGER.warning(_LOGGER.warning(f"Tag: {tag} not found!"))
                 self.api.tags = tags
 
             tagdatas = await self.api.async_get_data()

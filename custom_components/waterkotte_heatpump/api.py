@@ -13,11 +13,9 @@ from .xdetect import EASYCON, ECOTOUCH
 
 TIMEOUT = 10
 
-
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 HEADERS = {"Content-type": "application/json; charset=UTF-8"}
-
 
 class WaterkotteHeatpumpApiClient:
     """Waterkotte Heatpump API Client Class"""

@@ -4,7 +4,6 @@ import aiohttp
 ECOTOUCH = "ECOTOUCH"
 EASYCON = "EASYCON"
 
-
 async def waterkotte_detect(
     hostname: str, username: str, password: str
 ):  # pylint: disable=invalid-name, unused-argument

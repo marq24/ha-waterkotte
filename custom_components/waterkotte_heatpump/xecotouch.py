@@ -53,49 +53,49 @@ def _parse_value_default(
         self: Ecotouch2Tag, vals, bitnum=None, *other_args
 ):  # pylint: disable=unused-argument,keyword-arg-before-vararg
     assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    assert ecotouch_tag[0] in ["A", "I", "D"]
+    ecotouch2_tag = self.tags[0]
+    assert ecotouch2_tag[0] in ["A", "I", "D"]
 
-    if ecotouch_tag not in vals:
+    if ecotouch2_tag not in vals:
         return None
 
-    val = vals[ecotouch_tag]
+    val = vals[ecotouch2_tag]
 
-    if ecotouch_tag[0] == "A":
+    if ecotouch2_tag[0] == "A":
         return float(val) / 10.0
-    if ecotouch_tag[0] == "I":
+    if ecotouch2_tag[0] == "I":
         if bitnum is None:
             return int(val)
         else:
             return (int(val) & (1 << bitnum)) > 0
 
-    if ecotouch_tag[0] == "D":
+    if ecotouch2_tag[0] == "D":
         if val == "1":
             return True
         elif val == "0":
             return False
         else:
             raise InvalidValueException(
-                # "%s is not a valid value for %s" % (val, ecotouch_tag)
-                f"{val} is not a valid value for {ecotouch_tag}"
+                # "%s is not a valid value for %s" % (val, ecotouch2_tag)
+                f"{val} is not a valid value for {ecotouch2_tag}"
             )
     return None
 
 
 def _write_value_default(self, value, et_values):
     assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    assert ecotouch_tag[0] in ["A", "I", "D"]
+    ecotouch2_tag = self.tags[0]
+    assert ecotouch2_tag[0] in ["A", "I", "D"]
 
-    if ecotouch_tag[0] == "I":
+    if ecotouch2_tag[0] == "I":
         assert isinstance(value, int)
-        et_values[ecotouch_tag] = str(value)
-    elif ecotouch_tag[0] == "D":
+        et_values[ecotouch2_tag] = str(value)
+    elif ecotouch2_tag[0] == "D":
         assert isinstance(value, bool)
-        et_values[ecotouch_tag] = "1" if value else "0"
-    elif ecotouch_tag[0] == "A":
+        et_values[ecotouch2_tag] = "1" if value else "0"
+    elif ecotouch2_tag[0] == "A":
         assert isinstance(value, float)
-        et_values[ecotouch_tag] = str(int(value * 10))
+        et_values[ecotouch2_tag] = str(int(value * 10))
 
 
 def _parse_series(self, e_vals, *other_args):  # pylint: disable=unused-argument
@@ -928,7 +928,7 @@ class TagData(NamedTuple):
 
 
 class Ecotouch2Tag(TagData, Enum):  # pylint: disable=function-redefined
-    """EcotouchTag Class"""
+    """Ecotouch2Tag Class"""
 
     HOLIDAY_ENABLED = TagData(["D420"], writeable=True)
     HOLIDAY_START_TIME = TagData(
@@ -1320,10 +1320,10 @@ class Ecotouch2:
         return result
 
     #
-    # reads a list of ecotouch tags
+    # reads a list of xecotouch tags
     #
     async def _read_tags(
-            # self, tags: Sequence[EcotouchTag], results={}, results_status={}
+            # self, tags: Sequence[Ecotouch2Tag], results={}, results_status={}
             self,
             tags: Sequence[Ecotouch2Tag],
             results=None,
