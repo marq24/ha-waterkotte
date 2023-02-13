@@ -177,6 +177,9 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                         _LOGGER.warning(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
                         # match = re.search(r"^.*\.(.*)", entity)
+
+                        # I (marq24) do not really understand why we check here, if the
+                        # tag is available in the 'Ecotouch2Tag' - but what do I know...
                         if tag is not None and tag.upper() in Ecotouch2Tag.__members__:
                             # print(match.groups()[0].upper())
                             if Ecotouch2Tag[  # pylint: disable=unsubscriptable-object
@@ -193,7 +196,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                         #         # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
                         #         tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
                         else:
-                            _LOGGER.warning(_LOGGER.warning(f"Tag: {tag} not found!"))
+                            _LOGGER.warning(_LOGGER.warning(f"Tag: {tag} not found in Ecotouch2Tag.__members__ !"))
                 self.api.tags = tags
 
             tagdatas = await self.api.async_get_data()

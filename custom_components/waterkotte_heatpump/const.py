@@ -1,10 +1,10 @@
 """Constants for Waterkotte Heatpump."""
 # Base component constants
-NAME = "Waterkotte Heatpump 001"
-DOMAIN = "waterkotte_hp_001"
+NAME = "Waterkotte Heatpump"
+DOMAIN = "waterkotte_heatpump"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.0.1"
-TITLE = "Waterkotte 001"
+TITLE = "Waterkotte"
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/marq24/waterkotte-integration/issues"
 
