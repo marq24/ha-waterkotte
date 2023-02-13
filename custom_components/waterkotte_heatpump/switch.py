@@ -15,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category  #pylint: disable=line-too-long
 SENSOR_TYPES = {
-    "holiday_enabled": [
+    "HOLIDAY_ENABLED": [
         "Holiday Mode",
         Ecotouch2Tag.HOLIDAY_ENABLED,
         None,

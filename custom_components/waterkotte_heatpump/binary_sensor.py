@@ -16,7 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
 SENSOR_TYPES = {
-    "state_sourcepump": [
+    "STATE_SOURCEPUMP": [
         "Sourcepump",
         Ecotouch2Tag.STATE_SOURCEPUMP,
         BinarySensorDeviceClass.RUNNING,
@@ -26,7 +26,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_heatingpump": [
+    "STATE_HEATINGPUMP": [
         "Heatingpump",
         Ecotouch2Tag.STATE_HEATINGPUMP,
         BinarySensorDeviceClass.RUNNING,
@@ -36,7 +36,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_evd": [
+    "STATE_EVD": [
         "EVD",
         Ecotouch2Tag.STATE_EVD,
         BinarySensorDeviceClass.RUNNING,
@@ -46,7 +46,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_compressor": [
+    "STATE_COMPRESSOR": [
         "Compressor",
         Ecotouch2Tag.STATE_COMPRESSOR,
         BinarySensorDeviceClass.RUNNING,
@@ -56,7 +56,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_compressor2": [
+    "STATE_COMPRESSOR2": [
         "Compressor2",
         Ecotouch2Tag.STATE_COMPRESSOR2,
         BinarySensorDeviceClass.RUNNING,
@@ -66,7 +66,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_external_heater": [
+    "STATE_EXTERNAL_HEATER": [
         "External Heater",
         Ecotouch2Tag.STATE_EXTERNAL_HEATER,
         BinarySensorDeviceClass.RUNNING,
@@ -76,7 +76,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_alarm": [
+    "STATE_ALARM": [
         "Alarm",
         Ecotouch2Tag.STATE_ALARM,
         BinarySensorDeviceClass.RUNNING,
@@ -86,7 +86,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_cooling": [
+    "STATE_COOLING": [
         "Cooling",
         Ecotouch2Tag.STATE_COOLING,
         BinarySensorDeviceClass.RUNNING,
@@ -96,7 +96,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_water": [
+    "STATE_WATER": [
         "Water",
         Ecotouch2Tag.STATE_WATER,
         BinarySensorDeviceClass.RUNNING,
@@ -106,7 +106,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_pool": [
+    "STATE_POOL": [
         "Pool",
         Ecotouch2Tag.STATE_POOL,
         BinarySensorDeviceClass.RUNNING,
@@ -116,7 +116,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_solar": [
+    "STATE_SOLAR": [
         "Solar",
         Ecotouch2Tag.STATE_SOLAR,
         BinarySensorDeviceClass.RUNNING,
@@ -126,7 +126,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "state_cooling4way": [
+    "STATE_COOLING4WAY": [
         "Cooling4way",
         Ecotouch2Tag.STATE_COOLING4WAY,
         BinarySensorDeviceClass.RUNNING,

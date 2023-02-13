@@ -1329,8 +1329,8 @@ class Ecotouch2:
             results=None,
             results_status=None,
     ):
-        _LOGGER.warning(tags)
         """async read tags"""
+        #_LOGGER.warning(tags)
         if results is None:
             results = {}
         if results_status is None:
@@ -1347,19 +1347,14 @@ class Ecotouch2:
         for i in range(len(tags)):
             args[f"t{(i + 1)}"] = tags[i]
 
-        # r = requests.get(
-        #     "http://%s/cgi/readTags" % self.hostname,
-        #     params=args,
-        #     cookies=self.auth_cookies,
-        # )
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
             async with session.get(
                     f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
-                print(resp.request_info.url)
-                print(r)
+                # print(resp.request_info.url)
+                # print(r)
                 if r == "#E_NEED_LOGIN\n":
                     await self.login(self.username, self.password)
                     return results, results_status
