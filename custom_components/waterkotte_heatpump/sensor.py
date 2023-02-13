@@ -20,7 +20,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 
-from .xecotouch import Ecotouch2Tag
+from .mypywaterkotte.xecotouch import Ecotouch2Tag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import DOMAIN

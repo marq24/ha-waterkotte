@@ -19,7 +19,7 @@ from homeassistant.helpers.entity_registry import async_entries_for_device
 from homeassistant.helpers.entity_registry import async_get as getEntityRegistry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
-from .xecotouch import Ecotouch2Tag
+from .mypywaterkotte.xecotouch import Ecotouch2Tag
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
 from .const import (

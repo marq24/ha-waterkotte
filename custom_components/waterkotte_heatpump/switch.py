@@ -2,7 +2,7 @@
 import logging
 from homeassistant.components.switch import SwitchEntity
 
-from .xecotouch import Ecotouch2Tag
+from .mypywaterkotte.xecotouch import Ecotouch2Tag
 from .const import DOMAIN
 
 from .entity import WaterkotteHeatpumpEntity

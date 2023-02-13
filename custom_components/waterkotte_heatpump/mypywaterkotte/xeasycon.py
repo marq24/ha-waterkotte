@@ -12,7 +12,6 @@ from .xecotouch import (  # pylint: disable=import-error
     Any,
 )
 
-
 class Easycon2(Ecotouch2):
     """Base Easycon2 Class, inherits from xecotouch"""
 
