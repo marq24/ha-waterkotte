@@ -5,7 +5,7 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 # from homeassistant.const import ATTR_FRIENDLY_NAME
 
 # from .const import DOMAIN
-from .mypywaterkotte.xecotouch import Ecotouch2Tag
+from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag
 from .entity import WaterkotteHeatpumpEntity
 
 # from .xecotouch import EcotouchTag

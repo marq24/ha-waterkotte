@@ -7,8 +7,8 @@ import socket
 # import re
 import aiohttp
 import async_timeout
-from .mypywaterkotte.xecotouch import Ecotouch2, Ecotouch2Tag, EASYCON, ECOTOUCH
-from .mypywaterkotte.xeasycon import Easycon2
+from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2, Ecotouch2Tag, EASYCON, ECOTOUCH
+from custom_components.waterkotte_heatpump.mypywaterkotte.xeasycon import Easycon2
 
 TIMEOUT = 10
 

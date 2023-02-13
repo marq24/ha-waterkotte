@@ -25,7 +25,7 @@ from .const import (
 from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR, TITLE
 
 from .api import WaterkotteHeatpumpApiClient
-from .mypywaterkotte.xecotouch import Ecotouch2Tag, EASYCON, ECOTOUCH
+from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag, EASYCON, ECOTOUCH
 
 # import homeassistant.helpers.config_validation as cv
 
