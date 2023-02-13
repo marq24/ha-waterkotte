@@ -1,9 +1,9 @@
 """ Class to interact with Easycon sytem """
 import xml.etree.ElementTree as ET
 from .xecotouch import (  # pylint: disable=import-error
-    Ecotouch,
+    Ecotouch2,
     Sequence,
-    EcotouchTag,
+    Ecotouch2Tag,
     aiohttp,
     re,
     # Collection,
@@ -13,7 +13,7 @@ from .xecotouch import (  # pylint: disable=import-error
 )
 
 
-class Easycon(Ecotouch):
+class Easycon(Ecotouch2):
     """Base Easycon Class, inherits from ecotouch"""
 
     async def login(
@@ -33,7 +33,7 @@ class Easycon(Ecotouch):
     async def _read_tags(
         # self, tags: Sequence[EcotouchTag], results={}, results_status={}
         self,
-        tags: Sequence[EcotouchTag],
+        tags: Sequence[Ecotouch2Tag],
         results=None,
         results_status=None,
     ):

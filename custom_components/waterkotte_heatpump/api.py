@@ -7,7 +7,7 @@ import socket
 # import re
 import aiohttp
 import async_timeout
-from .xecotouch import Ecotouch, EcotouchTag
+from .xecotouch import Ecotouch2, Ecotouch2Tag
 from .xeasycon import Easycon
 from .xdetect import EASYCON, ECOTOUCH
 
@@ -39,7 +39,7 @@ class WaterkotteHeatpumpApiClient:
         # self._hass = hass
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = Ecotouch(host)
+            self._client = Ecotouch2(host)
         elif systemType == EASYCON:
             self._client = Easycon(host)
         else:
@@ -82,17 +82,17 @@ class WaterkotteHeatpumpApiClient:
         ret = await self._client.read_values(self.tags)
         return ret
 
-    async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
+    async def async_read_values(self, tags: Sequence[Ecotouch2Tag]) -> dict:
         """Get data from the API."""
         ret = await self._client.read_values(tags)
         return ret
 
-    async def async_read_value(self, tag: EcotouchTag) -> dict:
+    async def async_read_value(self, tag: Ecotouch2Tag) -> dict:
         """Get data from the API."""
         ret = await self._client.read_value(tag)
         return ret
 
-    async def async_write_value(self, tag: EcotouchTag, value):
+    async def async_write_value(self, tag: Ecotouch2Tag, value):
         """Write data to API"""
         res = await self._client.write_value(tag, value)
         return res

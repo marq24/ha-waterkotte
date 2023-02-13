@@ -26,7 +26,7 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 # TEMP_CELSIUS,
 #    TIME_SECONDS,
 # )
-from .xecotouch import EcotouchTag
+from .xecotouch import Ecotouch2Tag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
@@ -39,7 +39,7 @@ _LOGGER = logging.getLogger(__name__)
 SENSOR_TYPES = {
     "enable_cooling": [
         "Enable Cooling",
-        EcotouchTag.ENABLE_COOLING,
+        Ecotouch2Tag.ENABLE_COOLING,
         DEVICE_CLASS_ENUM,
         None,
         "mdi:snowflake-thermometer",
@@ -49,7 +49,7 @@ SENSOR_TYPES = {
     ],
     "enable_heating": [
         "Enable Heating",
-        EcotouchTag.ENABLE_HEATING,
+        Ecotouch2Tag.ENABLE_HEATING,
         DEVICE_CLASS_ENUM,
         None,
         "mdi:weather-partly-cloudy",
@@ -59,7 +59,7 @@ SENSOR_TYPES = {
     ],
     "enable_pv": [
         "Enable PV",
-        EcotouchTag.ENABLE_PV,
+        Ecotouch2Tag.ENABLE_PV,
         DEVICE_CLASS_ENUM,
         None,
         "mdi:solar-power",
@@ -69,7 +69,7 @@ SENSOR_TYPES = {
     ],
     "enable_warmwater": [
         "Enable Warmwater",
-        EcotouchTag.ENABLE_WARMWATER,
+        Ecotouch2Tag.ENABLE_WARMWATER,
         DEVICE_CLASS_ENUM,
         None,
         "mdi:water-thermometer",

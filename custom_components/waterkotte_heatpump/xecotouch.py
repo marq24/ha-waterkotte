@@ -42,7 +42,7 @@ class InvalidValueException(Exception):
     # pass
 
 
-class EcotouchTag:
+class Ecotouch2Tag:
     """A Dummy Class."""
 
     # pass
@@ -50,7 +50,7 @@ class EcotouchTag:
 
 # default method that reads a value based on a single tag
 def _parse_value_default(
-        self: EcotouchTag, vals, bitnum=None, *other_args
+        self: Ecotouch2Tag, vals, bitnum=None, *other_args
 ):  # pylint: disable=unused-argument,keyword-arg-before-vararg
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
@@ -927,7 +927,7 @@ class TagData(NamedTuple):
     bit: int = None
 
 
-class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
+class Ecotouch2Tag(TagData, Enum):  # pylint: disable=function-redefined
     """EcotouchTag Class"""
 
     HOLIDAY_ENABLED = TagData(["D420"], writeable=True)
@@ -1169,7 +1169,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
 #
 # Class to control Waterkotte Ecotouch heatpumps.
 #
-class Ecotouch:
+class Ecotouch2:
     """Ecotouch Class"""
 
     auth_cookies = None
@@ -1232,14 +1232,14 @@ class Ecotouch:
                 #     )
                 self.auth_cookies = None
 
-    async def read_value(self, tag: EcotouchTag):
+    async def read_value(self, tag: Ecotouch2Tag):
         """Read a value from Tag"""
         res = await self.read_values([tag])
         if tag in res:
             return res[tag]
         return None
 
-    async def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
+    async def write_values(self, kv_pairs: Collection[Tuple[Ecotouch2Tag, Any]]):
         """Write values to Tag"""
         to_write = {}
         result = {}
@@ -1273,7 +1273,7 @@ class Ecotouch:
         """Write a value"""
         return await self.write_values([(tag, value)])
 
-    async def read_values(self, tags: Sequence[EcotouchTag]):
+    async def read_values(self, tags: Sequence[Ecotouch2Tag]):
         """Async read values"""
         # create flat list of ecotouch tags to be read
         e_tags = list(set([etag for tag in tags for etag in tag.tags]))
@@ -1325,7 +1325,7 @@ class Ecotouch:
     async def _read_tags(
             # self, tags: Sequence[EcotouchTag], results={}, results_status={}
             self,
-            tags: Sequence[EcotouchTag],
+            tags: Sequence[Ecotouch2Tag],
             results=None,
             results_status=None,
     ):
@@ -1356,9 +1356,9 @@ class Ecotouch:
             async with session.get(
                     f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
-                # _LOGGER.info(resp.request_info.url)
                 r = await resp.text()  # pylint: disable=invalid-name
-                # print(r)
+                print(resp.request_info.url)
+                print(r)
                 if r == "#E_NEED_LOGIN\n":
                     await self.login(self.username, self.password)
                     return results, results_status
@@ -1424,7 +1424,7 @@ class Ecotouch:
                     f"http://{self.hostname}/cgi/writeTags", params=args
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
-                # print(r)
+                #print(r)
                 if r == "#E_NEED_LOGIN\n":
                     await self.login(
                         self.username, self.password

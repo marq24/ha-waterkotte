@@ -19,7 +19,7 @@ from homeassistant.helpers.entity_registry import async_entries_for_device
 from homeassistant.helpers.entity_registry import async_get as getEntityRegistry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
-from .xecotouch import EcotouchTag
+from .xecotouch import Ecotouch2Tag
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
 from .const import (
@@ -176,14 +176,14 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                         print(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
                         # match = re.search(r"^.*\.(.*)", entity)
-                        if tag is not None and tag.upper() in EcotouchTag.__members__:
+                        if tag is not None and tag.upper() in Ecotouch2Tag.__members__:
                             # print(match.groups()[0].upper())
-                            if EcotouchTag[  # pylint: disable=unsubscriptable-object
+                            if Ecotouch2Tag[  # pylint: disable=unsubscriptable-object
                                 tag.upper()
                             ]:
                                 # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
                                 tags.append(
-                                    EcotouchTag[tag.upper()]
+                                    Ecotouch2Tag[tag.upper()]
                                 )  # pylint: disable=unsubscriptable-object
                         # match = re.search(r"^.*\.(.*)", entity)
                         # if match:
@@ -207,7 +207,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         except UpdateFailed as exception:
             raise UpdateFailed() from exception
 
-    async def async_write_tag(self, tag: EcotouchTag, value):
+    async def async_write_tag(self, tag: Ecotouch2Tag, value):
         """Update single data"""
         res = await self.api.async_write_value(tag, value)
         # print(res)

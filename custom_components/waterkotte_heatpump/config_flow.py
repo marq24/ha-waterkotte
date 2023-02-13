@@ -25,7 +25,7 @@ from .const import (
 from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR, TITLE
 
 from .api import WaterkotteHeatpumpApiClient
-from .xecotouch import EcotouchTag
+from .xecotouch import Ecotouch2Tag
 from .xdetect import waterkotte_detect, EASYCON, ECOTOUCH
 
 # import homeassistant.helpers.config_validation as cv
@@ -143,19 +143,19 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             await client.login()
             # await client.async_read_value(EcotouchTag.DATE_DAY)
             inittag = [
-                EcotouchTag.VERSION_BIOS,
-                EcotouchTag.VERSION_CONTROLLER,
+                Ecotouch2Tag.VERSION_BIOS,
+                Ecotouch2Tag.VERSION_CONTROLLER,
                 # EcotouchTag.VERSION_CONTROLLER_BUILD,
-                EcotouchTag.INFO_ID,
-                EcotouchTag.INFO_SERIAL,
-                EcotouchTag.INFO_SERIES,
+                Ecotouch2Tag.INFO_ID,
+                Ecotouch2Tag.INFO_SERIAL,
+                Ecotouch2Tag.INFO_SERIES,
             ]
             ret = await client.async_read_values(inittag)
-            self._bios = ret[EcotouchTag.VERSION_BIOS]["value"]
-            self._firmware = ret[EcotouchTag.VERSION_CONTROLLER]["value"]
-            self._ID = str(ret[EcotouchTag.INFO_ID]["value"])
-            self._series = str(ret[EcotouchTag.INFO_SERIES]["value"])
-            self._serial = str(ret[EcotouchTag.INFO_SERIAL]["value"])
+            self._bios = ret[Ecotouch2Tag.VERSION_BIOS]["value"]
+            self._firmware = ret[Ecotouch2Tag.VERSION_CONTROLLER]["value"]
+            self._ID = str(ret[Ecotouch2Tag.INFO_ID]["value"])
+            self._series = str(ret[Ecotouch2Tag.INFO_SERIES]["value"])
+            self._serial = str(ret[Ecotouch2Tag.INFO_SERIAL]["value"])
             self._system_type = systemType
             # print(ret)
             return True
