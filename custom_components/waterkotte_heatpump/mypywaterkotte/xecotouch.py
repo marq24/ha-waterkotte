@@ -1074,6 +1074,8 @@ class Ecotouch2Tag(TagData, Enum):  # pylint: disable=function-redefined
     # just a percentage value (from 0.0 - 100.0)
     PERCENT_COMPRESSOR = TagData(["A58"], "%")
 
+    # I1264 -> Heizstab Leistung?! -> 6000
+
     # keep but not found in Waterkotte GUI
     TEMPERATURE_COLLECTOR = TagData(["A42"], "°C")  # aktuelle Temperatur Kollektor
     TEMPERATURE_FLOW2 = TagData(["A43"], "°C")  # aktuelle Temperatur Vorlauf

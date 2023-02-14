@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Waterkotte Heatpump",
-        "description": "If you need help with the configuration have a look here: https://github.com/pattisonmichael/waterkotte-heatpump",
+        "description": "If you need help with the configuration have a look here: https://github.com/marq24/waterkotte-integration",
         "data": {
           "username": "Username",
           "password": "Password",

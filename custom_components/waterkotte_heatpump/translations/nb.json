@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Waterkotte Heatpump",
-        "description": "Hvis du trenger hjep til konfigurasjon ta en titt her: https://github.com/pattisonmichael/waterkotte-heatpump",
+        "description": "Hvis du trenger hjep til konfigurasjon ta en titt her: https://github.com/marq24/waterkotte-integration",
         "data": {
           "username": "Brukernavn",
           "password": "Passord"
