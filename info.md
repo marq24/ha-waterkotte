@@ -4,6 +4,7 @@
 
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
+All credit's should go to the original creator [@pattisonmichael](https://github.com/pattisonmichael):
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
 [![Discord][discord-shield]][discord]
@@ -33,6 +34,7 @@
 <!---->
 
 ## Credits
+This project is a fork from [@pattisonmichael](https://github.com/pattisonmichael)'s [Waterkotte-Integration](https://github.com/pattisonmichael/waterkotte-integration)
 
 This project was generated from [@oncleben31](https://github.com/oncleben31)'s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.
 
@@ -41,20 +43,20 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 ---
 
 [integration_blueprint]: https://github.com/custom-components/integration_blueprint
-[buymecoffee]: https://www.buymeacoffee.com/ludeeus
+[buymecoffee]: https://www.buymeacoffee.com/pattisonmichael
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
-[commits-shield]: https://img.shields.io/github/commit-activity/y/pattisonmichael/waterkotte-integration.svg?style=for-the-badge
-[commits]: https://github.com/pattisonmichael/waterkotte-integration/commits/main
+[commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/waterkotte-integration.svg?style=for-the-badge
+[commits]: https://github.com/marq24/waterkotte-integration/commits/main
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-[exampleimg]: example.png
+[logoimg]: logo.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license]: https://github.com/pattisonmichael/waterkotte-integration/blob/main/LICENSE
-[license-shield]: https://img.shields.io/github/license/pattisonmichael/waterkotte-integration.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-%40pattisonmichael-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/pattisonmichael/waterkotte-integration.svg?style=for-the-badge
-[releases]: https://github.com/pattisonmichael/waterkotte-integration/releases
-[user_profile]: https://github.com/pattisonmichael
+[license-shield]: https://img.shields.io/github/license/marq24/waterkotte-integration.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-%40marq24-blue.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/marq24/waterkotte-integration.svg?style=for-the-badge
+[releases]: https://github.com/marq24/waterkotte-integration/releases
+[user_profile]: https://github.com/marq24
