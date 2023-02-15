@@ -3,6 +3,6 @@
   "domains": ["binary_sensor", "sensor", "switch", "select"],
   "iot_class": "Cloud Polling",
   "render_readme": true,
-  "homeassistant": "2022.12.0",
+  "homeassistant": "2023.2.4",
   "hacs": "1.28.4"
 }
