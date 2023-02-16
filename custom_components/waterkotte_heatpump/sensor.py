@@ -10,8 +10,9 @@ from homeassistant.const import (
     DEVICE_CLASS_POWER_FACTOR,
     PERCENTAGE,
     DEVICE_CLASS_PRESSURE,
+    DEVICE_CLASS_TEMPERATURE,
     PRESSURE_BAR,
-    DEVICE_CLASS_POWER,
+    TEMP_CELSIUS, DEVICE_CLASS_POWER,
     POWER_KILO_WATT,
 )
 
@@ -60,12 +61,233 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    # temperature sensors
+    "TEMPERATURE_OUTSIDE": [
+        "Temperature Outside",
+        Ecotouch2Tag.TEMPERATURE_OUTSIDE,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_OUTSIDE_1H": [
+        "Temperature Outside 1h",
+        Ecotouch2Tag.TEMPERATURE_OUTSIDE_1H,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_OUTSIDE_24H": [
+        "Temperature Outside 24h",
+        Ecotouch2Tag.TEMPERATURE_OUTSIDE_24H,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_SOURCE_ENTRY": [
+        "Temperature Source Entry",
+        Ecotouch2Tag.TEMPERATURE_SOURCE_ENTRY,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_SOURCE_EXIT": [
+        "Temperature Source Exit",
+        Ecotouch2Tag.TEMPERATURE_SOURCE_EXIT,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_EVAPORATION": [
+        "Temperature Evaporation",
+        Ecotouch2Tag.TEMPERATURE_EVAPORATION,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_SUCTION_LINE": [
+        "Temperature Suction Line",
+        Ecotouch2Tag.TEMPERATURE_SUCTION_LINE,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_RETURN": [
+        "Temperature Return",
+        Ecotouch2Tag.TEMPERATURE_RETURN,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_FLOW": [
+        "Temperature Flow",
+        Ecotouch2Tag.TEMPERATURE_FLOW,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_CONDENSATION": [
+        "Temperature Condensation",
+        Ecotouch2Tag.TEMPERATURE_CONDENSATION,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_BUFFERTANK": [
+        "Temperature Buffer Tank",
+        Ecotouch2Tag.TEMPERATURE_BUFFERTANK,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_ROOM": [
+        "Temperature Room",
+        Ecotouch2Tag.TEMPERATURE_ROOM,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_ROOM_1H": [
+        "Temperature Room 1h",
+        Ecotouch2Tag.TEMPERATURE_ROOM_1H,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_HEATING": [
+        "Temperature Heating",
+        Ecotouch2Tag.TEMPERATURE_HEATING,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:home-thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_HEATING_SET": [
+        "Demanded Temperature Heating",
+        Ecotouch2Tag.TEMPERATURE_HEATING_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:home-thermometer",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_COOLING": [
+        "Temperature Cooling",
+        Ecotouch2Tag.TEMPERATURE_COOLING,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:snowflake-thermometer",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_COOLING_SET": [
+        "Demanded Temperature Cooling",
+        Ecotouch2Tag.TEMPERATURE_COOLING_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:snowflake-thermometer",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_WATER": [
+        "Temperature Hot Water",
+        Ecotouch2Tag.TEMPERATURE_WATER,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_WATER_SET": [
+        "Demanded Temperature Hot Water",
+        Ecotouch2Tag.TEMPERATURE_WATER_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_MIX1": [
+        "Temperature mixing circle 1",
+        Ecotouch2Tag.TEMPERATURE_MIX1,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        True,
+        None,
+        None,
+    ],
     "TEMPERATURE_MIX1_PERCENT": [
         "Temperature mixing circle 1 percent",
         Ecotouch2Tag.TEMPERATURE_MIX1_PERCENT,
         None,
         PERCENTAGE,
         "mdi:gauge",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_MIX1_SET": [
+        "Demanded Temperature mixing circle 1",
+        Ecotouch2Tag.TEMPERATURE_MIX1_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        True,
+        None,
+        None,
+    ],
+    "TEMPERATURE_MIX2": [
+        "Temperature mixing circle 2",
+        Ecotouch2Tag.TEMPERATURE_MIX2,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
         False,
         None,
         None,
@@ -80,12 +302,82 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    "TEMPERATURE_MIX2_SET": [
+        "Demanded Temperature mixing circle 2",
+        Ecotouch2Tag.TEMPERATURE_MIX2_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_MIX3": [
+        "Temperature mixing circle 3",
+        Ecotouch2Tag.TEMPERATURE_MIX3,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        False,
+        None,
+        None,
+    ],
     "TEMPERATURE_MIX3_PERCENT": [
         "Temperature mixing circle 3 percent",
         Ecotouch2Tag.TEMPERATURE_MIX3_PERCENT,
         None,
         PERCENTAGE,
         "mdi:gauge",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_MIX3_SET": [
+        "Demanded Temperature mixing circle 3",
+        Ecotouch2Tag.TEMPERATURE_MIX3_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer-water",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_POOL": [
+        "Temperature Pool",
+        Ecotouch2Tag.TEMPERATURE_POOL,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:pool-thermometer",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_POOL_SET": [
+        "Demanded Temperature Pool",
+        Ecotouch2Tag.TEMPERATURE_POOL_SET,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:pool-thermometer",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_SOLAR": [
+        "Temperature Solar",
+        Ecotouch2Tag.TEMPERATURE_SOLAR,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
+        False,
+        None,
+        None,
+    ],
+    "TEMPERATURE_SOLAR_EXIT": [
+        "Temperature Solar Collector Exit",
+        Ecotouch2Tag.TEMPERATURE_SOLAR_EXIT,
+        DEVICE_CLASS_TEMPERATURE,
+        TEMP_CELSIUS,
+        "mdi:thermometer",
         False,
         None,
         None,
@@ -247,9 +539,10 @@ SENSOR_TYPES = {
 
 # async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_entities) -> None:
 async def async_setup_entry(
-    hass: HomeAssistantType, entry: ConfigType, async_add_devices
+        hass: HomeAssistantType, entry: ConfigType, async_add_devices
 ) -> None:
     """Set up the Waterkotte sensor platform."""
+
     _LOGGER.debug("Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices(
@@ -264,9 +557,10 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     """waterkotte_heatpump Sensor class."""
 
     def __init__(
-        self, entry, hass_data, sensor_type
+            self, entry, hass_data, sensor_type
     ):  # pylint: disable=unused-argument
         """Initialize the sensor."""
+        # super().__init__(self, hass_data)
         self._coordinator = hass_data
 
         self._type = sensor_type
@@ -308,15 +602,20 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         return value
 
     @property
+    def device_class(self):
+        """Return the device class of the sensor."""
+        return SENSOR_TYPES[self._type][2]
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement."""
+        return SENSOR_TYPES[self._type][3]
+
+    @property
     def icon(self):
         """Return the icon of the sensor."""
         return SENSOR_TYPES[self._type][4]
         # return ICON
-
-    @property
-    def device_class(self):
-        """Return the device class of the sensor."""
-        return SENSOR_TYPES[self._type][2]
 
     @property
     def entity_registry_enabled_default(self):
@@ -332,11 +631,6 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     def unique_id(self):
         """Return the unique of the sensor."""
         return self._unique_id
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return SENSOR_TYPES[self._type][3]
 
     async def async_update(self):
         """Schedule a custom update via the common entity update service."""
