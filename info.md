@@ -56,7 +56,7 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [logoimg]: logo.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
-[license]: https://github.com/pattisonmichael/waterkotte-integration/blob/main/LICENSE
+[license]: https://github.com/marq24/waterkotte-integration/blob/main/LICENSE
 [license-shield]: https://img.shields.io/github/license/marq24/waterkotte-integration.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40marq24-blue.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/marq24/waterkotte-integration.svg?style=for-the-badge
