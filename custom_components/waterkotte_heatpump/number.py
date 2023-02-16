@@ -38,65 +38,65 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]min, [4]icon, [5]enabled_by_default, [6]max, [7]step #pylint: disable=line-too-long
 SENSOR_TYPES = {
-    "temperature_heating_set": [
-        "Temperature Heating Set",
-        EcotouchTag.TEMPERATURE_HEATING_SET,
+    "adapt_heating": [
+        "Temperature Heating Adapt",
+        EcotouchTag.ADAPT_HEATING,
         NumberDeviceClass.TEMPERATURE,
-        0,
+        -2,
         "mdi:snowflake-thermometer",
         True,
-        100,
-        0.1,
+        2,
+        0.5,
     ],
-    "temperature_heating_set2": [
-        "Temperature Heating Set2",
-        EcotouchTag.TEMPERATURE_HEATING_SET2,
-        NumberDeviceClass.TEMPERATURE,
-        0,
-        "mdi:snowflake-thermometer",
-        True,
-        100,
-        0.1,
-    ],
-    "temperature_cooling_set": [
+    # "temperature_heating_set2": [
+    #     "Temperature Heating Set2",
+    #     EcotouchTag.TEMPERATURE_HEATING_SET2,
+    #     NumberDeviceClass.TEMPERATURE,
+    #     0,
+    #     "mdi:snowflake-thermometer",
+    #     True,
+    #     100,
+    #     0.1,
+    # ],
+    "nvi_soll_kuehlen": [
         "Temperature Cooling Set",
-        EcotouchTag.TEMPERATURE_COOLING_SET,
+        EcotouchTag.NVI_SOLL_KUEHLEN,
         NumberDeviceClass.TEMPERATURE,
-        0,
+        5,
         "mdi:snowflake-thermometer",
         True,
-        100,
-        0.1,
+        26,
+        0.5,
     ],
-    "temperature_cooling_set2": [
-        "Temperature Cooling Set2",
-        EcotouchTag.TEMPERATURE_COOLING_SET2,
-        NumberDeviceClass.TEMPERATURE,
-        0,
-        "mdi:snowflake-thermometer",
-        True,
-        100,
-        0.1,
-    ],
-    "temperature_water_setpoint": [
-        "Temperature Water Setpoint",
-        EcotouchTag.TEMPERATURE_WATER_SETPOINT,
-        NumberDeviceClass.TEMPERATURE,
-        0,
-        "mdi:snowflake-thermometer",
-        True,
-        100,
-        0.1,
-    ],
+    # "temperature_cooling_set2": [
+    #     "Temperature Cooling Set2",
+    #     EcotouchTag.TEMPERATURE_COOLING_SET2,
+    #     NumberDeviceClass.TEMPERATURE,
+    #     0,
+    #     "mdi:snowflake-thermometer",
+    #     True,
+    #     100,
+    #     0.1,
+    # ],
+    # "temperature_water_setpoint": [
+    #     "Temperature Water Setpoint",
+    #     EcotouchTag.TEMPERATURE_WATER_SETPOINT,
+    #     NumberDeviceClass.TEMPERATURE,
+    #     0,
+    #     "mdi:snowflake-thermometer",
+    #     True,
+    #     100,
+    #     0.1,
+    # ],
     "temperature_water_setpoint2": [
         "Temperature Water Setpoint2",
         EcotouchTag.TEMPERATURE_WATER_SETPOINT2,
         NumberDeviceClass.TEMPERATURE,
-        0,
+        28,
         "mdi:snowflake-thermometer",
         True,
-        100,
-        0.1,
+        70,
+        0.5,
     ],
     "temperature_pool_setpoint": [
         "Temperature Pool Setpoint",
@@ -171,6 +171,8 @@ SENSOR_TYPES = {
     MANUAL_4WAYVALVE = TagData(["I1299"])
     MANUAL_MULTIEXT = TagData(["I1319"]) """
 
+ADAPT_LOOKUP = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
+
 
 async def async_setup_entry(
     hass: HomeAssistantType, entry: ConfigType, async_add_devices
@@ -220,6 +222,8 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 return "unknown"
+            if self._type == "adapt_heating":
+                value = ADAPT_LOOKUP[value]
         except KeyError:
             return "unknown"
         except TypeError:
@@ -237,6 +241,8 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
         try:
             # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
+            if self._type == "adapt_heating":
+                value = ADAPT_LOOKUP.index(value)
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
             return "unavailable"
