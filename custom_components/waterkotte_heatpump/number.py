@@ -423,14 +423,13 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
     def native_value(self) -> float | None:
         try:
             sensor = SENSOR_TYPES[self._type]
-            _LOGGER.warning("native_value "+str(sensor)+" ")
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 return "unknown"
-            if str(sensor).upper().endswith("_ADJUST"):
-                _LOGGER.warning("native_value LOOKUP value "+str(value) +" "+str(TEMP_ADJUST_LOOKUP[value]))
+            if str(self._type).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
-            #elif (sensor[7] == TENTH_STEP):
+            elif (sensor[7] == TENTH_STEP):
+                _LOGGER.warning("native_value org: "+str(value) +" should? "+str(float(value) * 10.0))
             #    value = float(value) * 10;
         except KeyError:
             return "unknown"
@@ -450,12 +449,10 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
             sensor = SENSOR_TYPES[self._type]
-            _LOGGER.warning("async_set_native_value "+str(sensor)+" ")
-            if str(sensor).upper().endswith("_ADJUST"):
-                _LOGGER.warning("async_set_native_value LOOKUP value "+str(value) +" "+str(TEMP_ADJUST_LOOKUP.index(value)))
+            if str(self._type).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP.index(value)
-            #elif (sensor[7] == TENTH_STEP):
-            #    _LOGGER.warning("TENTH_STEP value "+str(value) +" "+str(float(value) / 10.0))
+            elif (sensor[7] == TENTH_STEP):
+                _LOGGER.warning("async_set_native_value org: "+str(value) +" should? "+str(float(value) / 10.0))
             #    value = float(value) / 10.0;
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
