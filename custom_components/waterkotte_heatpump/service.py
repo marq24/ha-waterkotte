@@ -1,7 +1,7 @@
 """ Service to setup time for holiday mode """
 # from .const import DOMAIN
 import datetime
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 
 class WaterkotteHeatpumpService():
     """waterkotte_heatpump switch class."""
@@ -24,8 +24,8 @@ class WaterkotteHeatpumpService():
         try:
             # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            await self._coordinator.async_write_tag(Ecotouch2Tag.HOLIDAY_START_TIME, start)
-            await self._coordinator.async_write_tag(Ecotouch2Tag.HOLIDAY_END_TIME, end)
+            await self._coordinator.async_write_tag(EcotouchTag.HOLIDAY_START_TIME, start)
+            await self._coordinator.async_write_tag(EcotouchTag.HOLIDAY_END_TIME, end)
             # sensor = SENSOR_TYPES[self._type]
             # return self._coordinator.data[sensor[1]]["value"]
         except ValueError:

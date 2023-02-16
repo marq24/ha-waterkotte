@@ -2,7 +2,7 @@
 import logging
 from homeassistant.components.switch import SwitchEntity
 
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .const import DOMAIN
 
 from .entity import WaterkotteHeatpumpEntity
@@ -17,7 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 SENSOR_TYPES = {
     "HOLIDAY_ENABLED": [
         "Holiday Mode",
-        Ecotouch2Tag.HOLIDAY_ENABLED,
+        EcotouchTag.HOLIDAY_ENABLED,
         None,
         None,
         None,

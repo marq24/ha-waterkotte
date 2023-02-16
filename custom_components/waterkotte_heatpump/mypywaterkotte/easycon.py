@@ -1,9 +1,9 @@
 """ Class to interact with Easycon system """
 import xml.etree.ElementTree as ET
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import (  # pylint: disable=import-error
-    Ecotouch2,
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import (  # pylint: disable=import-error
+    Ecotouch,
     Sequence,
-    Ecotouch2Tag,
+    EcotouchTag,
     aiohttp,
     re,
     # Collection,
@@ -12,8 +12,8 @@ from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import (  # 
     Any,
 )
 
-class Easycon2(Ecotouch2):
-    """Base Easycon2 Class, inherits from xecotouch"""
+class Easycon(Ecotouch):
+    """Base Easycon Class, inherits from ecotouch"""
 
     async def login(
         self, username="waterkotte", password="waterkotte"
@@ -32,7 +32,7 @@ class Easycon2(Ecotouch2):
     async def _read_tags(
         # self, tags: Sequence[EcotouchTag], results={}, results_status={}
         self,
-        tags: Sequence[Ecotouch2Tag],
+        tags: Sequence[EcotouchTag],
         results=None,
         results_status=None,
     ):

@@ -20,7 +20,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import DOMAIN
@@ -33,7 +33,7 @@ SENSOR_TYPES = {
     # status sensors
     "STATUS_HEATING": [
         "Status Heating",
-        Ecotouch2Tag.STATUS_HEATING,
+        EcotouchTag.STATUS_HEATING,
         None,
         None,
         "mdi:sun-thermometer",
@@ -43,7 +43,7 @@ SENSOR_TYPES = {
     ],
     "STATUS_WATER": [
         "Status Water",
-        Ecotouch2Tag.STATUS_WATER,
+        EcotouchTag.STATUS_WATER,
         None,
         None,
         "mdi:thermometer-water",
@@ -53,7 +53,7 @@ SENSOR_TYPES = {
     ],
     "STATUS_COOLING": [
         "Status Cooling",
-        Ecotouch2Tag.STATUS_COOLING,
+        EcotouchTag.STATUS_COOLING,
         None,
         None,
         "mdi:coolant-temperature",
@@ -64,7 +64,7 @@ SENSOR_TYPES = {
     # temperature sensors
     "TEMPERATURE_OUTSIDE": [
         "Temperature Outside",
-        Ecotouch2Tag.TEMPERATURE_OUTSIDE,
+        EcotouchTag.TEMPERATURE_OUTSIDE,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -74,7 +74,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_OUTSIDE_1H": [
         "Temperature Outside 1h",
-        Ecotouch2Tag.TEMPERATURE_OUTSIDE_1H,
+        EcotouchTag.TEMPERATURE_OUTSIDE_1H,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -84,7 +84,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_OUTSIDE_24H": [
         "Temperature Outside 24h",
-        Ecotouch2Tag.TEMPERATURE_OUTSIDE_24H,
+        EcotouchTag.TEMPERATURE_OUTSIDE_24H,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -94,7 +94,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_SOURCE_ENTRY": [
         "Temperature Source Entry",
-        Ecotouch2Tag.TEMPERATURE_SOURCE_ENTRY,
+        EcotouchTag.TEMPERATURE_SOURCE_ENTRY,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -104,7 +104,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_SOURCE_EXIT": [
         "Temperature Source Exit",
-        Ecotouch2Tag.TEMPERATURE_SOURCE_EXIT,
+        EcotouchTag.TEMPERATURE_SOURCE_EXIT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -114,7 +114,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_EVAPORATION": [
         "Temperature Evaporation",
-        Ecotouch2Tag.TEMPERATURE_EVAPORATION,
+        EcotouchTag.TEMPERATURE_EVAPORATION,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -124,7 +124,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_SUCTION_LINE": [
         "Temperature Suction Line",
-        Ecotouch2Tag.TEMPERATURE_SUCTION_LINE,
+        EcotouchTag.TEMPERATURE_SUCTION_LINE,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -134,7 +134,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_RETURN": [
         "Temperature Return",
-        Ecotouch2Tag.TEMPERATURE_RETURN,
+        EcotouchTag.TEMPERATURE_RETURN,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -144,7 +144,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_FLOW": [
         "Temperature Flow",
-        Ecotouch2Tag.TEMPERATURE_FLOW,
+        EcotouchTag.TEMPERATURE_FLOW,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -154,7 +154,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_CONDENSATION": [
         "Temperature Condensation",
-        Ecotouch2Tag.TEMPERATURE_CONDENSATION,
+        EcotouchTag.TEMPERATURE_CONDENSATION,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -164,7 +164,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_BUFFERTANK": [
         "Temperature Buffer Tank",
-        Ecotouch2Tag.TEMPERATURE_BUFFERTANK,
+        EcotouchTag.TEMPERATURE_BUFFERTANK,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -174,7 +174,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_ROOM": [
         "Temperature Room",
-        Ecotouch2Tag.TEMPERATURE_ROOM,
+        EcotouchTag.TEMPERATURE_ROOM,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -184,7 +184,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_ROOM_1H": [
         "Temperature Room 1h",
-        Ecotouch2Tag.TEMPERATURE_ROOM_1H,
+        EcotouchTag.TEMPERATURE_ROOM_1H,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -194,7 +194,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_HEATING": [
         "Temperature Heating",
-        Ecotouch2Tag.TEMPERATURE_HEATING,
+        EcotouchTag.TEMPERATURE_HEATING,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:home-thermometer",
@@ -204,7 +204,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_HEATING_SET": [
         "Demanded Temperature Heating",
-        Ecotouch2Tag.TEMPERATURE_HEATING_SET,
+        EcotouchTag.TEMPERATURE_HEATING_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:home-thermometer",
@@ -214,7 +214,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_COOLING": [
         "Temperature Cooling",
-        Ecotouch2Tag.TEMPERATURE_COOLING,
+        EcotouchTag.TEMPERATURE_COOLING,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:snowflake-thermometer",
@@ -224,7 +224,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_COOLING_SET": [
         "Demanded Temperature Cooling",
-        Ecotouch2Tag.TEMPERATURE_COOLING_SET,
+        EcotouchTag.TEMPERATURE_COOLING_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:snowflake-thermometer",
@@ -234,7 +234,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_WATER": [
         "Temperature Hot Water",
-        Ecotouch2Tag.TEMPERATURE_WATER,
+        EcotouchTag.TEMPERATURE_WATER,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -244,7 +244,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_WATER_SET": [
         "Demanded Temperature Hot Water",
-        Ecotouch2Tag.TEMPERATURE_WATER_SET,
+        EcotouchTag.TEMPERATURE_WATER_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -254,7 +254,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX1": [
         "Temperature mixing circle 1",
-        Ecotouch2Tag.TEMPERATURE_MIX1,
+        EcotouchTag.TEMPERATURE_MIX1,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -264,7 +264,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX1_PERCENT": [
         "Temperature mixing circle 1 percent",
-        Ecotouch2Tag.TEMPERATURE_MIX1_PERCENT,
+        EcotouchTag.TEMPERATURE_MIX1_PERCENT,
         None,
         PERCENTAGE,
         "mdi:gauge",
@@ -274,7 +274,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX1_SET": [
         "Demanded Temperature mixing circle 1",
-        Ecotouch2Tag.TEMPERATURE_MIX1_SET,
+        EcotouchTag.TEMPERATURE_MIX1_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -284,7 +284,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX2": [
         "Temperature mixing circle 2",
-        Ecotouch2Tag.TEMPERATURE_MIX2,
+        EcotouchTag.TEMPERATURE_MIX2,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -294,7 +294,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX2_PERCENT": [
         "Temperature mixing circle 2 percent",
-        Ecotouch2Tag.TEMPERATURE_MIX2_PERCENT,
+        EcotouchTag.TEMPERATURE_MIX2_PERCENT,
         None,
         PERCENTAGE,
         "mdi:gauge",
@@ -304,7 +304,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX2_SET": [
         "Demanded Temperature mixing circle 2",
-        Ecotouch2Tag.TEMPERATURE_MIX2_SET,
+        EcotouchTag.TEMPERATURE_MIX2_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -314,7 +314,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX3": [
         "Temperature mixing circle 3",
-        Ecotouch2Tag.TEMPERATURE_MIX3,
+        EcotouchTag.TEMPERATURE_MIX3,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -324,7 +324,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX3_PERCENT": [
         "Temperature mixing circle 3 percent",
-        Ecotouch2Tag.TEMPERATURE_MIX3_PERCENT,
+        EcotouchTag.TEMPERATURE_MIX3_PERCENT,
         None,
         PERCENTAGE,
         "mdi:gauge",
@@ -334,7 +334,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX3_SET": [
         "Demanded Temperature mixing circle 3",
-        Ecotouch2Tag.TEMPERATURE_MIX3_SET,
+        EcotouchTag.TEMPERATURE_MIX3_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer-water",
@@ -344,7 +344,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_POOL": [
         "Temperature Pool",
-        Ecotouch2Tag.TEMPERATURE_POOL,
+        EcotouchTag.TEMPERATURE_POOL,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:pool-thermometer",
@@ -354,7 +354,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_POOL_SET": [
         "Demanded Temperature Pool",
-        Ecotouch2Tag.TEMPERATURE_POOL_SET,
+        EcotouchTag.TEMPERATURE_POOL_SET,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:pool-thermometer",
@@ -364,7 +364,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_SOLAR": [
         "Temperature Solar",
-        Ecotouch2Tag.TEMPERATURE_SOLAR,
+        EcotouchTag.TEMPERATURE_SOLAR,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -374,7 +374,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_SOLAR_EXIT": [
         "Temperature Solar Collector Exit",
-        Ecotouch2Tag.TEMPERATURE_SOLAR_EXIT,
+        EcotouchTag.TEMPERATURE_SOLAR_EXIT,
         DEVICE_CLASS_TEMPERATURE,
         TEMP_CELSIUS,
         "mdi:thermometer",
@@ -385,7 +385,7 @@ SENSOR_TYPES = {
     # other (none temperature) values...
     "PRESSURE_EVAPORATION": [
         "Pressure Evaporation",
-        Ecotouch2Tag.PRESSURE_EVAPORATION,
+        EcotouchTag.PRESSURE_EVAPORATION,
         DEVICE_CLASS_PRESSURE,
         PRESSURE_BAR,
         "mdi:gauge",
@@ -395,7 +395,7 @@ SENSOR_TYPES = {
     ],
     "PRESSURE_CONDENSATION": [
         "Pressure Condensation",
-        Ecotouch2Tag.PRESSURE_CONDENSATION,
+        EcotouchTag.PRESSURE_CONDENSATION,
         DEVICE_CLASS_PRESSURE,
         PRESSURE_BAR,
         "mdi:gauge",
@@ -406,7 +406,7 @@ SENSOR_TYPES = {
     # other data...
     "POSITION_EXPANSION_VALVE": [
         "Position Expansion Valve",
-        Ecotouch2Tag.POSITION_EXPANSION_VALVE,
+        EcotouchTag.POSITION_EXPANSION_VALVE,
         None,
         SensorStateClass.MEASUREMENT,
         "mdi:gauge",
@@ -416,7 +416,7 @@ SENSOR_TYPES = {
     ],
     "SUCTION_GAS_OVERHEATING": [
         "Suction Gas Overheating",
-        Ecotouch2Tag.SUCTION_GAS_OVERHEATING,
+        EcotouchTag.SUCTION_GAS_OVERHEATING,
         None,
         SensorStateClass.MEASUREMENT,
         "mdi:gauge",
@@ -426,7 +426,7 @@ SENSOR_TYPES = {
     ],
     "POWER_ELECTRIC": [
         "Power Electrical",
-        Ecotouch2Tag.POWER_ELECTRIC,
+        EcotouchTag.POWER_ELECTRIC,
         DEVICE_CLASS_POWER,
         POWER_KILO_WATT,
         "mdi:lightning-bolt",
@@ -436,7 +436,7 @@ SENSOR_TYPES = {
     ],
     "POWER_HEATING": [
         "Power Thermal",
-        Ecotouch2Tag.POWER_HEATING,
+        EcotouchTag.POWER_HEATING,
         DEVICE_CLASS_POWER,
         POWER_KILO_WATT,
         "mdi:lightning-bolt",
@@ -446,7 +446,7 @@ SENSOR_TYPES = {
     ],
     "POWER_COOLING": [
         "Power Cooling",
-        Ecotouch2Tag.POWER_COOLING,
+        EcotouchTag.POWER_COOLING,
         DEVICE_CLASS_POWER,
         POWER_KILO_WATT,
         "mdi:lightning-bolt",
@@ -456,7 +456,7 @@ SENSOR_TYPES = {
     ],
     "COP_HEATING": [
         "COP Heating",
-        Ecotouch2Tag.COP_HEATING,
+        EcotouchTag.COP_HEATING,
         None,
         SensorStateClass.MEASUREMENT,
         "mdi:gauge",
@@ -466,7 +466,7 @@ SENSOR_TYPES = {
     ],
     "COP_COOLING": [
         "COP Cooling",
-        Ecotouch2Tag.COP_COOLING,
+        EcotouchTag.COP_COOLING,
         None,
         SensorStateClass.MEASUREMENT,
         "mdi:gauge",
@@ -476,7 +476,7 @@ SENSOR_TYPES = {
     ],
     "PERCENT_HEAT_CIRC_PUMP": [
         "Percent Heat Circ Pump",
-        Ecotouch2Tag.PERCENT_HEAT_CIRC_PUMP,
+        EcotouchTag.PERCENT_HEAT_CIRC_PUMP,
         DEVICE_CLASS_POWER_FACTOR,
         PERCENTAGE,
         "mdi:gauge",
@@ -486,7 +486,7 @@ SENSOR_TYPES = {
     ],
     "PERCENT_SOURCE_PUMP": [
         "Percent Source Pump",
-        Ecotouch2Tag.PERCENT_SOURCE_PUMP,
+        EcotouchTag.PERCENT_SOURCE_PUMP,
         DEVICE_CLASS_POWER_FACTOR,
         PERCENTAGE,
         "mdi:gauge",
@@ -496,7 +496,7 @@ SENSOR_TYPES = {
     ],
     "PERCENT_COMPRESSOR": [
         "Percent Compressor",
-        Ecotouch2Tag.PERCENT_COMPRESSOR,
+        EcotouchTag.PERCENT_COMPRESSOR,
         DEVICE_CLASS_POWER_FACTOR,
         PERCENTAGE,
         "mdi:gauge",
@@ -507,7 +507,7 @@ SENSOR_TYPES = {
     # writeable sensors from here...
     "HOLIDAY_START_TIME": [
         "Holiday start",
-        Ecotouch2Tag.HOLIDAY_START_TIME,
+        EcotouchTag.HOLIDAY_START_TIME,
         DEVICE_CLASS_DATE,
         None,
         "mdi:calendar-arrow-right",
@@ -517,7 +517,7 @@ SENSOR_TYPES = {
     ],
     "HOLIDAY_END_TIME": [
         "Holiday end",
-        Ecotouch2Tag.HOLIDAY_END_TIME,
+        EcotouchTag.HOLIDAY_END_TIME,
         DEVICE_CLASS_DATE,
         None,
         "mdi:calendar-arrow-left",
@@ -527,7 +527,7 @@ SENSOR_TYPES = {
     ],
     "STATE_SERVICE": [
         "State Service",
-        Ecotouch2Tag.STATE_SERVICE,
+        EcotouchTag.STATE_SERVICE,
         None,
         None,
         None,

@@ -19,7 +19,7 @@ from homeassistant.helpers.entity_registry import async_entries_for_device
 from homeassistant.helpers.entity_registry import async_get as getEntityRegistry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
 from .const import (
@@ -178,15 +178,15 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                         # match = re.search(r"^.*\.(.*)", entity)
 
                         # I (marq24) do not really understand why we check here, if the
-                        # tag is available in the 'Ecotouch2Tag' - but what do I know...
-                        if tag is not None and tag.upper() in Ecotouch2Tag.__members__:
+                        # tag is available in the 'EcotouchTag' - but what do I know...
+                        if tag is not None and tag.upper() in EcotouchTag.__members__:
                             # print(match.groups()[0].upper())
-                            if Ecotouch2Tag[  # pylint: disable=unsubscriptable-object
+                            if EcotouchTag[  # pylint: disable=unsubscriptable-object
                                 tag.upper()
                             ]:
                                 # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
                                 tags.append(
-                                    Ecotouch2Tag[tag.upper()]
+                                    EcotouchTag[tag.upper()]
                                 )  # pylint: disable=unsubscriptable-object
                         # match = re.search(r"^.*\.(.*)", entity)
                         # if match:
@@ -195,7 +195,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                         #         # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
                         #         tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
                         else:
-                            _LOGGER.warning(_LOGGER.warning(f"Tag: {tag} not found in Ecotouch2Tag.__members__ !"))
+                            _LOGGER.warning(_LOGGER.warning(f"Tag: {tag} not found in EcotouchTag.__members__ !"))
                 self.api.tags = tags
 
             tagdatas = await self.api.async_get_data()
@@ -212,7 +212,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         except UpdateFailed as exception:
             raise UpdateFailed() from exception
 
-    async def async_write_tag(self, tag: Ecotouch2Tag, value):
+    async def async_write_tag(self, tag: EcotouchTag, value):
         """Update single data"""
         res = await self.api.async_write_value(tag, value)
         # print(res)

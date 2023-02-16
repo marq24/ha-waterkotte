@@ -1,4 +1,4 @@
-""" xecotouch main module"""
+""" ecotouch main module"""
 from typing import (
     Any,
     Callable,
@@ -45,7 +45,7 @@ class InvalidValueException(Exception):
     # pass
 
 
-class Ecotouch2Tag:
+class EcotouchTag:
     """A Dummy Class."""
 
     # pass
@@ -53,52 +53,52 @@ class Ecotouch2Tag:
 
 # default method that reads a value based on a single tag
 def _parse_value_default(
-        self: Ecotouch2Tag, vals, bitnum=None, *other_args
+        self: EcotouchTag, vals, bitnum=None, *other_args
 ):  # pylint: disable=unused-argument,keyword-arg-before-vararg
     assert len(self.tags) == 1
-    ecotouch2_tag = self.tags[0]
-    assert ecotouch2_tag[0] in ["A", "I", "D"]
+    ecotouch_tag = self.tags[0]
+    assert ecotouch_tag[0] in ["A", "I", "D"]
 
-    if ecotouch2_tag not in vals:
+    if ecotouch_tag not in vals:
         return None
 
-    val = vals[ecotouch2_tag]
+    val = vals[ecotouch_tag]
 
-    if ecotouch2_tag[0] == "A":
+    if ecotouch_tag[0] == "A":
         return float(val) / 10.0
-    if ecotouch2_tag[0] == "I":
+    if ecotouch_tag[0] == "I":
         if bitnum is None:
             return int(val)
         else:
             return (int(val) & (1 << bitnum)) > 0
 
-    if ecotouch2_tag[0] == "D":
+    if ecotouch_tag[0] == "D":
         if val == "1":
             return True
         elif val == "0":
             return False
         else:
             raise InvalidValueException(
-                # "%s is not a valid value for %s" % (val, ecotouch2_tag)
-                f"{val} is not a valid value for {ecotouch2_tag}"
+                # "%s is not a valid value for %s" % (val, ecotouch_tag)
+                f"{val} is not a valid value for {ecotouch_tag}"
             )
     return None
 
 
 def _write_value_default(self, value, et_values):
     assert len(self.tags) == 1
-    ecotouch2_tag = self.tags[0]
-    assert ecotouch2_tag[0] in ["A", "I", "D"]
+    ecotouch_tag = self.tags[0]
+    assert ecotouch_tag[0] in ["A", "I", "D"]
 
-    if ecotouch2_tag[0] == "I":
+    if ecotouch_tag[0] == "I":
         assert isinstance(value, int)
-        et_values[ecotouch2_tag] = str(value)
-    elif ecotouch2_tag[0] == "D":
+        et_values[ecotouch_tag] = str(value)
+    elif ecotouch_tag[0] == "D":
         assert isinstance(value, bool)
-        et_values[ecotouch2_tag] = "1" if value else "0"
-    elif ecotouch2_tag[0] == "A":
+        et_values[ecotouch_tag] = "1" if value else "0"
+    elif ecotouch_tag[0] == "A":
         assert isinstance(value, float)
-        et_values[ecotouch2_tag] = str(int(value * 10))
+        et_values[ecotouch_tag] = str(int(value * 10))
 
 
 def _parse_series(self, e_vals, *other_args):  # pylint: disable=unused-argument
@@ -930,8 +930,8 @@ class TagData(NamedTuple):
     bit: int = None
 
 
-class Ecotouch2Tag(TagData, Enum):  # pylint: disable=function-redefined
-    """Ecotouch2Tag Class"""
+class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
+    """EcotouchTag Class"""
 
     HOLIDAY_ENABLED = TagData(["D420"], writeable=True)
     HOLIDAY_START_TIME = TagData(
@@ -1174,8 +1174,8 @@ class Ecotouch2Tag(TagData, Enum):  # pylint: disable=function-redefined
 #
 # Class to control Waterkotte Ecotouch heatpumps.
 #
-class Ecotouch2:
-    """Ecotouch2 Class"""
+class Ecotouch:
+    """Ecotouch Class"""
 
     auth_cookies = None
 
@@ -1237,14 +1237,14 @@ class Ecotouch2:
                 #     )
                 self.auth_cookies = None
 
-    async def read_value(self, tag: Ecotouch2Tag):
+    async def read_value(self, tag: EcotouchTag):
         """Read a value from Tag"""
         res = await self.read_values([tag])
         if tag in res:
             return res[tag]
         return None
 
-    async def write_values(self, kv_pairs: Collection[Tuple[Ecotouch2Tag, Any]]):
+    async def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
         """Write values to Tag"""
         to_write = {}
         result = {}
@@ -1278,7 +1278,7 @@ class Ecotouch2:
         """Write a value"""
         return await self.write_values([(tag, value)])
 
-    async def read_values(self, tags: Sequence[Ecotouch2Tag]):
+    async def read_values(self, tags: Sequence[EcotouchTag]):
         """Async read values"""
         # create flat list of ecotouch tags to be read
         e_tags = list(set([etag for tag in tags for etag in tag.tags]))
@@ -1325,12 +1325,12 @@ class Ecotouch2:
         return result
 
     #
-    # reads a list of xecotouch tags
+    # reads a list of ecotouch tags
     #
     async def _read_tags(
-            # self, tags: Sequence[Ecotouch2Tag], results={}, results_status={}
+            # self, tags: Sequence[EcotouchTag], results={}, results_status={}
             self,
-            tags: Sequence[Ecotouch2Tag],
+            tags: Sequence[EcotouchTag],
             results=None,
             results_status=None,
     ):

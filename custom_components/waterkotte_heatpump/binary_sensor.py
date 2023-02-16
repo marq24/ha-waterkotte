@@ -5,10 +5,10 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 # from homeassistant.const import ATTR_FRIENDLY_NAME
 
 # from .const import DOMAIN
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
-# from .xecotouch import EcotouchTag
+# from .ecotouch import EcotouchTag
 from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 SENSOR_TYPES = {
     "STATE_SOURCEPUMP": [
         "Sourcepump",
-        Ecotouch2Tag.STATE_SOURCEPUMP,
+        EcotouchTag.STATE_SOURCEPUMP,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:snowflake-thermometer",
@@ -28,7 +28,7 @@ SENSOR_TYPES = {
     ],
     "STATE_HEATINGPUMP": [
         "Heatingpump",
-        Ecotouch2Tag.STATE_HEATINGPUMP,
+        EcotouchTag.STATE_HEATINGPUMP,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -38,7 +38,7 @@ SENSOR_TYPES = {
     ],
     "STATE_EVD": [
         "EVD",
-        Ecotouch2Tag.STATE_EVD,
+        EcotouchTag.STATE_EVD,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -48,7 +48,7 @@ SENSOR_TYPES = {
     ],
     "STATE_COMPRESSOR": [
         "Compressor",
-        Ecotouch2Tag.STATE_COMPRESSOR,
+        EcotouchTag.STATE_COMPRESSOR,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -58,7 +58,7 @@ SENSOR_TYPES = {
     ],
     "STATE_COMPRESSOR2": [
         "Compressor2",
-        Ecotouch2Tag.STATE_COMPRESSOR2,
+        EcotouchTag.STATE_COMPRESSOR2,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -68,7 +68,7 @@ SENSOR_TYPES = {
     ],
     "STATE_EXTERNAL_HEATER": [
         "External Heater",
-        Ecotouch2Tag.STATE_EXTERNAL_HEATER,
+        EcotouchTag.STATE_EXTERNAL_HEATER,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -78,7 +78,7 @@ SENSOR_TYPES = {
     ],
     "STATE_ALARM": [
         "Alarm",
-        Ecotouch2Tag.STATE_ALARM,
+        EcotouchTag.STATE_ALARM,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -88,7 +88,7 @@ SENSOR_TYPES = {
     ],
     "STATE_COOLING": [
         "Cooling",
-        Ecotouch2Tag.STATE_COOLING,
+        EcotouchTag.STATE_COOLING,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -98,7 +98,7 @@ SENSOR_TYPES = {
     ],
     "STATE_WATER": [
         "Water",
-        Ecotouch2Tag.STATE_WATER,
+        EcotouchTag.STATE_WATER,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -108,7 +108,7 @@ SENSOR_TYPES = {
     ],
     "STATE_POOL": [
         "Pool",
-        Ecotouch2Tag.STATE_POOL,
+        EcotouchTag.STATE_POOL,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -118,7 +118,7 @@ SENSOR_TYPES = {
     ],
     "STATE_SOLAR": [
         "Solar",
-        Ecotouch2Tag.STATE_SOLAR,
+        EcotouchTag.STATE_SOLAR,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",
@@ -128,7 +128,7 @@ SENSOR_TYPES = {
     ],
     "STATE_COOLING4WAY": [
         "Cooling4way",
-        Ecotouch2Tag.STATE_COOLING4WAY,
+        EcotouchTag.STATE_COOLING4WAY,
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:weather-partly-cloudy",

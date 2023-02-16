@@ -12,7 +12,7 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 # from .const import SENSOR
 #  from .const import UnitOfTemperature
 
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2Tag
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
@@ -20,14 +20,14 @@ from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 # Sensor types are defined as:
-#   variable -> [0]title, [1] Ecotouch2Tag, [2]device_class, [3]min, [4]icon, [5]enabled_by_default, [6]max, [7]step #pylint: disable=line-too-long
+#   variable -> [0]title, [1] EcotouchTag, [2]device_class, [3]min, [4]icon, [5]enabled_by_default, [6]max, [7]step #pylint: disable=line-too-long
 SENSOR_TYPES = {
     # temperature sensors
 
     # not sure if this RETURN temperature should be setable at all?!
     "TEMPERATURE_RETURN_SET": [
         "Temperature Return Setpoint",
-        Ecotouch2Tag.TEMPERATURE_RETURN_SET,
+        EcotouchTag.TEMPERATURE_RETURN_SET,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         True,
@@ -39,7 +39,7 @@ SENSOR_TYPES = {
     # A109
     "TEMPERATURE_COOLING_SETPOINT": [
         "Temperature Cooling Demand",
-        Ecotouch2Tag.TEMPERATURE_COOLING_SETPOINT,
+        EcotouchTag.TEMPERATURE_COOLING_SETPOINT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -50,7 +50,7 @@ SENSOR_TYPES = {
     # A108
     "TEMPERATURE_COOLING_OUTDOOR_LIMIT": [
         "Temperature Cooling Outdoor Limit",
-        Ecotouch2Tag.TEMPERATURE_COOLING_OUTDOOR_LIMIT,
+        EcotouchTag.TEMPERATURE_COOLING_OUTDOOR_LIMIT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -76,7 +76,7 @@ SENSOR_TYPES = {
     # A93
     "TEMPERATURE_HEATING_HC_LIMIT": [
         "Temperature heating curve heating limit",
-        Ecotouch2Tag.TEMPERATURE_HEATING_HC_LIMIT,
+        EcotouchTag.TEMPERATURE_HEATING_HC_LIMIT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -87,7 +87,7 @@ SENSOR_TYPES = {
     # A94
     "TEMPERATURE_HEATING_HC_TARGET": [
         "Temperature heating curve heating limit target",
-        Ecotouch2Tag.TEMPERATURE_HEATING_HC_TARGET,
+        EcotouchTag.TEMPERATURE_HEATING_HC_TARGET,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -98,7 +98,7 @@ SENSOR_TYPES = {
     # A91
     "TEMPERATURE_HEATING_HC_OUTDOOR_NORM": [
         "Temperature heating curve norm outdoor",
-        Ecotouch2Tag.TEMPERATURE_HEATING_HC_OUTDOOR_NORM,
+        EcotouchTag.TEMPERATURE_HEATING_HC_OUTDOOR_NORM,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -109,7 +109,7 @@ SENSOR_TYPES = {
     # A92
     "TEMPERATURE_HEATING_HC_NORM": [
         "Temperature heating curve norm heating circle",
-        Ecotouch2Tag.TEMPERATURE_HEATING_HC_NORM,
+        EcotouchTag.TEMPERATURE_HEATING_HC_NORM,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -120,7 +120,7 @@ SENSOR_TYPES = {
     # A95
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MAX": [
         "Temperature heating curve Limit for setpoint (Max.)",
-        Ecotouch2Tag.TEMPERATURE_HEATING_SETPOINTLIMIT_MAX,
+        EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MAX,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -131,7 +131,7 @@ SENSOR_TYPES = {
     # A104
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MIN": [
         "Temperature heating curve Limit for setpoint (Min.)",
-        Ecotouch2Tag.TEMPERATURE_HEATING_SETPOINTLIMIT_MIN,
+        EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MIN,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -142,7 +142,7 @@ SENSOR_TYPES = {
     # A38 - Warmwasser
     "TEMPERATURE_WATER_SETPOINT": [
         "Temperature Hot Water setpoint",
-        Ecotouch2Tag.TEMPERATURE_WATER_SETPOINT,
+        EcotouchTag.TEMPERATURE_WATER_SETPOINT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -154,7 +154,7 @@ SENSOR_TYPES = {
     # A276
     "TEMPERATURE_MIX1_HC_LIMIT": [
         "Temperature mixing circle 1 heating limit",
-        Ecotouch2Tag.TEMPERATURE_MIX1_HC_LIMIT,
+        EcotouchTag.TEMPERATURE_MIX1_HC_LIMIT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -165,7 +165,7 @@ SENSOR_TYPES = {
     # A277
     "TEMPERATURE_MIX1_HC_TARGET": [
         "Temperature mixing circle 1 heating limit target",
-        Ecotouch2Tag.TEMPERATURE_MIX1_HC_TARGET,
+        EcotouchTag.TEMPERATURE_MIX1_HC_TARGET,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -176,7 +176,7 @@ SENSOR_TYPES = {
     # A274
     "TEMPERATURE_MIX1_HC_OUTDOOR_NORM": [
         "Temperature mixing circle 1 norm outdoor",
-        Ecotouch2Tag.TEMPERATURE_MIX1_HC_OUTDOOR_NORM,
+        EcotouchTag.TEMPERATURE_MIX1_HC_OUTDOOR_NORM,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -187,7 +187,7 @@ SENSOR_TYPES = {
     # A275
     "TEMPERATURE_MIX1_HC_HEATING_NORM": [
         "Temperature mixing circle 1 norm heating circle",
-        Ecotouch2Tag.TEMPERATURE_MIX1_HC_HEATING_NORM,
+        EcotouchTag.TEMPERATURE_MIX1_HC_HEATING_NORM,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -198,7 +198,7 @@ SENSOR_TYPES = {
     # A278
     "TEMPERATURE_MIX1_HC_MAX": [
         "Temperature mixing circle 1 Limit for setpoint (Max.)",
-        Ecotouch2Tag.TEMPERATURE_MIX1_HC_MAX,
+        EcotouchTag.TEMPERATURE_MIX1_HC_MAX,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -209,7 +209,7 @@ SENSOR_TYPES = {
     # Mischerkreis 2 Heizkennlinie
     "TEMPERATURE_MIX2_HC_LIMIT": [
         "Temperature mixing circle 2 heating limit",
-        Ecotouch2Tag.TEMPERATURE_MIX2_HC_LIMIT,
+        EcotouchTag.TEMPERATURE_MIX2_HC_LIMIT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -219,7 +219,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX2_HC_TARGET": [
         "Temperature mixing circle 2 heating limit target",
-        Ecotouch2Tag.TEMPERATURE_MIX2_HC_TARGET,
+        EcotouchTag.TEMPERATURE_MIX2_HC_TARGET,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -229,7 +229,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX2_HC_OUTDOOR_NORM": [
         "Temperature mixing circle 2 norm outdoor",
-        Ecotouch2Tag.TEMPERATURE_MIX2_HC_OUTDOOR_NORM,
+        EcotouchTag.TEMPERATURE_MIX2_HC_OUTDOOR_NORM,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -239,7 +239,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX2_HC_HEATING_NORM": [
         "Temperature mixing circle 2 norm heating circle",
-        Ecotouch2Tag.TEMPERATURE_MIX2_HC_HEATING_NORM,
+        EcotouchTag.TEMPERATURE_MIX2_HC_HEATING_NORM,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
@@ -249,7 +249,7 @@ SENSOR_TYPES = {
     ],
     "TEMPERATURE_MIX2_HC_MAX": [
         "Temperature mixing circle 2 Limit for setpoint (Max.)",
-        Ecotouch2Tag.TEMPERATURE_MIX2_HC_MAX,
+        EcotouchTag.TEMPERATURE_MIX2_HC_MAX,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,

@@ -7,8 +7,8 @@ import socket
 # import re
 import aiohttp
 import async_timeout
-from custom_components.waterkotte_heatpump.mypywaterkotte.xecotouch import Ecotouch2, Ecotouch2Tag, EASYCON, ECOTOUCH
-from custom_components.waterkotte_heatpump.mypywaterkotte.xeasycon import Easycon2
+from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import Ecotouch, EcotouchTag, EASYCON, ECOTOUCH
+from custom_components.waterkotte_heatpump.mypywaterkotte.easycon import Easycon
 
 TIMEOUT = 10
 
@@ -36,9 +36,9 @@ class WaterkotteHeatpumpApiClient:
         # self._hass = hass
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = Ecotouch2(host)
+            self._client = Ecotouch(host)
         elif systemType == EASYCON:
-            self._client = Easycon2(host)
+            self._client = Easycon(host)
         else:
             print("Error unknown System type!")
         # self._entities = []
@@ -79,17 +79,17 @@ class WaterkotteHeatpumpApiClient:
         ret = await self._client.read_values(self.tags)
         return ret
 
-    async def async_read_values(self, tags: Sequence[Ecotouch2Tag]) -> dict:
+    async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
         """Get data from the API."""
         ret = await self._client.read_values(tags)
         return ret
 
-    async def async_read_value(self, tag: Ecotouch2Tag) -> dict:
+    async def async_read_value(self, tag: EcotouchTag) -> dict:
         """Get data from the API."""
         ret = await self._client.read_value(tag)
         return ret
 
-    async def async_write_value(self, tag: Ecotouch2Tag, value):
+    async def async_write_value(self, tag: EcotouchTag, value):
         """Write data to API"""
         res = await self._client.write_value(tag, value)
         return res
