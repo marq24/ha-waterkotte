@@ -427,9 +427,10 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             if value is None or value == "":
                 return "unknown"
             if str(sensor).upper().endswith("_ADJUST"):
+                _LOGGER.warning("native_value LOOKUP value "+str(value) +" "+str(TEMP_ADJUST_LOOKUP[value]))
                 value = TEMP_ADJUST_LOOKUP[value]
-            elif (sensor[7] == TENTH_STEP):
-                value = float(value) * 10;
+            #elif (sensor[7] == TENTH_STEP):
+            #    value = float(value) * 10;
         except KeyError:
             return "unknown"
         except TypeError:
@@ -449,11 +450,11 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
             sensor = SENSOR_TYPES[self._type]
             if str(sensor).upper().endswith("_ADJUST"):
-                _LOGGER.warning("_ADJUST LOOKUP value "+str(value) +" "+str(TEMP_ADJUST_LOOKUP.index(value)))
+                _LOGGER.warning("async_set_native_value LOOKUP value "+str(value) +" "+str(TEMP_ADJUST_LOOKUP.index(value)))
                 value = TEMP_ADJUST_LOOKUP.index(value)
-            elif (sensor[7] == TENTH_STEP):
-                _LOGGER.warning("TENTH_STEP value "+str(value) +" "+str(float(value) / 10.0))
-                value = float(value) / 10.0;
+            #elif (sensor[7] == TENTH_STEP):
+            #    _LOGGER.warning("TENTH_STEP value "+str(value) +" "+str(float(value) / 10.0))
+            #    value = float(value) / 10.0;
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
             return "unavailable"
