@@ -428,9 +428,6 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
                 return "unknown"
             if str(self._type).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
-            elif (sensor[7] == TENTH_STEP):
-                _LOGGER.warning("native_value org: "+str(value) +" should? "+str(float(value) * 10.0))
-            #    value = float(value) * 10;
         except KeyError:
             return "unknown"
         except TypeError:
@@ -448,12 +445,9 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
         try:
             # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            sensor = SENSOR_TYPES[self._type]
+            # sensor = SENSOR_TYPES[self._type]
             if str(self._type).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP.index(value)
-            elif (sensor[7] == TENTH_STEP):
-                _LOGGER.warning("async_set_native_value org: "+str(value) +" should? "+str(float(value) / 10.0))
-            #    value = float(value) / 10.0;
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
             return "unavailable"
