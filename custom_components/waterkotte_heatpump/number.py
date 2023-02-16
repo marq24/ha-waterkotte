@@ -24,13 +24,13 @@ _LOGGER = logging.getLogger(__name__)
 SENSOR_TYPES = {
     # temperature sensors
 
-    # not sure if this RETURN temperature should be setable at all?!
+    # not sure if this RETURN temperature should be set able at all?!
     "TEMPERATURE_RETURN_SET": [
         "Temperature Return Setpoint",
         EcotouchTag.TEMPERATURE_RETURN_SET,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
-        True,
+        False,
         0,
         100,
         DEFAULT_STEP,
