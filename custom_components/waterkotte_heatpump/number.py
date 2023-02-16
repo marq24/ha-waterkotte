@@ -22,65 +22,220 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcotouchTag, [2]device_class, [3]min, [4]icon, [5]enabled_by_default, [6]max, [7]step #pylint: disable=line-too-long
 SENSOR_TYPES = {
-    "temperature_heating_set": [
-        "Temperature Heating Set",
-        EcotouchTag.TEMPERATURE_HEATING_SET,
+    # temperature sensors
+
+    # not sure if this RETURN temperature should be set able at all?!
+    "TEMPERATURE_RETURN_SET": [
+        "Temperature Return Setpoint",
+        EcotouchTag.TEMPERATURE_RETURN_SET,
         NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
         0,
-        "mdi:snowflake-thermometer",
-        True,
         100,
-        0.1,
+        DEFAULT_STEP,
     ],
-    "temperature_heating_set2": [
-        "Temperature Heating Set2",
-        EcotouchTag.TEMPERATURE_HEATING_SET2,
+
+    # Cooling/Kuehlung...
+    # A109
+    "TEMPERATURE_COOLING_SETPOINT": [
+        "Temperature Cooling Demand",
+        EcotouchTag.TEMPERATURE_COOLING_SETPOINT,
         NumberDeviceClass.TEMPERATURE,
-        0,
-        "mdi:snowflake-thermometer",
-        True,
-        100,
-        0.1,
+        "mdi:thermometer",
+        False,
+        5,
+        26,
+        0.5,
     ],
-    "temperature_cooling_set": [
-        "Temperature Cooling Set",
-        EcotouchTag.TEMPERATURE_COOLING_SET,
+    # A108
+    "TEMPERATURE_COOLING_OUTDOOR_LIMIT": [
+        "Temperature Cooling Outdoor Limit",
+        EcotouchTag.TEMPERATURE_COOLING_OUTDOOR_LIMIT,
         NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
         0,
-        "mdi:snowflake-thermometer",
-        True,
         100,
-        0.1,
+        DEFAULT_STEP,
     ],
-    "temperature_cooling_set2": [
-        "Temperature Cooling Set2",
-        EcotouchTag.TEMPERATURE_COOLING_SET2,
+
+    # We should not use the HEATING setpoint directly - adjust
+    # the heat curve instead!
+    #"temp_heating_setpoint": [
+    #    "Temperature Heating Demand",
+    #    EcotouchTag.TEMPERATURE_HEATING_SETPOINT,
+    #    NumberDeviceClass.TEMPERATURE,
+    #    "mdi:thermometer",
+    #    False,
+    #   0,
+    #   100,
+    #   DEFAULT_STEP,
+    #],
+
+    "TEMPERATURE_HEATING_ADJUST": [
+        "Temperature heating Adjustment",
+        EcotouchTag.TEMPERATURE_HEATING_ADJUST,
         NumberDeviceClass.TEMPERATURE,
-        0,
-        "mdi:snowflake-thermometer",
+        "mdi:thermometer",
         True,
-        100,
-        0.1,
+        -2,
+        2,
+        0.5,
     ],
-    "temperature_water_setpoint": [
-        "Temperature Water Setpoint",
+    "TEMPERATURE_MIX1_ADJUST": [
+        "Temperature mixing circle 1 Adjustment",
+        EcotouchTag.TEMPERATURE_MIX1_ADJUST,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        True,
+        -2,
+        2,
+        0.5,
+    ],
+    "TEMPERATURE_MIX2_ADJUST": [
+        "Temperature mixing circle 2 Adjustment",
+        EcotouchTag.TEMPERATURE_MIX2_ADJUST,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        -2,
+        2,
+        0.5,
+    ],
+    "TEMPERATURE_MIX3_ADJUST": [
+        "Temperature mixing circle 3 Adjustment",
+        EcotouchTag.TEMPERATURE_MIX3_ADJUST,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        -2,
+        2,
+        0.5,
+    ],
+
+    # Heizung - Heizkennlinie
+    # A93
+    "TEMPERATURE_HEATING_HC_LIMIT": [
+        "Temperature heating curve heating limit",
+        EcotouchTag.TEMPERATURE_HEATING_HC_LIMIT,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A94
+    "TEMPERATURE_HEATING_HC_TARGET": [
+        "Temperature heating curve heating limit target",
+        EcotouchTag.TEMPERATURE_HEATING_HC_TARGET,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A91
+    "TEMPERATURE_HEATING_HC_OUTDOOR_NORM": [
+        "Temperature heating curve norm outdoor",
+        EcotouchTag.TEMPERATURE_HEATING_HC_OUTDOOR_NORM,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A92
+    "TEMPERATURE_HEATING_HC_NORM": [
+        "Temperature heating curve norm heating circle",
+        EcotouchTag.TEMPERATURE_HEATING_HC_NORM,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A95
+    "TEMPERATURE_HEATING_SETPOINTLIMIT_MAX": [
+        "Temperature heating curve Limit for setpoint (Max.)",
+        EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MAX,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A104
+    "TEMPERATURE_HEATING_SETPOINTLIMIT_MIN": [
+        "Temperature heating curve Limit for setpoint (Min.)",
+        EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MIN,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        -40,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A38 - Warmwasser
+    "TEMPERATURE_WATER_SETPOINT": [
+        "Temperature Hot Water setpoint",
         EcotouchTag.TEMPERATURE_WATER_SETPOINT,
         NumberDeviceClass.TEMPERATURE,
-        0,
-        "mdi:snowflake-thermometer",
-        True,
-        100,
-        0.1,
+        "mdi:thermometer",
+        False,
+        28,
+        70,
+        0.5,
     ],
-    "temperature_water_setpoint2": [
-        "Temperature Water Setpoint2",
-        EcotouchTag.TEMPERATURE_WATER_SETPOINT2,
+    # Mischerkreis 1 Heizkennlinie
+    # A276
+    "TEMPERATURE_MIX1_HC_LIMIT": [
+        "Temperature mixing circle 1 heating limit",
+        EcotouchTag.TEMPERATURE_MIX1_HC_LIMIT,
         NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
         0,
-        "mdi:snowflake-thermometer",
-        True,
         100,
-        0.1,
+        DEFAULT_STEP,
+    ],
+    # A277
+    "TEMPERATURE_MIX1_HC_TARGET": [
+        "Temperature mixing circle 1 heating limit target",
+        EcotouchTag.TEMPERATURE_MIX1_HC_TARGET,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A274
+    "TEMPERATURE_MIX1_HC_OUTDOOR_NORM": [
+        "Temperature mixing circle 1 norm outdoor",
+        EcotouchTag.TEMPERATURE_MIX1_HC_OUTDOOR_NORM,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
+    ],
+    # A275
+    "TEMPERATURE_MIX1_HC_HEATING_NORM": [
+        "Temperature mixing circle 1 norm heating circle",
+        EcotouchTag.TEMPERATURE_MIX1_HC_HEATING_NORM,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        100,
+        DEFAULT_STEP,
     ],
     # A278
     "TEMPERATURE_MIX1_HC_MAX": [
@@ -192,7 +347,7 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 return "unknown"
-            if self._type == "adapt_heating":
+            if str(self._type).endswith("_ADJUST"):
                 value = ADAPT_LOOKUP[value]
         except KeyError:
             return "unknown"
@@ -211,7 +366,7 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
         try:
             # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            if self._type == "adapt_heating":
+            if str(self._type).endswith("_ADJUST"):
                 value = ADAPT_LOOKUP.index(value)
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
