@@ -19,15 +19,15 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 # Waterkotte Heatpump Integration for Home Assistant
 **This component will set up the following platforms.**
 
-| Platform        | Description                             |
-| --------------- |-----------------------------------------|
-| `binary_sensor` | Show something `True` or `False`.       |
-| `sensor`        | Show info from Waterkotte Heatpump API. |
-| `switch`        | Switch something `True` or `False`.     |
-| `select`        | Select a value from options.            |
-| `number`        | Temperatures                            |
+| Platform        | Description                                          |
+| --------------- |------------------------------------------------------|
+| `binary_sensor` | Show something `True` or `False`.                    |
+| `sensor`        | Show info from Waterkotte Heatpump API.              |
+| `switch`        | Switch something `True` or `False`.                  |
+| `select`        | Select a value from options.                         |
+| `number`        | adjustable Temperatures (demanded or heating curves) |
 
-![logo](https://github.com/marq24/waterkotte-integration/raw/master/logo.png)[logoimg]
+![logo](https://github.com/marq24/waterkotte-integration/raw/master/logo.png)
 
 ## Installation
 ## Installation

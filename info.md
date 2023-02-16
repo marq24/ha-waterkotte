@@ -14,13 +14,13 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 
 **This component will set up the following platforms.**
 
-| Platform        | Description                             |
-| --------------- |-----------------------------------------|
-| `binary_sensor` | Show something `True` or `False`.       |
-| `sensor`        | Show info from Waterkotte Heatpump API. |
-| `switch`        | Switch something `True` or `False`.     |
-| `select`        | Select a value from options.            |
-| `number`        | Temperatures                            |
+| Platform        | Description                                          |
+| --------------- |------------------------------------------------------|
+| `binary_sensor` | Show something `True` or `False`.                    |
+| `sensor`        | Show info from Waterkotte Heatpump API.              |
+| `switch`        | Switch something `True` or `False`.                  |
+| `select`        | Select a value from options.                         |
+| `number`        | adjustable Temperatures (demanded or heating curves) |
 
 {% if not installed %}
 
