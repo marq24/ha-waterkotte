@@ -49,7 +49,7 @@ SENSOR_TYPES = {
         False,
         5,
         26,
-        FIFTH_STEP,
+        TENTH_STEP,
     ],
     # A108
     "TEMPERATURE_COOLING_OUTDOOR_LIMIT": [
@@ -428,6 +428,8 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
                 return "unknown"
             if str(sensor).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
+            elif (sensor[7] == TENTH_STEP):
+                value = float(value) * 10;
         except KeyError:
             return "unknown"
         except TypeError:
@@ -447,7 +449,11 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
             sensor = SENSOR_TYPES[self._type]
             if str(sensor).upper().endswith("_ADJUST"):
+                _LOGGER.warning("_ADJUST LOOKUP value "+str(value) +" "+str(TEMP_ADJUST_LOOKUP.index(value)))
                 value = TEMP_ADJUST_LOOKUP.index(value)
+            elif (sensor[7] == TENTH_STEP):
+                _LOGGER.warning("TENTH_STEP value "+str(value) +" "+str(float(value) / 10.0))
+                value = float(value) / 10.0;
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
             return "unavailable"
