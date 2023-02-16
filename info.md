@@ -4,6 +4,7 @@
 
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
+
 All credit's should go to the original creator [@pattisonmichael](https://github.com/pattisonmichael):
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 

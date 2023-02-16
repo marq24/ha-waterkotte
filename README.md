@@ -5,10 +5,10 @@
 [![License][license-shield]](LICENSE)
 
 [![pre-commit][pre-commit-shield]][pre-commit]
-[![Black][black-shield]][black]
 
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
+
 All credit's should go to the original creator [@pattisonmichael](https://github.com/pattisonmichael):
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
@@ -74,8 +74,6 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 ---
 
 [integration_blueprint]: https://github.com/custom-components/integration_blueprint
-[black]: https://github.com/psf/black
-[black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge
 [buymecoffee]: https://www.buymeacoffee.com/pattisonmichael
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 [commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/waterkotte-integration.svg?style=for-the-badge
