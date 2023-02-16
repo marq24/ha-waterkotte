@@ -19,6 +19,9 @@ from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
+TENTH_STEP = 0.1
+FIFTH_STEP = 0.5
+
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcotouchTag, [2]device_class, [3]min, [4]icon, [5]enabled_by_default, [6]max, [7]step #pylint: disable=line-too-long
 SENSOR_TYPES = {
@@ -46,7 +49,7 @@ SENSOR_TYPES = {
         False,
         5,
         26,
-        0.5,
+        FIFTH_STEP,
     ],
     # A108
     "TEMPERATURE_COOLING_OUTDOOR_LIMIT": [
@@ -73,6 +76,7 @@ SENSOR_TYPES = {
     #   DEFAULT_STEP,
     #],
 
+    # Heizung
     "TEMPERATURE_HEATING_ADJUST": [
         "Temperature heating Adjustment",
         EcotouchTag.TEMPERATURE_HEATING_ADJUST,
@@ -81,7 +85,17 @@ SENSOR_TYPES = {
         True,
         -2,
         2,
-        0.5,
+        FIFTH_STEP,
+    ],
+    "TEMPERATURE_HEATING_HYSTERESIS": [
+        "Temperature heating Hysteresis",
+        EcotouchTag.TEMPERATURE_HEATING_HYSTERESIS,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        True,
+        0,
+        10,
+        TENTH_STEP,
     ],
     "TEMPERATURE_MIX1_ADJUST": [
         "Temperature mixing circle 1 Adjustment",
@@ -91,7 +105,7 @@ SENSOR_TYPES = {
         True,
         -2,
         2,
-        0.5,
+        FIFTH_STEP,
     ],
     "TEMPERATURE_MIX2_ADJUST": [
         "Temperature mixing circle 2 Adjustment",
@@ -101,7 +115,7 @@ SENSOR_TYPES = {
         False,
         -2,
         2,
-        0.5,
+        FIFTH_STEP,
     ],
     "TEMPERATURE_MIX3_ADJUST": [
         "Temperature mixing circle 3 Adjustment",
@@ -111,7 +125,7 @@ SENSOR_TYPES = {
         False,
         -2,
         2,
-        0.5,
+        FIFTH_STEP,
     ],
 
     # Heizung - Heizkennlinie
@@ -122,9 +136,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        5,
+        35,
+        TENTH_STEP,
     ],
     # A94
     "TEMPERATURE_HEATING_HC_TARGET": [
@@ -133,9 +147,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        15,
+        65,
+        TENTH_STEP,
     ],
     # A91
     "TEMPERATURE_HEATING_HC_OUTDOOR_NORM": [
@@ -144,9 +158,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        -99,
+        99,
+        TENTH_STEP,
     ],
     # A92
     "TEMPERATURE_HEATING_HC_NORM": [
@@ -156,8 +170,8 @@ SENSOR_TYPES = {
         "mdi:thermometer",
         False,
         0,
-        100,
-        DEFAULT_STEP,
+        99,
+        TENTH_STEP,
     ],
     # A95
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MAX": [
@@ -181,17 +195,29 @@ SENSOR_TYPES = {
         100,
         DEFAULT_STEP,
     ],
+
     # A38 - Warmwasser
     "TEMPERATURE_WATER_SETPOINT": [
         "Temperature Hot Water setpoint",
         EcotouchTag.TEMPERATURE_WATER_SETPOINT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
-        False,
-        28,
+        True,
+        10,
         70,
-        0.5,
+        TENTH_STEP,
     ],
+    "TEMPERATURE_WATER_HYSTERESIS": [
+        "Temperature Hot Water Hysteresis",
+        EcotouchTag.TEMPERATURE_WATER_HYSTERESIS,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        True,
+        0,
+        10,
+        TENTH_STEP,
+    ],
+
     # Mischerkreis 1 Heizkennlinie
     # A276
     "TEMPERATURE_MIX1_HC_LIMIT": [
@@ -200,9 +226,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        5,
+        35,
+        TENTH_STEP,
     ],
     # A277
     "TEMPERATURE_MIX1_HC_TARGET": [
@@ -211,9 +237,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        15,
+        65,
+        TENTH_STEP,
     ],
     # A274
     "TEMPERATURE_MIX1_HC_OUTDOOR_NORM": [
@@ -222,9 +248,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        -99,
+        99,
+        TENTH_STEP,
     ],
     # A275
     "TEMPERATURE_MIX1_HC_HEATING_NORM": [
@@ -234,8 +260,8 @@ SENSOR_TYPES = {
         "mdi:thermometer",
         False,
         0,
-        100,
-        DEFAULT_STEP,
+        99,
+        TENTH_STEP,
     ],
     # A278
     "TEMPERATURE_MIX1_HC_MAX": [
@@ -244,10 +270,11 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        15,
+        72,
+        TENTH_STEP,
     ],
+
     # Mischerkreis 2 Heizkennlinie
     "TEMPERATURE_MIX2_HC_LIMIT": [
         "Temperature mixing circle 2 heating limit",
@@ -255,9 +282,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        5,
+        35,
+        TENTH_STEP,
     ],
     "TEMPERATURE_MIX2_HC_TARGET": [
         "Temperature mixing circle 2 heating limit target",
@@ -265,9 +292,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        15,
+        65,
+        TENTH_STEP,
     ],
     "TEMPERATURE_MIX2_HC_OUTDOOR_NORM": [
         "Temperature mixing circle 2 norm outdoor",
@@ -275,9 +302,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
-        0,
-        100,
-        DEFAULT_STEP,
+        -99,
+        99,
+        TENTH_STEP,
     ],
     "TEMPERATURE_MIX2_HC_HEATING_NORM": [
         "Temperature mixing circle 2 norm heating circle",
@@ -286,8 +313,8 @@ SENSOR_TYPES = {
         "mdi:thermometer",
         False,
         0,
-        100,
-        DEFAULT_STEP,
+        99,
+        TENTH_STEP,
     ],
     "TEMPERATURE_MIX2_HC_MAX": [
         "Temperature mixing circle 2 Limit for setpoint (Max.)",
@@ -295,13 +322,65 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,
+        15,
+        72,
+        TENTH_STEP,
+    ],
+
+    # Mischerkreis 3 Heizkennlinie
+    "TEMPERATURE_MIX3_HC_LIMIT": [
+        "Temperature mixing circle 3 heating limit",
+        EcotouchTag.TEMPERATURE_MIX3_HC_LIMIT,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        5,
+        35,
+        TENTH_STEP,
+    ],
+    "TEMPERATURE_MIX3_HC_TARGET": [
+        "Temperature mixing circle 3 heating limit target",
+        EcotouchTag.TEMPERATURE_MIX3_HC_TARGET,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        15,
+        65,
+        TENTH_STEP,
+    ],
+    "TEMPERATURE_MIX3_HC_OUTDOOR_NORM": [
+        "Temperature mixing circle 3 norm outdoor",
+        EcotouchTag.TEMPERATURE_MIX3_HC_OUTDOOR_NORM,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        -99,
+        99,
+        TENTH_STEP,
+    ],
+    "TEMPERATURE_MIX3_HC_HEATING_NORM": [
+        "Temperature mixing circle 3 norm heating circle",
+        EcotouchTag.TEMPERATURE_MIX3_HC_HEATING_NORM,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
         0,
-        100,
-        DEFAULT_STEP,
+        99,
+        TENTH_STEP,
+    ],
+    "TEMPERATURE_MIX3_HC_MAX": [
+        "Temperature mixing circle 3 Limit for setpoint (Max.)",
+        EcotouchTag.TEMPERATURE_MIX3_HC_MAX,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        15,
+        72,
+        TENTH_STEP,
     ],
 }
 
-ADAPT_LOOKUP = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
+TEMP_ADJUST_LOOKUP = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
 
 async def async_setup_entry(
         hass: HomeAssistantType, entry: ConfigType, async_add_devices
@@ -348,7 +427,7 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             if value is None or value == "":
                 return "unknown"
             if str(sensor).upper().endswith("_ADJUST"):
-                value = ADAPT_LOOKUP[value]
+                value = TEMP_ADJUST_LOOKUP[value]
         except KeyError:
             return "unknown"
         except TypeError:
@@ -368,7 +447,7 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
             sensor = SENSOR_TYPES[self._type]
             if str(sensor).upper().endswith("_ADJUST"):
-                value = ADAPT_LOOKUP.index(value)
+                value = TEMP_ADJUST_LOOKUP.index(value)
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
             return "unavailable"
