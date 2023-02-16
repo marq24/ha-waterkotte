@@ -9,7 +9,8 @@
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
 
-All credit's should go to the original creator [@pattisonmichael](https://github.com/pattisonmichael):
+All credit's have to go to the original creator [@pattisonmichael](https://github.com/pattisonmichael):
+
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
 [![Discord][discord-shield]][discord]
@@ -19,13 +20,14 @@ All credit's should go to the original creator [@pattisonmichael](https://github
 **This component will set up the following platforms.**
 
 | Platform        | Description                             |
-| --------------- | --------------------------------------- |
+| --------------- |-----------------------------------------|
 | `binary_sensor` | Show something `True` or `False`.       |
 | `sensor`        | Show info from Waterkotte Heatpump API. |
 | `switch`        | Switch something `True` or `False`.     |
 | `select`        | Select a value from options.            |
+| `number`        | Temperatures                            |
 
-![logo][logoimg]
+![logo](https://github.com/marq24/waterkotte-integration/raw/master/logo.png)[logoimg]
 
 ## Installation
 ## Installation
