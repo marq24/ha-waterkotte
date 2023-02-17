@@ -29,14 +29,16 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 
 ![logo](https://github.com/marq24/waterkotte-integration/raw/master/logo.png)
 
-## Installation
+## What you get [2023.02.17]
+![sample-view](https://github.com/marq24/waterkotte-integration/raw/master/sample-view-s.png)
+
 ## Installation
 ### HACS [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 1. Add a custom integration repository to HACS: [waterkotte-integration](https://github.com/marq24/waterkotte-integration)
 1. Install the custom integration
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump"
 1. Setup the waterkotte custom integration as described below
-  <!--1. In HACS Store, search for [***pattisonmichael/waterkotte-integration***]-->
+  <!--1. In HACS Store, search for [***marq24/waterkotte-integration***]-->
 ### Manual
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
