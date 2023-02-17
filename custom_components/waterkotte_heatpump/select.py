@@ -52,7 +52,7 @@ SENSOR_TYPES = {
         EcotouchTag.ENABLE_HEATING,
         DEVICE_CLASS_ENUM,
         None,
-        "mdi:weather-partly-cloudy",
+        "mdi:radiator",
         True,
         ENUM_OFFAUTOMANUAL,
         None,
