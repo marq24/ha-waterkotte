@@ -378,36 +378,47 @@ SENSOR_TYPES = {
         72,
         TENTH_STEP,
     ],
+
     # Water disinfection start time & duration -> weekdays will be set in
     # switch.py
+    "TEMPERATURE_WATER_DISINFECTION": [
+        "Temperature Water disinfection",
+        EcotouchTag.TEMPERATURE_WATER_DISINFECTION,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:shield-bug",
+        False,
+        60,
+        70,
+        TENTH_STEP,
+    ],
     "SCHEDULE_WATER_DISINFECTION_START_HOUR": [
-        "Water disinfection start time (Hour)",
+        "Water disinfection start time (hour)",
         EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_HOUR,
         None, # time hh:mm (24h format)
-        "mdi:clock-start",
+        "mdi:clock-digital",
         False,
         0,
         23,
         DEFAULT_STEP,
     ],
     "SCHEDULE_WATER_DISINFECTION_START_MINUTE": [
-        "Water disinfection start time (Minutes)",
+        "Water disinfection start time (minute)",
         EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_MINUTE,
         None, # time mm (24h format)
-        "mdi:clock-start",
+        "mdi:clock-digital",
         False,
         0,
-        60,
+        59,
         DEFAULT_STEP,
     ],
     "SCHEDULE_WATER_DISINFECTION_DURATION": [
-        "Water disinfection duration (in h)",
+        "Water disinfection duration (in hours)",
         EcotouchTag.SCHEDULE_WATER_DISINFECTION_DURATION,
         None, # duration in h
-        "mdi:clock-end",
+        "mdi:progress-clock",
         False,
         0,
-        12,
+        23,
         DEFAULT_STEP,
     ],
 }
