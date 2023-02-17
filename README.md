@@ -30,7 +30,7 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 ![logo](https://github.com/marq24/waterkotte-integration/raw/master/logo.png)
 
 ## What you get [2023.02.17]
-![sample-view](https://github.com/marq24/waterkotte-integration/raw/master/sample-view-s.png)
+![![sampleview](https://github.com/marq24/waterkotte-integration/raw/master/sample-view.png)](https://github.com/marq24/waterkotte-integration/raw/master/sample-view-s.png)
 
 ## Installation
 ### HACS [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
