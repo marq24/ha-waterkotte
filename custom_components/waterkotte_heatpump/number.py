@@ -181,8 +181,8 @@ SENSOR_TYPES = {
         "mdi:radiator",
         False,
         0,
-        100,
-        DEFAULT_STEP,
+        99,
+        TENTH_STEP,
     ],
     # A104
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MIN": [
@@ -191,9 +191,9 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         "mdi:radiator",
         False,
-        -40,
-        100,
-        DEFAULT_STEP,
+        0,
+        99,
+        TENTH_STEP,
     ],
 
     # A38 - Warmwasser
