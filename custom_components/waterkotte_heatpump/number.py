@@ -464,13 +464,17 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
 
     @property
     def native_value(self) -> float | None:
+        # this will be called, if the value is READ -> and so the
+        # data will be converted to the display value
         try:
             sensor = SENSOR_TYPES[self._type]
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 return "unknown"
-            if str(self._type).upper().endswith("_ADJUST"):
+            if str(sensor[1].name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
+            #if(sensor[1][0][0][0] == 'I'):
+            #    _LOGGER.warning("native_value "+str(value))
         except KeyError:
             return "unknown"
         except TypeError:
@@ -488,9 +492,11 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
         try:
             # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            # sensor = SENSOR_TYPES[self._type]
-            if str(self._type).upper().endswith("_ADJUST"):
+            sensor = SENSOR_TYPES[self._type]
+            if str(sensor[1].name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP.index(value)
+            if sensor[1][0][0][0] == 'I':
+                value = int(value)
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
             return "unavailable"
