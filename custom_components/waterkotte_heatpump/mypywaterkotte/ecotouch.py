@@ -1012,10 +1012,16 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_WATER_HYSTERESIS = TagData(["A139"], "°K", writeable=True)
     TEMPERATURE_WATER_PV_CHANGE = TagData(["A684"], "°K", writeable=True)
     TEMPERATURE_WATER_DISINFECTION = TagData(["A168"], "°C", writeable=True)
-    # Disinfection details:
-    # I505 -> START  TIME
-    # I507 -> Duration
-    # D153: Mo | D154: Di | ... D159: So
+    SCHEDULE_WATER_DISINFECTION_START = TagData(["I505"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_DURATION = TagData(["I507"], "h", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_MO = TagData(["D153"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_TU = TagData(["D154"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_WE = TagData(["D155"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_TH = TagData(["D156"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_FR = TagData(["D157"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_SA = TagData(["D158"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_SU = TagData(["D159"], "", writeable=True)
+
     TEMPERATURE_WATER_SETPOINT_FOR_SOLAR = TagData(["A169"], "°C", writeable=True)
     # Changeover temperature to extern heating when exceeding T hot water
     # Umschalttemperatur ext. Waermeerzeuger bei Ueberschreitung der T Warmwasser
