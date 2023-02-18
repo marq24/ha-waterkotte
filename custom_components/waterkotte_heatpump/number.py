@@ -33,7 +33,7 @@ from .entity import WaterkotteHeatpumpEntity
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-
+_LANG = None
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]min, [4]icon, [5]enabled_by_default, [6]max, [7]step #pylint: disable=line-too-long
@@ -181,6 +181,8 @@ async def async_setup_entry(
     # hass_data = hass.data[DOMAIN][entry.entry_id]
     _LOGGER.debug("Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
+    global _LANG
+    _LANG = coordinator.lang
     # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_condensation")])
     # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_evaporation")])
     async_add_devices(
@@ -203,6 +205,7 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
         self._type = sensor_type
         # self._name = f"{SENSOR_TYPES[self._type][0]} {DOMAIN}"
         self._name = f"{SENSOR_TYPES[self._type][0]}"
+        self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
         # self._unique_id = f"{SENSOR_TYPES[self._type][0]}_{DOMAIN}"
         self._unique_id = self._type
         self._entry_data = entry.data
