@@ -575,7 +575,7 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
 
     @property
     def native_mode(self):
-        """Return the native Step."""
+        """Return the native Mode."""
         try:
             return SENSOR_TYPES[self._type][8]
         except IndexError:
