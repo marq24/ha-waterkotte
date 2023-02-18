@@ -525,6 +525,16 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    "SCHEDULE_WATER_DISINFECTION_START_TIME": [
+        "Water disinfection start time",
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
+        DEVICE_CLASS_DATE,
+        None,
+        "mdi:clock-digital",
+        True,
+        None,
+        None,
+    ],
     "STATE_SERVICE": [
         "State Service",
         EcotouchTag.STATE_SERVICE,

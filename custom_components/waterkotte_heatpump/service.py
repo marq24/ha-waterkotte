@@ -31,3 +31,20 @@ class WaterkotteHeatpumpService():
         except ValueError:
             return "unavailable"
         # self._hass.states.set("waterkotte.set_holiday", name)
+
+    async def set_time(self, call):
+        """Handle the service call."""
+        # name = call.data.get(ATTR_NAME, DEFAULT_NAME)
+        startTime = call.data.get('starthhmm', None)
+        if startTime is not None:
+            startTime = datetime.time.strftime(startTime, '%H:%M')
+        print(f"Time: {startTime}")
+        try:
+            # print(option)
+            # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
+            await self._coordinator.async_write_tag(EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_TIME, startTime)
+            # sensor = SENSOR_TYPES[self._type]
+            # return self._coordinator.data[sensor[1]]["value"]
+        except ValueError:
+            return "unavailable"
+        # self._hass.states.set("waterkotte.set_holiday", name)

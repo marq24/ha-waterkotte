@@ -13,7 +13,7 @@ from typing import (
 import re
 import math
 from enum import Enum
-from datetime import datetime, timedelta
+from datetime import time, datetime, timedelta
 
 # import requests
 
@@ -846,7 +846,7 @@ def _parse_sn(self, e_vals, *other_args):  # pylint: disable=unused-argument
     return str(s1) + str(s2) + str(sn2)
 
 
-def _parse_time(self, e_vals, *other_args):  # pylint: disable=unused-argument
+def _parse_datetime(self, e_vals, *other_args):  # pylint: disable=unused-argument
     vals = [int(e_vals[tag]) for tag in self.tags]
     vals[0] = vals[0] + 2000
     next_day = False
@@ -857,6 +857,10 @@ def _parse_time(self, e_vals, *other_args):  # pylint: disable=unused-argument
     dt = datetime(*vals)  # pylint: disable=invalid-name
     return dt + timedelta(days=1) if next_day else dt
 
+def _parse_time_hhmm(self, e_vals, *other_args):  # pylint: disable=unused-argument
+    vals = [int(e_vals[tag]) for tag in self.tags]
+    dt = time(hour=vals[0], minute=vals[1])  # pylint: disable=invalid-name
+    return dt
 
 def _parse_status(self, value, *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
@@ -898,7 +902,7 @@ def _write_state(self, value, et_values):
         et_values[ecotouch_tag] = "2"
 
 
-def _write_time(tag, value, et_values):
+def _write_datetime(tag, value, et_values):
     assert isinstance(value, datetime)
     vals = [
         str(val)
@@ -918,6 +922,17 @@ def _write_time(tag, value, et_values):
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
 
+def _write_time_hhmm(tag, value, et_values):
+    assert isinstance(value, time)
+    vals = [
+        str(val)
+        for val in [
+            value.hour,
+            value.minute,
+            ]
+    ]
+    for i, tags in enumerate(tag.tags):
+        et_values[tags] = vals[i]
 
 class TagData(NamedTuple):
     """TagData Class"""
@@ -937,14 +952,14 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     HOLIDAY_START_TIME = TagData(
         ["I1254", "I1253", "I1252", "I1250", "I1251"],
         writeable=True,
-        read_function=_parse_time,
-        write_function=_write_time,
+        read_function=_parse_datetime,
+        write_function=_write_datetime,
     )
     HOLIDAY_END_TIME = TagData(
         ["I1259", "I1258", "I1257", "I1255", "I1256"],
         writeable=True,
-        read_function=_parse_time,
-        write_function=_write_time,
+        read_function=_parse_datetime,
+        write_function=_write_datetime,
     )
     TEMPERATURE_OUTSIDE = TagData(["A1"], "°C")
     TEMPERATURE_OUTSIDE_1H = TagData(["A2"], "°C")
@@ -1012,8 +1027,14 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_WATER_HYSTERESIS = TagData(["A139"], "K", writeable=True)
     TEMPERATURE_WATER_PV_CHANGE = TagData(["A684"], "K", writeable=True)
     TEMPERATURE_WATER_DISINFECTION = TagData(["A168"], "°C", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_START_TIME = TagData(
+        ["I505", "I506"],
+        writeable=True,
+        read_function=_parse_time_hhmm,
+        write_function=_write_time_hhmm,
+    )
+    #SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
+    #SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_DURATION = TagData(["I507"], "h", writeable=True)
     SCHEDULE_WATER_DISINFECTION_MO = TagData(["D153"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_TU = TagData(["D154"], "", writeable=True)

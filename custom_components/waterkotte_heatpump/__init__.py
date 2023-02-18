@@ -131,6 +131,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
 
     hass.services.async_register(DOMAIN, "set_holiday", service.set_holiday)
+    hass.services.async_register(DOMAIN, "set_time", service.set_time)
     return True
 
 
