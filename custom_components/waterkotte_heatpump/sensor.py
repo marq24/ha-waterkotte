@@ -512,7 +512,7 @@ SENSOR_TYPES = {
         "mdi:calendar-arrow-right",
         True,
         None,
-        datetime,
+        None,
     ],
     "HOLIDAY_END_TIME": [
         "Holiday end",
@@ -522,18 +522,18 @@ SENSOR_TYPES = {
         "mdi:calendar-arrow-left",
         True,
         None,
-        datetime,
-    ],
-    "SCHEDULE_WATER_DISINFECTION_START_TIME": [
-        "Water disinfection start time",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
-        SensorDeviceClass.DATE,
         None,
-        "mdi:clock-digital",
-        False,
-        None,
-        time,
     ],
+    # "SCHEDULE_WATER_DISINFECTION_START_TIME": [
+    #     "Water disinfection start time",
+    #     EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
+    #     SensorDeviceClass.DATE,
+    #     None,
+    #     "mdi:clock-digital",
+    #     False,
+    #     None,
+    #     time,
+    # ],
     "STATE_SERVICE": [
         "State Service",
         EcotouchTag.STATE_SERVICE,
@@ -636,11 +636,6 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         # UNKNONW ?!
         return None
 
-    @property
-    def native_value(self) -> StateType | date | datetime | time | Decimal:
-        if SENSOR_TYPES[self._type][7] != None:
-            return SENSOR_TYPES[self._type][7]
-        return self._attr_native_value
 
     @property
     def unique_id(self):

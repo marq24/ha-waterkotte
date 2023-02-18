@@ -1027,14 +1027,14 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_WATER_HYSTERESIS = TagData(["A139"], "K", writeable=True)
     TEMPERATURE_WATER_PV_CHANGE = TagData(["A684"], "K", writeable=True)
     TEMPERATURE_WATER_DISINFECTION = TagData(["A168"], "°C", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_START_TIME = TagData(
-        ["I505", "I506"],
-        writeable=True,
-        read_function=_parse_time_hhmm,
-        write_function=_write_time_hhmm,
-    )
-    #SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
-    #SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
+    # SCHEDULE_WATER_DISINFECTION_START_TIME = TagData(
+    #     ["I505", "I506"],
+    #     writeable=True,
+    #     read_function=_parse_time_hhmm,
+    #     write_function=_write_time_hhmm,
+    # )
+    SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_DURATION = TagData(["I507"], "h", writeable=True)
     SCHEDULE_WATER_DISINFECTION_MO = TagData(["D153"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_TU = TagData(["D154"], "", writeable=True)
