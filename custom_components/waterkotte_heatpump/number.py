@@ -2,7 +2,7 @@
 import logging
 
 # from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
-from homeassistant.components.number import NumberEntity, NumberDeviceClass, DEFAULT_STEP
+from homeassistant.components.number import NumberEntity, NumberDeviceClass, DEFAULT_STEP, NumberMode
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 # from .const import DEFAULT_NAME
@@ -37,6 +37,7 @@ SENSOR_TYPES = {
         0,
         100,
         DEFAULT_STEP,
+        NumberMode.AUTO,
     ],
 
     # Cooling/Kuehlung...
@@ -50,6 +51,7 @@ SENSOR_TYPES = {
         5,
         26,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A108
     "TEMPERATURE_COOLING_OUTDOOR_LIMIT": [
@@ -61,6 +63,7 @@ SENSOR_TYPES = {
         0,
         100,
         DEFAULT_STEP,
+        NumberMode.BOX,
     ],
 
     # We should not use the HEATING setpoint directly - adjust
@@ -86,6 +89,7 @@ SENSOR_TYPES = {
         -2,
         2,
         FIFTH_STEP,
+        NumberMode.SLIDER,
     ],
     "TEMPERATURE_HEATING_HYSTERESIS": [
         "Temperature heating Hysteresis",
@@ -96,6 +100,7 @@ SENSOR_TYPES = {
         0,
         10,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX1_ADJUST": [
         "Temperature mixing circle 1 Adjustment",
@@ -106,6 +111,7 @@ SENSOR_TYPES = {
         -2,
         2,
         FIFTH_STEP,
+        NumberMode.SLIDER,
     ],
     "TEMPERATURE_MIX2_ADJUST": [
         "Temperature mixing circle 2 Adjustment",
@@ -116,6 +122,7 @@ SENSOR_TYPES = {
         -2,
         2,
         FIFTH_STEP,
+        NumberMode.SLIDER,
     ],
     "TEMPERATURE_MIX3_ADJUST": [
         "Temperature mixing circle 3 Adjustment",
@@ -126,6 +133,7 @@ SENSOR_TYPES = {
         -2,
         2,
         FIFTH_STEP,
+        NumberMode.SLIDER,
     ],
 
     # Heizung - Heizkennlinie
@@ -139,6 +147,7 @@ SENSOR_TYPES = {
         5,
         35,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A94
     "TEMPERATURE_HEATING_HC_TARGET": [
@@ -150,6 +159,7 @@ SENSOR_TYPES = {
         15,
         65,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A91
     "TEMPERATURE_HEATING_HC_OUTDOOR_NORM": [
@@ -161,6 +171,7 @@ SENSOR_TYPES = {
         -99,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A92
     "TEMPERATURE_HEATING_HC_NORM": [
@@ -172,6 +183,7 @@ SENSOR_TYPES = {
         0,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A95
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MAX": [
@@ -183,6 +195,7 @@ SENSOR_TYPES = {
         0,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A104
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MIN": [
@@ -194,6 +207,7 @@ SENSOR_TYPES = {
         0,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
 
     # A38 - Warmwasser
@@ -206,6 +220,7 @@ SENSOR_TYPES = {
         10,
         70,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_WATER_HYSTERESIS": [
         "Temperature Hot Water Hysteresis",
@@ -216,6 +231,7 @@ SENSOR_TYPES = {
         0,
         10,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
 
     # Mischerkreis 1 Heizkennlinie
@@ -229,6 +245,7 @@ SENSOR_TYPES = {
         5,
         35,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A277
     "TEMPERATURE_MIX1_HC_TARGET": [
@@ -240,6 +257,7 @@ SENSOR_TYPES = {
         15,
         65,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A274
     "TEMPERATURE_MIX1_HC_OUTDOOR_NORM": [
@@ -251,6 +269,7 @@ SENSOR_TYPES = {
         -99,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A275
     "TEMPERATURE_MIX1_HC_HEATING_NORM": [
@@ -262,6 +281,7 @@ SENSOR_TYPES = {
         0,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # A278
     "TEMPERATURE_MIX1_HC_MAX": [
@@ -273,6 +293,7 @@ SENSOR_TYPES = {
         15,
         72,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
 
     # Mischerkreis 2 Heizkennlinie
@@ -285,6 +306,7 @@ SENSOR_TYPES = {
         5,
         35,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX2_HC_TARGET": [
         "Temperature mixing circle 2 heating limit target",
@@ -295,6 +317,7 @@ SENSOR_TYPES = {
         15,
         65,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX2_HC_OUTDOOR_NORM": [
         "Temperature mixing circle 2 norm outdoor",
@@ -305,6 +328,7 @@ SENSOR_TYPES = {
         -99,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX2_HC_HEATING_NORM": [
         "Temperature mixing circle 2 norm heating circle",
@@ -315,6 +339,7 @@ SENSOR_TYPES = {
         0,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX2_HC_MAX": [
         "Temperature mixing circle 2 Limit for setpoint (Max.)",
@@ -325,6 +350,7 @@ SENSOR_TYPES = {
         15,
         72,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
 
     # Mischerkreis 3 Heizkennlinie
@@ -337,6 +363,7 @@ SENSOR_TYPES = {
         5,
         35,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX3_HC_TARGET": [
         "Temperature mixing circle 3 heating limit target",
@@ -347,6 +374,7 @@ SENSOR_TYPES = {
         15,
         65,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX3_HC_OUTDOOR_NORM": [
         "Temperature mixing circle 3 norm outdoor",
@@ -357,6 +385,7 @@ SENSOR_TYPES = {
         -99,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX3_HC_HEATING_NORM": [
         "Temperature mixing circle 3 norm heating circle",
@@ -367,6 +396,7 @@ SENSOR_TYPES = {
         0,
         99,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     "TEMPERATURE_MIX3_HC_MAX": [
         "Temperature mixing circle 3 Limit for setpoint (Max.)",
@@ -377,6 +407,7 @@ SENSOR_TYPES = {
         15,
         72,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
 
     # Water disinfection start time & duration -> weekdays will be set in
@@ -390,6 +421,7 @@ SENSOR_TYPES = {
         60,
         70,
         TENTH_STEP,
+        NumberMode.BOX,
     ],
     # "SCHEDULE_WATER_DISINFECTION_START_HOUR": [
     #     "Water disinfection start time (hour)",
@@ -420,6 +452,7 @@ SENSOR_TYPES = {
         0,
         23,
         DEFAULT_STEP,
+        NumberMode.SLIDER,
     ],
 }
 
@@ -433,13 +466,13 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_devices(
         [
-            WaterkotteHeatpumpSelect(entry, coordinator, sensor_type)
+            WaterkotteHeatpumpNumber(entry, coordinator, sensor_type)
             for sensor_type in SENSOR_TYPES
         ]
     )
 
 
-class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
+class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
     """waterkotte_heatpump Sensor class."""
 
     def __init__(
@@ -537,6 +570,14 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
         """Return the native Step."""
         try:
             return SENSOR_TYPES[self._type][7]
+        except IndexError:
+            return None
+
+    @property
+    def native_mode(self):
+        """Return the native Step."""
+        try:
+            return SENSOR_TYPES[self._type][8]
         except IndexError:
             return None
 
