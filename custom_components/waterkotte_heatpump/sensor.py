@@ -2,7 +2,9 @@
 import logging
 
 # from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
-from homeassistant.helpers.typing import ConfigType, HomeAssistantType
+from homeassistant.helpers.typing import ConfigType, HomeAssistantType, StateType
+from datetime import datetime, date, time
+from decimal import Decimal
 
 from homeassistant.const import (
     PERCENTAGE,
@@ -510,7 +512,7 @@ SENSOR_TYPES = {
         "mdi:calendar-arrow-right",
         True,
         None,
-        None,
+        datetime,
     ],
     "HOLIDAY_END_TIME": [
         "Holiday end",
@@ -520,7 +522,7 @@ SENSOR_TYPES = {
         "mdi:calendar-arrow-left",
         True,
         None,
-        None,
+        datetime,
     ],
     "SCHEDULE_WATER_DISINFECTION_START_TIME": [
         "Water disinfection start time",
@@ -530,7 +532,7 @@ SENSOR_TYPES = {
         "mdi:clock-digital",
         False,
         None,
-        None,
+        time,
     ],
     "STATE_SERVICE": [
         "State Service",
@@ -635,9 +637,10 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         return None
 
     @property
-    def suggested_unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return SENSOR_TYPES[self._type][7]
+    def native_value(self) -> StateType | date | datetime | time | Decimal:
+        if SENSOR_TYPES[self._type][7] != None:
+            return SENSOR_TYPES[self._type][7]
+        return self._attr_native_value
 
     @property
     def unique_id(self):
