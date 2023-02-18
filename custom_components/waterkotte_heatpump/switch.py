@@ -108,13 +108,13 @@ async def async_setup_entry(hass, entry, async_add_devices):
     # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_evaporation")])
     async_add_devices(
         [
-            WaterkotteHeatpumpBinarySwitch(entry, coordinator, sensor_type)
+            WaterkotteHeatpumpSwitch(entry, coordinator, sensor_type)
             for sensor_type in SENSOR_TYPES
         ]
     )
 
 
-class WaterkotteHeatpumpBinarySwitch(WaterkotteHeatpumpEntity, SwitchEntity):
+class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     """waterkotte_heatpump switch class."""
 
     def __init__(
