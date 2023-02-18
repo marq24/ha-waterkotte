@@ -574,12 +574,12 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
             return None
 
     @property
-    def native_mode(self):
+    def mode(self):
         """Return the native Mode."""
         try:
             return SENSOR_TYPES[self._type][8]
         except IndexError:
-            return None
+            return NumberMode.AUTO
 
     @property
     def unique_id(self):
