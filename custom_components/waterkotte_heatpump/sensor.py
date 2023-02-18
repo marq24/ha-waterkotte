@@ -505,7 +505,7 @@ SENSOR_TYPES = {
     "HOLIDAY_START_TIME": [
         "Holiday start",
         EcotouchTag.HOLIDAY_START_TIME,
-        "datetime",
+        SensorDeviceClass.DATE,
         None,
         "mdi:calendar-arrow-right",
         True,
@@ -515,7 +515,7 @@ SENSOR_TYPES = {
     "HOLIDAY_END_TIME": [
         "Holiday end",
         EcotouchTag.HOLIDAY_END_TIME,
-        "datetime",
+        SensorDeviceClass.DATE,
         None,
         "mdi:calendar-arrow-left",
         True,
@@ -525,10 +525,10 @@ SENSOR_TYPES = {
     "SCHEDULE_WATER_DISINFECTION_START_TIME": [
         "Water disinfection start time",
         EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
-        "time",
+        SensorDeviceClass.DATE,
         None,
         "mdi:clock-digital",
-        True,
+        False,
         None,
         None,
     ],
