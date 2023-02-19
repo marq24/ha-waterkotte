@@ -37,7 +37,7 @@ class WaterkotteHeatpumpService():
         # name = call.data.get(ATTR_NAME, DEFAULT_NAME)
         startTime = call.data.get('starthhmm', None)
         if startTime is not None:
-            startTime = datetime.time.fromisoformat(str(startTime)).strftime('%H:%M')
+            startTime = datetime.time.fromisoformat(str(startTime))
         print(f"Time: {startTime}")
         try:
             # print(option)

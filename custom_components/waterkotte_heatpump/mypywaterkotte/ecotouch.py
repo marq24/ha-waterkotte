@@ -13,7 +13,7 @@ from typing import (
 import re
 import math
 from enum import Enum
-from datetime import time, datetime, timedelta
+from datetime import datetime, timedelta
 
 # import requests
 
@@ -859,7 +859,7 @@ def _parse_datetime(self, e_vals, *other_args):  # pylint: disable=unused-argume
 
 def _parse_time_hhmm(self, e_vals, *other_args):  # pylint: disable=unused-argument
     vals = [int(e_vals[tag]) for tag in self.tags]
-    dt = time(hour=vals[0], minute=vals[1])  # pylint: disable=invalid-name
+    dt = datetime.time(hour=vals[0], minute=vals[1])  # pylint: disable=invalid-name
     return dt
 
 def _parse_status(self, value, *other_args):  # pylint: disable=unused-argument
@@ -923,7 +923,7 @@ def _write_datetime(tag, value, et_values):
         et_values[tags] = vals[i]
 
 def _write_time_hhmm(tag, value, et_values):
-    assert isinstance(value, time)
+    assert isinstance(value, datetime.time)
     vals = [
         str(val)
         for val in [
@@ -1386,9 +1386,9 @@ class Ecotouch:
 
         while len(tags) > self.tagsPerRequest:
             results, results_status = await self._read_tags(
-                tags[:tagsPerRequest], results, results_status
+                tags[:self.tagsPerRequest], results, results_status
             )
-            tags = tags[tagsPerRequest:]
+            tags = tags[self.tagsPerRequest:]
 
         args = {}
         args["n"] = len(tags)
