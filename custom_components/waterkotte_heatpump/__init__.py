@@ -2,11 +2,10 @@
 Custom integration to integrate Waterkotte Heatpump with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/pattisonmichael/waterkotte-heatpump
+https://github.com/marq24/waterkotte-heatpump
 """
 import asyncio
 import logging
-import re
 from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
@@ -21,17 +20,18 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
 from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
-from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID, CONF_TAGS_PER_REQUEST
 from .const import (
+    CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID,
     CONF_HOST,
     CONF_PASSWORD,
     CONF_USERNAME,
     CONF_POLLING_INTERVAL,
+    CONF_TAGS_PER_REQUEST,
     CONF_SYSTEMTYPE,
+    DOMAIN, NAME, TITLE,
+    PLATFORMS,
+    STARTUP_MESSAGE,
 )
-from .const import DOMAIN, NAME, TITLE
-from .const import PLATFORMS
-from .const import STARTUP_MESSAGE
 
 from . import service as waterkotteservice
 

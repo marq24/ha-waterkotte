@@ -29,6 +29,7 @@
           "sensor": "Sensor enabled",
           "switch": "Switch enabled",
           "select": "Select enabled",
+          "number": "Number enabled",
           "username": "Username",
           "password": "Password",
           "host": "Host or IP",
