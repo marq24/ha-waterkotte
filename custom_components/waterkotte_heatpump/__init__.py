@@ -96,10 +96,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     username = entry.options.get(CONF_USERNAME, entry.data.get(CONF_USERNAME))
     password = entry.options.get(CONF_PASSWORD, entry.data.get(CONF_PASSWORD))
     host = entry.options.get(CONF_HOST, entry.data.get(CONF_HOST))
-    SCAN_INTERVAL = timedelta(seconds=entry.options.get(CONF_POLLING_INTERVAL, 60))
-    session = async_get_clientsession(hass)
     system_type = entry.options.get(CONF_SYSTEMTYPE, entry.data.get(CONF_SYSTEMTYPE))
+    SCAN_INTERVAL = timedelta(seconds=entry.options.get(CONF_POLLING_INTERVAL, 60))
     tags_per_request = entry.options.get(CONF_TAGS_PER_REQUEST, entry.data.get(CONF_TAGS_PER_REQUEST))
+    if tags_per_request is None:
+        tags_per_request = 10
+
+    session = async_get_clientsession(hass)
     client = WaterkotteHeatpumpApiClient(
         host, username, password, session, tags, systemType=system_type, tagsPerRequest=tags_per_request
     )

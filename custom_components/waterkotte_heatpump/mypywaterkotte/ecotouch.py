@@ -1221,11 +1221,11 @@ class Ecotouch:
 
     auth_cookies = None
 
-    def __init__(self, host, tagsPerRequest):
+    def __init__(self, host, tagsPerRequest: int):
         self.hostname = host
         self.username = "waterkotte"
         self.password = "waterkotte"
-        self.tagsPerRequest = tagsPerRequest;
+        self.tagsPerRequest = tagsPerRequest
 
     # extracts statuscode from response
     def get_status_response(self, r):  # pylint: disable=invalid-name
