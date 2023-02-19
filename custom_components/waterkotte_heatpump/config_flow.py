@@ -198,7 +198,7 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
                 # vol.Required(SENSOR, default=self.options.get(SENSOR, True)): bool,
                 # vol.Required(SELECT, default=self.options.get(SELECT, True)): bool,
                 vol.Required(
-                    CONF_POLLING_INTERVAL, default = self.options.get(CONF_POLLING_INTERVAL, 60),
+                    CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 60),
                 ): int,  # pylint: disable=line-too-long
                 vol.Required(
                     CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 10),
