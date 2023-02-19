@@ -1225,7 +1225,7 @@ class Ecotouch:
         self.hostname = host
         self.username = "waterkotte"
         self.password = "waterkotte"
-        self.tagsPerRequest = tagsPerRequest
+        self.tagsPerRequest = min(tagsPerRequest, 75)
 
     # extracts statuscode from response
     def get_status_response(self, r):  # pylint: disable=invalid-name
