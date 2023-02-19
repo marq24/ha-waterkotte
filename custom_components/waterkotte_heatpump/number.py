@@ -18,6 +18,7 @@ from .entity import WaterkotteHeatpumpEntity
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+_LANG = None
 
 TENTH_STEP = 0.1
 FIFTH_STEP = 0.5
@@ -466,6 +467,8 @@ async def async_setup_entry(
     """Set up the Waterkotte sensor platform."""
     _LOGGER.debug("Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
+    global _LANG
+    _LANG = coordinator.lang
     async_add_devices(
         [
             WaterkotteHeatpumpNumber(entry, coordinator, sensor_type)
@@ -485,6 +488,7 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
 
         self._type = sensor_type
         self._name = f"{SENSOR_TYPES[self._type][0]}"
+        self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
         # self._unique_id = f"{SENSOR_TYPES[self._type][0]}_{DOMAIN}"
         self._unique_id = self._type
         self._entry_data = entry.data
