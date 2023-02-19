@@ -9,7 +9,7 @@
           "password": "Password",
           "host": "Host or IP",
           "polling_interval": "Polling Interval in seconds",
-          "tags_per_request": "Num. of tags to fetch",
+          "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
           "system_type": "System Type"
         }
       }
@@ -34,7 +34,7 @@
           "password": "Password",
           "host": "Host or IP",
           "polling_interval": "Polling Interval in seconds",
-          "tags_per_request": "Num. of tags to fetch",
+          "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
           "system_type": "System Type"
         }
       }

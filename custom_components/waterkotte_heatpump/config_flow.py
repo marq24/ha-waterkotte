@@ -116,7 +116,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password, host, systemType):
+    async def _test_credentials(self, username, password, host, systemType, tagsPerRequest):
         """Return true if credentials is valid."""
         try:
             # # session = async_create_clientsession(self.hass)
@@ -161,6 +161,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             self._series = str(ret[EcotouchTag.INFO_SERIES]["value"])
             self._serial = str(ret[EcotouchTag.INFO_SERIAL]["value"])
             self._system_type = systemType
+            self._tags_per_request = tagsPerRequest
             # print(ret)
             return True
 

@@ -423,28 +423,28 @@ SENSOR_TYPES = {
         TENTH_STEP,
         NumberMode.BOX,
     ],
-    "SCHEDULE_WATER_DISINFECTION_START_HOUR": [
-        "Water disinfection start time (hour)",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_HOUR,
-        None, # time hh:mm (24h format)
-        "mdi:clock-digital",
-        False,
-        0,
-        23,
-        DEFAULT_STEP,
-        NumberMode.BOX,
-    ],
-    "SCHEDULE_WATER_DISINFECTION_START_MINUTE": [
-        "Water disinfection start time (minute)",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_MINUTE,
-        None, # time mm (24h format)
-        "mdi:clock-digital",
-        False,
-        0,
-        59,
-        DEFAULT_STEP,
-        NumberMode.BOX,
-    ],
+    # "SCHEDULE_WATER_DISINFECTION_START_HOUR": [
+    #     "Water disinfection start time (hour)",
+    #     EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_HOUR,
+    #     None, # time hh:mm (24h format)
+    #     "mdi:clock-digital",
+    #     False,
+    #     0,
+    #     23,
+    #     DEFAULT_STEP,
+    #     NumberMode.BOX,
+    # ],
+    # "SCHEDULE_WATER_DISINFECTION_START_MINUTE": [
+    #     "Water disinfection start time (minute)",
+    #     EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_MINUTE,
+    #     None, # time mm (24h format)
+    #     "mdi:clock-digital",
+    #     False,
+    #     0,
+    #     59,
+    #     DEFAULT_STEP,
+    #     NumberMode.BOX,
+    # ],
     "SCHEDULE_WATER_DISINFECTION_DURATION": [
         "Water disinfection duration (in hours)",
         EcotouchTag.SCHEDULE_WATER_DISINFECTION_DURATION,
