@@ -2,10 +2,11 @@
 Custom integration to integrate Waterkotte Heatpump with Home Assistant.
 
 For more details about this integration, please refer to
-https://github.com/marq24/waterkotte-heatpump
+https://github.com/pattisonmichael/waterkotte-heatpump
 """
 import asyncio
 import logging
+import json
 from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
@@ -40,7 +41,7 @@ from . import service as waterkotteservice
 SCAN_INTERVAL = timedelta(seconds=60)
 COORDINATOR = None
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
+LANG = None
 tags = []
 
 
@@ -49,6 +50,19 @@ async def async_setup(
 ):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
+
+
+def load_translation(hass):
+    """Load correct language file or defailt to english"""
+    global LANG  # pylint: disable=global-statement
+    basepath = __file__[:-11]
+    file = f"{basepath}translations/heatpump.{hass.config.country.lower()}.json"
+    try:
+        with open(file) as f:  # pylint: disable=unspecified-encoding,invalid-name
+            LANG = json.load(f)
+    except:  # pylint: disable=unspecified-encoding,bare-except,invalid-name
+        with open(f"{basepath}translations/heatpump.en.json") as f:
+            LANG = json.load(f)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -93,6 +107,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # )
 
     ###
+    load_translation(hass)
     username = entry.options.get(CONF_USERNAME, entry.data.get(CONF_USERNAME))
     password = entry.options.get(CONF_PASSWORD, entry.data.get(CONF_PASSWORD))
     host = entry.options.get(CONF_HOST, entry.data.get(CONF_HOST))
@@ -111,9 +126,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             hass,
             client=client,
             data=COORDINATOR.data,
+            lang=LANG,
         )
     else:
-        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(hass, client=client)
+        coordinator = WaterkotteHeatpumpDataUpdateCoordinator(
+            hass, client=client, lang=LANG
+        )
     # await coordinator.async_refresh() ##Needed?
 
     if not coordinator.last_update_success:
@@ -143,7 +161,11 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(
-        self, hass: HomeAssistant, client: WaterkotteHeatpumpApiClient, data=None
+        self,
+        hass: HomeAssistant,
+        client: WaterkotteHeatpumpApiClient,
+        data=None,
+        lang=None,
     ) -> None:
         """Initialize."""
         self.api = client
@@ -154,6 +176,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         self.platforms = []
         self.__hass = hass
         self.alltags = {}
+        self.lang = lang
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
