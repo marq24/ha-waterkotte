@@ -24,7 +24,7 @@ import logging
 ECOTOUCH = "ECOTOUCH"
 EASYCON = "EASYCON"
 
-MAX_NO_TAGS = 75
+#MAX_NO_TAGS = 75
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -1195,6 +1195,20 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # MODE_POOL = TagData(["A536"])
     # MODE_SOLAR = TagData(["A538"])
 
+    # found on the "extended" Tab in the Waterkotte WebGui
+    # (all values can be read/write) - no clue about the unit yet
+    # reading the values always returned '0' -> so I guess they have
+    # no use for us?!
+    #ENERGY_THERMAL_WORK_1 = TagData("I1923")
+    #ENERGY_THERMAL_WORK_2 = TagData("I1924")
+    #ENERGY_COOLING = TagData("I1925")
+    #ENERGY_HEATING = TagData("I1926")
+    #ENERGY_HOT_WATER = TagData("I1927")
+    #ENERGY_POOL_HEATER = TagData("I1928")
+    #ENERGY_COMPRESSOR = TagData("I1929")
+    #ENERGY_HEAT_SOURCE_PUMP = TagData("I1930")
+    #ENERGY_EXTERNAL_HEATER = TagData("I1931")
+
     def __hash__(self) -> int:
         return hash(self.name)
 
@@ -1207,10 +1221,11 @@ class Ecotouch:
 
     auth_cookies = None
 
-    def __init__(self, host):
+    def __init__(self, host, tagsPerRequest):
         self.hostname = host
         self.username = "waterkotte"
         self.password = "waterkotte"
+        self.tagsPerRequest = tagsPerRequest;
 
     # extracts statuscode from response
     def get_status_response(self, r):  # pylint: disable=invalid-name
@@ -1369,11 +1384,11 @@ class Ecotouch:
         if results_status is None:
             results_status = {}
 
-        while len(tags) > MAX_NO_TAGS:
+        while len(tags) > self.tagsPerRequest:
             results, results_status = await self._read_tags(
-                tags[:MAX_NO_TAGS], results, results_status
+                tags[:tagsPerRequest], results, results_status
             )
-            tags = tags[MAX_NO_TAGS:]
+            tags = tags[tagsPerRequest:]
 
         args = {}
         args["n"] = len(tags)

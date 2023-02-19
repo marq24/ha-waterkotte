@@ -21,7 +21,7 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
 from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
-from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
+from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID, CONF_TAGS_PER_REQUEST
 from .const import (
     CONF_HOST,
     CONF_PASSWORD,
@@ -99,8 +99,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     SCAN_INTERVAL = timedelta(seconds=entry.options.get(CONF_POLLING_INTERVAL, 60))
     session = async_get_clientsession(hass)
     system_type = entry.options.get(CONF_SYSTEMTYPE, entry.data.get(CONF_SYSTEMTYPE))
+    tags_per_request = entry.options.get(CONF_TAGS_PER_REQUEST, entry.data.get(CONF_TAGS_PER_REQUEST))
     client = WaterkotteHeatpumpApiClient(
-        host, username, password, session, tags, systemType=system_type
+        host, username, password, session, tags, systemType=system_type, tagsPerRequest=tags_per_request
     )
     if COORDINATOR is not None:
         coordinator = WaterkotteHeatpumpDataUpdateCoordinator(

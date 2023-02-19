@@ -9,7 +9,8 @@
           "password": "Password",
           "host": "Host or IP",
           "polling_interval": "Polling Interval in seconds",
-          "system_type": "System Type"
+          "system_type": "System Type",
+          "tags_per_request": "Number of tags to fetch in a single request from heatpump (max. 75)"
         }
       }
     },
