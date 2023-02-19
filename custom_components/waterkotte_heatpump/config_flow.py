@@ -50,6 +50,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._series = ""
         self._serial = ""
         self._system_type = ""
+        self._tags_per_request = 10
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -65,6 +66,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_PASSWORD],
                 user_input[CONF_HOST],
                 user_input[CONF_SYSTEMTYPE],
+                user_input[CONF_TAGS_PER_REQUEST],
             )
             if valid:
                 user_input[CONF_IP] = self._ip
@@ -74,6 +76,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_SERIAL] = self._serial
                 user_input[CONF_ID] = self._ID
                 user_input[CONF_SYSTEMTYPE] = self._system_type
+                user_input[CONF_TAGS_PER_REQUEST] = self._tags_per_request
                 return self.async_create_entry(title=TITLE, data=user_input)
             else:
                 self._errors["base"] = "auth"
@@ -107,6 +110,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             }
                         }
                     ),
+                    vol.Required(CONF_TAGS_PER_REQUEST, default=10): int,
                 }
             ),
             errors=self._errors,
