@@ -26,6 +26,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
+        "heatsrcpump"
     ],
     "STATE_HEATINGPUMP": [
         "Heatingpump",
@@ -36,6 +37,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
+        "heatpump"
     ],
     # EVD: -> Überhitzungsregler
     "STATE_EVD": [
@@ -47,6 +49,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
+        "evd"
     ],
     "STATE_COMPRESSOR": [
         "Compressor",
@@ -57,6 +60,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
+        "comp"
     ],
     "STATE_COMPRESSOR2": [
         "Compressor2",
@@ -67,6 +71,7 @@ SENSOR_TYPES = {
         False,
         None,
         None,
+        "comp"
     ],
     "STATE_EXTERNAL_HEATER": [
         "External Heater",
@@ -77,6 +82,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
+        "heater"
     ],
     "STATE_ALARM": [
         "Alarm",
@@ -87,6 +93,7 @@ SENSOR_TYPES = {
         False,
         None,
         None,
+        "alarm"
     ],
     "STATE_COOLING": [
         "Cooling",
@@ -97,6 +104,7 @@ SENSOR_TYPES = {
         False,
         None,
         None,
+        "cool"
     ],
     "STATE_WATER": [
         "Water",
@@ -107,6 +115,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
+        "water"
     ],
     "STATE_POOL": [
         "Pool",
@@ -117,6 +126,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
+        "pool"
     ],
     "STATE_SOLAR": [
         "Solar",
@@ -127,6 +137,7 @@ SENSOR_TYPES = {
         False,
         None,
         None,
+        "solar"
     ],
     "STATE_COOLING4WAY": [
         "Cooling4way",
@@ -137,6 +148,7 @@ SENSOR_TYPES = {
         False,
         None,
         None,
+        "4wayvalve"
     ],
     # "holiday_enabled": [
     #     "Holiday Mode",
@@ -148,8 +160,6 @@ SENSOR_TYPES = {
     #     None,
     #     None,
     # ],
-
-
 }
 
 # async def async_setup_entry(hass, entry, async_add_devices):
@@ -179,10 +189,10 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         self._unique_id = self._type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-            self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+        if SENSOR_TYPES[self._type][8] in _LANG:
+            self._name = _LANG[SENSOR_TYPES[self._type][8]]
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Binary-Sensor not found in translation")
+            _LOGGER.warning(str(SENSOR_TYPES[self._type][8])+" Binary-Sensor not found in translation")
             self._name = f"{SENSOR_TYPES[self._type][0]}"
         hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
