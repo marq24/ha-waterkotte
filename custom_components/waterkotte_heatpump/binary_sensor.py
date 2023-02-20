@@ -115,7 +115,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
-        "water"
+        "dhw"
     ],
     "STATE_POOL": [
         "Pool",
