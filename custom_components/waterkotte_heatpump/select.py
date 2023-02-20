@@ -80,6 +80,7 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
             self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
         else:
+            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Select not found in translation")
             self._name = f"{SENSOR_TYPES[self._type][0]}"
         hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
