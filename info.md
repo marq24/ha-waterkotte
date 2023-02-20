@@ -33,7 +33,14 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 
 ## Configuration is done in the UI
 
+Use the Config flow to add the integration. You will need the IP/Hostname and Username/Password to log in.
 <!---->
+
+Not all available sensors are enabled by default.
+
+### Setting dates & times
+- To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
+- To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and set `time` parameter (seconds will be ignored).
 
 ## Credits
 This project is a fork from [@pattisonmichael](https://github.com/pattisonmichael)'s [Waterkotte-Integration](https://github.com/pattisonmichael/waterkotte-integration)

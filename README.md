@@ -55,10 +55,11 @@ Use the Config flow to add the integration. You will need the IP/Hostname and Us
 
 Not all available sensors are enabled by default.
 
-To set the the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
+### Setting dates & times
+- To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
+- To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and set `time` parameter (seconds will be ignored).
 
 ## Troubleshooting
-
 
 ### Sessions
 
