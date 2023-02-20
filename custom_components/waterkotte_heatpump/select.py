@@ -4,35 +4,13 @@ import logging
 from homeassistant.components.select import SelectEntity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-# from .const import DEFAULT_NAME
-
-
-# from .const import ICON
-# from .const import SENSOR
-
-#  from .const import UnitOfTemperature
-
-
-# from homeassistant.const import (
-#    ATTR_ATTRIBUTION,
-# DEGREE,
-#    DEVICE_CLASS_HUMIDITY,
-# DEVICE_CLASS_PRESSURE,
-# DEVICE_CLASS_TEMPERATURE,
-#    LENGTH_KILOMETERS,
-# PRESSURE_HPA,
-# PRESSURE_BAR,
-# SPEED_KILOMETERS_PER_HOUR,
-# TEMP_CELSIUS,
-#    TIME_SECONDS,
-# )
 from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-
+_LANG = None
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
@@ -80,12 +58,11 @@ SENSOR_TYPES = {
 }
 
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_devices) -> None:
-    """Set up the Waterkotte sensor platform."""
-    # hass_data = hass.data[DOMAIN][entry.entry_id]
-    _LOGGER.debug("Sensor async_setup_entry")
+    """Set up the Waterkotte Select platform."""
+    _LOGGER.debug("Select async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_condensation")])
-    # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_evaporation")])
+    global _LANG
+    _LANG = coordinator.lang
     async_add_devices([WaterkotteHeatpumpSelect(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 

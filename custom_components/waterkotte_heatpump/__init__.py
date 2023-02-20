@@ -53,7 +53,7 @@ async def async_setup(
 
 
 def load_translation(hass):
-    """Load correct language file or defailt to english"""
+    """Load correct language file or default to english"""
     global LANG  # pylint: disable=global-statement
     basepath = __file__[:-11]
     file = f"{basepath}translations/heatpump.{hass.config.country.lower()}.json"

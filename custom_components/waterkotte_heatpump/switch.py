@@ -10,6 +10,7 @@ from .entity import WaterkotteHeatpumpEntity
 # from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
 
 _LOGGER = logging.getLogger(__name__)
+_LANG = None
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category  #pylint: disable=line-too-long
@@ -98,20 +99,13 @@ SENSOR_TYPES = {
 
 
 async def async_setup_entry(hass, entry, async_add_devices):
-    """Setup sensor platform."""
-    # coordinator = hass.data[DOMAIN][entry.entry_id]
-    # async_add_devices([WaterkotteHeatpumpBinarySwitch(coordinator, entry)])
-    # hass_data = hass.data[DOMAIN][entry.entry_id]
-    _LOGGER.debug("Sensor async_setup_entry")
+    """Setup the Waterkotte Switch platform."""
+    _LOGGER.debug("Switch async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_condensation")])
-    # async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, "temperature_evaporation")])
-    async_add_devices(
-        [
-            WaterkotteHeatpumpSwitch(entry, coordinator, sensor_type)
-            for sensor_type in SENSOR_TYPES
-        ]
-    )
+    global _LANG
+    _LANG = coordinator.lang
+    async_add_devices([WaterkotteHeatpumpSwitch(entry, coordinator, sensor_type)
+                       for sensor_type in SENSOR_TYPES])
 
 
 class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):

@@ -6,16 +6,14 @@ from homeassistant.components.number import NumberEntity, NumberDeviceClass, DEF
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 # from .const import DEFAULT_NAME
-
-
 # from .const import ICON
 # from .const import SENSOR
-#  from .const import UnitOfTemperature
+# from .const import UnitOfTemperature
 
 from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
-from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
+from .const import ENUM_OFFAUTOMANUAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 _LANG = None
@@ -464,21 +462,17 @@ TEMP_ADJUST_LOOKUP = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
 async def async_setup_entry(
         hass: HomeAssistantType, entry: ConfigType, async_add_devices
 ) -> None:
-    """Set up the Waterkotte sensor platform."""
-    _LOGGER.debug("Sensor async_setup_entry")
+    """Set up the Waterkotte Number platform."""
+    _LOGGER.debug("Number async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
     global _LANG
     _LANG = coordinator.lang
-    async_add_devices(
-        [
-            WaterkotteHeatpumpNumber(entry, coordinator, sensor_type)
-            for sensor_type in SENSOR_TYPES
-        ]
-    )
+    async_add_devices([WaterkotteHeatpumpNumber(entry, coordinator, sensor_type)
+                       for sensor_type in SENSOR_TYPES])
 
 
 class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
-    """waterkotte_heatpump Sensor class."""
+    """waterkotte_heatpump Number class."""
 
     def __init__(
             self, entry, hass_data, sensor_type
