@@ -27,7 +27,7 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 ## Installation
 
 1. Click install.
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump".
+1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]".
 
 {% endif %}
 
@@ -36,7 +36,7 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 Use the Config flow to add the integration. You will need the IP/Hostname and Username/Password to log in.
 <!---->
 
-Not all available sensors are enabled by default.
+Most of the available sensors are __not__ enabled by default.
 
 ### Setting dates & times
 - To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.

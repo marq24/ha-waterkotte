@@ -1,4 +1,4 @@
-# Waterkotte Heatpump
+# Waterkotte Heatpump [+2020]
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
@@ -36,7 +36,7 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 ### HACS [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 1. Add a custom integration repository to HACS: [waterkotte-integration](https://github.com/marq24/waterkotte-integration)
 1. Install the custom integration
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump"
+1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]"
 1. Setup the waterkotte custom integration as described below
   <!--1. In HACS Store, search for [***marq24/waterkotte-integration***]-->
 ### Manual
@@ -46,14 +46,14 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 4. Download _all_ the files from the `custom_components/waterkotte_heatpump/` directory (folder) in this repository.
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
-7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump"
+7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]"
 
 ## Configuration is done in the UI
 
 Use the Config flow to add the integration. You will need the IP/Hostname and Username/Password to log in.
 <!---->
 
-Not all available sensors are enabled by default.
+Most of the available sensors are __not__ enabled by default.
 
 ### Setting dates & times
 - To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
