@@ -1,6 +1,6 @@
 """ Class to interact with Easycon system """
 import xml.etree.ElementTree as ET
-from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import (  # pylint: disable=import-error
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import (  # pylint: disable=import-error
     Ecotouch,
     Sequence,
     EcotouchTag,

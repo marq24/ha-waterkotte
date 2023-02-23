@@ -1,7 +1,7 @@
 """ Service to setup time for holiday mode """
 # from .const import DOMAIN
 import datetime
-from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 
 class WaterkotteHeatpumpService():
     """waterkotte_heatpump switch class."""

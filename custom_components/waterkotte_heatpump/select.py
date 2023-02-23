@@ -4,7 +4,7 @@ import logging
 from homeassistant.components.select import SelectEntity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
-from custom_components.waterkotte_heatpump.mypywaterkotte.ecotouch import EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
 from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
