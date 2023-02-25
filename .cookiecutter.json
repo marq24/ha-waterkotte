@@ -4,7 +4,7 @@
   "domain_name": "waterkotte_heatpump",
   "friendly_name": "Waterkotte Heatpump [+2020]",
   "github_user": "marq24",
-  "project_name": "waterkotte-integration",
+  "project_name": "ha-waterkotte",
   "test_suite": "yes",
   "version": "1.0.1"
 }

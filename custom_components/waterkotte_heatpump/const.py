@@ -6,7 +6,7 @@ DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "1.0.1"
 TITLE = "Waterkotte"
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
-ISSUE_URL = "https://github.com/marq24/waterkotte-integration/issues"
+ISSUE_URL = "https://github.com/marq24/ha-waterkotte/issues"
 
 # Icons
 ICON = "mdi:format-quote-close"

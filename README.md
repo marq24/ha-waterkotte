@@ -2,7 +2,7 @@
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
-[![License][license-shield]](https://github.com/marq24/waterkotte-integration/raw/master/LICENSE)
+[![License][license-shield]](https://github.com/marq24/ha-waterkotte/raw/master/LICENSE)
 
 [![pre-commit][pre-commit-shield]][pre-commit]
 
@@ -27,18 +27,18 @@ All credit's have to go to the original creator [@pattisonmichael](https://githu
 | `select`        | Select a value from options.                         |
 | `number`        | adjustable Temperatures (demanded or heating curves) |
 
-![logo](https://github.com/marq24/waterkotte-integration/raw/master/logo.png)
+![logo](https://github.com/marq24/ha-waterkotte/raw/master/logo.png)
 
 ## What you get [2023.02.17]
-[![sampleview](https://github.com/marq24/waterkotte-integration/raw/master/sample-view-s.png)](https://github.com/marq24/waterkotte-integration/raw/master/sample-view.png)
+[![sampleview](https://github.com/marq24/ha-waterkotte/raw/master/sample-view-s.png)](https://github.com/marq24/ha-waterkotte/raw/master/sample-view.png)
 
 ## Installation
 ### HACS [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-1. Add a custom integration repository to HACS: [waterkotte-integration](https://github.com/marq24/waterkotte-integration)
+1. Add a custom integration repository to HACS: [ha-waterkotte](https://github.com/marq24/ha-waterkotte)
 1. Install the custom integration
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]"
 1. Setup the waterkotte custom integration as described below
-  <!--1. In HACS Store, search for [***marq24/waterkotte-integration***]-->
+  <!--1. In HACS Store, search for [***marq24/ha-waterkotte***]-->
 ### Manual
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
@@ -81,8 +81,8 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [integration_blueprint]: https://github.com/custom-components/integration_blueprint
 [buymecoffee]: https://www.buymeacoffee.com/pattisonmichael
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
-[commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/waterkotte-integration.svg?style=for-the-badge
-[commits]: https://github.com/marq24/waterkotte-integration/commits/main
+[commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/ha-waterkotte.svg?style=for-the-badge
+[commits]: https://github.com/marq24/ha-waterkotte/commits/main
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
@@ -90,10 +90,10 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [logoimg]: logo.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/marq24/waterkotte-integration.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/marq24/ha-waterkotte.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40marq24-blue.svg?style=for-the-badge
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [pre-commit-shield]: https://img.shields.io/badge/pre--commit-enabled-brightgreen?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/marq24/waterkotte-integration.svg?style=for-the-badge
-[releases]: https://github.com/marq24/waterkotte-integration/releases
+[releases-shield]: https://img.shields.io/github/release/marq24/ha-waterkotte.svg?style=for-the-badge
+[releases]: https://github.com/marq24/ha-waterkotte/releases
 [user_profile]: https://github.com/marq24

@@ -54,8 +54,8 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [integration_blueprint]: https://github.com/custom-components/integration_blueprint
 [buymecoffee]: https://www.buymeacoffee.com/pattisonmichael
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
-[commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/waterkotte-integration.svg?style=for-the-badge
-[commits]: https://github.com/marq24/waterkotte-integration/commits/main
+[commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/ha-waterkotte.svg?style=for-the-badge
+[commits]: https://github.com/marq24/ha-waterkotte/commits/main
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [discord]: https://discord.gg/Qa5fW2R
@@ -63,9 +63,9 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [logoimg]: logo.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
-[license]: https://github.com/marq24/waterkotte-integration/blob/main/LICENSE
-[license-shield]: https://img.shields.io/github/license/marq24/waterkotte-integration.svg?style=for-the-badge
+[license]: https://github.com/marq24/ha-waterkotte/blob/main/LICENSE
+[license-shield]: https://img.shields.io/github/license/marq24/ha-waterkotte.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40marq24-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/marq24/waterkotte-integration.svg?style=for-the-badge
-[releases]: https://github.com/marq24/waterkotte-integration/releases
+[releases-shield]: https://img.shields.io/github/release/marq24/ha-waterkotte.svg?style=for-the-badge
+[releases]: https://github.com/marq24/ha-waterkotte/releases
 [user_profile]: https://github.com/marq24

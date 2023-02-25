@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "description": "Hvis du trenger hjep til konfigurasjon ta en titt her: https://github.com/marq24/waterkotte-integration",
+        "description": "Hvis du trenger hjep til konfigurasjon ta en titt her: https://github.com/marq24/ha-waterkotte",
         "data": {
           "username": "Brukernavn",
           "password": "Passord"
