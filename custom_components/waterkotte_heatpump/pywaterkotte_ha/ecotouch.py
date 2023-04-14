@@ -969,7 +969,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_EVAPORATION = TagData(["A6"], "°C")
     TEMPERATURE_SUCTION_LINE = TagData(["A7"], "°C")
     PRESSURE_EVAPORATION = TagData(["A8"], "bar")
-    TEMPERATURE_RETURN_SET = TagData(["A10"], "°C")
+    TEMPERATURE_RETURN_SETPOINT = TagData(["A10"], "°C")
     TEMPERATURE_RETURN = TagData(["A11"], "°C")
     TEMPERATURE_FLOW = TagData(["A12"], "°C")
     TEMPERATURE_CONDENSATION = TagData(["A13"], "°C")
@@ -991,7 +991,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     COP_COOLING = TagData(["A29"], "")
 
     TEMPERATURE_HEATING = TagData(["A30"], "°C")
-    TEMPERATURE_HEATING_SET = TagData(["A31"], "°C")
+    TEMPERATURE_HEATING_DEMAND = TagData(["A31"], "°C")
     # this A32 value is not visible in the GUI - and IMHO (marq24) there should
     # be no way to set the heating temperature directly - use the values of the
     # 'TEMPERATURE_HEATING_HC' instead (HC = HeatCurve)
@@ -1004,7 +1004,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_HEATING_HC_TARGET = TagData(["A94"], "°C", writeable=True)
     TEMPERATURE_HEATING_HC_OUTDOOR_NORM = TagData(["A91"], "°C", writeable=True)
     TEMPERATURE_HEATING_HC_NORM = TagData(["A92"], "°C", writeable=True)
-    TEMPERATURE_HEATING_HC_SET = TagData(["A96"], "°C")
+    TEMPERATURE_HEATING_HC_TARGET = TagData(["A96"], "°C")
     TEMPERATURE_HEATING_ANTIFREEZE = TagData(["A1231"], "°C", writeable=True)
     TEMPERATURE_HEATING_SETPOINTLIMIT_MAX = TagData(["A95"], "°C", writeable=True)
     TEMPERATURE_HEATING_SETPOINTLIMIT_MIN = TagData(["A104"], "°C", writeable=True)
@@ -1015,14 +1015,14 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_HEATING_SETPOINT_FOR_SOLAR = TagData(["A1710"], "°C", writeable=True)
 
     TEMPERATURE_COOLING = TagData(["A33"], "°C")
-    TEMPERATURE_COOLING_SET = TagData(["A34"], "°C")
+    TEMPERATURE_COOLING_DEMAND = TagData(["A34"], "°C")
     TEMPERATURE_COOLING_SETPOINT = TagData(["A109"], "°C", writeable=True)
     TEMPERATURE_COOLING_OUTDOOR_LIMIT = TagData(["A108"], "°C", writeable=True)
     TEMPERATURE_COOLING_HYSTERESIS = TagData(["A107"], "K", writeable=True)
     TEMPERATURE_COOLING_PV_CHANGE = TagData(["A683"], "K", writeable=True)
 
     TEMPERATURE_WATER = TagData(["A19"], "°C")
-    TEMPERATURE_WATER_SET = TagData(["A37"], "°C")
+    TEMPERATURE_WATER_DEMAND = TagData(["A37"], "°C")
     TEMPERATURE_WATER_SETPOINT = TagData(["A38"], "°C", writeable=True)
     TEMPERATURE_WATER_HYSTERESIS = TagData(["A139"], "K", writeable=True)
     TEMPERATURE_WATER_PV_CHANGE = TagData(["A684"], "K", writeable=True)
@@ -1036,13 +1036,13 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     #SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
     #SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_DURATION = TagData(["I507"], "h", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_MO = TagData(["D153"], "", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_TU = TagData(["D154"], "", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_WE = TagData(["D155"], "", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_TH = TagData(["D156"], "", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_FR = TagData(["D157"], "", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_SA = TagData(["D158"], "", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_SU = TagData(["D159"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_1MO = TagData(["D153"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_2TU = TagData(["D154"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_3WE = TagData(["D155"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_4TH = TagData(["D156"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_5FR = TagData(["D157"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_6SA = TagData(["D158"], "", writeable=True)
+    SCHEDULE_WATER_DISINFECTION_7SU = TagData(["D159"], "", writeable=True)
 
     TEMPERATURE_WATER_SETPOINT_FOR_SOLAR = TagData(["A169"], "°C", writeable=True)
     # Changeover temperature to extern heating when exceeding T hot water
@@ -1055,12 +1055,12 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_WATER_POWLIMIT_MIN = TagData(["A172"], "%", writeable=True)
 
     TEMPERATURE_POOL = TagData(["A20"], "°C")
-    TEMPERATURE_POOL_SET = TagData(["A40"], "°C")
+    TEMPERATURE_POOL_DEMAND = TagData(["A40"], "°C")
     TEMPERATURE_POOL_SETPOINT = TagData(["A41"], "°C", writeable=True)
     TEMPERATURE_POOL_PV_CHANGE = TagData(["A685"], "K", writeable=True)
 
     TEMPERATURE_MIX1 = TagData(["A44"], "°C")
-    TEMPERATURE_MIX1_SET = TagData(["A45"], "°C")
+    TEMPERATURE_MIX1_DEMAND = TagData(["A45"], "°C")
     TEMPERATURE_MIX1_ADJUST = TagData(["I776"], "K", writeable=True)
     TEMPERATURE_MIX1_PV_CHANGE = TagData(["A1094"], "K", writeable=True)
     TEMPERATURE_MIX1_PERCENT = TagData(["A510"], "%")
@@ -1071,7 +1071,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_MIX1_HC_MAX = TagData(["A278"], "°C", writeable=True)
 
     TEMPERATURE_MIX2 = TagData(["A46"], "°C")
-    TEMPERATURE_MIX2_SET = TagData(["A47"], "°C")
+    TEMPERATURE_MIX2_DEMAND = TagData(["A47"], "°C")
     TEMPERATURE_MIX2_ADJUST = TagData(["I896"], "K", writeable=True)
     TEMPERATURE_MIX2_PV_CHANGE = TagData(["A1095"], "K", writeable=True)
     TEMPERATURE_MIX2_PERCENT = TagData(["A512"], "%")
@@ -1082,7 +1082,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_MIX2_HC_MAX = TagData(["A324"], "°C", writeable=True)
 
     TEMPERATURE_MIX3 = TagData(["A48"], "°C")
-    TEMPERATURE_MIX3_SET = TagData(["A49"], "°C")
+    TEMPERATURE_MIX3_DEMAND = TagData(["A49"], "°C")
     TEMPERATURE_MIX3_ADJUST = TagData(["I1017"], "K", writeable=True)
     TEMPERATURE_MIX3_PV_CHANGE = TagData(["A1096"], "K", writeable=True)
     TEMPERATURE_MIX3_PERCENT = TagData(["A514"], "%")

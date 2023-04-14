@@ -27,9 +27,9 @@ SENSOR_TYPES = {
     # temperature sensors
 
     # not sure if this RETURN temperature should be set able at all?!
-    "TEMPERATURE_RETURN_SET": [
+    "TEMPERATURE_RETURN_SETPOINT": [
         "Temperature Return Setpoint",
-        EcotouchTag.TEMPERATURE_RETURN_SET,
+        EcotouchTag.TEMPERATURE_RETURN_SETPOINT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:thermometer",
         False,

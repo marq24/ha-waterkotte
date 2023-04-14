@@ -202,9 +202,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "TEMPERATURE_HEATING_SET": [
+    "TEMPERATURE_HEATING_DEMAND": [
         "Demanded Temperature Heating",
-        EcotouchTag.TEMPERATURE_HEATING_SET,
+        EcotouchTag.TEMPERATURE_HEATING_DEMAND,
         SensorDeviceClass.TEMPERATURE,
         UnitOfTemperature.CELSIUS,
         "mdi:radiator",
@@ -222,9 +222,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "TEMPERATURE_COOLING_SET": [
+    "TEMPERATURE_COOLING_DEMAND": [
         "Demanded Temperature Cooling",
-        EcotouchTag.TEMPERATURE_COOLING_SET,
+        EcotouchTag.TEMPERATURE_COOLING_DEMAND,
         SensorDeviceClass.TEMPERATURE,
         UnitOfTemperature.CELSIUS,
         "mdi:snowflake-thermometer",
@@ -242,9 +242,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "TEMPERATURE_WATER_SET": [
+    "TEMPERATURE_WATER_DEMAND": [
         "Demanded Temperature Hot Water",
-        EcotouchTag.TEMPERATURE_WATER_SET,
+        EcotouchTag.TEMPERATURE_WATER_DEMAND,
         SensorDeviceClass.TEMPERATURE,
         UnitOfTemperature.CELSIUS,
         "mdi:water-thermometer",
@@ -272,9 +272,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "TEMPERATURE_MIX1_SET": [
+    "TEMPERATURE_MIX1_DEMAND": [
         "Demanded Temperature mixing circle 1",
-        EcotouchTag.TEMPERATURE_MIX1_SET,
+        EcotouchTag.TEMPERATURE_MIX1_DEMAND,
         SensorDeviceClass.TEMPERATURE,
         UnitOfTemperature.CELSIUS,
         "mdi:numeric-1-circle",
@@ -302,9 +302,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "TEMPERATURE_MIX2_SET": [
+    "TEMPERATURE_MIX2_DEMAND": [
         "Demanded Temperature mixing circle 2",
-        EcotouchTag.TEMPERATURE_MIX2_SET,
+        EcotouchTag.TEMPERATURE_MIX2_DEMAND,
         SensorDeviceClass.TEMPERATURE,
         UnitOfTemperature.CELSIUS,
         "mdi:numeric-2-circle",
@@ -332,9 +332,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "TEMPERATURE_MIX3_SET": [
+    "TEMPERATURE_MIX3_DEMAND": [
         "Demanded Temperature mixing circle 3",
-        EcotouchTag.TEMPERATURE_MIX3_SET,
+        EcotouchTag.TEMPERATURE_MIX3_DEMAND,
         SensorDeviceClass.TEMPERATURE,
         UnitOfTemperature.CELSIUS,
         "mdi:numeric-3-circle",
@@ -352,9 +352,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "TEMPERATURE_POOL_SET": [
+    "TEMPERATURE_POOL_DEMAND": [
         "Demanded Temperature Pool",
-        EcotouchTag.TEMPERATURE_POOL_SET,
+        EcotouchTag.TEMPERATURE_POOL_DEMAND,
         SensorDeviceClass.TEMPERATURE,
         UnitOfTemperature.CELSIUS,
         "mdi:pool-thermometer",

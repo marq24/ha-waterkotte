@@ -25,9 +25,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "SCHEDULE_WATER_DISINFECTION_MO": [
+    "SCHEDULE_WATER_DISINFECTION_1MO": [
         "Water disinfection day 1 - Monday",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_MO,
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_1MO,
         None,
         None,
         "mdi:calendar-today",
@@ -35,9 +35,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "SCHEDULE_WATER_DISINFECTION_TU": [
+    "SCHEDULE_WATER_DISINFECTION_2TU": [
         "Water disinfection day 2 - Tuesday",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_TU,
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_2TU,
         None,
         None,
         "mdi:calendar-today",
@@ -45,9 +45,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "SCHEDULE_WATER_DISINFECTION_WE": [
+    "SCHEDULE_WATER_DISINFECTION_3WE": [
         "Water disinfection day 3 - Wednesday",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_WE,
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_3WE,
         None,
         None,
         "mdi:calendar-today",
@@ -55,9 +55,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "SCHEDULE_WATER_DISINFECTION_TH": [
+    "SCHEDULE_WATER_DISINFECTION_4TH": [
         "Water disinfection day 4 - Thursday",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_TH,
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_4TH,
         None,
         None,
         "mdi:calendar-today",
@@ -65,9 +65,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "SCHEDULE_WATER_DISINFECTION_FR": [
+    "SCHEDULE_WATER_DISINFECTION_5FR": [
         "Water disinfection day 5 - Friday",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_FR,
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_5FR,
         None,
         None,
         "mdi:calendar-today",
@@ -75,9 +75,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "SCHEDULE_WATER_DISINFECTION_SA": [
+    "SCHEDULE_WATER_DISINFECTION_6SA": [
         "Water disinfection day 6 - Saturday",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_SA,
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_6SA,
         None,
         None,
         "mdi:calendar-today",
@@ -85,9 +85,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "SCHEDULE_WATER_DISINFECTION_SU": [
+    "SCHEDULE_WATER_DISINFECTION_7SU": [
         "Water disinfection day 7 - Sunday",
-        EcotouchTag.SCHEDULE_WATER_DISINFECTION_SU,
+        EcotouchTag.SCHEDULE_WATER_DISINFECTION_7SU,
         None,
         None,
         "mdi:calendar-today",
