@@ -74,7 +74,7 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         """Initialize the sensor."""
         self._coordinator = hass_data
         self._type = sensor_type
-        self._unique_id = self._type
+        self._unique_id = SENSOR_TYPES[self._type][1].name
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
