@@ -587,7 +587,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
             self, entry, hass_data, sensor_type
     ):  # pylint: disable=unused-argument
         """Initialize the sensor."""
-        self.entity_id = f"{DOMAIN}.wkhp_{sensor_type}"
+        self.entity_id = f"{DOMAIN}.wkh_{sensor_type}"
         self._coordinator = hass_data
         self._type = sensor_type
         self._attr_unique_id = sensor_type
