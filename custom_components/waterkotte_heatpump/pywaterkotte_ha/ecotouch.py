@@ -1004,7 +1004,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_HEATING_HC_TARGET = TagData(["A94"], "°C", writeable=True)
     TEMPERATURE_HEATING_HC_OUTDOOR_NORM = TagData(["A91"], "°C", writeable=True)
     TEMPERATURE_HEATING_HC_NORM = TagData(["A92"], "°C", writeable=True)
-    TEMPERATURE_HEATING_HC_TARGET = TagData(["A96"], "°C")
+    TEMPERATURE_HEATING_HC_RESULT = TagData(["A96"], "°C")
     TEMPERATURE_HEATING_ANTIFREEZE = TagData(["A1231"], "°C", writeable=True)
     TEMPERATURE_HEATING_SETPOINTLIMIT_MAX = TagData(["A95"], "°C", writeable=True)
     TEMPERATURE_HEATING_SETPOINTLIMIT_MIN = TagData(["A104"], "°C", writeable=True)
