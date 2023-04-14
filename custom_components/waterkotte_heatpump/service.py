@@ -32,7 +32,7 @@ class WaterkotteHeatpumpService():
             return "unavailable"
         # self._hass.states.set("waterkotte.set_holiday", name)
 
-    async def set_time(self, call):
+    async def set_disinfection_start_time(self, call):
         """Handle the service call."""
         # name = call.data.get(ATTR_NAME, DEFAULT_NAME)
         startTime = call.data.get('starthhmm', None)
