@@ -194,7 +194,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         else:
             _LOGGER.warning(str(SENSOR_TYPES[self._type][8])+" Binary-Sensor not found in translation")
             self._name = f"{SENSOR_TYPES[self._type][0]}"
-        hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
+        hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1].name})
         super().__init__(hass_data, entry)
 
     @property
