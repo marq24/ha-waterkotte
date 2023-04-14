@@ -382,6 +382,16 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    "TEMPERATURE_DISCHARGE": [
+        "Temperature Discharge",
+        EcotouchTag.TEMPERATURE_DISCHARGE,
+        SensorDeviceClass.TEMPERATURE,
+        UnitOfTemperature.CELSIUS,
+        "mdi:solar-power-variant",
+        False,
+        None,
+        None,
+    ],
     # other (none temperature) values...
     "PRESSURE_EVAPORATION": [
         "Pressure Evaporation",
@@ -396,6 +406,16 @@ SENSOR_TYPES = {
     "PRESSURE_CONDENSATION": [
         "Pressure Condensation",
         EcotouchTag.PRESSURE_CONDENSATION,
+        SensorDeviceClass.PRESSURE,
+        UnitOfPressure.BAR,
+        "mdi:gauge",
+        True,
+        None,
+        None,
+    ],
+    "PRESSURE_WATER": [
+        "Pressure Water",
+        EcotouchTag.PRESSURE_WATER,
         SensorDeviceClass.PRESSURE,
         UnitOfPressure.BAR,
         "mdi:gauge",

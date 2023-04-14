@@ -1102,6 +1102,12 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # just a percentage value (from 0.0 - 100.0)
     PERCENT_COMPRESSOR = TagData(["A58"], "%")
 
+    # just found... Druckgastemperatur
+    TEMPERATURE_DISCHARGE = TagData(["A1462"], "°C")
+
+    # implement https://github.com/marq24/ha-waterkotte/issues/3
+    PRESSURE_WATER = TagData(["A1669"], "bar")
+
     # I1264 -> Heizstab Leistung?! -> 6000
 
     # keep but not found in Waterkotte GUI

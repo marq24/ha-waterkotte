@@ -142,7 +142,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             #     print("Could not detect System Type!")
 
             client = WaterkotteHeatpumpApiClient(
-                host, username, password, session, None, systemType=systemType
+                host, username, password, session, None, systemType=systemType, tagsPerRequest=tagsPerRequest
             )
             await client.login()
             # await client.async_read_value(EcotouchTag.DATE_DAY)
