@@ -184,9 +184,10 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
 
     def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
+        self.entity_id = "f{DOMAIN}.{sensor_type}"
         self._coordinator = hass_data
         self._type = sensor_type
-        self._unique_id = SENSOR_TYPES[self._type][1].name
+        self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         if SENSOR_TYPES[self._type][8] in _LANG:
@@ -194,7 +195,6 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         else:
             _LOGGER.warning(str(SENSOR_TYPES[self._type][8])+" Binary-Sensor not found in translation")
             self._name = f"{SENSOR_TYPES[self._type][0]}"
-        hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1].name})
         super().__init__(hass_data, entry)
 
     @property
@@ -262,4 +262,4 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
     @ property
     def unique_id(self):
         """Return the unique of the sensor."""
-        return self._unique_id
+        return self._attr_unique_id
