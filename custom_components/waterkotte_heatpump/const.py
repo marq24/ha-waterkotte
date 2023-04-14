@@ -1,7 +1,7 @@
 """Constants for Waterkotte Heatpump."""
 # Base component constants
 NAME = "Waterkotte Heatpump [+2020]"
-DOMAIN = "waterkotte_heatpump"
+DOMAIN = "waterkotte_hp2020"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "1.0.1"
 TITLE = "Waterkotte"
