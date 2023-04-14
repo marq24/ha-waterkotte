@@ -184,7 +184,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
 
     def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
-        self.entity_id = "f{DOMAIN}.{sensor_type}"
+        self.entity_id = f"{DOMAIN}.wkhp.{sensor_type}"
         self._coordinator = hass_data
         self._type = sensor_type
         self._attr_unique_id = sensor_type
