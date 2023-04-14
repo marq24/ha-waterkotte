@@ -115,9 +115,10 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         self, entry, hass_data, sensor_type
     ):  # pylint: disable=unused-argument
         """Initialize the sensor."""
+        self.entity_id = f"{DOMAIN}.wkhp_{sensor_type}"
         self._coordinator = hass_data
         self._type = sensor_type
-        self._unique_id = self._type
+        self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
@@ -125,13 +126,12 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         else:
             _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Switch not found in translation")
             self._name = f"{SENSOR_TYPES[self._type][0]}"
-        hass_data.alltags.update({self._unique_id: SENSOR_TYPES[self._type][1]})
+        hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
-        # self._attr_capability_attributes[ATTR_FRIENDLY_NAME] = self._name
 
     def __del__(self):
         try:
-            del self._coordinator[self._unique_id]
+            del self._coordinator[self._attr_unique_id]
         except Exception:  # pylint: disable=broad-except
             pass
 
@@ -225,4 +225,4 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     @property
     def unique_id(self):
         """Return the unique of the sensor."""
-        return self._unique_id
+        return self._attr_unique_id
