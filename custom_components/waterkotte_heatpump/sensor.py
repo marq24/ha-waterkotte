@@ -587,7 +587,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
             self, entry, hass_data, sensor_type
     ):  # pylint: disable=unused-argument
         """Initialize the sensor."""
-        self.entity_id = f"{DOMAIN}.wkhp.{sensor_type}"
+        self.entity_id = f"{DOMAIN}.wkhp_{sensor_type}"
         self._coordinator = hass_data
         self._type = sensor_type
         self._attr_unique_id = sensor_type
@@ -598,6 +598,7 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         else:
             _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Sensor not found in translation")
             self._name = f"{SENSOR_TYPES[self._type][0]}"
+        hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
 
     @property
