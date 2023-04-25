@@ -419,7 +419,7 @@ SENSOR_TYPES = {
         SensorDeviceClass.PRESSURE,
         UnitOfPressure.BAR,
         "mdi:gauge",
-        True,
+        False,
         None,
         None,
     ],

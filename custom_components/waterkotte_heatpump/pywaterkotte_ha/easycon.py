@@ -11,6 +11,9 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import (  # 
     List,
     Any,
 )
+import logging
+
+_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 class Easycon(Ecotouch):
     """Base Easycon Class, inherits from ecotouch"""
@@ -110,10 +113,13 @@ class Easycon(Ecotouch):
                         # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                         # print("Tag: %s is inactive!", tag)
                         if match is None:
-                            raise Exception(tag + " tag not found in response")
+                            #raise Exception(tag + " tag not found in response")
+                            _LOGGER.warning("Tag: %s not found in response!", tag)
+                            results_status[tag] = "E_NOTFOUND"
+                        else:
+                            # if val_status == "E_INACTIVE":
+                            results_status[tag] = "E_INACTIVE"
 
-                        # if val_status == "E_INACTIVE":
-                        results_status[tag] = "E_INACTIVE"
                         results[tag] = None
                     else:
                         results_status[tag] = "E_OK"

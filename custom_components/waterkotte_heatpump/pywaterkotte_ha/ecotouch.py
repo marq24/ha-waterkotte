@@ -1348,7 +1348,7 @@ class Ecotouch:
             # e_inactive = False
             for tag_status in tag.tags:
                 try:
-                    if e_status[tag_status] == "E_INACTIVE":
+                    if e_status[tag_status] in ("E_INACTIVE", "E_NOTFOUND"):
                         if e_values[tag.tags[0]] is not None:
                             val = e_values[tag.tags[0]]
                         else:
@@ -1429,10 +1429,13 @@ class Ecotouch:
                         # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                         # print("Tag: %s is inactive!", tag)
                         if match is None:
-                            raise Exception(tag + " tag not found in response")
+                            # raise Exception(tag + " tag not found in response")
+                            _LOGGER.warning("Tag: %s not found in response!", tag)
+                            results_status[tag] = "E_NOTFOUND"
+                        else:
+                            # if val_status == "E_INACTIVE":
+                            results_status[tag] = "E_INACTIVE"
 
-                        # if val_status == "E_INACTIVE":
-                        results_status[tag] = "E_INACTIVE"
                         results[tag] = None
                     else:
                         results_status[tag] = "E_OK"
@@ -1499,10 +1502,13 @@ class Ecotouch:
                         # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                         # print("Tag: %s is inactive!", tag)
                         if match is None:
-                            raise Exception(tag + " tag not found in response")
+                            # raise Exception(tag + " tag not found in response")
+                            _LOGGER.warning("Tag: %s not found in response!", tag)
+                            results_status[tag] = "E_NOTFOUND"
+                        else:
+                            # if val_status == "E_INACTIVE":
+                            results_status[tag] = "E_INACTIVE"
 
-                        # if val_status == "E_INACTIVE":
-                        results_status[tag] = "E_INACTIVE"
                         results[tag] = None
                     else:
                         results_status[tag] = "E_OK"
