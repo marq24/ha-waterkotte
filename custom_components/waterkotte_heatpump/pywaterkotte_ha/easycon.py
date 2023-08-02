@@ -123,7 +123,10 @@ class Easycon(Ecotouch):
                         results[tag] = None
                     else:
                         results_status[tag] = "E_OK"
-                        results[tag] = match.text
+                        if valType == "ANALOG":
+                            results[tag] = str(float(match.text) * 10.0)
+                        else:
+                            results[tag] = match.text
 
         return results, results_status
 
