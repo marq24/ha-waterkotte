@@ -24,14 +24,52 @@ import logging
 ECOTOUCH = "ECOTOUCH"
 EASYCON = "EASYCON"
 
-#MAX_NO_TAGS = 75
+HEATING_MODE_TRANS = {
+    "en": {
+        0: "Weather-compensated",
+        1: "Manual Setpoint",
+        2: "Setpoint BMS",
+        3: "Setpoint EXT",
+        4: "Setpoint 0-10V",
+        5: "Based on Mixing circle"
+    },
+    "de": {
+        0: "Witterungsgeführt",
+        1: "Manuelle Sollwertvorgabe",
+        2: "Sollwertvorgabe BMS",
+        3: "Sollwertvorgabe EXT",
+        4: "Sollwertvorgabe 0-10V",
+        5: "Mischerkreis Vorgabe"
+    },
+    "fr": {
+        0: "M\xe9t\xe9o-compens\xe9",
+        1: "Consigne",
+        2: "Consigne BMS",
+        3: "Consigne EXT",
+        4: "Consigne 0-10V",
+        5: "Consigne circuit m\xe9langeur"
+    },
+    "xx": {
+        0: "hm0",
+        1: "hm1",
+        2: "hm2",
+        3: "hm3",
+        4: "hm4",
+        5: "hm5"
+    }
+}
+HEATING_MODE = HEATING_MODE_TRANS['en']
+
+# MAX_NO_TAGS = 75
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
 
 class StatusException(Exception):
     """A Status Exception."""
 
     # pass
+
 
 class InvalidResponseException(Exception):
     """A InvalidResponseException."""
@@ -857,10 +895,12 @@ def _parse_datetime(self, e_vals, *other_args):  # pylint: disable=unused-argume
     dt = datetime(*vals)  # pylint: disable=invalid-name
     return dt + timedelta(days=1) if next_day else dt
 
+
 def _parse_time_hhmm(self, e_vals, *other_args):  # pylint: disable=unused-argument
     vals = [int(e_vals[tag]) for tag in self.tags]
     dt = time(hour=vals[0], minute=vals[1])  # pylint: disable=invalid-name
     return dt
+
 
 def _parse_status(self, value, *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
@@ -902,6 +942,34 @@ def _write_state(self, value, et_values):
         et_values[ecotouch_tag] = "2"
 
 
+# a very simple "find first key" of dict method...
+def get_key_from_value(a_dict: dict, value_to_find):
+    keys = [k for k, v in a_dict.items() if v == value_to_find]
+    if keys:
+        return keys[0]
+    return None
+
+
+def _parse_heat_mode(self, value, *other_args):  # pylint: disable=unused-argument
+    assert len(self.tags) == 1
+    ecotouch_tag = self.tags[0]
+    # assert isinstance(value[ecotouch_tag],int)
+    intVal = int(value[ecotouch_tag])
+    if intVal >= 0 and intVal <= len(HEATING_MODE):
+        return HEATING_MODE[intVal]
+    else:
+        return "Error"
+
+
+def _write_heat_mode(self, value, et_values):
+    assert len(self.tags) == 1
+    ecotouch_tag = self.tags[0]
+    assert ecotouch_tag[0] in ["I"]
+    index = get_key_from_value(HEATING_MODE, value)
+    if index is not None:
+        et_values[ecotouch_tag] = str(index)
+
+
 def _write_datetime(tag, value, et_values):
     assert isinstance(value, datetime)
     vals = [
@@ -922,6 +990,7 @@ def _write_datetime(tag, value, et_values):
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
 
+
 def _write_time_hhmm(tag, value, et_values):
     assert isinstance(value, time)
     vals = [
@@ -929,10 +998,11 @@ def _write_time_hhmm(tag, value, et_values):
         for val in [
             value.hour,
             value.minute,
-            ]
+        ]
     ]
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
+
 
 class TagData(NamedTuple):
     """TagData Class"""
@@ -992,10 +1062,6 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
 
     TEMPERATURE_HEATING = TagData(["A30"], "°C")
     TEMPERATURE_HEATING_DEMAND = TagData(["A31"], "°C")
-    # this A32 value is not visible in the GUI - and IMHO (marq24) there should
-    # be no way to set the heating temperature directly - use the values of the
-    # 'TEMPERATURE_HEATING_HC' instead (HC = HeatCurve)
-    TEMPERATURE_HEATING_SETPOINT = TagData(["A32"], "°C", writeable=True)
     TEMPERATURE_HEATING_ADJUST = TagData(["I263"], "K", writeable=True)
     TEMPERATURE_HEATING_HYSTERESIS = TagData(["A61"], "K", writeable=True)
     TEMPERATURE_HEATING_PV_CHANGE = TagData(["A682"], "K", writeable=True)
@@ -1011,6 +1077,15 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_HEATING_POWLIMIT_MAX = TagData(["A504"], "%", writeable=True)
     TEMPERATURE_HEATING_POWLIMIT_MIN = TagData(["A505"], "%", writeable=True)
     TEMPERATURE_HEATING_SGREADY_STATUS4 = TagData(["A967"], "°C", writeable=True)
+
+    # TEMPERATURE_HEATING_BUFFERTANK_ROOM_SETPOINT = TagData(["A413"], "°C", writeable=True)
+
+    TEMPERATURE_HEATING_MODE = TagData(["I265"], writeable=True, read_function=_parse_heat_mode,
+                                       write_function=_write_heat_mode)
+    # this A32 value is not visible in the GUI - and IMHO (marq24) there should
+    # be no way to set the heating temperature directly - use the values of the
+    # 'TEMPERATURE_HEATING_HC' instead (HC = HeatCurve)
+    TEMPERATURE_HEATING_SETPOINT = TagData(["A32"], "°C", writeable=True)
     # same as A32 ?!
     TEMPERATURE_HEATING_SETPOINT_FOR_SOLAR = TagData(["A1710"], "°C", writeable=True)
 
@@ -1033,8 +1108,8 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
         read_function=_parse_time_hhmm,
         write_function=_write_time_hhmm,
     )
-    #SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
-    #SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
+    # SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
+    # SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_DURATION = TagData(["I507"], "h", writeable=True)
     SCHEDULE_WATER_DISINFECTION_1MO = TagData(["D153"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_2TU = TagData(["D154"], "", writeable=True)
@@ -1205,15 +1280,15 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # (all values can be read/write) - no clue about the unit yet
     # reading the values always returned '0' -> so I guess they have
     # no use for us?!
-    #ENERGY_THERMAL_WORK_1 = TagData("I1923")
-    #ENERGY_THERMAL_WORK_2 = TagData("I1924")
-    #ENERGY_COOLING = TagData("I1925")
-    #ENERGY_HEATING = TagData("I1926")
-    #ENERGY_HOT_WATER = TagData("I1927")
-    #ENERGY_POOL_HEATER = TagData("I1928")
-    #ENERGY_COMPRESSOR = TagData("I1929")
-    #ENERGY_HEAT_SOURCE_PUMP = TagData("I1930")
-    #ENERGY_EXTERNAL_HEATER = TagData("I1931")
+    # ENERGY_THERMAL_WORK_1 = TagData("I1923")
+    # ENERGY_THERMAL_WORK_2 = TagData("I1924")
+    # ENERGY_COOLING = TagData("I1925")
+    # ENERGY_HEATING = TagData("I1926")
+    # ENERGY_HOT_WATER = TagData("I1927")
+    # ENERGY_POOL_HEATER = TagData("I1928")
+    # ENERGY_COMPRESSOR = TagData("I1929")
+    # ENERGY_HEAT_SOURCE_PUMP = TagData("I1930")
+    # ENERGY_EXTERNAL_HEATER = TagData("I1931")
 
     def __hash__(self) -> int:
         return hash(self.name)
@@ -1227,7 +1302,7 @@ class Ecotouch:
 
     auth_cookies = None
 
-    def __init__(self, host, tagsPerRequest: int):
+    def __init__(self, host, tagsPerRequest: int = 10, lc_lang: str = 'en'):
         self.hostname = host
         self.username = "waterkotte"
         self.password = "waterkotte"
@@ -1384,7 +1459,7 @@ class Ecotouch:
             results_status=None,
     ):
         """async read tags"""
-        #_LOGGER.warning(tags)
+        # _LOGGER.warning(tags)
         if results is None:
             results = {}
         if results_status is None:
@@ -1471,13 +1546,14 @@ class Ecotouch:
         # result = {}
         results = {}
         results_status = {}
+        # _LOGGER.info(f"requesting '{args}' [tags: {tags}, values: {value}]")
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
             async with session.get(
                     f"http://{self.hostname}/cgi/writeTags", params=args
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
-                #print(r)
+                # print(r)
                 if r == "#E_NEED_LOGIN\n":
                     await self.login(
                         self.username, self.password

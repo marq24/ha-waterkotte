@@ -46,7 +46,7 @@ tags = []
 
 
 async def async_setup(
-    hass: HomeAssistant, config: Config
+        hass: HomeAssistant, config: Config
 ):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
@@ -56,7 +56,7 @@ def load_translation(hass):
     """Load correct language file or default to english"""
     global LANG  # pylint: disable=global-statement
     basepath = __file__[:-11]
-    file = f"{basepath}translations/heatpump.{hass.config.country.lower()}.json"
+    file = f"{basepath}translations/heatpump.{hass.config.language.lower()}.json"
     try:
         with open(file) as f:  # pylint: disable=unspecified-encoding,invalid-name
             LANG = json.load(f)
@@ -119,7 +119,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     session = async_get_clientsession(hass)
     client = WaterkotteHeatpumpApiClient(
-        host, username, password, session, tags, systemType=system_type, tagsPerRequest=tags_per_request
+        host, username, password, session, tags, systemType=system_type, tagsPerRequest=tags_per_request, lc_lang=hass.config.language.lower()
     )
     if COORDINATOR is not None:
         coordinator = WaterkotteHeatpumpDataUpdateCoordinator(
@@ -161,11 +161,11 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
     def __init__(
-        self,
-        hass: HomeAssistant,
-        client: WaterkotteHeatpumpApiClient,
-        data=None,
-        lang=None,
+            self,
+            hass: HomeAssistant,
+            client: WaterkotteHeatpumpApiClient,
+            data=None,
+            lang=None,
     ) -> None:
         """Initialize."""
         self.api = client
@@ -187,12 +187,12 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                 tags = []
                 for entity in self.__hass.data["entity_registry"].entities:
                     if (  # pylint: disable=line-too-long
-                        self.__hass.data["entity_registry"].entities[entity].platform
-                        == DOMAIN
-                        and self.__hass.data["entity_registry"]
-                        .entities[entity]
-                        .disabled
-                        is False
+                            self.__hass.data["entity_registry"].entities[entity].platform
+                            == DOMAIN
+                            and self.__hass.data["entity_registry"]
+                            .entities[entity]
+                            .disabled
+                            is False
                     ):
                         # x += 1
                         # print(entity)
@@ -244,7 +244,10 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         """Update single data"""
         res = await self.api.async_write_value(tag, value)
         # print(res)
-        self.data[tag]["value"] = res[tag.tags[0]]["value"]
+        if tag.tags[0] in res:
+            self.data[tag]["value"] = res[tag.tags[0]]["value"]
+        else:
+            _LOGGER.error(f"could not write value: '{value}' to: {tag} res was: {res}")
         # self.data[result[0]]
 
 

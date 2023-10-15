@@ -7,7 +7,7 @@ from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
-from .const import ENUM_OFFAUTOMANUAL, DEVICE_CLASS_ENUM, DOMAIN
+from .const import ENUM_OFFAUTOMANUAL, ENUM_HEATING_MODE, DEVICE_CLASS_ENUM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 _LANG = None
@@ -55,7 +55,19 @@ SENSOR_TYPES = {
         ENUM_OFFAUTOMANUAL,
         None,
     ],
+    # I265
+    "temperature_heating_mode": [
+        "Heating Control",
+        EcotouchTag.TEMPERATURE_HEATING_MODE,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:radiator",
+        False,
+        ENUM_HEATING_MODE,
+        None,
+    ],
 }
+
 
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_devices) -> None:
     """Set up the Waterkotte Select platform."""
@@ -76,17 +88,19 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         self._coordinator = hass_data
         self._type = sensor_type
         self._attr_unique_id = sensor_type
+        self._attr_translation_key = f"tkey_{sensor_type}"
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
             self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Select not found in translation")
+            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Select not found in translation")
             self._name = f"{SENSOR_TYPES[self._type][0]}"
+
         hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
         super().__init__(hass_data, entry)
 
-    @ property
+    @property
     def name(self):
         """Return the name of the sensor."""
         return self._name
@@ -124,23 +138,23 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         """Return a unique ID to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 
-    @ property
+    @property
     def device_class(self):
         """Return the device class of the sensor."""
         return SENSOR_TYPES[self._type][2]
 
-    @ property
+    @property
     def icon(self):
         """Return the icon of the sensor."""
         return SENSOR_TYPES[self._type][4]
         # return ICON
 
-    @ property
+    @property
     def entity_registry_enabled_default(self):
         """Return the entity_registry_enabled_default of the sensor."""
         return SENSOR_TYPES[self._type][5]
 
-    @ property
+    @property
     def entity_category(self):
         """Return the unit of measurement."""
         try:
@@ -148,12 +162,12 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         except IndexError:
             return None
 
-    @ property
+    @property
     def unique_id(self):
         """Return the unique of the sensor."""
         return self._attr_unique_id
 
-    @ property
+    @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
         return SENSOR_TYPES[self._type][3]
@@ -162,7 +176,7 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         """Schedule a custom update via the common entity update service."""
         await self._coordinator.async_request_refresh()
 
-    @ property
+    @property
     def should_poll(self) -> bool:
         """Entities do not individually poll."""
         return False

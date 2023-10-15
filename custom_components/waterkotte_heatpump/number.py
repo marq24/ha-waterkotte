@@ -3,6 +3,7 @@ import logging
 
 # from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
 from homeassistant.components.number import NumberEntity, NumberDeviceClass, DEFAULT_STEP, NumberMode
+from homeassistant.components.sensor import SensorStateClass
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 # from .const import DEFAULT_NAME
@@ -65,20 +66,20 @@ SENSOR_TYPES = {
         NumberMode.BOX,
     ],
 
-    # We should not use the HEATING setpoint directly - adjust
-    # the heat curve instead!
-    #"temp_heating_setpoint": [
-    #    "Temperature Heating Demand",
-    #    EcotouchTag.TEMPERATURE_HEATING_SETPOINT,
-    #    NumberDeviceClass.TEMPERATURE,
-    #    "mdi:thermometer",
-    #    False,
-    #   0,
-    #   100,
-    #   DEFAULT_STEP,
-    #],
-
     # Heizung
+    # A32 manual heat-setpoint (when heat_mode = 1)
+    "TEMPERATURE_HEATING_SETPOINT": [
+        "Temperature Heating Demand",
+        EcotouchTag.TEMPERATURE_HEATING_SETPOINT,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:radiator",
+        False,
+        0,
+        60,
+        TENTH_STEP,
+        NumberMode.BOX,
+    ],
+
     "TEMPERATURE_HEATING_ADJUST": [
         "Temperature heating Adjustment",
         EcotouchTag.TEMPERATURE_HEATING_ADJUST,

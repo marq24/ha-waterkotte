@@ -28,6 +28,7 @@ class WaterkotteHeatpumpApiClient:
         tags: str,
         systemType: str,
         tagsPerRequest: int,
+        lc_lang: str = "en"
     ) -> None:
         """Sample API Client."""
         self._username = username
@@ -37,7 +38,7 @@ class WaterkotteHeatpumpApiClient:
         # self._hass = hass
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = Ecotouch(host, tagsPerRequest)
+            self._client = Ecotouch(host, tagsPerRequest, lc_lang)
         elif systemType == EASYCON:
             self._client = Easycon(host)
         else:
