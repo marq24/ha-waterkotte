@@ -1,5 +1,5 @@
 """Constants for Waterkotte Heatpump."""
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import HEATING_MODE
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import HEATING_MODES
 # Base component constants
 NAME = "Waterkotte Heatpump [+2020]"
 DOMAIN = "waterkotte_heatpump"
@@ -24,7 +24,7 @@ STATE_OFF = "off"
 # # #### Enum Options ####
 ENUM_ONOFFAUTO = [STATE_ON, STATE_OFF, STATE_AUTO]
 ENUM_OFFAUTOMANUAL = [STATE_OFF, STATE_AUTO, STATE_MANUAL]
-ENUM_HEATING_MODE = list(HEATING_MODE.values())
+ENUM_HEATING_MODE = list(HEATING_MODES.values())
 
 
 # Platforms

@@ -26,5 +26,20 @@
         }
       }
     }
+  },
+  "entity": {
+    "select": {
+      "tkey_temperature_heating_mode": {
+        "name": "Régulation chauffage",
+        "state": {
+          "hm0": "Météo-compensé",
+          "hm1": "Consigne",
+          "hm2": "Consigne BMS",
+          "hm3": "Consigne EXT",
+          "hm4": "Consigne 0-10V",
+          "hm5": "Consigne circuit mélangeur"
+        }
+      }
+    }
   }
 }

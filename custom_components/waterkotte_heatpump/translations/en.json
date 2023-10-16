@@ -38,5 +38,20 @@
         }
       }
     }
+  },
+  "entity": {
+    "select": {
+      "tkey_temperature_heating_mode": {
+        "name": "Heating Control",
+        "state": {
+          "hm0": "Weather-compensated",
+          "hm1": "Manual Setpoint",
+          "hm2": "Setpoint BMS",
+          "hm3": "Setpoint EXT",
+          "hm4": "Setpoint 0-10V",
+          "hm5": "Based on Mixing circle"
+        }
+      }
+    }
   }
 }

@@ -23,42 +23,14 @@ import logging
 
 ECOTOUCH = "ECOTOUCH"
 EASYCON = "EASYCON"
-
-HEATING_MODE_TRANS = {
-    "en": {
-        0: "Weather-compensated",
-        1: "Manual Setpoint",
-        2: "Setpoint BMS",
-        3: "Setpoint EXT",
-        4: "Setpoint 0-10V",
-        5: "Based on Mixing circle"
-    },
-    "de": {
-        0: "Witterungsgeführt",
-        1: "Manuelle Sollwertvorgabe",
-        2: "Sollwertvorgabe BMS",
-        3: "Sollwertvorgabe EXT",
-        4: "Sollwertvorgabe 0-10V",
-        5: "Mischerkreis Vorgabe"
-    },
-    "fr": {
-        0: "M\xe9t\xe9o-compens\xe9",
-        1: "Consigne",
-        2: "Consigne BMS",
-        3: "Consigne EXT",
-        4: "Consigne 0-10V",
-        5: "Consigne circuit m\xe9langeur"
-    },
-    "xx": {
-        0: "hm0",
-        1: "hm1",
-        2: "hm2",
-        3: "hm3",
-        4: "hm4",
-        5: "hm5"
-    }
+HEATING_MODES = {
+    0: "hm0",
+    1: "hm1",
+    2: "hm2",
+    3: "hm3",
+    4: "hm4",
+    5: "hm5"
 }
-HEATING_MODE = HEATING_MODE_TRANS['en']
 
 # MAX_NO_TAGS = 75
 
@@ -955,8 +927,8 @@ def _parse_heat_mode(self, value, *other_args):  # pylint: disable=unused-argume
     ecotouch_tag = self.tags[0]
     # assert isinstance(value[ecotouch_tag],int)
     intVal = int(value[ecotouch_tag])
-    if intVal >= 0 and intVal <= len(HEATING_MODE):
-        return HEATING_MODE[intVal]
+    if intVal >= 0 and intVal <= len(HEATING_MODES):
+        return HEATING_MODES[intVal]
     else:
         return "Error"
 
@@ -965,7 +937,7 @@ def _write_heat_mode(self, value, et_values):
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
     assert ecotouch_tag[0] in ["I"]
-    index = get_key_from_value(HEATING_MODE, value)
+    index = get_key_from_value(HEATING_MODES, value)
     if index is not None:
         et_values[ecotouch_tag] = str(index)
 

@@ -1,0 +1,17 @@
+{
+  "entity": {
+    "select": {
+      "tkey_temperature_heating_mode": {
+        "name": "Heizungsregelung",
+        "state": {
+          "hm0": "Witterungsgeführt",
+          "hm1": "Manuelle Sollwertvorgabe",
+          "hm2": "Sollwertvorgabe BMS",
+          "hm3": "Sollwertvorgabe EXT",
+          "hm4": "Sollwertvorgabe 0-10V",
+          "hm5": "Mischerkreis Vorgabe"
+        }
+      }
+    }
+  }
+}

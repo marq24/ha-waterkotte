@@ -1,11 +1,13 @@
 """Sensor platform for Waterkotte Heatpump."""
 import logging
+from dataclasses import dataclass
+
 # from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
-from homeassistant.components.select import SelectEntity
+from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
-from .entity import WaterkotteHeatpumpEntity
+from .entity import WaterkotteHeatpumpEntity, WaterkotteHeatpumpEntity2
 
 from .const import ENUM_OFFAUTOMANUAL, ENUM_HEATING_MODE, DEVICE_CLASS_ENUM, DOMAIN
 
@@ -69,41 +71,70 @@ SENSOR_TYPES = {
 }
 
 
+@dataclass
+class ExtSelectEntityDescription(SelectEntityDescription):
+    tag: EcotouchTag | None = None
+
+
+SENSOR_TYPES2 = [
+    ExtSelectEntityDescription(
+        key="temperature_heating_mode",
+        tag=EcotouchTag.TEMPERATURE_HEATING_MODE,
+        name="Heating Control",
+        entity_registry_enabled_default=True,
+        options=ENUM_HEATING_MODE,
+        icon="mdi:radiator"
+    )
+]
+
+
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_devices) -> None:
     """Set up the Waterkotte Select platform."""
     _LOGGER.debug("Select async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
+
     global _LANG
     _LANG = coordinator.lang
     async_add_devices([WaterkotteHeatpumpSelect(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 
+    # async_add_devices([WaterkotteHeatpumpSelect2(coordinator, sensor_type)
+    #                   for sensor_type in SENSOR_TYPES2])
+
 
 class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
     """waterkotte_heatpump Sensor class."""
 
-    def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
+    def __init__(self, entry, coordinator, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
+        super().__init__(coordinator, entry)
         self.entity_id = f"{DOMAIN}.wkh_{sensor_type}"
-        self._coordinator = hass_data
+        self._coordinator = coordinator
         self._type = sensor_type
         self._attr_unique_id = sensor_type
-        self._attr_translation_key = f"tkey_{sensor_type}"
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-            self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+
+        # for now, we just use the "new" translation impl just for the single 'heating_mode'
+        # selection... the rest might follow in the future...
+        if self._type == 'temperature_heating_mode':
+            self._attr_translation_key = f"tkey_{sensor_type}"
+
+            # no need to provide an SelectEntityDescription here - since when the translation-key
+            # is present 'tkey_*' in our translation files, all is FINE!!!
+            # self.entity_description = SelectEntityDescription (
+            #    key = sensor_type,
+            #    name = SENSOR_TYPES[self._type][0],
+            #    options = SENSOR_TYPES[self._type][6]
+            # )
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Select not found in translation")
-            self._name = f"{SENSOR_TYPES[self._type][0]}"
+            if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
+                self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+            else:
+                _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Select not found in translation")
+                self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
 
-        hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
-        super().__init__(hass_data, entry)
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return self._name
+        coordinator.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
 
     @property
     def current_option(self) -> str | None:
@@ -180,3 +211,47 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
     def should_poll(self) -> bool:
         """Entities do not individually poll."""
         return False
+
+
+class WaterkotteHeatpumpSelect2(WaterkotteHeatpumpEntity2, SelectEntity):
+    def __init__(
+            self,
+            coordinator,
+            description: ExtSelectEntityDescription
+    ):
+        """Initialize a singular value sensor."""
+        super().__init__(coordinator=coordinator, description=description)
+
+        self._tag = description.tag
+        if (hasattr(self.entity_description, 'entity_registry_enabled_default')):
+            self._attr_entity_registry_enabled_default = self.entity_description.entity_registry_enabled_default
+        else:
+            self._attr_entity_registry_enabled_default = True
+
+        key = self.entity_description.key.lower()
+        self.entity_id = f"{DOMAIN}.wkh_{key}"
+
+        if description.options is not None:
+            self._attr_options = description.options
+
+        # we use the "key" also as our internal translation-key - and EXTREMELY important we have
+        # to set the '_attr_has_entity_name' to trigger the calls to the localization framework!
+        self._attr_translation_key = f"tkey_{key}"
+        self._attr_has_entity_name = True
+
+        # if hasattr(description, 'suggested_display_precision') and description.suggested_display_precision is not None:
+        #    self._attr_suggested_display_precision = description.suggested_display_precision
+        # else:
+        #    self._attr_suggested_display_precision = 2
+
+    @property
+    def current_option(self) -> str | None:
+        try:
+            value = self.coordinator.data[self._tag]["value"]
+            if value is None or value == "":
+                value = 'unknown'
+        except KeyError:
+            value = "unknown"
+        except TypeError:
+            return None
+        return value
