@@ -150,6 +150,40 @@ SENSOR_TYPES = {
         None,
         "4wayvalve"
     ],
+    # status sensors
+    "STATUS_HEATING": [
+        "Status Heating",
+        EcotouchTag.STATUS_HEATING,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        "mdi:radiator",
+        True,
+        None,
+        None,
+        "heating"
+    ],
+    "STATUS_WATER": [
+        "Status Water",
+        EcotouchTag.STATUS_WATER,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        "mdi:water-thermometer",
+        True,
+        None,
+        None,
+        "dhw"
+    ],
+    "STATUS_COOLING": [
+        "Status Cooling",
+        EcotouchTag.STATUS_COOLING,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        "mdi:snowflake-thermometer",
+        True,
+        None,
+        None,
+        "cool"
+    ],
     # "holiday_enabled": [
     #     "Holiday Mode",
     #     EcotouchTag.HOLIDAY_ENABLED,
@@ -222,6 +256,17 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
             print(value)
         except TypeError:
             return None
+
+        if not isinstance(value, bool):
+            if isinstance(value, str):
+                # parse anything else then 'on' to False!
+                if value.lower()=='on':
+                    value = True
+                else:
+                    value = False
+            else:
+                value = False
+
         return value
 
     @ property

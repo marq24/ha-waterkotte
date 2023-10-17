@@ -30,37 +30,6 @@ _LANG = None
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
 SENSOR_TYPES = {
-    # status sensors
-    "STATUS_HEATING": [
-        "Status Heating",
-        EcotouchTag.STATUS_HEATING,
-        None,
-        None,
-        "mdi:radiator",
-        True,
-        None,
-        None,
-    ],
-    "STATUS_WATER": [
-        "Status Water",
-        EcotouchTag.STATUS_WATER,
-        None,
-        None,
-        "mdi:water-thermometer",
-        True,
-        None,
-        None,
-    ],
-    "STATUS_COOLING": [
-        "Status Cooling",
-        EcotouchTag.STATUS_COOLING,
-        None,
-        None,
-        "mdi:snowflake-thermometer",
-        True,
-        None,
-        None,
-    ],
     # temperature sensors
     "TEMPERATURE_OUTSIDE": [
         "Temperature Outside",
