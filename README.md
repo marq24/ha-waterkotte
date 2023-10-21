@@ -9,7 +9,7 @@
 [![hacs][hacsbadge]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
 
-All credit's have to go to the original creator [@pattisonmichael](https://github.com/pattisonmichael):
+Credit's have to go to the original creator of the HA integration [@pattisonmichael](https://github.com/pattisonmichael):
 
 [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
 
@@ -79,7 +79,7 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 ---
 
 [integration_blueprint]: https://github.com/custom-components/integration_blueprint
-[buymecoffee]: https://www.buymeacoffee.com/pattisonmichael
+[buymecoffee]: https://www.buymeacoffee.com/marquardt24
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 [commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/ha-waterkotte.svg?style=for-the-badge
 [commits]: https://github.com/marq24/ha-waterkotte/commits/main
