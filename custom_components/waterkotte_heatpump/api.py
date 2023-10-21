@@ -1,20 +1,15 @@
 """Sample API Client."""
-from typing import Sequence
 import asyncio
+from typing import Sequence
 import logging
-import socket
 
-# import re
 import aiohttp
-import async_timeout
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import Ecotouch, EcotouchTag, EASYCON, ECOTOUCH
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.easycon import Easycon
 
 TIMEOUT = 10
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 class WaterkotteHeatpumpApiClient:
     """Waterkotte Heatpump API Client Class"""
@@ -35,7 +30,6 @@ class WaterkotteHeatpumpApiClient:
         self._password = password
         self._session = session
         self._host = host
-        # self._hass = hass
         self._systemType = systemType
         if systemType == ECOTOUCH:
             self._client = Ecotouch(host, tagsPerRequest, lc_lang)
@@ -43,16 +37,8 @@ class WaterkotteHeatpumpApiClient:
             self._client = Easycon(host)
         else:
             _LOGGER.error("Error unknown System type!")
-        # self._entities = []
-        self.tags = tags
 
-        # # session = async_create_clientsession(self.hass)
-        # client = Ecotouch(host)
-        # await client.login(username, password)
-        # ret = await client.read_value(EcotouchTag.DATE_DAY)
-        # # print(ret)
-        # return ret["status"] == "E_OK"
-        # # await client.async_get_data()
+        self.tags = tags
 
     @property
     def tags(self):
@@ -61,6 +47,8 @@ class WaterkotteHeatpumpApiClient:
 
     @tags.setter
     def tags(self, tags):
+        if tags is not None:
+            _LOGGER.info(f"tags to query set to: {len(tags)}")
         self.__tags = tags
 
     async def login(self) -> None:
@@ -70,6 +58,7 @@ class WaterkotteHeatpumpApiClient:
                 await self._client.login(self._username, self._password)
             except Exception as exception:  # pylint: disable=broad-except
                 _LOGGER.error(exception)
+                await asyncio.sleep(15)
                 await self._client.logout()
                 await self._client.login(self._username, self._password)
 
@@ -99,61 +88,3 @@ class WaterkotteHeatpumpApiClient:
         return res
         # if res is not None:
         #     self.tags[tag] = res
-
-    async def async_set_title(self, value: str) -> None:
-        """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
-
-    async def api_wrapper(
-        # self, method: str, url: str, data: dict = {}, headers: dict = {}
-        self,
-        method: str,
-        url: str,
-        data=None,
-        headers=None,
-    ) -> dict:
-        """Get information from the API."""
-        if data is None:
-            data = {}
-        if headers is None:
-            headers = {}
-        try:
-            async with async_timeout.timeout(  # pylint: disable=unexpected-keyword-arg
-                TIMEOUT, loop=asyncio.get_event_loop()
-            ):
-                # async with async_timeout.timeout(TIMEOUT):
-                if method == "get":
-                    response = await self._session.get(url, headers=headers)
-                    return await response.json()
-
-                elif method == "put":
-                    await self._session.put(url, headers=headers, json=data)
-
-                elif method == "patch":
-                    await self._session.patch(url, headers=headers, json=data)
-
-                elif method == "post":
-                    await self._session.post(url, headers=headers, json=data)
-
-        except asyncio.TimeoutError as exception:
-            _LOGGER.error(
-                "Timeout error fetching information from %s - %s",
-                url,
-                exception,
-            )
-
-        except (KeyError, TypeError) as exception:
-            _LOGGER.error(
-                "Error parsing information from %s - %s",
-                url,
-                exception,
-            )
-        except (aiohttp.ClientError, socket.gaierror) as exception:
-            _LOGGER.error(
-                "Error fetching information from %s - %s",
-                url,
-                exception,
-            )
-        except Exception as exception:  # pylint: disable=broad-except
-            _LOGGER.error("Something really wrong happened! - %s", exception)

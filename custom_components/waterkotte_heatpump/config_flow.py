@@ -1,14 +1,14 @@
 """Adds config flow for Waterkotte Heatpump."""
-# from os import system
-from socket import gethostbyname
+import logging
 import voluptuous as vol
+
+from socket import gethostbyname
 
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.selector import selector
 
-# import api
 from .const import (
     CONF_POLLING_INTERVAL,
     CONF_TAGS_PER_REQUEST,
@@ -23,15 +23,12 @@ from .const import (
     CONF_PASSWORD,
     CONF_USERNAME,
 )
-from .const import DOMAIN, SELECT, SENSOR, BINARY_SENSOR, TITLE
+from .const import DOMAIN, TITLE
 
 from .api import WaterkotteHeatpumpApiClient
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag, EASYCON, ECOTOUCH
 
-# import homeassistant.helpers.config_validation as cv
-
-# from custom_components.pywaterkotte import pywaterkotte
-# from .pywaterkotte.ecotouch import Ecotouch, EcotouchTag
+_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -50,7 +47,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._series = ""
         self._serial = ""
         self._system_type = ""
-        self._tags_per_request = 10
+        self._tags_per_request = 75
 
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
@@ -110,7 +107,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             }
                         }
                     ),
-                    vol.Required(CONF_TAGS_PER_REQUEST, default=10): int,
+                    vol.Required(CONF_TAGS_PER_REQUEST, default=75): int,
                 }
             ),
             errors=self._errors,
@@ -119,34 +116,18 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def _test_credentials(self, username, password, host, systemType, tagsPerRequest):
         """Return true if credentials is valid."""
         try:
-            # # session = async_create_clientsession(self.hass)
-            # client = Ecotouch(host)
-            # await client.login(username, password)
-            # ret = await client.read_value(EcotouchTag.DATE_DAY)
-            # # print(ret)
-            # return ret["status"] == "E_OK"
-            # # await client.async_get_data()
             hasPort = host.find(":")
             if hasPort == -1:
                 self._ip = gethostbyname(host)
             else:
                 self._ip = gethostbyname(host[:hasPort])
-            session = async_create_clientsession(self.hass)
-            # detect system
-            # system_type = await waterkotte_detect(host, username, password)
-            # if system_type == ECOTOUCH:
-            #     print("Detected EcoTouch System")
-            # elif system_type == EASYCON:
-            #     print("Detected EasyCon System")
-            # else:
-            #     print("Could not detect System Type!")
 
+            session = async_create_clientsession(self.hass)
             client = WaterkotteHeatpumpApiClient(
                 host, username, password, session, None, systemType=systemType, tagsPerRequest=tagsPerRequest
             )
             await client.login()
-            # await client.async_read_value(EcotouchTag.DATE_DAY)
-            inittag = [
+            init_tags = [
                 EcotouchTag.VERSION_BIOS,
                 EcotouchTag.VERSION_CONTROLLER,
                 # EcotouchTag.VERSION_CONTROLLER_BUILD,
@@ -154,7 +135,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 EcotouchTag.INFO_SERIAL,
                 EcotouchTag.INFO_SERIES,
             ]
-            ret = await client.async_read_values(inittag)
+            ret = await client.async_read_values(init_tags)
             self._bios = ret[EcotouchTag.VERSION_BIOS]["value"]
             self._firmware = ret[EcotouchTag.VERSION_CONTROLLER]["value"]
             self._ID = str(ret[EcotouchTag.INFO_ID]["value"])
@@ -162,11 +143,11 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             self._serial = str(ret[EcotouchTag.INFO_SERIAL]["value"])
             self._system_type = systemType
             self._tags_per_request = tagsPerRequest
-            # print(ret)
+            _LOGGER.info(f"successfully validated login -> result: {ret}")
             return True
 
-        except Exception:  # pylint: disable=broad-except
-            pass
+        except Exception as exec:  # pylint: disable=broad-except
+            _LOGGER.error(f"{exec}", exec)
         return False
 
 
@@ -193,16 +174,11 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
 
         dataSchema = vol.Schema(
             {
-                # vol.Required(
-                #     BINARY_SENSOR, default=self.options.get(BINARY_SENSOR, True)
-                # ): bool,
-                # vol.Required(SENSOR, default=self.options.get(SENSOR, True)): bool,
-                # vol.Required(SELECT, default=self.options.get(SELECT, True)): bool,
                 vol.Required(
                     CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 60),
                 ): int,  # pylint: disable=line-too-long
                 vol.Required(
-                    CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 10),
+                    CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 75),
                 ): int,  # pylint: disable=line-too-long
                 vol.Required(
                     CONF_USERNAME, default=self.options.get(CONF_USERNAME)

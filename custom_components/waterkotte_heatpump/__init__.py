@@ -15,12 +15,11 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from homeassistant.helpers.entity_registry import async_entries_for_device
-from homeassistant.helpers.entity_registry import async_get as getEntityRegistry
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
+
 from .const import (
     CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID,
     CONF_HOST,
@@ -29,7 +28,7 @@ from .const import (
     CONF_POLLING_INTERVAL,
     CONF_TAGS_PER_REQUEST,
     CONF_SYSTEMTYPE,
-    DOMAIN, NAME, TITLE,
+    DOMAIN, NAME,
     PLATFORMS,
     STARTUP_MESSAGE,
 )
@@ -119,7 +118,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     session = async_get_clientsession(hass)
     client = WaterkotteHeatpumpApiClient(
-        host, username, password, session, tags, systemType=system_type, tagsPerRequest=tags_per_request, lc_lang=hass.config.language.lower()
+        host, username, password, session, tags, systemType=system_type, tagsPerRequest=tags_per_request,
+        lc_lang=hass.config.language.lower()
     )
     if COORDINATOR is not None:
         coordinator = WaterkotteHeatpumpDataUpdateCoordinator(
@@ -150,12 +150,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             # )
     entry.add_update_listener(async_reload_entry)
 
-    if len(tags) > 0:
-        await coordinator.async_refresh()
+    await coordinator.async_refresh()
     COORDINATOR = coordinator
 
     service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
-
     hass.services.async_register(DOMAIN, "set_holiday", service.set_holiday)
     hass.services.async_register(DOMAIN, "set_disinfection_start_time", service.set_disinfection_start_time)
     return True
@@ -168,7 +166,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
             self,
             hass: HomeAssistant,
             client: WaterkotteHeatpumpApiClient,
-            config_entry: ConfigEntry=None,
+            config_entry: ConfigEntry = None,
             data=None,
             lang=None,
     ) -> None:
@@ -191,47 +189,26 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         """Update data via library."""
         try:
             await self.api.login()
+            _LOGGER.info(f"number of tags to query: {len(self.api.tags)}")
             if len(self.api.tags) == 0:
+                _LOGGER.info(f"need to rebuild tag list... querying registry")
                 tags = []
-                for entity in self.__hass.data["entity_registry"].entities:
-                    if (  # pylint: disable=line-too-long
-                            self.__hass.data["entity_registry"].entities[entity].platform
-                            == DOMAIN
-                            and self.__hass.data["entity_registry"]
-                            .entities[entity]
-                            .disabled
-                            is False
-                    ):
-                        # x += 1
-                        # print(entity)
-                        tag = (
-                            self.__hass.data["entity_registry"]
-                            .entities[entity]
-                            .unique_id
-                        )
-                        _LOGGER.debug(f"Entity: {entity} Tag: {tag.upper()}")
-                        # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
-                        # match = re.search(r"^.*\.(.*)", entity)
+                if self.__hass is not None:
+                    a_reg = er.async_get(self.__hass)
+                    if a_reg is not None:
+                        # we query from the HA entity registry all entities that are created by this
+                        # 'config_entry' -> we use here just default api calls [no more hacks!]
+                        for entity in er.async_entries_for_config_entry(registry=a_reg,
+                                                                        config_entry_id=self._config_entry.entry_id):
+                            if entity.disabled is False:
+                                a_temp_tag = (entity.unique_id)
+                                _LOGGER.info(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
+                                if a_temp_tag is not None and a_temp_tag.upper() in EcotouchTag.__members__:
+                                    if EcotouchTag[a_temp_tag.upper()]:
+                                        tags.append(EcotouchTag[a_temp_tag.upper()])
+                                else:
+                                    _LOGGER.warning(f"Tag: {a_temp_tag} not found in EcotouchTag.__members__ !")
 
-                        # I (marq24) do not really understand why we check here, if the
-                        # tag is available in the 'EcotouchTag' - but what do I know...
-                        if tag is not None and tag.upper() in EcotouchTag.__members__:
-                            # print(match.groups()[0].upper())
-                            if EcotouchTag[  # pylint: disable=unsubscriptable-object
-                                tag.upper()
-                            ]:
-                                # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
-                                tags.append(
-                                    EcotouchTag[tag.upper()]
-                                )  # pylint: disable=unsubscriptable-object
-                        # match = re.search(r"^.*\.(.*)", entity)
-                        # if match:
-                        #     print(match.groups()[0].upper())
-                        #     if EcotouchTag[match.groups()[0].upper()]:  # pylint: disable=unsubscriptable-object
-                        #         # print(EcotouchTag[match.groups()[0].upper()]) # pylint: disable=unsubscriptable-object
-                        #         tags.append(EcotouchTag[match.groups()[0].upper()])  # pylint: disable=unsubscriptable-object
-                        else:
-                            _LOGGER.warning(_LOGGER.warning(f"Tag: {tag} not found in EcotouchTag.__members__ !"))
                 self.api.tags = tags
 
             tagdatas = await self.api.async_get_data()
