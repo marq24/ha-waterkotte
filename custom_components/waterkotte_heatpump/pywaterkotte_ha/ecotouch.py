@@ -1,4 +1,13 @@
 """ ecotouch main module"""
+import aiohttp
+import struct
+import re
+import math
+import logging
+
+from enum import Enum
+from datetime import time, datetime, timedelta
+
 from typing import (
     Any,
     Callable,
@@ -7,19 +16,7 @@ from typing import (
     Sequence,
     Tuple,
     List,
-)  # , List
-
-# from unittest import case
-import re
-import math
-from enum import Enum
-from datetime import time, datetime, timedelta
-
-# import requests
-
-# import random
-import aiohttp
-import logging
+)
 
 ECOTOUCH = "ECOTOUCH"
 EASYCON = "EASYCON"
@@ -37,63 +34,40 @@ HEATING_MODES = {
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-class StatusException(Exception):
-    """A Status Exception."""
 
-    # pass
+def _parse_value_default(self, str_vals: List[str], *other_args):
+    first_tag = self.tags[0]
+    first_val = str_vals[0]
+    assert first_tag[0] in ["A", "I", "D"]
 
-
-class InvalidResponseException(Exception):
-    """A InvalidResponseException."""
-
-    # pass
-
-
-class InvalidValueException(Exception):
-    """A InvalidValueException."""
-
-    # pass
-
-
-class EcotouchTag:
-    """A Dummy Class."""
-
-    # pass
-
-
-# default method that reads a value based on a single tag
-def _parse_value_default(
-        self: EcotouchTag, vals, bitnum=None, *other_args
-):  # pylint: disable=unused-argument,keyword-arg-before-vararg
-    assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    assert ecotouch_tag[0] in ["A", "I", "D"]
-
-    if ecotouch_tag not in vals:
-        return None
-
-    val = vals[ecotouch_tag]
-
-    if ecotouch_tag[0] == "A":
-        return float(val) / 10.0
-    if ecotouch_tag[0] == "I":
-        if bitnum is None:
-            return int(val)
+    if first_tag[0] == "A":
+        if len(self.tags) == 1:
+            return float(first_val) / 10.0
         else:
-            return (int(val) & (1 << bitnum)) > 0
+            ivals = [int(xxl) & 0xFFFF for xxl in str_vals]
+            hex_string = f"{ivals[0]:04x}{ivals[1]:04x}"
+            return struct.unpack("!f", bytes.fromhex(hex_string))[0]
 
-    if ecotouch_tag[0] == "D":
-        if val == "1":
-            return True
-        elif val == "0":
-            return False
+    else:
+        assert len(self.tags) == 1
+        if first_tag[0] == "I":
+            if self.bit is None:
+                return int(first_val)
+            else:
+                return (int(first_val) & (1 << self.bit)) > 0
+
+        elif first_tag[0] == "D":
+            if first_val == "1":
+                return True
+            elif first_val == "0":
+                return False
         else:
             raise InvalidValueException(
                 # "%s is not a valid value for %s" % (val, ecotouch_tag)
-                f"{val} is not a valid value for {ecotouch_tag}"
+                f"{first_val} is not a valid value for {first_tag}"
             )
-    return None
 
+    return None
 
 def _write_value_default(self, value, et_values):
     assert len(self.tags) == 1
@@ -110,9 +84,7 @@ def _write_value_default(self, value, et_values):
         assert isinstance(value, float)
         et_values[ecotouch_tag] = str(int(value * 10))
 
-
-def _parse_series(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    # pylint: disable=invalid-name,line-too-long
+def _parse_series(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     aI105 = [
         "Custom",
         "Ai1",
@@ -471,19 +443,22 @@ def _parse_series(self, e_vals, *other_args):  # pylint: disable=unused-argument
         "",
         "",
     ]
-    return aI105[int(e_vals["I105"])] if e_vals["I105"] else ""
+    return aI105[int(str_vals[0])] if str_vals[0] else ""
 
+def _parse_bios(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+    assert len(self.tags) == 1
+    str_val = str_vals[0]
+    return f"{str_val[:-2]}.{str_val[-2:]}"
 
-def _parse_bios(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    return f"{str(e_vals['I3'])[0]}.{str(e_vals['I3'])[1:3]}"
+def _parse_fw(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+    assert len(self.tags) == 2
+    str_val1 = str_vals[0]
+    str_val2 = str_vals[1]
+    # str fw2 = f"{str_val1[:-4]:0>2}.{str_val1[-4:-2]}.{str_val1[-2:]}"
+    return f"0{str_val1[0]}.{str_val1[1:3]}.{str_val1[3:]}-{str_val2}"
 
-
-def _parse_fw(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    return f"0{str(e_vals['I1'])[0]}.{str(e_vals['I1'])[1:3]}.{str(e_vals['I1'])[3:]}-{str(e_vals['I2'])}"  # pylint: disable=line-too-long
-
-
-def _parse_id(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    # pylint: disable=invalid-name,line-too-long
+def _parse_id(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+    assert len(self.tags) == 1
     aI110 = [
         "Ai1 5005.4",
         "Ai1 5006.4",
@@ -842,12 +817,12 @@ def _parse_id(self, e_vals, *other_args):  # pylint: disable=unused-argument
         "ET 5222.4 Tandem",
         None,
     ]
-    return aI110[int(e_vals["I110"])] if e_vals["I110"] else ""
+    return aI110[int(str_vals[0])] if str_vals[0] else ""
 
-
-def _parse_sn(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    sn1 = int(e_vals["I114"])
-    sn2 = int(e_vals["I115"])
+def _parse_sn(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+    assert len(self.tags) == 2
+    sn1 = int(str_vals[0])
+    sn2 = int(str_vals[1])
     s1 = "WE" if math.floor(sn1 / 1000) > 0 else "00"  # pylint: disable=invalid-name
     s2 = (
         sn1 - 1000 if math.floor(sn1 / 1000) > 0 else sn1
@@ -855,52 +830,43 @@ def _parse_sn(self, e_vals, *other_args):  # pylint: disable=unused-argument
     s2 = "0" + s2 if s2 < 10 else s2  # pylint: disable=invalid-name
     return str(s1) + str(s2) + str(sn2)
 
-
-def _parse_datetime(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    vals = [int(e_vals[tag]) for tag in self.tags]
+def _parse_datetime(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+    vals = list(map(int, str_vals))
     vals[0] = vals[0] + 2000
     next_day = False
     if vals[3] == 24:
         vals[3] = 0
         next_day = True
 
-    dt = datetime(*vals)  # pylint: disable=invalid-name
-    return dt + timedelta(days=1) if next_day else dt
+    dt_val = datetime(*vals)
+    return dt_val + timedelta(days=1) if next_day else dt_val
 
-
-def _parse_time_hhmm(self, e_vals, *other_args):  # pylint: disable=unused-argument
-    vals = [int(e_vals[tag]) for tag in self.tags]
-    dt = time(hour=vals[0], minute=vals[1])  # pylint: disable=invalid-name
+def _parse_time_hhmm(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+    vals = list(map(int, str_vals))
+    dt = time(hour=vals[0], minute=vals[1])
     return dt
 
-
-def _parse_status(self, value, *other_args):  # pylint: disable=unused-argument
+def _parse_status(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    # assert isinstance(value[ecotouch_tag],int)
-    if value[ecotouch_tag] == "0":
+    if str_vals[0] == "0":
         return "off"
-    elif value[ecotouch_tag] == "1":
+    elif str_vals[0] == "1":
         return "on"
-    elif value[ecotouch_tag] == "2":
+    elif str_vals[0] == "2":
         return "disabled"
     else:
         return "Error"
 
-
-def _parse_state(self, value, *other_args):  # pylint: disable=unused-argument
+def _parse_state(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    # assert isinstance(value[ecotouch_tag],int)
-    if value[ecotouch_tag] == "0":
+    if str_vals[0] == "0":
         return "off"
-    elif value[ecotouch_tag] == "1":
+    elif str_vals[0] == "1":
         return "auto"
-    elif value[ecotouch_tag] == "2":
+    elif str_vals[0] == "2":
         return "manual"
     else:
         return "Error"
-
 
 def _write_state(self, value, et_values):
     assert len(self.tags) == 1
@@ -913,34 +879,28 @@ def _write_state(self, value, et_values):
     elif value == "manual":
         et_values[ecotouch_tag] = "2"
 
-
 # a very simple "find first key" of dict method...
-def get_key_from_value(a_dict: dict, value_to_find):
+def _get_key_from_value(a_dict: dict, value_to_find):
     keys = [k for k, v in a_dict.items() if v == value_to_find]
     if keys:
         return keys[0]
     return None
 
-
-def _parse_heat_mode(self, value, *other_args):  # pylint: disable=unused-argument
+def _parse_heat_mode(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    # assert isinstance(value[ecotouch_tag],int)
-    intVal = int(value[ecotouch_tag])
+    intVal = int(str_vals[0])
     if intVal >= 0 and intVal <= len(HEATING_MODES):
         return HEATING_MODES[intVal]
     else:
         return "Error"
 
-
 def _write_heat_mode(self, value, et_values):
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
     assert ecotouch_tag[0] in ["I"]
-    index = get_key_from_value(HEATING_MODES, value)
+    index = _get_key_from_value(HEATING_MODES, value)
     if index is not None:
         et_values[ecotouch_tag] = str(index)
-
 
 def _write_datetime(tag, value, et_values):
     assert isinstance(value, datetime)
@@ -953,7 +913,7 @@ def _write_datetime(tag, value, et_values):
             value.hour,
             value.minute,
             value.second,
-        ]
+            ]
     ]
     # check if result is the same
     # for i in range(len(tag.tags)):
@@ -961,7 +921,6 @@ def _write_datetime(tag, value, et_values):
     # print(et_values)
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
-
 
 def _write_time_hhmm(tag, value, et_values):
     assert isinstance(value, time)
@@ -974,6 +933,25 @@ def _write_time_hhmm(tag, value, et_values):
     ]
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
+
+
+
+class StatusException(Exception):
+    """A Status Exception."""
+
+    # pass
+
+
+class InvalidResponseException(Exception):
+    """A InvalidResponseException."""
+
+    # pass
+
+
+class InvalidValueException(Exception):
+    """A InvalidValueException."""
+
+    # pass
 
 
 class TagData(NamedTuple):
@@ -1032,6 +1010,19 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     COP_HEATING = TagData(["A28"], "")
     COP_COOLING = TagData(["A29"], "")
 
+    # ENERGY-YEAR-BALANCE
+    COP_HEATING_YEAR = TagData(["A460"], "")
+    COP_TOTAL_SYSTEM_YEAR = TagData(["A461"], "")
+    ENERGY_CONSUMPTION_TOTAL_YEAR = TagData(["A450", "A451"], "kWh")
+    COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR = TagData(["A444", "A445"], "kWh")
+    SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR = TagData(["A446", "A447"], "kWh")
+    ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR = TagData(["A448", "A449"], "kWh")
+    ENERGY_PRODUCTION_TOTAL_YEAR = TagData(["A458", "A459"], "kWh")
+    HEATING_ENERGY_PRODUCTION_YEAR = TagData(["A452", "A453"], "kWh")
+    HOT_WATER_ENERGY_PRODUCTION_YEAR = TagData(["A454", "A455"], "kWh")
+    COOLING_ENERGY_YEAR = TagData(["A462", "A463"], "kWh")
+
+    # Temperature stuff
     TEMPERATURE_HEATING = TagData(["A30"], "°C")
     TEMPERATURE_HEATING_DEMAND = TagData(["A31"], "°C")
     TEMPERATURE_HEATING_ADJUST = TagData(["I263"], "K", writeable=True)
@@ -1074,12 +1065,11 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_WATER_HYSTERESIS = TagData(["A139"], "K", writeable=True)
     TEMPERATURE_WATER_PV_CHANGE = TagData(["A684"], "K", writeable=True)
     TEMPERATURE_WATER_DISINFECTION = TagData(["A168"], "°C", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_START_TIME = TagData(
-        ["I505", "I506"],
-        writeable=True,
-        read_function=_parse_time_hhmm,
-        write_function=_write_time_hhmm,
-    )
+    SCHEDULE_WATER_DISINFECTION_START_TIME = TagData(["I505", "I506"],
+                                                     writeable=True,
+                                                     read_function=_parse_time_hhmm,
+                                                     write_function=_write_time_hhmm,
+                                                     )
     # SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
     # SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_DURATION = TagData(["I507"], "h", writeable=True)
@@ -1161,11 +1151,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_COLLECTOR = TagData(["A42"], "°C")  # aktuelle Temperatur Kollektor
     TEMPERATURE_FLOW2 = TagData(["A43"], "°C")  # aktuelle Temperatur Vorlauf
 
-    VERSION_CONTROLLER = TagData(
-        ["I1", "I2"],
-        writeable=False,
-        read_function=_parse_fw,
-    )
+    VERSION_CONTROLLER = TagData(["I1", "I2"], writeable=False, read_function=_parse_fw)
     # VERSION_CONTROLLER_BUILD = TagData(["I2"])
     VERSION_BIOS = TagData(["I3"], writeable=False, read_function=_parse_bios)
     DATE_DAY = TagData(["I5"])
@@ -1178,21 +1164,11 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
     OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
     OPERATING_HOURS_SOLAR = TagData(["I22"])
-    ENABLE_HEATING = TagData(
-        ["I30"], read_function=_parse_state, write_function=_write_state, writeable=True
-    )  # pylint: disable=line-too-long
-    ENABLE_COOLING = TagData(
-        ["I31"], read_function=_parse_state, write_function=_write_state, writeable=True
-    )  # pylint: disable=line-too-long
-    ENABLE_WARMWATER = TagData(
-        ["I32"], read_function=_parse_state, write_function=_write_state, writeable=True
-    )  # pylint: disable=line-too-long
-    ENABLE_POOL = TagData(
-        ["I33"], read_function=_parse_state, write_function=_write_state, writeable=True
-    )  # pylint: disable=line-too-long
-    ENABLE_PV = TagData(
-        ["I41"], read_function=_parse_state, write_function=_write_state, writeable=True
-    )  # pylint: disable=line-too-long
+    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_POOL = TagData(["I33"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_PV = TagData(["I41"], read_function=_parse_state, write_function=_write_state, writeable=True)
     STATE_SOURCEPUMP = TagData(["I51"], bit=0)
     STATE_HEATINGPUMP = TagData(["I51"], bit=1)
     STATE_EVD = TagData(["I51"], bit=2)
@@ -1213,11 +1189,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     STATUS_WATER = TagData(["I139"], read_function=_parse_status)
     INFO_SERIES = TagData(["I105"], read_function=_parse_series)
     INFO_ID = TagData(["I110"], read_function=_parse_id)
-    INFO_SERIAL = TagData(
-        ["I114", "I115"],
-        writeable=False,
-        read_function=_parse_sn,
-    )
+    INFO_SERIAL = TagData(["I114", "I115"], writeable=False, read_function=_parse_sn)
     ADAPT_HEATING = TagData(["I263"], writeable=True)
     MANUAL_HEATINGPUMP = TagData(["I1270"])
     MANUAL_SOURCEPUMP = TagData(["I1281"])
@@ -1293,44 +1265,27 @@ class Ecotouch:
     # performs a login. Has to be called before any other method.
     async def login(self, username="waterkotte", password="waterkotte"):
         """Login to Heat Pump"""
+        _LOGGER.info(f"login to waterkotte host {self.hostname}")
         args = {"username": username, "password": password}
         self.username = username
         self.password = password
-        # r = requests.get("http://%s/cgi/login" % self.hostname, params=args)
         async with aiohttp.ClientSession() as session:
-            # r = await session.get("http://%s/cgi/login" % self.hostname, params=args)
-            r = await session.get(
-                f"http://{self.hostname}/cgi/login", params=args
-            )  # pylint: disable=invalid-name
+            r = await session.get(f"http://{self.hostname}/cgi/login", params=args)  # pylint: disable=invalid-name
             async with r:
                 assert r.status == 200
-                # r = await resp.text()
-
-                print(await r.text())
-                print(r.status)
+                _LOGGER.info(await r.text())
+                _LOGGER.info(r.status)
                 if self.get_status_response(await r.text()) != "S_OK":
-                    raise StatusException(
-                        f"Fehler beim Login: Status:{self.get_status_response(await r.text())}"
-                    )
+                    raise StatusException(f"Fehler beim Login: Status:{self.get_status_response(await r.text())}")
                 self.auth_cookies = r.cookies
 
     async def logout(self):
         """Logout function"""
         async with aiohttp.ClientSession() as session:
-            # r = await session.get("http://%s/cgi/login" % self.hostname, params=args)
-            r = await session.get(
-                f"http://{self.hostname}/cgi/logout"
-            )  # pylint: disable=invalid-name
+            r = await session.get(f"http://{self.hostname}/cgi/logout")  # pylint: disable=invalid-name
             async with r:
-                # assert r.status == 200
-                # r = await resp.text()
-
-                print(await r.text())
-                print(r.status)
-                # if self.get_status_response(await r.text()) != "S_OK":
-                #     raise StatusException(
-                #         f"Fehler beim Logout: Status:{self.get_status_response(await r.text())}"
-                #     )
+                _LOGGER.info(await r.text())
+                _LOGGER.info(r.status)
                 self.auth_cookies = None
 
     async def read_value(self, tag: EcotouchTag):
@@ -1381,7 +1336,25 @@ class Ecotouch:
         e_values, e_status = await self._read_tags(e_tags)
 
         result = {}
-        # result_status = {}
+        for tag in tags:
+            str_vals = [e_values[e_tag] for e_tag in tag.tags]
+            stat_vals = [e_status[e_tag] for e_tag in tag.tags]
+            try:
+                result[tag] = {
+                    "value": tag.read_function(tag, str_vals),
+                    "status": stat_vals[0]
+                }
+            except KeyError:
+                _LOGGER.warning(
+                    f"Key Error in read_values. tagstatus:{stat_vals} tag: {tag} val: {str_vals} e_status:{e_status} e_values:{e_values} reguested tags:{tags}"
+                )
+        return result
+
+    async def dummy(self, tags: Sequence[EcotouchTag]):
+        e_tags = list(set([etag for tag in tags for etag in tag.tags]))
+        e_values, e_status = await self._read_tags(e_tags)
+        result = {}
+
         for tag in tags:
             # tag2=tag._replace(status=e_status[tag.tags[0]])
             # tag.status[0]=e_status[tag.tags[0]]
@@ -1415,7 +1388,7 @@ class Ecotouch:
                     "status": e_status[tag_status],
                 }  # pylint: disable=undefined-loop-variable
             except KeyError:
-                print(
+                _LOGGER.warning(
                     f"Key Error in read_values. tagstatus:{tag_status} tag: {tag} val: {val} e_status:{e_status} e_values:{e_values} reguested tags:{tags}"
                 )
         return result
@@ -1454,8 +1427,6 @@ class Ecotouch:
                     f"http://{self.hostname}/cgi/readTags", params=args
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
-                # print(resp.request_info.url)
-                # print(r)
                 if r == "#E_NEED_LOGIN\n":
                     await self.login(self.username, self.password)
                     return results, results_status
@@ -1571,3 +1542,5 @@ class Ecotouch:
             #     return result
             #     # return match.group(1)
             # return None
+
+    # default method that reads a value based on a single tag

@@ -1,7 +1,7 @@
 {
   "entity": {
     "select": {
-      "tkey_temperature_heating_mode": {
+      "temperature_heating_mode": {
         "name": "Heating Control",
         "state": {
           "hm0": "Weather-compensated",
@@ -11,6 +11,32 @@
           "hm4": "Setpoint 0-10V",
           "hm5": "Based on Mixing circle"
         }
+      }
+    },
+    "sensor": {
+      "energy_consumption_total_year": {
+        "name": "Electrical year performance"
+      },
+      "compressor_electric_consumption_year": {
+        "name": "Compressor year performance"
+      },
+      "sourcepump_electric_consumption_year": {
+        "name": "Heat source pump year performance"
+      },
+      "electrical_heater_electric_consumption_year": {
+        "name": "Electrical heater year performance"
+      },
+      "energy_production_total_year": {
+        "name": "Thermal year performance"
+      },
+      "heating_energy_production_year": {
+        "name": "Heating year performance"
+      },
+      "hot_water_energy_production_year": {
+        "name": "Hot water year performance"
+      },
+      "cooling_energy_year": {
+        "name": "Cooling year performance"
       }
     }
   }

@@ -8,6 +8,7 @@ from decimal import Decimal
 
 from homeassistant.const import (
     PERCENTAGE,
+    ENERGY_KILO_WATT_HOUR,
     UnitOfTemperature,
     UnitOfPressure,
     UnitOfPower,
@@ -397,7 +398,7 @@ SENSOR_TYPES = {
         "Position Expansion Valve",
         EcotouchTag.POSITION_EXPANSION_VALVE,
         None,
-        SensorStateClass.MEASUREMENT,
+        None,
         "mdi:gauge",
         True,
         None,
@@ -407,7 +408,7 @@ SENSOR_TYPES = {
         "Suction Gas Overheating",
         EcotouchTag.SUCTION_GAS_OVERHEATING,
         None,
-        SensorStateClass.MEASUREMENT,
+        None,
         "mdi:gauge",
         True,
         None,
@@ -447,7 +448,7 @@ SENSOR_TYPES = {
         "COP Heating",
         EcotouchTag.COP_HEATING,
         None,
-        SensorStateClass.MEASUREMENT,
+        None,
         "mdi:gauge",
         True,
         None,
@@ -457,11 +458,99 @@ SENSOR_TYPES = {
         "COP Cooling",
         EcotouchTag.COP_COOLING,
         None,
-        SensorStateClass.MEASUREMENT,
+        None,
         "mdi:gauge",
         True,
         None,
         None,
+    ],
+    "ENERGY_CONSUMPTION_TOTAL_YEAR":[
+        "ENERGY_CONSUMPTION_TOTAL_YEAR",
+        EcotouchTag.ENERGY_CONSUMPTION_TOTAL_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:lightning-bolt-outline",
+        True,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
+    "COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR":[
+        "COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR",
+        EcotouchTag.COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:gauge",
+        True,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
+    "SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR":[
+        "SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR",
+        EcotouchTag.SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:water-pump",
+        False,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
+    "ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR":[
+        "ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR",
+        EcotouchTag.ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:heating-coil",
+        True,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
+    "ENERGY_PRODUCTION_TOTAL_YEAR":[
+        "ENERGY_PRODUCTION_TOTAL_YEAR",
+        EcotouchTag.ENERGY_PRODUCTION_TOTAL_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:home-thermometer-outline",
+        True,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
+    "HEATING_ENERGY_PRODUCTION_YEAR":[
+        "HEATING_ENERGY_PRODUCTION_YEAR",
+        EcotouchTag.HEATING_ENERGY_PRODUCTION_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:radiator",
+        True,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
+    "HOT_WATER_ENERGY_PRODUCTION_YEAR":[
+        "HOT_WATER_ENERGY_PRODUCTION_YEAR",
+        EcotouchTag.HOT_WATER_ENERGY_PRODUCTION_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:water-thermometer",
+        True,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
+    "COOLING_ENERGY_YEAR":[
+        "COOLING_ENERGY_YEAR",
+        EcotouchTag.COOLING_ENERGY_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:snowflake-thermometer",
+        True,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
     ],
     "PERCENT_HEAT_CIRC_PUMP": [
         "Percent Heat Circ Pump",
@@ -562,18 +651,39 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-            self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+
+        # if the 'name' of the Sensor is matching the TAG, we use the NEW translation code!
+        if self._type == SENSOR_TYPES[self._type][0]:
+            self._attr_translation_key = f"{sensor_type.lower()}"
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Sensor not found in translation")
-            self._name = f"{SENSOR_TYPES[self._type][0]}"
+            if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
+                self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+            else:
+                _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Sensor not found in translation")
+                self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
+
+        # this are the NEW-Sensors, where the translation comes from the "translations" json files...
+        if len(SENSOR_TYPES[self._type]) > 8:
+            self._attr_state_class = SENSOR_TYPES[self._type][8]
+            #self._attr_suggested_display_precision = 3
+            self._attr_selfimplemented_display_precision = 3
+        else:
+            self._attr_selfimplemented_display_precision = None
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+
         hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
+
         super().__init__(hass_data, entry)
 
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return self._name
+    #SENSOR_TYPES['x'][0] => DisplayName (if not translated)
+    #SENSOR_TYPES['x'][1] => EcotouchTag
+    #SENSOR_TYPES['x'][2] => SensorDeviceClass
+    #SENSOR_TYPES['x'][3] => Native Unit_of_measurement
+    #SENSOR_TYPES['x'][4] => Icon
+    #SENSOR_TYPES['x'][5] => enabled_by_default
+    #SENSOR_TYPES['x'][6] => Options
+    #SENSOR_TYPES['x'][7] => entity_category
+    #SENSOR_TYPES['x'][8] => SensorState_class -> default is MEASUREMENT
 
     @property
     def tag(self):
@@ -590,6 +700,9 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 value = "unknown"
+
+            if self._attr_selfimplemented_display_precision is not None:
+                value = round(float(value), self._attr_selfimplemented_display_precision)
         except KeyError:
             value = "unknown"
         except TypeError:

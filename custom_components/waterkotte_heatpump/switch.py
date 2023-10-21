@@ -171,8 +171,8 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
             if value is None or value == "":
                 value = None
         except KeyError:
+            _LOGGER.warning(f"is_on caused KeyError for: {value}")
             value = None
-            print(value)
         except TypeError:
             return None
         return value
@@ -204,7 +204,7 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
                 else:
                     return None
             except KeyError:
-                print(
+                _LOGGER.warning(
                     f"KeyError in switch.icon: should have value? data:{self._coordinator.data[sensor[1]]}"
                 )
             except TypeError:

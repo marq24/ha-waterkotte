@@ -42,7 +42,7 @@ class WaterkotteHeatpumpApiClient:
         elif systemType == EASYCON:
             self._client = Easycon(host)
         else:
-            print("Error unknown System type!")
+            _LOGGER.error("Error unknown System type!")
         # self._entities = []
         self.tags = tags
 
@@ -69,11 +69,13 @@ class WaterkotteHeatpumpApiClient:
             try:
                 await self._client.login(self._username, self._password)
             except Exception as exception:  # pylint: disable=broad-except
-                print(exception)
+                _LOGGER.error(exception)
                 await self._client.logout()
                 await self._client.login(self._username, self._password)
 
         # return ret
+    async def logout(self) -> None:
+        await self._client.logout()
 
     async def async_get_data(self) -> dict:
         """Get data from the API."""

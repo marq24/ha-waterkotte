@@ -118,7 +118,7 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         # for now, we just use the "new" translation impl just for the single 'heating_mode'
         # selection... the rest might follow in the future...
         if self._type == 'temperature_heating_mode':
-            self._attr_translation_key = f"tkey_{sensor_type}"
+            self._attr_translation_key = f"{self._type.lower()}"
 
             # no need to provide an SelectEntityDescription here - since when the translation-key
             # is present 'tkey_*' in our translation files, all is FINE!!!
