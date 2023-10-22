@@ -641,9 +641,7 @@ async def async_setup_entry(
 class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     """waterkotte_heatpump Sensor class."""
 
-    def __init__(
-            self, entry, hass_data, sensor_type
-    ):  # pylint: disable=unused-argument
+    def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
         self.entity_id = f"{DOMAIN}.wkh_{sensor_type}"
         self._coordinator = hass_data
@@ -670,8 +668,6 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         else:
             self._attr_selfimplemented_display_precision = None
             self._attr_state_class = SensorStateClass.MEASUREMENT
-
-        hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
 
         super().__init__(hass_data, entry)
 

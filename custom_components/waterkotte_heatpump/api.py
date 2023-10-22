@@ -48,7 +48,7 @@ class WaterkotteHeatpumpApiClient:
     @tags.setter
     def tags(self, tags):
         if tags is not None:
-            _LOGGER.info(f"tags to query set to: {len(tags)}")
+            _LOGGER.info(f"number of tags to query set to: {len(tags)}")
         self.__tags = tags
 
     async def login(self) -> None:
@@ -57,7 +57,7 @@ class WaterkotteHeatpumpApiClient:
             try:
                 await self._client.login(self._username, self._password)
             except Exception as exception:  # pylint: disable=broad-except
-                _LOGGER.error(exception)
+                _LOGGER.error(f"Error while login: {exception}", exception)
                 await asyncio.sleep(15)
                 await self._client.logout()
                 await self._client.login(self._username, self._password)
@@ -69,18 +69,18 @@ class WaterkotteHeatpumpApiClient:
     async def async_get_data(self) -> dict:
         """Get data from the API."""
 
-        ret = await self._client.read_values(self.tags)
-        return ret
+        res = await self._client.read_values(self.tags)
+        return res
 
     async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
         """Get data from the API."""
-        ret = await self._client.read_values(tags)
-        return ret
+        res = await self._client.read_values(tags)
+        return res
 
     async def async_read_value(self, tag: EcotouchTag) -> dict:
         """Get data from the API."""
-        ret = await self._client.read_value(tag)
-        return ret
+        res = await self._client.read_value(tag)
+        return res
 
     async def async_write_value(self, tag: EcotouchTag, value):
         """Write data to API"""

@@ -160,7 +160,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
-        "heating"
+        "I137"
     ],
     "STATUS_WATER": [
         "Status Water",
@@ -171,7 +171,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
-        "dhw"
+        "I139"
     ],
     "STATUS_COOLING": [
         "Status Cooling",
@@ -182,7 +182,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
-        "cool"
+        "I138"
     ],
     # "holiday_enabled": [
     #     "Holiday Mode",
@@ -195,6 +195,7 @@ SENSOR_TYPES = {
     #     None,
     # ],
 }
+
 
 # async def async_setup_entry(hass, entry, async_add_devices):
 #     """Setup binary_sensor platform."""
@@ -214,6 +215,7 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_ad
 
 class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntity):
     """waterkotte_heatpump binary_sensor class."""
+
     # _attr_has_entity_name = True
 
     def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
@@ -225,22 +227,17 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         if SENSOR_TYPES[self._type][8] in _LANG:
-            self._name = _LANG[SENSOR_TYPES[self._type][8]]
+            self._attr_name = _LANG[SENSOR_TYPES[self._type][8]]
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][8])+" Binary-Sensor not found in translation")
-            self._name = f"{SENSOR_TYPES[self._type][0]}"
-        hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
+            _LOGGER.warning(str(SENSOR_TYPES[self._type][8]) + " Binary-Sensor not found in translation")
+            self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
+
         super().__init__(hass_data, entry)
 
     @property
     def tag(self):
         """Return a tag to use for this entity."""
         return SENSOR_TYPES[self._type][1]
-
-    @ property
-    def name(self):
-        """Return the name of the sensor."""
-        return self._name
 
     @property
     def is_on(self) -> bool | None:
@@ -260,7 +257,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         if not isinstance(value, bool):
             if isinstance(value, str):
                 # parse anything else then 'on' to False!
-                if value.lower()=='on':
+                if value.lower() == 'on':
                     value = True
                 else:
                     value = False
@@ -269,7 +266,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
 
         return value
 
-    @ property
+    @property
     def icon(self):
         """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
@@ -285,19 +282,18 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
             except KeyError:
                 _LOGGER.warning(f"KeyError in Binary_sensor.icon: should have value? data:{self._coordinator.data[sensor[1]]}")  # pylint: disable=line-too-long
         return SENSOR_TYPES[self._type][4]
-        # return ICON
 
-    @ property
+    @property
     def device_class(self):
         """Return the device class of the sensor."""
         return SENSOR_TYPES[self._type][2]
 
-    @ property
+    @property
     def entity_registry_enabled_default(self):
         """Return the entity_registry_enabled_default of the sensor."""
         return SENSOR_TYPES[self._type][5]
 
-    @ property
+    @property
     def entity_category(self):
         """Return the unit of measurement."""
         try:
@@ -305,7 +301,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         except IndexError:
             return None
 
-    @ property
+    @property
     def unique_id(self):
         """Return the unique of the sensor."""
         return self._attr_unique_id

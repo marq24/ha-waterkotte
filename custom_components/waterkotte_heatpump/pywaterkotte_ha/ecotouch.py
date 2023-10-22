@@ -34,7 +34,6 @@ HEATING_MODES = {
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-
 def _parse_value_default(self, str_vals: List[str], *other_args):
     first_tag = self.tags[0]
     first_val = str_vals[0]
@@ -69,6 +68,7 @@ def _parse_value_default(self, str_vals: List[str], *other_args):
 
     return None
 
+
 def _write_value_default(self, value, et_values):
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
@@ -83,6 +83,7 @@ def _write_value_default(self, value, et_values):
     elif ecotouch_tag[0] == "A":
         assert isinstance(value, float)
         et_values[ecotouch_tag] = str(int(value * 10))
+
 
 def _parse_series(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     aI105 = [
@@ -445,10 +446,12 @@ def _parse_series(self, str_vals: List[str], *other_args):  # pylint: disable=un
     ]
     return aI105[int(str_vals[0])] if str_vals[0] else ""
 
+
 def _parse_bios(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
     str_val = str_vals[0]
     return f"{str_val[:-2]}.{str_val[-2:]}"
+
 
 def _parse_fw(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 2
@@ -456,6 +459,7 @@ def _parse_fw(self, str_vals: List[str], *other_args):  # pylint: disable=unused
     str_val2 = str_vals[1]
     # str fw2 = f"{str_val1[:-4]:0>2}.{str_val1[-4:-2]}.{str_val1[-2:]}"
     return f"0{str_val1[0]}.{str_val1[1:3]}.{str_val1[3:]}-{str_val2}"
+
 
 def _parse_id(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
@@ -819,32 +823,34 @@ def _parse_id(self, str_vals: List[str], *other_args):  # pylint: disable=unused
     ]
     return aI110[int(str_vals[0])] if str_vals[0] else ""
 
+
 def _parse_sn(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 2
     sn1 = int(str_vals[0])
     sn2 = int(str_vals[1])
     s1 = "WE" if math.floor(sn1 / 1000) > 0 else "00"  # pylint: disable=invalid-name
-    s2 = (
-        sn1 - 1000 if math.floor(sn1 / 1000) > 0 else sn1
-    )  # pylint: disable=invalid-name
-    s2 = "0" + s2 if s2 < 10 else s2  # pylint: disable=invalid-name
+    s2 = (sn1 - 1000 if math.floor(sn1 / 1000) > 0 else sn1)  # pylint: disable=invalid-name
+    s2 = "0" + str(s2) if s2 < 10 else s2  # pylint: disable=invalid-name
     return str(s1) + str(s2) + str(sn2)
 
+
 def _parse_datetime(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    vals = list(map(int, str_vals))
-    vals[0] = vals[0] + 2000
+    int_vals = list(map(int, str_vals))
+    int_vals[0] = int_vals[0] + 2000
     next_day = False
-    if vals[3] == 24:
-        vals[3] = 0
+    if int_vals[3] == 24:
+        int_vals[3] = 0
         next_day = True
 
-    dt_val = datetime(*vals)
+    dt_val = datetime(*int_vals)
     return dt_val + timedelta(days=1) if next_day else dt_val
 
+
 def _parse_time_hhmm(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    vals = list(map(int, str_vals))
-    dt = time(hour=vals[0], minute=vals[1])
+    int_vals = list(map(int, str_vals))
+    dt = time(hour=int_vals[0], minute=int_vals[1])
     return dt
+
 
 def _parse_status(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
@@ -857,6 +863,7 @@ def _parse_status(self, str_vals: List[str], *other_args):  # pylint: disable=un
     else:
         return "Error"
 
+
 def _parse_state(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
     if str_vals[0] == "0":
@@ -867,6 +874,7 @@ def _parse_state(self, str_vals: List[str], *other_args):  # pylint: disable=unu
         return "manual"
     else:
         return "Error"
+
 
 def _write_state(self, value, et_values):
     assert len(self.tags) == 1
@@ -879,12 +887,14 @@ def _write_state(self, value, et_values):
     elif value == "manual":
         et_values[ecotouch_tag] = "2"
 
+
 # a very simple "find first key" of dict method...
 def _get_key_from_value(a_dict: dict, value_to_find):
     keys = [k for k, v in a_dict.items() if v == value_to_find]
     if keys:
         return keys[0]
     return None
+
 
 def _parse_heat_mode(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
     assert len(self.tags) == 1
@@ -894,6 +904,7 @@ def _parse_heat_mode(self, str_vals: List[str], *other_args):  # pylint: disable
     else:
         return "Error"
 
+
 def _write_heat_mode(self, value, et_values):
     assert len(self.tags) == 1
     ecotouch_tag = self.tags[0]
@@ -901,6 +912,7 @@ def _write_heat_mode(self, value, et_values):
     index = _get_key_from_value(HEATING_MODES, value)
     if index is not None:
         et_values[ecotouch_tag] = str(index)
+
 
 def _write_datetime(tag, value, et_values):
     assert isinstance(value, datetime)
@@ -913,14 +925,14 @@ def _write_datetime(tag, value, et_values):
             value.hour,
             value.minute,
             value.second,
-            ]
+        ]
     ]
     # check if result is the same
     # for i in range(len(tag.tags)):
     #     et_values[tag.tags[i]] = vals[i]
-    # print(et_values)
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
+
 
 def _write_time_hhmm(tag, value, et_values):
     assert isinstance(value, time)
@@ -933,7 +945,6 @@ def _write_time_hhmm(tag, value, et_values):
     ]
     for i, tags in enumerate(tag.tags):
         et_values[tags] = vals[i]
-
 
 
 class StatusException(Exception):
@@ -1257,9 +1268,7 @@ class Ecotouch:
         """get_status_response"""
         match = re.search(r"^#([A-Z_]+)", r, re.MULTILINE)
         if match is None:
-            raise InvalidResponseException(
-                "Ungültige Antwort. Konnte Status nicht auslesen."
-            )
+            raise InvalidResponseException("Invalid reply. Status could not be parsed")
         return match.group(1)
 
     # performs a login. Has to be called before any other method.
@@ -1270,22 +1279,24 @@ class Ecotouch:
         self.username = username
         self.password = password
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"http://{self.hostname}/cgi/login", params=args)  # pylint: disable=invalid-name
-            async with r:
-                assert r.status == 200
-                _LOGGER.info(await r.text())
-                _LOGGER.info(r.status)
-                if self.get_status_response(await r.text()) != "S_OK":
-                    raise StatusException(f"Fehler beim Login: Status:{self.get_status_response(await r.text())}")
-                self.auth_cookies = r.cookies
+            response = await session.get(f"http://{self.hostname}/cgi/login", params=args)
+            async with response:
+                assert response.status == 200
+                content = await response.text()
+                # tc = content.replace("\n", "<nl>").replace("\r", "<cr>")
+                _LOGGER.info(f"LOGIN status:{response.status} content: {content}")
+                if self.get_status_response(content) != "S_OK":
+                    raise StatusException(f"Error while LOGIN: status:{self.get_status_response(content)}")
+                self.auth_cookies = response.cookies
 
     async def logout(self):
         """Logout function"""
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"http://{self.hostname}/cgi/logout")  # pylint: disable=invalid-name
-            async with r:
-                _LOGGER.info(await r.text())
-                _LOGGER.info(r.status)
+            response = await session.get(f"http://{self.hostname}/cgi/logout")
+            async with response:
+                content = await response.text()
+                # tc = content.replace("\n", "<nl>").replace("\r", "<cr>")
+                _LOGGER.info(f"LOGOUT status:{response.status} content: {content}")
                 self.auth_cookies = None
 
     async def read_value(self, tag: EcotouchTag):
@@ -1295,40 +1306,6 @@ class Ecotouch:
             return res[tag]
         return None
 
-    async def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
-        """Write values to Tag"""
-        to_write = {}
-        result = {}
-        for k, v in kv_pairs:  # pylint: disable=invalid-name
-            if not k.writeable:
-                raise InvalidValueException("tried to write to an readonly field")
-            k.write_function(k, v, to_write)
-            #####
-            res = await self._write_tag(to_write.keys(), to_write.values())
-            # res = await self._write_tag(k[0][0], to_write[k[0][0]])
-            if res is not None and len(res[0]) > 0:
-                all_ok = True
-                for value in res[1]:
-                    if res[1][value] != "E_OK":
-                        all_ok = False
-                if all_ok:
-                    val = k.read_function(k, res[0], k.bit)
-                    result[k[0][0]] = {"status": res[1][value], "value": val}
-                # if res[k[0][0]]['status'] == "S_OK":
-                #     val = k.read_function(k, {k[0][0]: res[k[0][0]]['value']}, k.bit)
-                #     result[k[0][0]] = ({'status': res[k[0][0]]['status'], 'value': val})
-
-        # for k, v in to_write.items():  # pylint: disable=invalid-name
-        #     res = await self._write_tag(k, v)
-        #     if res['status'] == "S_OK":
-        #         val= k.read_function(k, v, k.bit)
-        #         result.update({'status': res['status'], 'value': val})
-        return result
-
-    async def write_value(self, tag, value):
-        """Write a value"""
-        return await self.write_values([(tag, value)])
-
     async def read_values(self, tags: Sequence[EcotouchTag]):
         """Async read values"""
         # create flat list of ecotouch tags to be read
@@ -1336,73 +1313,25 @@ class Ecotouch:
         e_values, e_status = await self._read_tags(e_tags)
 
         result = {}
-        for tag in tags:
-            str_vals = [e_values[e_tag] for e_tag in tag.tags]
-            stat_vals = [e_status[e_tag] for e_tag in tag.tags]
+        for a_eco_tag in tags:
+            str_vals = [e_values[a_tag] for a_tag in a_eco_tag.tags]
+            stat_vals = [e_status[a_tag] for a_tag in a_eco_tag.tags]
             try:
-                result[tag] = {
-                    "value": tag.read_function(tag, str_vals),
+                result[a_eco_tag] = {
+                    "value": a_eco_tag.read_function(a_eco_tag, str_vals),
                     "status": stat_vals[0]
                 }
             except KeyError:
                 _LOGGER.warning(
-                    f"Key Error in read_values. tagstatus:{stat_vals} tag: {tag} val: {str_vals} e_status:{e_status} e_values:{e_values} reguested tags:{tags}"
-                )
-        return result
-
-    async def dummy(self, tags: Sequence[EcotouchTag]):
-        e_tags = list(set([etag for tag in tags for etag in tag.tags]))
-        e_values, e_status = await self._read_tags(e_tags)
-        result = {}
-
-        for tag in tags:
-            # tag2=tag._replace(status=e_status[tag.tags[0]])
-            # tag.status[0]=e_status[tag.tags[0]]
-            # if len(tag.status)==0:
-            #     tag.status.append(e_status[tag.tags[0]])
-            # else:
-            #     tag.status.clear()
-            #     tag.status.append(e_status[tag.tags[0]] + str(random.randint(1,10)))
-            # result_status[tag] = e_status[tag.tags[0]] + str(random.randint(1,10))
-            # tag.status=e_status[tag.tags[0]]
-            # e_inactive = False
-            for tag_status in tag.tags:
-                try:
-                    if e_status[tag_status] in ("E_INACTIVE", "E_NOTFOUND"):
-                        if e_values[tag.tags[0]] is not None:
-                            val = e_values[tag.tags[0]]
-                        else:
-                            val = None
-                    else:
-                        val = tag.read_function(tag, e_values, tag.bit)
-                except KeyError:
-                    val = None
-            #         e_inactive = True
-            # if e_inactive is False:
-            #     val = tag.read_function(tag, e_values, tag.bit)
-            # else:
-            #     val = None
-            try:
-                result[tag] = {
-                    "value": val,
-                    "status": e_status[tag_status],
-                }  # pylint: disable=undefined-loop-variable
-            except KeyError:
-                _LOGGER.warning(
-                    f"Key Error in read_values. tagstatus:{tag_status} tag: {tag} val: {val} e_status:{e_status} e_values:{e_values} reguested tags:{tags}"
+                    f"Key Error in read_values. tagstatus:{stat_vals} tag: {a_eco_tag} val: {str_vals} e_status:{e_status} e_values:{e_values} requested tags:{tags}"
                 )
         return result
 
     #
     # reads a list of ecotouch tags
     #
-    async def _read_tags(
-            # self, tags: Sequence[EcotouchTag], results={}, results_status={}
-            self,
-            tags: Sequence[EcotouchTag],
-            results=None,
-            results_status=None,
-    ):
+    # self, tags: Sequence[EcotouchTag], results={}, results_status={}
+    async def _read_tags(self, tags: Sequence[EcotouchTag], results=None, results_status=None):
         """async read tags"""
         # _LOGGER.warning(tags)
         if results is None:
@@ -1411,9 +1340,7 @@ class Ecotouch:
             results_status = {}
 
         while len(tags) > self.tagsPerRequest:
-            results, results_status = await self._read_tags(
-                tags[:self.tagsPerRequest], results, results_status
-            )
+            results, results_status = await self._read_tags(tags[:self.tagsPerRequest], results, results_status)
             tags = tags[self.tagsPerRequest:]
 
         args = {}
@@ -1423,29 +1350,27 @@ class Ecotouch:
 
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
-            async with session.get(
-                    f"http://{self.hostname}/cgi/readTags", params=args
-            ) as resp:
-                r = await resp.text()  # pylint: disable=invalid-name
-                if r == "#E_NEED_LOGIN\n":
+            async with session.get(f"http://{self.hostname}/cgi/readTags", params=args) as resp:
+                response = await resp.text()
+                if response.startswith("#E_NEED_LOGIN"):
                     await self.login(self.username, self.password)
                     return results, results_status
+
                 for tag in tags:
                     match = re.search(
                         f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
                         # pylint: disable=anomalous-backslash-in-string
-                        r,
+                        response,
                         re.MULTILINE,
                     )
                     if match is None:
                         match = re.search(
                             # r"#%s\tE_INACTIVETAG" % tag,
                             f"#{tag}\tE_INACTIVETAG",
-                            r,
+                            response,
                             re.MULTILINE,
                         )
                         # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
-                        # print("Tag: %s is inactive!", tag)
                         if match is None:
                             # raise Exception(tag + " tag not found in response")
                             _LOGGER.warning("Tag: %s not found in response!", tag)
@@ -1461,10 +1386,52 @@ class Ecotouch:
 
         return results, results_status
 
+    async def write_value(self, tag, value):
+        """Write a value"""
+        return await self.write_values([(tag, value)])
+
+    async def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
+        """Write values to Tag"""
+        to_write = {}
+        result = {}
+        # we write only one EcotouchTag at the same time (but the EcotouchTag can consist of
+        # multiple internal tag fields)
+        for a_eco_tag, value in kv_pairs:  # pylint: disable=invalid-name
+            if not a_eco_tag.writeable:
+                raise InvalidValueException("tried to write to an readonly field")
+
+            # converting the HA values to the final int or bools that the waterkotte understand
+            a_eco_tag.write_function(a_eco_tag, value, to_write)
+
+            e_values, e_status = await self._write_tags(to_write.keys(), to_write.values())
+
+            if e_values is not None and len(e_values) > 0:
+                _LOGGER.info(
+                    f"after _write_tags of EcotouchTag {a_eco_tag} > raw-values: {e_values} states: {e_status}")
+
+                all_ok = True
+                for a_tag in e_status:
+                    if e_status[a_tag] != "E_OK":
+                        all_ok = False
+
+                if all_ok:
+                    str_vals = [e_values[a_tag] for a_tag in a_eco_tag.tags]
+                    val = a_eco_tag.read_function(a_eco_tag, str_vals)
+                    if str(val) != str(value):
+                        _LOGGER.error(
+                            f"WRITE value does not match value that was READ: '{val}' (read) != '{value}' (write)")
+                    else:
+                        result[a_eco_tag] = {
+                            "value": val,
+                            # here we also take just the first status...
+                            "status": e_status[a_eco_tag.tags[0]]
+                        }
+        return result
+
     #
     # writes <value> into the tag <tag>
     #
-    async def _write_tag(self, tags: List[str], value: List[Any]):
+    async def _write_tags(self, tags: List[str], value: List[Any]):
         """write tag"""
         args = {}
         args["n"] = len(tags)
@@ -1474,7 +1441,6 @@ class Ecotouch:
         #    args[f"t{(i + 1)}"] = tags[i]
         # for i in range(len(tag.tags)):
         #     et_values[tag.tags[i]] = vals[i]
-        # print(et_values)
         for i, tag in enumerate(tags):
             args[f"t{i + 1}"] = tag
             args[f"v{i + 1}"] = list(value)[i]
@@ -1492,15 +1458,10 @@ class Ecotouch:
         # _LOGGER.info(f"requesting '{args}' [tags: {tags}, values: {value}]")
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
-            async with session.get(
-                    f"http://{self.hostname}/cgi/writeTags", params=args
-            ) as resp:
-                r = await resp.text()  # pylint: disable=invalid-name
-                # print(r)
-                if r == "#E_NEED_LOGIN\n":
-                    await self.login(
-                        self.username, self.password
-                    )  # pylint: disable=possibly-unused-variable
+            async with session.get(f"http://{self.hostname}/cgi/writeTags", params=args) as resp:
+                response = await resp.text()  # pylint: disable=invalid-name
+                if response.startswith("#E_NEED_LOGIN"):
+                    await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
                     res = await self._write_tag(tags, value)
                     return res
                 ###
@@ -1508,18 +1469,17 @@ class Ecotouch:
                     match = re.search(
                         f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
                         # pylint: disable=anomalous-backslash-in-string
-                        r,
+                        response,
                         re.MULTILINE,
                     )
                     if match is None:
                         match = re.search(
                             # r"#%s\tE_INACTIVETAG" % tag,
                             f"#{tag}\tE_INACTIVETAG",
-                            r,
+                            response,
                             re.MULTILINE,
                         )
                         # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
-                        # print("Tag: %s is inactive!", tag)
                         if match is None:
                             # raise Exception(tag + " tag not found in response")
                             _LOGGER.warning("Tag: %s not found in response!", tag)

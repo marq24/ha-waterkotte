@@ -134,8 +134,6 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
                 _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Select not found in translation")
                 self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
 
-        coordinator.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
-
     @property
     def current_option(self) -> str | None:
         try:
@@ -236,7 +234,7 @@ class WaterkotteHeatpumpSelect2(WaterkotteHeatpumpEntity2, SelectEntity):
 
         # we use the "key" also as our internal translation-key - and EXTREMELY important we have
         # to set the '_attr_has_entity_name' to trigger the calls to the localization framework!
-        self._attr_translation_key = f"tkey_{key}"
+        self._attr_translation_key = f"{key}"
         self._attr_has_entity_name = True
 
         # if hasattr(description, 'suggested_display_precision') and description.suggested_display_precision is not None:

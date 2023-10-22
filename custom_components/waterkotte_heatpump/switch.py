@@ -111,9 +111,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     """waterkotte_heatpump switch class."""
 
-    def __init__(
-        self, entry, hass_data, sensor_type
-    ):  # pylint: disable=unused-argument
+    def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
         self.entity_id = f"{DOMAIN}.wkh_{sensor_type}"
         self._coordinator = hass_data
@@ -122,11 +120,11 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-            self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+            self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Switch not found in translation")
-            self._name = f"{SENSOR_TYPES[self._type][0]}"
-        hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
+            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Switch not found in translation")
+            self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
+
         super().__init__(hass_data, entry)
 
     def __del__(self):
@@ -183,20 +181,12 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         return SENSOR_TYPES[self._type][1]
 
     @property
-    def name(self):
-        """Return the name of the sensor."""
-        return self._name
-
-    @property
     def icon(self):
         """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
             sensor = SENSOR_TYPES[self._type]
             try:
-                if (
-                    self._type == "holiday_enabled"
-                    and sensor[1] in self._coordinator.data
-                ):
+                if (self._type == "holiday_enabled" and sensor[1] in self._coordinator.data):
                     if self._coordinator.data[sensor[1]]["value"] is True:
                         return "mdi:calendar-check"
                     else:
@@ -204,9 +194,7 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
                 else:
                     return None
             except KeyError:
-                _LOGGER.warning(
-                    f"KeyError in switch.icon: should have value? data:{self._coordinator.data[sensor[1]]}"
-                )
+                _LOGGER.warning(f"KeyError in switch.icon: should have value? data:{self._coordinator.data[sensor[1]]}")
             except TypeError:
                 return None
         return SENSOR_TYPES[self._type][4]

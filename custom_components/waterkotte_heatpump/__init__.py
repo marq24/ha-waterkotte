@@ -8,6 +8,8 @@ import asyncio
 import logging
 import json
 from datetime import timedelta
+from typing import List
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
 from homeassistant.core import HomeAssistant
@@ -15,8 +17,8 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import device_registry as DeviceReg
+from homeassistant.helpers import entity_registry as EntityReg
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 
@@ -73,12 +75,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.info(STARTUP_MESSAGE)
 
     # Setup Device
-    fw = entry.options.get(
-        CONF_IP, entry.data.get(CONF_IP)
-    )  # pylint: disable=invalid-name
+    fw = entry.options.get(CONF_IP, entry.data.get(CONF_IP))
     bios = entry.options.get(CONF_BIOS, entry.data.get(CONF_BIOS))
 
-    device_registry = dr.async_get(hass)
+    device_registry = DeviceReg.async_get(hass)
 
     device_registry.async_get_or_create(  # pylint: disable=invalid-name
         config_entry_id=entry.entry_id,
@@ -136,19 +136,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             client=client,
             lang=LANG
         )
-    # await coordinator.async_refresh() ##Needed?
 
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
     for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            # hass.async_add_job(
-            await hass.config_entries.async_forward_entry_setup(entry, platform)
-            # )
+        await hass.config_entries.async_forward_entry_setup(entry, platform)
+
     entry.add_update_listener(async_reload_entry)
+
+    # after all sensors for the different platforms have been registered we can create the list
+    # of all active tags - so that we only query the information from the heatpump that is currently
+    # active in HA
+    client.tags = generate_tag_list(hass, entry.entry_id)
 
     await coordinator.async_refresh()
     COORDINATOR = coordinator
@@ -158,6 +159,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.services.async_register(DOMAIN, "set_disinfection_start_time", service.set_disinfection_start_time)
     return True
 
+@staticmethod
+def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[EcotouchTag]:
+    _LOGGER.info(f"(re)build tag list...")
+    tags = []
+    if hass is not None:
+        a_entity_reg = EntityReg.async_get(hass)
+        if a_entity_reg is not None:
+            # we query from the HA entity registry all entities that are created by this
+            # 'config_entry' -> we use here just default api calls [no more hacks!]
+            for entity in EntityReg.async_entries_for_config_entry(registry=a_entity_reg,
+                                                            config_entry_id=config_entry_id):
+                if entity.disabled is False:
+                    a_temp_tag = (entity.unique_id)
+                    _LOGGER.info(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
+                    if a_temp_tag is not None and a_temp_tag.upper() in EcotouchTag.__members__:
+                        if EcotouchTag[a_temp_tag.upper()]:
+                            tags.append(EcotouchTag[a_temp_tag.upper()])
+                    else:
+                        _LOGGER.warning(f"Tag: {a_temp_tag} not found in EcotouchTag.__members__ !")
+    return tags
 
 class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
@@ -179,9 +200,8 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
             self.data = {}
         else:
             self.data = data
-        self.platforms = []
+
         self.__hass = hass
-        self.alltags = {}
         self.lang = lang
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
@@ -190,36 +210,21 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             await self.api.login()
             _LOGGER.info(f"number of tags to query: {len(self.api.tags)}")
-            if len(self.api.tags) == 0:
-                _LOGGER.info(f"need to rebuild tag list... querying registry")
-                tags = []
-                if self.__hass is not None:
-                    a_reg = er.async_get(self.__hass)
-                    if a_reg is not None:
-                        # we query from the HA entity registry all entities that are created by this
-                        # 'config_entry' -> we use here just default api calls [no more hacks!]
-                        for entity in er.async_entries_for_config_entry(registry=a_reg,
-                                                                        config_entry_id=self._config_entry.entry_id):
-                            if entity.disabled is False:
-                                a_temp_tag = (entity.unique_id)
-                                _LOGGER.info(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
-                                if a_temp_tag is not None and a_temp_tag.upper() in EcotouchTag.__members__:
-                                    if EcotouchTag[a_temp_tag.upper()]:
-                                        tags.append(EcotouchTag[a_temp_tag.upper()])
-                                else:
-                                    _LOGGER.warning(f"Tag: {a_temp_tag} not found in EcotouchTag.__members__ !")
+            #if len(self.api.tags) == 0:
+            #    tags = self.generateTagList(self.__hass, self._config_entry.entry_id)
+            #    self.api.tags = tags
 
-                self.api.tags = tags
+            result = await self.api.async_get_data()
+            _LOGGER.info(f"number of tag-values read: {len(result)}")
 
-            tagdatas = await self.api.async_get_data()
             if self.data is None:
                 self.data = {}
-            for key in tagdatas:
+            for a_tag_in_result in result:
                 # print(f"{key}:{tagdatas[key]}")
-                if tagdatas[key]["status"] == "E_OK":
+                if result[a_tag_in_result]["status"] == "E_OK":
                     # self.data.update(tagdatas[key])
                     # self.data.update({key:tagdatas[key]})
-                    self.data[key] = tagdatas[key]
+                    self.data[a_tag_in_result] = result[a_tag_in_result]
                     # self.data =
             return self.data
         except UpdateFailed as exception:
@@ -227,12 +232,12 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def async_write_tag(self, tag: EcotouchTag, value):
         """Update single data"""
-        res = await self.api.async_write_value(tag, value)
+        result = await self.api.async_write_value(tag, value)
         # print(res)
-        if tag.tags[0] in res:
-            self.data[tag]["value"] = res[tag.tags[0]]["value"]
+        if tag in result:
+            self.data[tag] = result[tag]
         else:
-            _LOGGER.error(f"could not write value: '{value}' to: {tag} res was: {res}")
+            _LOGGER.error(f"could not write value: '{value}' to: {tag} result was: {result}")
         # self.data[result[0]]
 
 
@@ -245,7 +250,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             *[
                 hass.config_entries.async_forward_entry_unload(entry, platform)
                 for platform in PLATFORMS
-                if platform in coordinator.platforms
             ]
         )
     )

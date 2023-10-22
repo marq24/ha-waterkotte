@@ -448,7 +448,7 @@ SENSOR_TYPES = {
     "SCHEDULE_WATER_DISINFECTION_DURATION": [
         "Water disinfection duration (in hours)",
         EcotouchTag.SCHEDULE_WATER_DISINFECTION_DURATION,
-        None, # duration in h
+        None,  # duration in h
         "mdi:progress-clock",
         False,
         0,
@@ -459,6 +459,7 @@ SENSOR_TYPES = {
 }
 
 TEMP_ADJUST_LOOKUP = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
+
 
 async def async_setup_entry(
         hass: HomeAssistantType, entry: ConfigType, async_add_devices
@@ -475,9 +476,7 @@ async def async_setup_entry(
 class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
     """waterkotte_heatpump Number class."""
 
-    def __init__(
-            self, entry, hass_data, sensor_type
-    ):  # pylint: disable=unused-argument
+    def __init__(self, entry, hass_data, sensor_type):  # pylint: disable=unused-argument
         """Initialize the sensor."""
         self.entity_id = f"{DOMAIN}.wkh_{sensor_type}"
         self._coordinator = hass_data
@@ -486,17 +485,12 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-            self._name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+            self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Number not found in translation")
-            self._name = f"{SENSOR_TYPES[self._type][0]}"
-        hass_data.alltags.update({self._attr_unique_id: SENSOR_TYPES[self._type][1]})
-        super().__init__(hass_data, entry)
+            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Number not found in translation")
+            self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
 
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return self._name
+        super().__init__(hass_data, entry)
 
     @property
     def native_value(self) -> float | None:
@@ -509,7 +503,7 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
                 return "unknown"
             if str(sensor[1].name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
-            #if(sensor[1][0][0][0] == 'I'):
+            # if(sensor[1][0][0][0] == 'I'):
             #    _LOGGER.warning("native_value "+str(value))
         except KeyError:
             return "unknown"
@@ -517,11 +511,6 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
             return None
         return float(value)
         # return "auto"
-
-    # @property
-    # def native_uni(self) -> str:
-    #     # return ["off", "auto", "manual"]
-    #     return SENSOR_TYPES[self._type][6]
 
     async def async_set_native_value(self, value: float) -> None:
         """Turn on the switch."""
@@ -551,7 +540,6 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
     def icon(self):
         """Return the icon of the sensor."""
         return SENSOR_TYPES[self._type][3]
-        # return ICON
 
     @property
     def entity_registry_enabled_default(self):
