@@ -1,23 +1,15 @@
 """Sensor platform for Waterkotte Heatpump."""
 import logging
 
-# from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
 from homeassistant.components.number import NumberEntity, NumberDeviceClass, DEFAULT_STEP, NumberMode
-from homeassistant.components.sensor import SensorStateClass
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
-
-# from .const import DEFAULT_NAME
-# from .const import ICON
-# from .const import SENSOR
-# from .const import UnitOfTemperature
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
-from .const import ENUM_OFFAUTOMANUAL, DOMAIN
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-_LANG = None
 
 TENTH_STEP = 0.1
 FIFTH_STEP = 0.5
@@ -467,8 +459,6 @@ async def async_setup_entry(
     """Set up the Waterkotte Number platform."""
     _LOGGER.debug("Number async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    global _LANG
-    _LANG = coordinator.lang
     async_add_devices([WaterkotteHeatpumpNumber(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 
@@ -484,13 +474,7 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if self.eco_tag.tags[0] in _LANG:
-            self._attr_name = _LANG[self.eco_tag.tags[0]]
-        else:
-            _LOGGER.warning(f"{self.eco_tag.tags[0]} Number not found in translation")
-            self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
-
-
+        self._attr_translation_key = self._type.lower()
         super().__init__(hass_data, entry)
 
     @property

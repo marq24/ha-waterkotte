@@ -7,10 +7,7 @@ from .const import DOMAIN
 
 from .entity import WaterkotteHeatpumpEntity
 
-# from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
-
 _LOGGER = logging.getLogger(__name__)
-_LANG = None
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category  #pylint: disable=line-too-long
@@ -102,8 +99,6 @@ async def async_setup_entry(hass, entry, async_add_devices):
     """Setup the Waterkotte Switch platform."""
     _LOGGER.debug("Switch async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    global _LANG
-    _LANG = coordinator.lang
     async_add_devices([WaterkotteHeatpumpSwitch(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 
@@ -119,12 +114,7 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if self.eco_tag.tags[0] in _LANG:
-            self._attr_name = _LANG[self.eco_tag.tags[0]]
-        else:
-            _LOGGER.warning(f"{self.eco_tag.tags[0]} Switch not found in translation")
-            self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
-
+        self._attr_translation_key = self._type.lower()
         super().__init__(hass_data, entry)
 
     def __del__(self):
@@ -188,7 +178,8 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
                 else:
                     return None
             except KeyError:
-                _LOGGER.warning(f"KeyError in switch.icon: should have value? data:{self._coordinator.data[self.eco_tag]}")
+                _LOGGER.warning(
+                    f"KeyError in switch.icon: should have value? data:{self._coordinator.data[self.eco_tag]}")
             except TypeError:
                 return None
         return SENSOR_TYPES[self._type][4]

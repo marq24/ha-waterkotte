@@ -1,8 +1,7 @@
-"""Sensor platform for Waterkotte Heatpump."""
+"""Select platform for Waterkotte Heatpump."""
 import logging
 from dataclasses import dataclass
 
-# from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
@@ -12,7 +11,6 @@ from .entity import WaterkotteHeatpumpEntity, WaterkotteHeatpumpEntity2
 from .const import ENUM_OFFAUTOMANUAL, ENUM_HEATING_MODE, DEVICE_CLASS_ENUM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-_LANG = None
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
@@ -92,9 +90,6 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_ad
     """Set up the Waterkotte Select platform."""
     _LOGGER.debug("Select async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-
-    global _LANG
-    _LANG = coordinator.lang
     async_add_devices([WaterkotteHeatpumpSelect(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 
@@ -114,26 +109,7 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-
-        # for now, we just use the "new" translation impl just for the single 'heating_mode'
-        # selection... the rest might follow in the future...
-        if self._type == 'temperature_heating_mode':
-            self._attr_translation_key = f"{self._type.lower()}"
-
-            # no need to provide an SelectEntityDescription here - since when the translation-key
-            # is present 'tkey_*' in our translation files, all is FINE!!!
-            # self.entity_description = SelectEntityDescription (
-            #    key = sensor_type,
-            #    name = SENSOR_TYPES[self._type][0],
-            #    options = SENSOR_TYPES[self._type][6]
-            # )
-        else:
-            if self.eco_tag.tags[0] in _LANG:
-                self._attr_name = _LANG[self.eco_tag.tags[0]]
-            else:
-                _LOGGER.warning(f"{self.eco_tag.tags[0]} Select not found in translation")
-                self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
-
+        self._attr_translation_key = self._type.lower()
 
     @property
     def current_option(self) -> str | None:

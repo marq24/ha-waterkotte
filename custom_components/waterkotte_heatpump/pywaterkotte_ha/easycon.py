@@ -1,25 +1,25 @@
 """ Class to interact with Easycon system """
 import xml.etree.ElementTree as ET
+import logging
+
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import (  # pylint: disable=import-error
-    Ecotouch,
+    EcotouchBridge,
     Sequence,
     EcotouchTag,
     aiohttp,
     re,
-    # Collection,
-    # Tuple,
     List,
     Any,
 )
-import logging
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
-class Easycon(Ecotouch):
+
+class EasyconBridge(EcotouchBridge):
     """Base Easycon Class, inherits from ecotouch"""
 
     async def login(
-        self, username="waterkotte", password="waterkotte"
+            self, username="waterkotte", password="waterkotte"
     ):  # pylint: disable=unused-argument
         """Login to Heat Pump (not needed for easycon)"""
         return
@@ -33,11 +33,11 @@ class Easycon(Ecotouch):
     # reads a list of ecotouch tags
     #
     async def _read_tags(
-        # self, tags: Sequence[EcotouchTag], results={}, results_status={}
-        self,
-        tags: Sequence[EcotouchTag],
-        results=None,
-        results_status=None,
+            # self, tags: Sequence[EcotouchTag], results={}, results_status={}
+            self,
+            tags: Sequence[EcotouchTag],
+            results=None,
+            results_status=None,
     ):
         """async read tags"""
         if results is None:
@@ -64,11 +64,11 @@ class Easycon(Ecotouch):
 
         query = ""
         if len(D) > 0:
-            query += f"|D|{D[0]}|{D[len(D)-1]}"
+            query += f"|D|{D[0]}|{D[len(D) - 1]}"
         if len(A) > 0:
-            query += f"|A|{A[0]}|{A[len(A)-1]}"
+            query += f"|A|{A[0]}|{A[len(A) - 1]}"
         if len(I) > 0:
-            query += f"|I|{I[0]}|{I[len(I)-1]}"
+            query += f"|I|{I[0]}|{I[len(I) - 1]}"
         # query="?" + query[1:]
         print(query)
         if query == "":
@@ -77,7 +77,7 @@ class Easycon(Ecotouch):
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
             async with session.get(
-                f"http://{self.hostname}/config/xml.cgi?{query[1:]}"
+                    f"http://{self.hostname}/config/xml.cgi?{query[1:]}"
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
                 tree = ET.fromstring(r)
@@ -108,7 +108,7 @@ class Easycon(Ecotouch):
                         # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                         # print("Tag: %s is inactive!", tag)
                         if match is None:
-                            #raise Exception(tag + " tag not found in response")
+                            # raise Exception(tag + " tag not found in response")
                             _LOGGER.warning("Tag: %s not found in response!", tag)
                             results_status[tag] = "E_NOTFOUND"
                         else:
@@ -155,7 +155,7 @@ class Easycon(Ecotouch):
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
             async with session.get(
-                f"http://{self.hostname}/config/query.cgi?{param}"
+                    f"http://{self.hostname}/config/query.cgi?{param}"
             ) as resp:
                 r = await resp.text()  # pylint: disable=invalid-name
                 if r.find("Operation completed succesfully") > 0 and resp.status == 200:

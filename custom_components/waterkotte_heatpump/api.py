@@ -4,8 +4,9 @@ from typing import Sequence
 import logging
 
 import aiohttp
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import Ecotouch, EcotouchTag, EASYCON, ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.easycon import Easycon
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import EASYCON, ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchBridge, EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.easycon import EasyconBridge
 
 TIMEOUT = 10
 
@@ -22,8 +23,7 @@ class WaterkotteHeatpumpApiClient:
         session: aiohttp.ClientSession,
         tags: str,
         systemType: str,
-        tagsPerRequest: int,
-        lc_lang: str = "en"
+        tagsPerRequest: int
     ) -> None:
         """Sample API Client."""
         self._username = username
@@ -32,9 +32,9 @@ class WaterkotteHeatpumpApiClient:
         self._host = host
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = Ecotouch(host, tagsPerRequest, lc_lang)
+            self._client = EcotouchBridge(host, tagsPerRequest)
         elif systemType == EASYCON:
-            self._client = Easycon(host)
+            self._client = EasyconBridge(host)
         else:
             _LOGGER.error("Error unknown System type!")
 

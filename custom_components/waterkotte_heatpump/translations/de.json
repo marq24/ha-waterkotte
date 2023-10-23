@@ -1,5 +1,58 @@
 {
   "entity": {
+    "binary_sensor": {
+      "state_sourcepump": {"name": "Quellenpumpe"},
+      "state_heatingpump": {"name": "Wärmepumpe"},
+      "state_evd": {"name": "EVD (Überhitzungsregler)"},
+      "state_compressor": {"name": "Verdichter"},
+      "state_compressor2": {"name": "Verdichter"},
+      "state_external_heater": {"name": "Heizstab"},
+      "state_alarm": {"name": "Meldungen"},
+      "state_cooling": {"name": "Kühlen"},
+      "state_water": {"name": "Warmwasser"},
+      "state_pool": {"name": "Pool"},
+      "state_solar": {"name": "Solar"},
+      "state_cooling4way": {"name": "4-Wege Ventil"},
+      "status_heating": {"name": "Heizbetrieb"},
+      "status_water": {"name": "Warmwasserbetrieb"},
+      "status_cooling": {"name": "Kühlbetrieb"}
+    },
+    "number": {
+      "temperature_return_setpoint": {"name": "T Sollwert"},
+      "temperature_cooling_setpoint": {"name": "Kühltemperatur"},
+      "temperature_cooling_outdoor_limit": {"name": "T Außen Einsatzgrenze"},
+      "temperature_heating_setpoint": {"name": "Heiztemperatur"},
+      "temperature_heating_adjust": {"name": "Temperaturanpassung"},
+      "temperature_heating_hysteresis": {"name": "Schaltdifferenz Sollwert"},
+      "temperature_mix1_adjust": {"name": "Temperaturanpassung"},
+      "temperature_mix2_adjust": {"name": "Temperaturanpassung"},
+      "temperature_mix3_adjust": {"name": "Temperaturanpassung"},
+      "temperature_heating_hc_limit": {"name": "T Heizgrenze"},
+      "temperature_heating_hc_target": {"name": "T Heizgrenze Soll"},
+      "temperature_heating_hc_outdoor_norm": {"name": "T Norm-Außen"},
+      "temperature_heating_hc_norm": {"name": "T Heizkreis Norm"},
+      "temperature_heating_setpointlimit_max": {"name": "Grenze für Sollwert (Max.)"},
+      "temperature_heating_setpointlimit_min": {"name": "Grenze für Sollwert (Min.)"},
+      "temperature_water_setpoint": {"name": "geforderte Temperatur"},
+      "temperature_water_hysteresis": {"name": "Schaltdifferenz Sollwert"},
+      "temperature_mix1_hc_limit": {"name": "T Heizgrenze"},
+      "temperature_mix1_hc_target": {"name": "T Heizgrenze Soll"},
+      "temperature_mix1_hc_outdoor_norm": {"name": "T Norm-Außen"},
+      "temperature_mix1_hc_heating_norm": {"name": "T Heizkreis Norm"},
+      "temperature_mix1_hc_max": {"name": "Maximale Temperatur im Mischerkreis"},
+      "temperature_mix2_hc_limit": {"name": "T Heizgrenze"},
+      "temperature_mix2_hc_target": {"name": "T Heizgrenze Soll"},
+      "temperature_mix2_hc_outdoor_norm": {"name": "T Norm-Außen"},
+      "temperature_mix2_hc_heating_norm": {"name": "T Heizkreis Norm"},
+      "temperature_mix2_hc_max": {"name": "Maximale Temperatur im Mischerkreis"},
+      "temperature_mix3_hc_limit": {"name": "T Heizgrenze"},
+      "temperature_mix3_hc_target": {"name": "T Heizgrenze Soll"},
+      "temperature_mix3_hc_outdoor_norm": {"name": "T Norm-Außen"},
+      "temperature_mix3_hc_heating_norm": {"name": "T Heizkreis Norm"},
+      "temperature_mix3_hc_max": {"name": "Maximale Temperatur im Mischerkreis"},
+      "temperature_water_disinfection": {"name": "geforderte Temperatur"},
+      "schedule_water_disinfection_duration": {"name": "max.Laufzeit"}
+    },
     "select": {
       "temperature_heating_mode": {
         "name": "Heizungsregelung",
@@ -11,33 +64,81 @@
           "hm4": "Sollwertvorgabe 0-10V",
           "hm5": "Mischerkreis Vorgabe"
         }
-      }
+      },
+      "enable_cooling": {"name": "Betriebsmodus Kühlung"},
+      "enable_heating": {"name": "Betriebsmodus Heizung"},
+      "enable_pv": {"name": "Betriebsmodus PV"},
+      "enable_warmwater": {"name": "Betriebsmodus Warmwasser"}
     },
     "sensor": {
-      "energy_consumption_total_year": {
-        "name": "Elektrische Arbeit Jahresverbrauch"
-      },
-      "compressor_electric_consumption_year": {
-        "name": "Verdichter Jahresverbrauch"
-      },
-      "sourcepump_electric_consumption_year": {
-        "name": "Quellenpumpe Jahresverbrauch"
-      },
-      "electrical_heater_electric_consumption_year": {
-        "name": "Heizstab Jahresverbrauch"
-      },
-      "energy_production_total_year": {
-        "name": "Thermische Energie Jahresproduktion"
-      },
-      "heating_energy_production_year": {
-        "name": "Heizenergie Jahresproduktion"
-      },
-      "hot_water_energy_production_year": {
-        "name": "Warmwasserenergie Jahresproduktion"
-      },
-      "cooling_energy_year": {
-        "name": "Kältearbeit im Jahr"
-      }
+      "energy_consumption_total_year": {"name": "Elektrische Arbeit Jahresverbrauch"},
+      "compressor_electric_consumption_year": {"name": "Verdichter Jahresverbrauch"},
+      "sourcepump_electric_consumption_year": {"name": "Quellenpumpe Jahresverbrauch"},
+      "electrical_heater_electric_consumption_year": {"name": "Heizstab Jahresverbrauch"},
+      "energy_production_total_year": {"name": "Thermische Energie Jahresproduktion"},
+      "heating_energy_production_year": {"name": "Heizenergie Jahresproduktion"},
+      "hot_water_energy_production_year": {"name": "Warmwasserenergie Jahresproduktion"},
+      "cooling_energy_year": {"name": "Kältearbeit im Jahr"},
+      "temperature_outside": {"name": "Außentemperatur"},
+      "temperature_outside_1h": {"name": "Außentemperatur 1h"},
+      "temperature_outside_24h": {"name": "Außentemperatur 24h"},
+      "temperature_source_entry": {"name": "T Quelle Ein"},
+      "temperature_source_exit": {"name": "T Quelle Aus"},
+      "temperature_evaporation": {"name": "T Verdampfer"},
+      "temperature_suction_line": {"name": "T Saugleitung"},
+      "temperature_return": {"name": "T Rücklauf"},
+      "temperature_flow": {"name": "T Vorlauf"},
+      "temperature_condensation": {"name": "T Kondensation"},
+      "temperature_buffertank": {"name": "Temperatur Pufferspeicher"},
+      "temperature_room": {"name": "Temperatur Raum"},
+      "temperature_room_1h": {"name": "Temperatur Raum 1h"},
+      "temperature_heating": {"name": "aktuelle Temperatur"},
+      "temperature_heating_demand": {"name": "geforderte Temperatur"},
+      "temperature_cooling": {"name": "aktuelle Temperatur"},
+      "temperature_cooling_demand": {"name": "aktuelle Temperatur"},
+      "temperature_water": {"name": "Temperatur Warmwasser"},
+      "temperature_water_demand": {"name": "geforderte Temperatur"},
+      "temperature_mix1": {"name": "aktuelle Temperatur"},
+      "temperature_mix1_percent": {"name": "Y"},
+      "temperature_mix1_demand": {"name": "geforderte Temperatur"},
+      "temperature_mix2": {"name": "aktuelle Temperatur"},
+      "temperature_mix2_percent": {"name": "Y"},
+      "temperature_mix2_demand": {"name": "geforderte Temperatur"},
+      "temperature_mix3": {"name": "aktuelle Temperatur"},
+      "temperature_mix3_percent": {"name": "Y"},
+      "temperature_mix3_demand": {"name": "geforderte Temperatur"},
+      "temperature_pool": {"name": "aktuelle Temperatur"},
+      "temperature_pool_demand": {"name": "geforderte Temperatur"},
+      "temperature_solar": {"name": "T Solar"},
+      "temperature_solar_exit": {"name": "Austrittstemperatur Solarkollektor"},
+      "temperature_discharge": {"name": "Druckgastemperatur"},
+      "pressure_evaporation": {"name": "p Verdampfer"},
+      "pressure_condensation": {"name": "p Kondensator"},
+      "pressure_water": {"name": "Wasserdruck"},
+      "position_expansion_valve": {"name": "EEV Ventilöffnung"},
+      "suction_gas_overheating": {"name": "Sauggas Überhitzung"},
+      "power_electric": {"name": "Elektrische Leistung"},
+      "power_heating": {"name": "Thermische Leistung"},
+      "power_cooling": {"name": "Kälteleistung"},
+      "cop_heating": {"name": "COP"},
+      "cop_cooling": {"name": "COP Kälteleistung"},
+      "percent_heat_circ_pump": {"name": "Drehzahl Heizungspumpe"},
+      "percent_source_pump": {"name": "Drehzahl Quellenpumpe"},
+      "percent_compressor": {"name": "Leistung Verdichter"},
+      "holiday_start_time": {"name": "Urlaub Start"},
+      "holiday_end_time": {"name": "Urlaub Ende"},
+      "schedule_water_disinfection_start_time": {"name": "Startzeit"},
+      "state_service": {"name": "Servicedaten"}
+    },
+    "switch": {
+      "holiday_enabled": {"name": "Urlaubsfunktion"},
+      "schedule_water_disinfection_1mo": {"name": "Montag"},
+      "schedule_water_disinfection_2tu": {"name": "Dienstag"},
+      "schedule_water_disinfection_3we": {"name": "Mittwoch"},
+      "schedule_water_disinfection_4th": {"name": "Donnerstag"},
+      "schedule_water_disinfection_5fr": {"name": "Freitag"},
+      "schedule_water_disinfection_6sa": {"name": "Samstag"},
+      "schedule_water_disinfection_7su": {"name": "Sonntag"}
     }
   }
 }

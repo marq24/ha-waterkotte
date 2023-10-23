@@ -11,16 +11,13 @@ from custom_components.waterkotte_heatpump.const import (
 from custom_components.waterkotte_heatpump.const import (
     DOMAIN,
 )
-from custom_components.waterkotte_heatpump.const import (
-    SWITCH,
-)
 from homeassistant.components.switch import SERVICE_TURN_OFF
 from homeassistant.components.switch import SERVICE_TURN_ON
 from homeassistant.const import ATTR_ENTITY_ID
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from .const import MOCK_CONFIG
-
+SWITCH = "switch"
 
 async def test_switch_services(hass):
     """Test switch services."""

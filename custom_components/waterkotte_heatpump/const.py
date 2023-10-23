@@ -1,58 +1,48 @@
 """Constants for Waterkotte Heatpump."""
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import HEATING_MODES
+from typing import Final
+
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import HEATING_MODES
+
 # Base component constants
-NAME = "Waterkotte Heatpump [+2020]"
-DOMAIN = "waterkotte_heatpump"
-DOMAIN_DATA = f"{DOMAIN}_data"
-TITLE = "Waterkotte"
-ISSUE_URL = "https://github.com/marq24/ha-waterkotte/issues"
+NAME: Final = "Waterkotte Heatpump [+2020]"
+DOMAIN: Final = "waterkotte_heatpump"
+PLATFORMS: Final = ["binary_sensor", "number", "select", "sensor", "switch"]
+
+DOMAIN_DATA: Final = f"{DOMAIN}_data"
+TITLE: Final = "Waterkotte"
+ISSUE_URL: Final = "https://github.com/marq24/ha-waterkotte/issues"
 
 # Device classes
-BINARY_SENSOR_DEVICE_CLASS = "connectivity"
-DEVICE_CLASS_ENUM = "enum"
+DEVICE_CLASS_ENUM: Final = "enum"
 
 # States
-STATE_AUTO = "auto"
-STATE_MANUAL = "manual"
-STATE_ON = "on"
-STATE_OFF = "off"
+STATE_AUTO: Final = "auto"
+STATE_MANUAL: Final = "manual"
+STATE_ON: Final = "on"
+STATE_OFF: Final = "off"
 # # #### Enum Options ####
-ENUM_ONOFFAUTO = [STATE_ON, STATE_OFF, STATE_AUTO]
-ENUM_OFFAUTOMANUAL = [STATE_OFF, STATE_AUTO, STATE_MANUAL]
-ENUM_HEATING_MODE = list(HEATING_MODES.values())
-
-
-# Platforms
-BINARY_SENSOR = "binary_sensor"
-SENSOR = "sensor"
-SWITCH = "switch"
-SELECT = "select"
-NUMBER = "number"
-# TEXT = "text"
-#PLATFORMS = [SENSOR]
-PLATFORMS = [BINARY_SENSOR, SELECT, SENSOR, SWITCH, NUMBER]  #
-SENSORS = ["heating", "cooling", "water"]
-
+ENUM_ONOFFAUTO: Final = [STATE_ON, STATE_OFF, STATE_AUTO]
+ENUM_OFFAUTOMANUAL: Final = [STATE_OFF, STATE_AUTO, STATE_MANUAL]
+ENUM_HEATING_MODE: Final = list(HEATING_MODES.values())
 
 # Configuration and options
-CONF_ENABLED = "enabled"
-CONF_USERNAME = "username"
-CONF_PASSWORD = "password"
-CONF_HOST = "host"
-CONF_POLLING_INTERVAL = "polling_interval"
-CONF_TAGS_PER_REQUEST = "tags_per_request"
-CONF_IP = "ip"
-CONF_BIOS = "bios"
-CONF_FW = "fw"
-CONF_SERIAL = "serial"
-CONF_SERIES = "series"
-CONF_ID = "id"
-CONF_SYSTEMTYPE = "system_type"
-# Defaults
-DEFAULT_NAME = DOMAIN
+CONF_ENABLED: Final = "enabled"
+CONF_USERNAME: Final = "username"
+CONF_PASSWORD: Final = "password"
+CONF_HOST: Final = "host"
+CONF_POLLING_INTERVAL: Final = "polling_interval"
+CONF_TAGS_PER_REQUEST: Final = "tags_per_request"
+CONF_IP: Final = "ip"
+CONF_BIOS: Final = "bios"
+CONF_FW: Final = "fw"
+CONF_SERIAL: Final = "serial"
+CONF_SERIES: Final = "series"
+CONF_ID: Final = "id"
+CONF_SYSTEMTYPE: Final = "system_type"
 
+DEFAULT_NAME: Final = DOMAIN
 
-STARTUP_MESSAGE = f"""
+STARTUP_MESSAGE: Final = f"""
 -------------------------------------------------------------------
 {NAME}
 This is a custom integration!

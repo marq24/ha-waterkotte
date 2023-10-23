@@ -1,956 +1,22 @@
 """ ecotouch main module"""
 import aiohttp
-import struct
 import re
-import math
 import logging
 
 from enum import Enum
-from datetime import time, datetime, timedelta
+from datetime import datetime
 
 from typing import (
     Any,
-    Callable,
-    Collection,
-    NamedTuple,
     Sequence,
     Tuple,
     List,
+    Collection
 )
 
-ECOTOUCH = "ECOTOUCH"
-EASYCON = "EASYCON"
-HEATING_MODES = {
-    0: "hm0",
-    1: "hm1",
-    2: "hm2",
-    3: "hm3",
-    4: "hm4",
-    5: "hm5"
-}
-
-# MAX_NO_TAGS = 75
+from custom_components.waterkotte_heatpump.pywaterkotte_ha import TagData, InvalidValueException
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-
-def _parse_value_default(self, str_vals: List[str], *other_args):
-    first_tag = self.tags[0]
-    first_val = str_vals[0]
-    assert first_tag[0] in ["A", "I", "D"]
-
-    if first_tag[0] == "A":
-        if len(self.tags) == 1:
-            return float(first_val) / 10.0
-        else:
-            ivals = [int(xxl) & 0xFFFF for xxl in str_vals]
-            hex_string = f"{ivals[0]:04x}{ivals[1]:04x}"
-            return struct.unpack("!f", bytes.fromhex(hex_string))[0]
-
-    else:
-        assert len(self.tags) == 1
-        if first_tag[0] == "I":
-            if self.bit is None:
-                return int(first_val)
-            else:
-                return (int(first_val) & (1 << self.bit)) > 0
-
-        elif first_tag[0] == "D":
-            if first_val == "1":
-                return True
-            elif first_val == "0":
-                return False
-        else:
-            raise InvalidValueException(
-                # "%s is not a valid value for %s" % (val, ecotouch_tag)
-                f"{first_val} is not a valid value for {first_tag}"
-            )
-
-    return None
-
-
-def _write_value_default(self, value, et_values):
-    assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    assert ecotouch_tag[0] in ["A", "I", "D"]
-
-    if ecotouch_tag[0] == "I":
-        assert isinstance(value, int)
-        et_values[ecotouch_tag] = str(value)
-    elif ecotouch_tag[0] == "D":
-        assert isinstance(value, bool)
-        et_values[ecotouch_tag] = "1" if value else "0"
-    elif ecotouch_tag[0] == "A":
-        assert isinstance(value, float)
-        et_values[ecotouch_tag] = str(int(value * 10))
-
-
-def _parse_series(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    aI105 = [
-        "Custom",
-        "Ai1",
-        "Ai1+",
-        "AiQE",
-        "DS 5023",
-        "DS 5027Ai",
-        "DS 5051",
-        "DS 5050T",
-        "DS 5110T",
-        "DS 5240",
-        "DS 6500",
-        "DS 502xAi",
-        "DS 505x",
-        "DS 505xT",
-        "DS 51xxT",
-        "DS 509x",
-        "DS 51xx",
-        "EcoTouch Ai1 Geo",
-        "EcoTouch DS 5027 Ai",
-        "EnergyDock",
-        "Basic Line Ai1 Geo",
-        "EcoTouch DS 5018 Ai",
-        "EcoTouch DS 5050T",
-        "EcoTouch DS 5112.5 DT",
-        "EcoTouch 5029 Ai",
-        "DS 6500 D (Duo)",
-        "ET 6900 Q",
-        "EcoTouch Geo Inverter",
-        "EcoTouch 5110TWR",
-        "EcoTouch 5240TWR",
-        "EcoTouch 5240T",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "Ai QL / WP QL",
-        "WPQL-K",
-        "EcoTouch Ai1 Air",
-        "EcoTouch Ai1 Air",
-        "EcoTouch MB 7010",
-        "EcoTouch DA 5018 Ai",
-        "EcoTouch Air LCI",
-        "EcoTouch Ai1 Air K1.1",
-        "EcoTouch DA 5018 Ai K1.1",
-        "EcoTouch Ai1 Air K2",
-        "EcoTouch DA 5018 Ai K2",
-        "EcoTouch Ai1 Air 2018",
-        "Basic Line Ai1 Air",
-        "Basic Line Split",
-        "Basic Line Split W",
-        "EcoTouch Ai1 Air LC S",
-        "EcoTouch Air Kaskade",
-        "EcoTouch Ai1 Air K1.2",
-        "EcoTouch DA 5018 Ai K1.2",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-    ]
-    return aI105[int(str_vals[0])] if str_vals[0] else ""
-
-
-def _parse_bios(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    assert len(self.tags) == 1
-    str_val = str_vals[0]
-    return f"{str_val[:-2]}.{str_val[-2:]}"
-
-
-def _parse_fw(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    assert len(self.tags) == 2
-    str_val1 = str_vals[0]
-    str_val2 = str_vals[1]
-    # str fw2 = f"{str_val1[:-4]:0>2}.{str_val1[-4:-2]}.{str_val1[-2:]}"
-    return f"0{str_val1[0]}.{str_val1[1:3]}.{str_val1[3:]}-{str_val2}"
-
-
-def _parse_id(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    assert len(self.tags) == 1
-    aI110 = [
-        "Ai1 5005.4",
-        "Ai1 5006.4",
-        "Ai1 5007.4",
-        "Ai1 5008.4",
-        "Ai1+ 5006.3",
-        "Ai1+ 5007.3",
-        "Ai1+ 5009.3",
-        "Ai1+ 5011.3",
-        "Ai1+ 5006.3 (1x230V)",
-        "Ai1+ 5007.3 (1x230V)",
-        "Ai1+ 5009.3 (1x230V)",
-        "Ai1+ 5011.3 (1x230V)",
-        "DS 5006.3",
-        "DS 5008.3",
-        "DS 5009.3",
-        "DS 5011.3",
-        "DS 5014.3",
-        "DS 5017.3",
-        "DS 5020.3",
-        "DS 5023.3",
-        "DS 5006.3 (1x230V)",
-        "DS 5008.3 (1x230V)",
-        "DS 5009.3 (1x230V)",
-        "DS 5011.3 (1x230V)",
-        "DS 5014.3 (1x230V)",
-        "DS 5017.3 (1x230V)",
-        "DS 5006.4",
-        "DS 5008.4",
-        "DS 5009.4",
-        "DS 5011.4",
-        "DS 5014.4",
-        "DS 5017.4",
-        "DS 5020.4",
-        "DS 5023.4",
-        "DS 5007.3 Ai",
-        "DS 5009.3 Ai",
-        "DS 5010.3 Ai",
-        "DS 5012.3 Ai",
-        "DS 5015.3 Ai",
-        "DS 5019.3 Ai",
-        "DS 5022.3 Ai",
-        "DS 5025.3 Ai",
-        "DS 5007.3 Ai (1x230V)",
-        "DS 5009.3 Ai (1x230V)",
-        "DS 5010.3 Ai (1x230V)",
-        "DS 5012.3 Ai (1x230V)",
-        "DS 5015.3 Ai (1x230V)",
-        "DS 5019.3 Ai (1x230V)",
-        "DS 5007.4 Ai",
-        "DS 5009.4 Ai",
-        "DS 5010.4 Ai",
-        "DS 5012.4 Ai",
-        "DS 5015.4 Ai",
-        "DS 5019.4 Ai",
-        "DS 5022.4 Ai",
-        "DS 5025.4 Ai",
-        "DS 5007.4 Ai (1x230V)",
-        "DS 5009.4 Ai (1x230V)",
-        "DS 5010.4 Ai (1x230V)",
-        "DS 5012.4 Ai (1x230V)",
-        "DS 5015.4 Ai (1x230V)",
-        "DS 5030.3",
-        "DS 5034.3",
-        "DS 5043.3",
-        "DS 5051.3",
-        "DS 5030.4",
-        "DS 5034.4",
-        "DS 5043.4",
-        "DS 5051.4",
-        "DS 5030.3 T",
-        "DS 5037.3 T",
-        "DS 5044.3 T",
-        "DS 5050.3 T",
-        "DS 5030.4 T",
-        "DS 5037.4 T",
-        "DS 5044.4 T",
-        "DS 5050.4 T",
-        "DS 5062.3 T",
-        "DS 5072.3 T",
-        "DS 5089.3 T",
-        "DS 5109.3 T",
-        "DS 5062.4 T",
-        "DS 5072.4 T",
-        "DS 5089.4 T",
-        "DS 5109.4 T",
-        "DS 5118.3",
-        "DS 5136.3",
-        "DS 5161.3",
-        "DS 5162.3",
-        "DS 5193.3",
-        "DS 5194.3",
-        "DS 5231.3",
-        "DS 5118.4",
-        "DS 5136.4",
-        "DS 5161.4",
-        "DS 5162.4",
-        "DS 5194.4",
-        "DS 6237.3",
-        "DS 6271.3",
-        "DS 6299.3",
-        "DS 6388.3",
-        "DS 6438.3",
-        "DS 6485.3",
-        "DS 6237.4",
-        "DS 6271.4",
-        "DS 6299.4",
-        "DS 6388.4",
-        "DS 6438.4",
-        "DS 6485.4",
-        "Ai1QE 5006.5",
-        "Ai1QE 5007.5",
-        "Ai1QE 5009.5",
-        "Ai1QE 5010.5",
-        "Ai1QE 5006.5 (1x230V)",
-        "Ai1QE 5007.5 (1x230V)",
-        "Ai1QE 5009.5 (1x230V)",
-        "Ai1QE 5010.5 (1x230V)",
-        "DS 5008.5AI",
-        "DS 5009.5AI",
-        "DS 5012.5AI",
-        "DS 5014.5AI",
-        "DS 5017.5AI",
-        "DS 5020.5AI",
-        "DS 5023.5AI",
-        "DS 5026.5AI",
-        "DS 5008.5AI (1x230V)",
-        "DS 5009.5AI (1x230V)",
-        "DS 5012.5AI (1x230V)",
-        "DS 5014.5AI (1x230V)",
-        "DS 5017.5AI (1x230V)",
-        "DS 5029.5",
-        "DS 5033.5",
-        "DS 5040.5",
-        "DS 5045.5",
-        "DS 5050.5",
-        "DS 5059.5",
-        "DS 5028.5 T",
-        "DS 5034.5 T",
-        "DS 5040.5 T",
-        "DS 5046.5 T",
-        "DS 5052.5 T",
-        "DS 5058.5 T",
-        "DS 5063.5 T",
-        "DS 5075.5 T",
-        "DS 5085.5 T",
-        "DS 5095.5 T",
-        "DS 5112.5 T",
-        "DS 5076.5",
-        "DS 5095.5",
-        "DS 5123.5",
-        "DS 5158.5",
-        "Ai QL",
-        "Ai QL Kaskade",
-        "DS 5013.5AI",
-        "DS 5013.5AI (1x230V)",
-        "DS 5036.4T",
-        "DS 5049.4T",
-        "DS 5063.4T",
-        "DS 5077.4T",
-        "DS 5007.5AI HT",
-        "DS 5008.5AI HT",
-        "DS 5010.5AI HT",
-        "DS 5014.5AI HT",
-        "DS 5018.5AI HT",
-        "DS 5023.5AI HT",
-        "DS 5007.5AI HT (1x230V)",
-        "DS 5008.5AI HT (1x230V)",
-        "DS 5010.5AI HT (1x230V)",
-        "DS 5014.5AI HT (1x230V)",
-        "DS 5018.5AI HT (1x230V)",
-        "DS 5005.4Ai HT",
-        "DS 5007.4Ai HT",
-        "DS 5009.4Ai HT",
-        "DS 5010.4Ai HT",
-        "DS 5012.4Ai HT",
-        "DS 5015.4Ai HT",
-        "DS 5005.4Ai HT (1x230V)",
-        "DS 5007.4Ai HT (1x230V)",
-        "DS 5009.4Ai HT (1x230V)",
-        "DS 5010.4Ai HT (1x230V)",
-        "5006.5",
-        "5008.5",
-        "5010.5",
-        "5013.5",
-        "5006.5(1x230V)",
-        "5008.5(1x230V)",
-        "5010.5(1x230V)",
-        "5013.5(1x230V)",
-        "EcoTouch Ai1 QL ",
-        "5018.5",
-        "5010.5",
-        "5010.5",
-        "DS 5008.5AI",
-        "DS 5010.5AI",
-        "DS 5012.5AI",
-        "DS 5014.5AI",
-        "DS 5017.5AI",
-        "DS 5020.5AI",
-        "DS 5023.5AI",
-        "DS 5027.5AI",
-        "DS 5008.5AI (1x230V)",
-        "DS 5010.5AI (1x230V)",
-        "DS 5012.5AI (1x230V)",
-        "DS 5014.5AI (1x230V)",
-        "DS 5017.5AI (1x230V)",
-        "Power+",
-        "DS 5145.5 Tandem",
-        "DS 5150.5",
-        "DS 5182.5 Tandem",
-        "DS 5226.5",
-        "DS 5235.5 Tandem",
-        "DS 6272.5 Trio",
-        "DS 6300.5 Tandem",
-        "DS 6352.5 Trio",
-        "DS 6450.5 Trio",
-        "5005.5",
-        "5006.5",
-        "5007.5",
-        "5008.5",
-        "5010.5",
-        "5005.5 (1x230V)",
-        "5006.5 (1x230V)",
-        "5008.5 (1x230V)",
-        "5010.5 (1x230V)",
-        "DS 5006.5Ai Split",
-        "DS 5007.5Ai Split",
-        "DS 5009.5Ai Split",
-        "DS 5012.5Ai Split",
-        "DS 5015.5Ai Split",
-        "DS 5020.5Ai Split",
-        "DS 5025.5Ai Split",
-        "DS 5006.3Ai Split",
-        "DS 5007.3Ai Split",
-        "DS 5008.3Ai Split",
-        "DS 5010.3Ai Split",
-        "DS 5012.3Ai Split",
-        "DS 5015.3Ai Split",
-        "DS 5018.3Ai Split",
-        "DS 5020.3Ai Split",
-        "5008.5",
-        "5011.5",
-        "5014.5",
-        "5018.5",
-        "5008.5 (230V)",
-        "5011.5 (230V)",
-        "5014.5 (230V)",
-        "5018.5 (230V)",
-        "5018.5",
-        "5010.5",
-        "5034.5T",
-        "5045.5T",
-        "5056.5T",
-        "5009.3",
-        "5068.5 DT",
-        "5090.5 DT",
-        "5112.5 DT",
-        "5007.3",
-        "5011.3",
-        "EcoTouch 5007.5Ai",
-        "EcoTouch 5008.5Ai",
-        "EcoTouch 5010.5Ai",
-        "EcoTouch 5014.5Ai",
-        "EcoTouch 5018.5Ai",
-        "EcoTouch 5023.5Ai",
-        "EcoTouch 5029.5Ai",
-        "EcoTouch 5007.5Ai",
-        "EcoTouch 5008.5Ai",
-        "EcoTouch 5010.5Ai",
-        "EcoTouch 5014.5Ai",
-        "EcoTouch 5018.5Ai",
-        "DS 5028.4T HT",
-        "EcoTouch compact 5004.5",
-        "5010.5",
-        "5010.5",
-        "DS 6450.5 D",
-        "5028.5T",
-        "ET 6600.5 Q",
-        "ET 6750.5 Q",
-        "ET 6900.5 Q",
-        "5015.5 Ai",
-        "5010.5 Ai",
-        "5010.5",
-        "5018.5",
-        "5010.5(1x230V)",
-        "5018.5(1x230V)",
-        "5010.5",
-        "5018.5",
-        "5010.5(1x230V)",
-        "5018.5(1x230V)",
-        "50xx.5",
-        "5003.5 Ai",
-        "5004.5(1x230V)",
-        "",
-        "5008.5(1x230V)",
-        "5011.5(1x230V)",
-        "5012.5(1x230V)",
-        "",
-        "5011.5",
-        "5012.5",
-        "5015.5",
-        "5003.5 Ai NX",
-        "5004.5(1x230V)",
-        "",
-        "5008.5(1x230V)",
-        "5011.5(1x230V)",
-        "5012.5(1x230V)",
-        "",
-        "5011.5",
-        "5012.5",
-        "5015.5",
-        "5004.5(1x230V)",
-        "",
-        "5008.5(1x230V)",
-        "5011.5(1x230V)",
-        "5012.5(1x230V)",
-        "",
-        "5011.5",
-        "5012.5",
-        "5015.5",
-        "5004.5(1x230V)",
-        "",
-        "5008.5(1x230V)",
-        "5011.5(1x230V)",
-        "5012.5(1x230V)",
-        "",
-        "5011.5",
-        "5012.5",
-        "5015.5",
-        "EcoTouch Air Kaskade",
-        "5003.6 Ai NX",
-        "5003.5 Ai SNB",
-        "5003.6 Ai SVB",
-        "5010.5-18 (230V)",
-        "5010.5-18 (230V)",
-        "5018.5",
-        "5018.5(1x230V)",
-        "5018.5",
-        "5018.5(1x230V)",
-        "EcoTouch 5007.5Ai Split",
-        "EcoTouch 5008.5Ai Split",
-        "EcoTouch 5010.5Ai Split",
-        "EcoTouch 5014.5Ai Split",
-        "EcoTouch 5018.5Ai Split",
-        "EcoTouch 5023.5Ai Split",
-        "EcoTouch 5029.5Ai Split",
-        "ET 5063.4 Tandem WR",
-        "ET 5072.4 Tandem WR",
-        "ET 5090.4 Tandem WR",
-        "ET 5108.4 Tandem WR",
-        "ET 5144.4 Tandem WR",
-        "ET 5179.4 Tandem WR",
-        "ET 5222.4 Tandem WR",
-        "ET 5144.4 Tandem",
-        "ET 5179.4 Tandem",
-        "ET 5222.4 Tandem",
-        None,
-    ]
-    return aI110[int(str_vals[0])] if str_vals[0] else ""
-
-
-def _parse_sn(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    assert len(self.tags) == 2
-    sn1 = int(str_vals[0])
-    sn2 = int(str_vals[1])
-    s1 = "WE" if math.floor(sn1 / 1000) > 0 else "00"  # pylint: disable=invalid-name
-    s2 = (sn1 - 1000 if math.floor(sn1 / 1000) > 0 else sn1)  # pylint: disable=invalid-name
-    s2 = "0" + str(s2) if s2 < 10 else s2  # pylint: disable=invalid-name
-    return str(s1) + str(s2) + str(sn2)
-
-
-def _parse_datetime(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    int_vals = list(map(int, str_vals))
-    int_vals[0] = int_vals[0] + 2000
-    next_day = False
-    if int_vals[3] == 24:
-        int_vals[3] = 0
-        next_day = True
-
-    dt_val = datetime(*int_vals)
-    return dt_val + timedelta(days=1) if next_day else dt_val
-
-
-def _parse_time_hhmm(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    int_vals = list(map(int, str_vals))
-    dt = time(hour=int_vals[0], minute=int_vals[1])
-    return dt
-
-
-def _parse_status(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    assert len(self.tags) == 1
-    if str_vals[0] == "0":
-        return "off"
-    elif str_vals[0] == "1":
-        return "on"
-    elif str_vals[0] == "2":
-        return "disabled"
-    else:
-        return "Error"
-
-
-def _parse_state(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    assert len(self.tags) == 1
-    if str_vals[0] == "0":
-        return "off"
-    elif str_vals[0] == "1":
-        return "auto"
-    elif str_vals[0] == "2":
-        return "manual"
-    else:
-        return "Error"
-
-
-def _write_state(self, value, et_values):
-    assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    assert ecotouch_tag[0] in ["I"]
-    if value == "off":
-        et_values[ecotouch_tag] = "0"
-    elif value == "auto":
-        et_values[ecotouch_tag] = "1"
-    elif value == "manual":
-        et_values[ecotouch_tag] = "2"
-
-
-# a very simple "find first key" of dict method...
-def _get_key_from_value(a_dict: dict, value_to_find):
-    keys = [k for k, v in a_dict.items() if v == value_to_find]
-    if keys:
-        return keys[0]
-    return None
-
-
-def _parse_heat_mode(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
-    assert len(self.tags) == 1
-    intVal = int(str_vals[0])
-    if intVal >= 0 and intVal <= len(HEATING_MODES):
-        return HEATING_MODES[intVal]
-    else:
-        return "Error"
-
-
-def _write_heat_mode(self, value, et_values):
-    assert len(self.tags) == 1
-    ecotouch_tag = self.tags[0]
-    assert ecotouch_tag[0] in ["I"]
-    index = _get_key_from_value(HEATING_MODES, value)
-    if index is not None:
-        et_values[ecotouch_tag] = str(index)
-
-
-def _write_datetime(tag, value, et_values):
-    assert isinstance(value, datetime)
-    vals = [
-        str(val)
-        for val in [
-            value.year % 100,
-            value.month,
-            value.day,
-            value.hour,
-            value.minute,
-            value.second,
-        ]
-    ]
-    # check if result is the same
-    # for i in range(len(tag.tags)):
-    #     et_values[tag.tags[i]] = vals[i]
-    for i, tags in enumerate(tag.tags):
-        et_values[tags] = vals[i]
-
-
-def _write_time_hhmm(tag, value, et_values):
-    assert isinstance(value, time)
-    vals = [
-        str(val)
-        for val in [
-            value.hour,
-            value.minute,
-        ]
-    ]
-    for i, tags in enumerate(tag.tags):
-        et_values[tags] = vals[i]
-
-
-class StatusException(Exception):
-    """A Status Exception."""
-
-    # pass
 
 
 class InvalidResponseException(Exception):
@@ -959,21 +25,10 @@ class InvalidResponseException(Exception):
     # pass
 
 
-class InvalidValueException(Exception):
-    """A InvalidValueException."""
+class StatusException(Exception):
+    """A Status Exception."""
 
     # pass
-
-
-class TagData(NamedTuple):
-    """TagData Class"""
-
-    tags: Collection[str]
-    unit: str = None
-    writeable: bool = False
-    read_function: Callable = _parse_value_default
-    write_function: Callable = _write_value_default
-    bit: int = None
 
 
 class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
@@ -983,14 +38,14 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     HOLIDAY_START_TIME = TagData(
         ["I1254", "I1253", "I1252", "I1250", "I1251"],
         writeable=True,
-        read_function=_parse_datetime,
-        write_function=_write_datetime,
+        decode_function=TagData._decode_datetime,
+        encode_function=TagData._encode_datetime,
     )
     HOLIDAY_END_TIME = TagData(
         ["I1259", "I1258", "I1257", "I1255", "I1256"],
         writeable=True,
-        read_function=_parse_datetime,
-        write_function=_write_datetime,
+        decode_function=TagData._decode_datetime,
+        encode_function=TagData._encode_datetime,
     )
     TEMPERATURE_OUTSIDE = TagData(["A1"], "°C")
     TEMPERATURE_OUTSIDE_1H = TagData(["A2"], "°C")
@@ -1054,8 +109,8 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
 
     # TEMPERATURE_HEATING_BUFFERTANK_ROOM_SETPOINT = TagData(["A413"], "°C", writeable=True)
 
-    TEMPERATURE_HEATING_MODE = TagData(["I265"], writeable=True, read_function=_parse_heat_mode,
-                                       write_function=_write_heat_mode)
+    TEMPERATURE_HEATING_MODE = TagData(["I265"], writeable=True, decode_function=TagData._decode_heat_mode,
+                                       encode_function=TagData._encode_heat_mode)
     # this A32 value is not visible in the GUI - and IMHO (marq24) there should
     # be no way to set the heating temperature directly - use the values of the
     # 'TEMPERATURE_HEATING_HC' instead (HC = HeatCurve)
@@ -1078,8 +133,8 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_WATER_DISINFECTION = TagData(["A168"], "°C", writeable=True)
     SCHEDULE_WATER_DISINFECTION_START_TIME = TagData(["I505", "I506"],
                                                      writeable=True,
-                                                     read_function=_parse_time_hhmm,
-                                                     write_function=_write_time_hhmm,
+                                                     decode_function=TagData._decode_time_hhmm,
+                                                     encode_function=TagData._encode_time_hhmm,
                                                      )
     # SCHEDULE_WATER_DISINFECTION_START_HOUR = TagData(["I505"], "", writeable=True)
     # SCHEDULE_WATER_DISINFECTION_START_MINUTE = TagData(["I506"], "", writeable=True)
@@ -1162,9 +217,9 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_COLLECTOR = TagData(["A42"], "°C")  # aktuelle Temperatur Kollektor
     TEMPERATURE_FLOW2 = TagData(["A43"], "°C")  # aktuelle Temperatur Vorlauf
 
-    VERSION_CONTROLLER = TagData(["I1", "I2"], writeable=False, read_function=_parse_fw)
+    VERSION_CONTROLLER = TagData(["I1", "I2"], writeable=False, decode_function=TagData._decode_ro_fw)
     # VERSION_CONTROLLER_BUILD = TagData(["I2"])
-    VERSION_BIOS = TagData(["I3"], writeable=False, read_function=_parse_bios)
+    VERSION_BIOS = TagData(["I3"], writeable=False, decode_function=TagData._decode_ro_bios)
     DATE_DAY = TagData(["I5"])
     DATE_MONTH = TagData(["I6"])
     DATE_YEAR = TagData(["I7"])
@@ -1175,11 +230,16 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
     OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
     OPERATING_HOURS_SOLAR = TagData(["I22"])
-    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_POOL = TagData(["I33"], read_function=_parse_state, write_function=_write_state, writeable=True)
-    ENABLE_PV = TagData(["I41"], read_function=_parse_state, write_function=_write_state, writeable=True)
+    ENABLE_HEATING = TagData(["I30"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                             writeable=True)
+    ENABLE_COOLING = TagData(["I31"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                             writeable=True)
+    ENABLE_WARMWATER = TagData(["I32"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                               writeable=True)
+    ENABLE_POOL = TagData(["I33"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                          writeable=True)
+    ENABLE_PV = TagData(["I41"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                        writeable=True)
     STATE_SOURCEPUMP = TagData(["I51"], bit=0)
     STATE_HEATINGPUMP = TagData(["I51"], bit=1)
     STATE_EVD = TagData(["I51"], bit=2)
@@ -1195,12 +255,12 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     ALARM = TagData(["I52"])
     INTERRUPTIONS = TagData(["I53"])
     STATE_SERVICE = TagData(["I135"])
-    STATUS_HEATING = TagData(["I137"], read_function=_parse_status)
-    STATUS_COOLING = TagData(["I138"], read_function=_parse_status)
-    STATUS_WATER = TagData(["I139"], read_function=_parse_status)
-    INFO_SERIES = TagData(["I105"], read_function=_parse_series)
-    INFO_ID = TagData(["I110"], read_function=_parse_id)
-    INFO_SERIAL = TagData(["I114", "I115"], writeable=False, read_function=_parse_sn)
+    STATUS_HEATING = TagData(["I137"], decode_function=TagData._decode_ro_status)
+    STATUS_COOLING = TagData(["I138"], decode_function=TagData._decode_ro_status)
+    STATUS_WATER = TagData(["I139"], decode_function=TagData._decode_ro_status)
+    INFO_SERIES = TagData(["I105"], decode_function=TagData._decode_ro_series)
+    INFO_ID = TagData(["I110"], decode_function=TagData._decode_ro_id)
+    INFO_SERIAL = TagData(["I114", "I115"], writeable=False, decode_function=TagData._decode_ro_sn)
     ADAPT_HEATING = TagData(["I263"], writeable=True)
     MANUAL_HEATINGPUMP = TagData(["I1270"])
     MANUAL_SOURCEPUMP = TagData(["I1281"])
@@ -1252,12 +312,12 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
 #
 # Class to control Waterkotte Ecotouch heatpumps.
 #
-class Ecotouch:
+class EcotouchBridge:
     """Ecotouch Class"""
 
     auth_cookies = None
 
-    def __init__(self, host, tagsPerRequest: int = 10, lc_lang: str = 'en'):
+    def __init__(self, host, tagsPerRequest: int = 10):
         self.hostname = host
         self.username = "waterkotte"
         self.password = "waterkotte"
@@ -1314,16 +374,19 @@ class Ecotouch:
 
         result = {}
         for a_eco_tag in tags:
-            str_vals = [e_values[a_tag] for a_tag in a_eco_tag.tags]
-            stat_vals = [e_status[a_tag] for a_tag in a_eco_tag.tags]
             try:
+                t_values = [e_values[a_tag] for a_tag in a_eco_tag.tags]
+                t_states = [e_status[a_tag] for a_tag in a_eco_tag.tags]
                 result[a_eco_tag] = {
-                    "value": a_eco_tag.read_function(a_eco_tag, str_vals),
-                    "status": stat_vals[0]
+                    "value": a_eco_tag.decode_function(a_eco_tag, t_values),
+                    "status": t_states[0]
                 }
             except KeyError:
-                _LOGGER.warning(
-                    f"Key Error in read_values. tagstatus:{stat_vals} tag: {a_eco_tag} val: {str_vals} e_status:{e_status} e_values:{e_values} requested tags:{tags}"
+                _LOGGER.warning(f"Key Error while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}")
+            except Exception as other_exc:
+                _LOGGER.error(
+                    f"Exception {other_exc} while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}",
+                    other_exc
                 )
         return result
 
@@ -1401,13 +464,13 @@ class Ecotouch:
                 raise InvalidValueException("tried to write to an readonly field")
 
             # converting the HA values to the final int or bools that the waterkotte understand
-            a_eco_tag.write_function(a_eco_tag, value, to_write)
+            a_eco_tag.encode_function(a_eco_tag, value, to_write)
 
             e_values, e_status = await self._write_tags(to_write.keys(), to_write.values())
 
             if e_values is not None and len(e_values) > 0:
                 _LOGGER.info(
-                    f"after _write_tags of EcotouchTag {a_eco_tag} > raw-values: {e_values} states: {e_status}")
+                    f"after _encode_tags of EcotouchTag {a_eco_tag} > raw-values: {e_values} states: {e_status}")
 
                 all_ok = True
                 for a_tag in e_status:
@@ -1416,7 +479,7 @@ class Ecotouch:
 
                 if all_ok:
                     str_vals = [e_values[a_tag] for a_tag in a_eco_tag.tags]
-                    val = a_eco_tag.read_function(a_eco_tag, str_vals)
+                    val = a_eco_tag.decode_function(a_eco_tag, str_vals)
                     if str(val) != str(value):
                         _LOGGER.error(
                             f"WRITE value does not match value that was READ: '{val}' (read) != '{value}' (write)")
@@ -1462,7 +525,7 @@ class Ecotouch:
                 response = await resp.text()  # pylint: disable=invalid-name
                 if response.startswith("#E_NEED_LOGIN"):
                     await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
-                    res = await self._write_tag(tags, value)
+                    res = await self._encode_tag(tags, value)
                     return res
                 ###
                 for tag in tags:
@@ -1494,13 +557,3 @@ class Ecotouch:
                         results[tag] = match.group("value")
 
             return results, results_status
-
-            # match = re.search(f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)", r, re.MULTILINE)  # pylint: disable=anomalous-backslash-in-string
-            # # match = re.search(r"(?:^\d+\t)(\-?\d+)", r, re.MULTILINE)
-            # if match is not None:
-            #     result[tag] = {"value": match.group(2), "status": match.group(1)}
-            #     return result
-            #     # return match.group(1)
-            # return None
-
-    # default method that reads a value based on a single tag

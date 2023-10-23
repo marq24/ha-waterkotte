@@ -1,12 +1,9 @@
 """
 Custom integration to integrate Waterkotte Heatpump with Home Assistant.
-
-For more details about this integration, please refer to
-https://github.com/pattisonmichael/waterkotte-heatpump
 """
 import asyncio
 import logging
-import json
+
 from datetime import timedelta
 from typing import List
 
@@ -30,19 +27,17 @@ from .const import (
     CONF_POLLING_INTERVAL,
     CONF_TAGS_PER_REQUEST,
     CONF_SYSTEMTYPE,
-    DOMAIN, NAME,
+    DOMAIN,
     PLATFORMS,
+    NAME,
     STARTUP_MESSAGE,
 )
 
 from . import service as waterkotteservice
 
-# from .const import SENSORS
-
+_LOGGER: logging.Logger = logging.getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=60)
 COORDINATOR = None
-_LOGGER: logging.Logger = logging.getLogger(__package__)
-LANG = None
 tags = []
 
 
@@ -51,19 +46,6 @@ async def async_setup(
 ):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
-
-
-def load_translation(hass):
-    """Load correct language file or default to english"""
-    global LANG  # pylint: disable=global-statement
-    basepath = __file__[:-11]
-    file = f"{basepath}translations/heatpump.{hass.config.language.lower()}.json"
-    try:
-        with open(file) as f:  # pylint: disable=unspecified-encoding,invalid-name
-            LANG = json.load(f)
-    except:  # pylint: disable=unspecified-encoding,bare-except,invalid-name
-        with open(f"{basepath}translations/heatpump.en.json") as f:
-            LANG = json.load(f)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -105,8 +87,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     #     hw_version=deviceEntry.hw_version,
     # )
 
-    ###
-    load_translation(hass)
     username = entry.options.get(CONF_USERNAME, entry.data.get(CONF_USERNAME))
     password = entry.options.get(CONF_PASSWORD, entry.data.get(CONF_PASSWORD))
     host = entry.options.get(CONF_HOST, entry.data.get(CONF_HOST))
@@ -118,23 +98,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     session = async_get_clientsession(hass)
     client = WaterkotteHeatpumpApiClient(
-        host, username, password, session, tags, systemType=system_type, tagsPerRequest=tags_per_request,
-        lc_lang=hass.config.language.lower()
+        host=host,
+        username=username,
+        password=password,
+        session=session,
+        tags=tags,
+        systemType=system_type,
+        tagsPerRequest=tags_per_request
     )
     if COORDINATOR is not None:
         coordinator = WaterkotteHeatpumpDataUpdateCoordinator(
             hass,
             client=client,
             config_entry=entry,
-            data=COORDINATOR.data,
-            lang=LANG
+            data=COORDINATOR.data
         )
     else:
         coordinator = WaterkotteHeatpumpDataUpdateCoordinator(
             hass,
             config_entry=entry,
-            client=client,
-            lang=LANG
+            client=client
         )
 
     if not coordinator.last_update_success:
@@ -159,6 +142,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.services.async_register(DOMAIN, "set_disinfection_start_time", service.set_disinfection_start_time)
     return True
 
+
 @staticmethod
 def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[EcotouchTag]:
     _LOGGER.info(f"(re)build tag list...")
@@ -169,7 +153,7 @@ def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[Ecotouc
             # we query from the HA entity registry all entities that are created by this
             # 'config_entry' -> we use here just default api calls [no more hacks!]
             for entity in EntityReg.async_entries_for_config_entry(registry=a_entity_reg,
-                                                            config_entry_id=config_entry_id):
+                                                                   config_entry_id=config_entry_id):
                 if entity.disabled is False:
                     a_temp_tag = (entity.unique_id)
                     _LOGGER.info(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
@@ -180,6 +164,7 @@ def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[Ecotouc
                         _LOGGER.warning(f"Tag: {a_temp_tag} not found in EcotouchTag.__members__ !")
     return tags
 
+
 class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the API."""
 
@@ -188,8 +173,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
             hass: HomeAssistant,
             client: WaterkotteHeatpumpApiClient,
             config_entry: ConfigEntry = None,
-            data=None,
-            lang=None,
+            data=None
     ) -> None:
         """Initialize."""
         self.api = client
@@ -202,7 +186,6 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
             self.data = data
 
         self.__hass = hass
-        self.lang = lang
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
     async def _async_update_data(self):
@@ -210,7 +193,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             await self.api.login()
             _LOGGER.info(f"number of tags to query: {len(self.api.tags)}")
-            #if len(self.api.tags) == 0:
+            # if len(self.api.tags) == 0:
             #    tags = self.generateTagList(self.__hass, self._config_entry.entry_id)
             #    self.api.tags = tags
 

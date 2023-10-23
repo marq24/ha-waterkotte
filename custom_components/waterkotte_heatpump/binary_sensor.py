@@ -2,17 +2,13 @@
 import logging
 from homeassistant.components.binary_sensor import BinarySensorEntity, BinarySensorDeviceClass
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
-# from homeassistant.const import ATTR_FRIENDLY_NAME
 
-# from .const import DOMAIN
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 from .entity import WaterkotteHeatpumpEntity
 
-# from .ecotouch import EcotouchTag
-from .const import DOMAIN  # , NAME, CONF_FW, CONF_BIOS, CONF_IP
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-_LANG = None
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
@@ -207,8 +203,6 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_ad
     """Set up the Waterkotte binary_sensor platform."""
     _LOGGER.debug("Binary_Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    global _LANG
-    _LANG = coordinator.lang
     async_add_devices([WaterkotteHeatpumpBinarySensor(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 
@@ -226,12 +220,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if SENSOR_TYPES[self._type][8] in _LANG:
-            self._attr_name = _LANG[SENSOR_TYPES[self._type][8]]
-        else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][8]) + " Binary-Sensor not found in translation")
-            self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
-
+        self._attr_translation_key = self._type.lower()
         super().__init__(hass_data, entry)
 
     @property

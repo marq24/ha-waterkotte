@@ -1,10 +1,8 @@
 """Sensor platform for Waterkotte Heatpump."""
 import logging
 
-# from homeassistant.helpers.entity import Entity, EntityCategory  # , DeviceInfo
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType, StateType
-from datetime import datetime, date, time
-from decimal import Decimal
+from datetime import time
 
 from homeassistant.const import (
     PERCENTAGE,
@@ -26,7 +24,6 @@ from .entity import WaterkotteHeatpumpEntity
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
-_LANG = None
 
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
@@ -632,8 +629,6 @@ async def async_setup_entry(
     """Set up the Waterkotte sensor platform."""
     _LOGGER.debug("Sensor async_setup_entry")
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    global _LANG
-    _LANG = coordinator.lang
     async_add_devices([WaterkotteHeatpumpSensor(entry, coordinator, sensor_type)
                        for sensor_type in SENSOR_TYPES])
 
@@ -649,18 +644,8 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
+        self._attr_translation_key = self._type.lower()
 
-        # if the 'name' of the Sensor is matching the TAG, we use the NEW translation code!
-        if self._type == SENSOR_TYPES[self._type][0]:
-            self._attr_translation_key = f"{sensor_type.lower()}"
-        else:
-            if self.eco_tag.tags[0] in _LANG:
-                self._attr_name = _LANG[self.eco_tag.tags[0]]
-            else:
-                _LOGGER.warning(f"{self.eco_tag.tags[0]} Sensor not found in translation")
-                self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
-
-        # these are the NEW-Sensors, where the translation comes from the "translations" json files...
         if len(SENSOR_TYPES[self._type]) > 8:
             self._attr_state_class = SENSOR_TYPES[self._type][8]
             #self._attr_suggested_display_precision = 3

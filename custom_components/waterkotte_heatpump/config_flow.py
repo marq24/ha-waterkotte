@@ -10,6 +10,8 @@ from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.selector import selector
 
 from .const import (
+    DOMAIN,
+    TITLE,
     CONF_POLLING_INTERVAL,
     CONF_TAGS_PER_REQUEST,
     CONF_BIOS,
@@ -23,10 +25,10 @@ from .const import (
     CONF_PASSWORD,
     CONF_USERNAME,
 )
-from .const import DOMAIN, TITLE
 
 from .api import WaterkotteHeatpumpApiClient
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag, EASYCON, ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import EASYCON, ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -113,7 +115,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password, host, systemType, tagsPerRequest):
+    async def _test_credentials(self, username, password, host, system_type, tags_per_request):
         """Return true if credentials is valid."""
         try:
             hasPort = host.find(":")
@@ -124,7 +126,13 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
             session = async_create_clientsession(self.hass)
             client = WaterkotteHeatpumpApiClient(
-                host, username, password, session, None, systemType=systemType, tagsPerRequest=tagsPerRequest
+                host=host,
+                username=username,
+                password=password,
+                session=session,
+                tags=None,
+                systemType=system_type,
+                tagsPerRequest=tags_per_request
             )
             await client.login()
             init_tags = [
@@ -141,8 +149,8 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             self._ID = str(ret[EcotouchTag.INFO_ID]["value"])
             self._series = str(ret[EcotouchTag.INFO_SERIES]["value"])
             self._serial = str(ret[EcotouchTag.INFO_SERIAL]["value"])
-            self._system_type = systemType
-            self._tags_per_request = tagsPerRequest
+            self._system_type = system_type
+            self._tags_per_request = tags_per_request
             _LOGGER.info(f"successfully validated login -> result: {ret}")
             return True
 

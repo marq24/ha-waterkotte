@@ -2,25 +2,13 @@
 from unittest.mock import patch
 
 import pytest
-from custom_components.waterkotte_heatpump.const import (
-    BINARY_SENSOR,
-)
-from custom_components.waterkotte_heatpump.const import (
-    DOMAIN,
-)
-from custom_components.waterkotte_heatpump.const import (
-    PLATFORMS,
-)
-from custom_components.waterkotte_heatpump.const import (
-    SENSOR,
-)
-from custom_components.waterkotte_heatpump.const import (
-    SWITCH,
-)
+
 from homeassistant import config_entries
 from homeassistant import data_entry_flow
+
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from waterkotte_heatpump import DOMAIN, PLATFORMS
 from .const import MOCK_CONFIG
 
 
@@ -106,7 +94,7 @@ async def test_options_flow(hass):
     # Enter some fake data into the form
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        user_input={platform: platform != SENSOR for platform in PLATFORMS},
+        user_input={platform: platform != "sensor" for platform in PLATFORMS},
     )
 
     # Verify that the flow finishes
@@ -114,4 +102,4 @@ async def test_options_flow(hass):
     assert result["title"] == "test_username"
 
     # Verify that the options were updated
-    assert entry.options == {BINARY_SENSOR: True, SENSOR: False, SWITCH: True}
+    assert entry.options == {"binary_sensor": True, "sensor": False, "switch": True}

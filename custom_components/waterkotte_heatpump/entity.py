@@ -1,9 +1,12 @@
 """WaterkotteHeatpumpEntity class"""
+import logging
+
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.entity import DeviceInfo, Entity, EntityDescription
-from .const import DOMAIN
+from .const import DOMAIN, CONF_SERIAL
 
 SENSOR_TYPES = []
+_LOGGER = logging.getLogger(__name__)
 
 
 class WaterkotteHeatpumpEntity(CoordinatorEntity):
@@ -17,7 +20,7 @@ class WaterkotteHeatpumpEntity(CoordinatorEntity):
     @property
     def unique_id(self):
         """Return a unique ID to use for this entity."""
-        return self.config_entry.data['serial']
+        return self.config_entry.data[CONF_SERIAL]
         # return self.config_entry.entry_id
 
     @property
@@ -25,17 +28,21 @@ class WaterkotteHeatpumpEntity(CoordinatorEntity):
         """Return true."""
         return True
 
-    @property
-    def device_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            # "attribution": ATTRIBUTION,
-            "id": str(self.coordinator.data.get("id")),
-            "integration": DOMAIN,
-        }
+    # 1. renamed from 'device_state_attributes' to 'extra_state_attributes'
+    # 2. replaced self.coordinator.data.get("id") with config_entry source - since there is no 'id' in the data!
+    # 3. completely removed (by marq24) - IMHO nobody needs additional attributes for the sensors that is static!
+    # @property
+    # def extra_state_attributes(self):
+    #    return {
+    #        # "attribution": ATTRIBUTION,
+    #        "id": str(self.config_entry.data[CONF_ID]),
+    #        "integration": DOMAIN,
+    #    }
+
 
 class WaterkotteHeatpumpEntity2(Entity):
     _attr_should_poll = False
+    _attr_has_entity_name = True
 
     def __init__(self, coordinator, description: EntityDescription) -> None:
         self.coordinator = coordinator
