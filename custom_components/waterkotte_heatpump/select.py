@@ -128,17 +128,17 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
             #    options = SENSOR_TYPES[self._type][6]
             # )
         else:
-            if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-                self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+            if self.eco_tag.tags[0] in _LANG:
+                self._attr_name = _LANG[self.eco_tag.tags[0]]
             else:
-                _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Select not found in translation")
+                _LOGGER.warning(f"{self.eco_tag.tags[0]} Select not found in translation")
                 self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
+
 
     @property
     def current_option(self) -> str | None:
         try:
-            sensor = SENSOR_TYPES[self._type]
-            value = self._coordinator.data[sensor[1]]["value"]
+            value = self._coordinator.data[self.eco_tag]["value"]
             if value is None or value == "":
                 value = 'unknown'
         except KeyError:
@@ -156,14 +156,12 @@ class WaterkotteHeatpumpSelect(SelectEntity, WaterkotteHeatpumpEntity):
     async def async_select_option(self, option: str) -> None:  # pylint: disable=unused-argument
         """Turn on the switch."""
         try:
-            # print(option)
-            # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], option)
+            await self._coordinator.async_write_tag(self.eco_tag, option)
         except ValueError:
             return "unavailable"
 
     @property
-    def tag(self):
+    def eco_tag(self):
         """Return a unique ID to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 

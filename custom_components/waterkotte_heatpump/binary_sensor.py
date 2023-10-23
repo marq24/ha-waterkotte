@@ -235,7 +235,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         super().__init__(hass_data, entry)
 
     @property
-    def tag(self):
+    def eco_tag(self):
         """Return a tag to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 
@@ -243,15 +243,14 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
     def is_on(self) -> bool | None:
         try:
             value = None
-            eco_tag = SENSOR_TYPES[self._type][1]
-            if eco_tag in self._coordinator.data:
-                value_and_state = self._coordinator.data[eco_tag]
+            if self.eco_tag in self._coordinator.data:
+                value_and_state = self._coordinator.data[self.eco_tag]
                 if "value" in value_and_state:
                     value = value_and_state["value"]
                 else:
-                    _LOGGER.info(f"is_on for {self._type} could not read value from data: {value_and_state}")
+                    _LOGGER.info(f"is_on: for {self._type} could not read value from data: {value_and_state}")
             else:
-                _LOGGER.info(f"is_on for {self._type} could not be found in available data: {self._coordinator.data}")
+                _LOGGER.info(f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
             if value is None or value == "":
                 value = None
         except KeyError:
@@ -276,17 +275,16 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
     def icon(self):
         """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
-            sensor = SENSOR_TYPES[self._type]
             try:
-                if self._type == "holiday_enabled" and 'value' in self._coordinator.data[sensor[1]]:
-                    if self._coordinator.data[sensor[1]]["value"] is True:
+                if self._type == "holiday_enabled" and 'value' in self._coordinator.data[self.eco_tag]:
+                    if self._coordinator.data[self.eco_tag]["value"] is True:
                         return "mdi:calendar-check"
                     else:
                         return "mdi:calendar-blank"
                 else:
                     return None
             except KeyError:
-                _LOGGER.warning(f"KeyError in binary_sensor.icon: should have value? data:{self._coordinator.data[sensor[1]]}")  # pylint: disable=line-too-long
+                _LOGGER.warning(f"KeyError in binary_sensor.icon: should have value? data:{self._coordinator.data[self.eco_tag]}")  # pylint: disable=line-too-long
         return SENSOR_TYPES[self._type][4]
 
     @property

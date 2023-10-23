@@ -654,13 +654,13 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         if self._type == SENSOR_TYPES[self._type][0]:
             self._attr_translation_key = f"{sensor_type.lower()}"
         else:
-            if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-                self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+            if self.eco_tag.tags[0] in _LANG:
+                self._attr_name = _LANG[self.eco_tag.tags[0]]
             else:
-                _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0])+" Sensor not found in translation")
+                _LOGGER.warning(f"{self.eco_tag.tags[0]} Sensor not found in translation")
                 self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
 
-        # this are the NEW-Sensors, where the translation comes from the "translations" json files...
+        # these are the NEW-Sensors, where the translation comes from the "translations" json files...
         if len(SENSOR_TYPES[self._type]) > 8:
             self._attr_state_class = SENSOR_TYPES[self._type][8]
             #self._attr_suggested_display_precision = 3
@@ -682,18 +682,15 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
     #SENSOR_TYPES['x'][8] => SensorState_class -> default is MEASUREMENT
 
     @property
-    def tag(self):
+    def eco_tag(self):
         """Return a unique ID to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        # result = ""
-        # print(self._coordinator.data)
         try:
-            sensor = SENSOR_TYPES[self._type]
-            value = self._coordinator.data[sensor[1]]["value"]
+            value = self._coordinator.data[self.eco_tag]["value"]
             if value is None or value == "":
                 value = "unknown"
             else:

@@ -119,10 +119,10 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-            self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+        if self.eco_tag.tags[0] in _LANG:
+            self._attr_name = _LANG[self.eco_tag.tags[0]]
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Switch not found in translation")
+            _LOGGER.warning(f"{self.eco_tag.tags[0]} Switch not found in translation")
             self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
 
         super().__init__(hass_data, entry)
@@ -135,27 +135,17 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""
-        # await self.coordinator.api.async_set_title("bar")
-        # await self.coordinator.async_request_refresh()
         try:
-            # print(option)
-            # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], True)
-            sensor = SENSOR_TYPES[self._type]
-            return self._coordinator.data[sensor[1]]["value"]
+            await self._coordinator.async_write_tag(self.eco_tag, True)
+            return self._coordinator.data[self.eco_tag]["value"]
         except ValueError:
             return "unavailable"
 
     async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
         """Turn off the switch."""
-        # await self.coordinator.api.async_set_title("foo")
-        # await self.coordinator.async_request_refresh()
         try:
-            # print(option)
-            # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], False)
-            sensor = SENSOR_TYPES[self._type]
-            return self._coordinator.data[sensor[1]]["value"]
+            await self._coordinator.async_write_tag(self.eco_tag, False)
+            return self._coordinator.data[self.eco_tag]["value"]
         except ValueError:
             return "unavailable"
 
@@ -163,15 +153,14 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     def is_on(self) -> bool | None:
         try:
             value = None
-            eco_tag = SENSOR_TYPES[self._type][1]
-            if eco_tag in self._coordinator.data:
-                value_and_state = self._coordinator.data[eco_tag]
+            if self.eco_tag in self._coordinator.data:
+                value_and_state = self._coordinator.data[self.eco_tag]
                 if "value" in value_and_state:
                     value = value_and_state["value"]
                 else:
-                    _LOGGER.info(f"is_on for {self._type} could not read value from data: {value_and_state}")
+                    _LOGGER.info(f"is_on: for {self._type} could not read value from data: {value_and_state}")
             else:
-                _LOGGER.info(f"is_on for {self._type} could not be found in available data: {self._coordinator.data}")
+                _LOGGER.info(f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
             if value is None or value == "":
                 value = None
         except KeyError:
@@ -182,7 +171,7 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         return value
 
     @property
-    def tag(self):
+    def eco_tag(self):
         """Return a unique ID to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 
@@ -190,17 +179,16 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     def icon(self):
         """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
-            sensor = SENSOR_TYPES[self._type]
             try:
-                if (self._type == "holiday_enabled" and sensor[1] in self._coordinator.data):
-                    if self._coordinator.data[sensor[1]]["value"] is True:
+                if (self._type == "holiday_enabled" and self.eco_tag in self._coordinator.data):
+                    if self._coordinator.data[self.eco_tag]["value"] is True:
                         return "mdi:calendar-check"
                     else:
                         return "mdi:calendar-blank"
                 else:
                     return None
             except KeyError:
-                _LOGGER.warning(f"KeyError in switch.icon: should have value? data:{self._coordinator.data[sensor[1]]}")
+                _LOGGER.warning(f"KeyError in switch.icon: should have value? data:{self._coordinator.data[self.eco_tag]}")
             except TypeError:
                 return None
         return SENSOR_TYPES[self._type][4]

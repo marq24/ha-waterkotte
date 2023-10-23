@@ -484,11 +484,12 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
         self._attr_unique_id = sensor_type
         self._entry_data = entry.data
         self._device_id = entry.entry_id
-        if SENSOR_TYPES[self._type][1].tags[0] in _LANG:
-            self._attr_name = _LANG[SENSOR_TYPES[self._type][1].tags[0]]
+        if self.eco_tag.tags[0] in _LANG:
+            self._attr_name = _LANG[self.eco_tag.tags[0]]
         else:
-            _LOGGER.warning(str(SENSOR_TYPES[self._type][1].tags[0]) + " Number not found in translation")
+            _LOGGER.warning(f"{self.eco_tag.tags[0]} Number not found in translation")
             self._attr_name = f"{SENSOR_TYPES[self._type][0]}"
+
 
         super().__init__(hass_data, entry)
 
@@ -497,13 +498,12 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
         # this will be called, if the value is READ -> and so the
         # data will be converted to the display value
         try:
-            sensor = SENSOR_TYPES[self._type]
-            value = self._coordinator.data[sensor[1]]["value"]
+            value = self._coordinator.data[self.eco_tag]["value"]
             if value is None or value == "":
                 return "unknown"
-            if str(sensor[1].name).upper().endswith("_ADJUST"):
+            if str(self.eco_tag.name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
-            # if(sensor[1][0][0][0] == 'I'):
+            # if(self.tag[0][0][0] == 'I'):
             #    _LOGGER.warning("native_value "+str(value))
         except KeyError:
             return "unknown"
@@ -515,19 +515,16 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
     async def async_set_native_value(self, value: float) -> None:
         """Turn on the switch."""
         try:
-            # print(option)
-            # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            sensor = SENSOR_TYPES[self._type]
-            if str(sensor[1].name).upper().endswith("_ADJUST"):
+            if str(self.eco_tag.name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP.index(value)
-            if sensor[1][0][0][0] == 'I':
+            if self.eco_tag[0][0][0] == 'I':
                 value = int(value)
-            await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
+            await self._coordinator.async_write_tag(self.eco_tag, value)
         except ValueError:
             return "unavailable"
 
     @property
-    def tag(self):
+    def eco_tag(self):
         """Return a unique ID to use for this entity."""
         return SENSOR_TYPES[self._type][1]
 
