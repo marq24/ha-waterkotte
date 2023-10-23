@@ -245,11 +245,14 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         # return self.coordinator.data.get("title", "") == "foo"
         try:
             sensor = SENSOR_TYPES[self._type]
-            value = self._coordinator.data[sensor[1]]["value"]
+            if sensor[1] in self._coordinator.data:
+                value_and_state = self._coordinator.data[sensor[1]]
+                if "value" in value_and_state:
+                    value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 value = None
         except KeyError:
-            _LOGGER.warning(f"is_on caused KeyError for: {value}")
+            _LOGGER.warning(f"is_on caused KeyError for: {SENSOR_TYPES[self._type]}")
             value = None
         except TypeError:
             return None
@@ -280,7 +283,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
                 else:
                     return None
             except KeyError:
-                _LOGGER.warning(f"KeyError in Binary_sensor.icon: should have value? data:{self._coordinator.data[sensor[1]]}")  # pylint: disable=line-too-long
+                _LOGGER.warning(f"KeyError in binary_sensor.icon: should have value? data:{self._coordinator.data[sensor[1]]}")  # pylint: disable=line-too-long
         return SENSOR_TYPES[self._type][4]
 
     @property

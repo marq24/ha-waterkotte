@@ -165,11 +165,14 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
         # return self.coordinator.data.get("title", "") == "foo"
         try:
             sensor = SENSOR_TYPES[self._type]
-            value = self._coordinator.data[sensor[1]]["value"]
+            if sensor[1] in self._coordinator.data:
+                value_and_state = self._coordinator.data[sensor[1]]
+                if "value" in value_and_state:
+                    value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 value = None
         except KeyError:
-            _LOGGER.warning(f"is_on caused KeyError for: {value}")
+            _LOGGER.warning(f"is_on caused KeyError for: {SENSOR_TYPES[self._type]}")
             value = None
         except TypeError:
             return None
