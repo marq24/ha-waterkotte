@@ -161,18 +161,21 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
 
     @property
     def is_on(self) -> bool | None:
-        """Return true if the binary_sensor is on."""
-        # return self.coordinator.data.get("title", "") == "foo"
         try:
-            sensor = SENSOR_TYPES[self._type]
-            if sensor[1] in self._coordinator.data:
-                value_and_state = self._coordinator.data[sensor[1]]
+            value = None
+            eco_tag = SENSOR_TYPES[self._type][1]
+            if eco_tag in self._coordinator.data:
+                value_and_state = self._coordinator.data[eco_tag]
                 if "value" in value_and_state:
-                    value = self._coordinator.data[sensor[1]]["value"]
+                    value = value_and_state["value"]
+                else:
+                    _LOGGER.info(f"is_on for {self._type} could not read value from data: {value_and_state}")
+            else:
+                _LOGGER.info(f"is_on for {self._type} could not be found in available data: {self._coordinator.data}")
             if value is None or value == "":
                 value = None
         except KeyError:
-            _LOGGER.warning(f"is_on caused KeyError for: {SENSOR_TYPES[self._type]}")
+            _LOGGER.warning(f"is_on caused KeyError for: {self._type}")
             value = None
         except TypeError:
             return None

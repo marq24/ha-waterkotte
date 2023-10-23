@@ -696,9 +696,9 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 value = "unknown"
-
-            if self._attr_selfimplemented_display_precision is not None:
-                value = round(float(value), self._attr_selfimplemented_display_precision)
+            else:
+                if self._attr_selfimplemented_display_precision is not None:
+                    value = round(float(value), self._attr_selfimplemented_display_precision)
         except KeyError:
             value = "unknown"
         except TypeError:
