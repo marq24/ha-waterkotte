@@ -1,4 +1,5 @@
 """ ecotouch main module"""
+import asyncio
 import aiohttp
 import re
 import logging
@@ -27,6 +28,12 @@ class InvalidResponseException(Exception):
 
 class StatusException(Exception):
     """A Status Exception."""
+
+    # pass
+
+
+class TooManyUsersException(StatusException):
+    """A TooManyUsers Exception."""
 
     # pass
 
@@ -343,10 +350,17 @@ class EcotouchBridge:
             async with response:
                 assert response.status == 200
                 content = await response.text()
-                # tc = content.replace("\n", "<nl>").replace("\r", "<cr>")
-                _LOGGER.info(f"LOGIN status:{response.status} content: {content}")
-                if self.get_status_response(content) != "S_OK":
-                    raise StatusException(f"Error while LOGIN: status:{self.get_status_response(content)}")
+
+                tc = content.replace('\n', '<nl>')
+                tc = tc.replace('\r', '<cr>')
+                _LOGGER.info(f"LOGIN status:{response.status} content: {tc}")
+
+                parsed_response = self.get_status_response(content)
+                if parsed_response != "S_OK":
+                    if parsed_response.startswith("E_TOO_MANY_USERS"):
+                        raise TooManyUsersException("TOO MANY USERS")
+                    else:
+                        raise StatusException(f"Error while LOGIN: status: {parsed_response}")
                 self.auth_cookies = response.cookies
 
     async def logout(self):
@@ -373,21 +387,24 @@ class EcotouchBridge:
         e_values, e_status = await self._read_tags(e_tags)
 
         result = {}
-        for a_eco_tag in tags:
-            try:
-                t_values = [e_values[a_tag] for a_tag in a_eco_tag.tags]
-                t_states = [e_status[a_tag] for a_tag in a_eco_tag.tags]
-                result[a_eco_tag] = {
-                    "value": a_eco_tag.decode_function(a_eco_tag, t_values),
-                    "status": t_states[0]
-                }
-            except KeyError:
-                _LOGGER.warning(f"Key Error while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}")
-            except Exception as other_exc:
-                _LOGGER.error(
-                    f"Exception {other_exc} while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}",
-                    other_exc
-                )
+        if e_values is not None and len(e_values) > 0:
+            for a_eco_tag in tags:
+                try:
+                    t_values = [e_values[a_tag] for a_tag in a_eco_tag.tags]
+                    t_states = [e_status[a_tag] for a_tag in a_eco_tag.tags]
+                    result[a_eco_tag] = {
+                        "value": a_eco_tag.decode_function(a_eco_tag, t_values),
+                        "status": t_states[0]
+                    }
+                except KeyError:
+                    _LOGGER.warning(
+                        f"Key Error while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}")
+                except Exception as other_exc:
+                    _LOGGER.error(
+                        f"Exception {other_exc} while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}",
+                        other_exc
+                    )
+
         return result
 
     #
@@ -411,13 +428,21 @@ class EcotouchBridge:
         for i in range(len(tags)):
             args[f"t{(i + 1)}"] = tags[i]
 
-        async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
+        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.hostname}")
 
+        async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
             async with session.get(f"http://{self.hostname}/cgi/readTags", params=args) as resp:
                 response = await resp.text()
                 if response.startswith("#E_NEED_LOGIN"):
-                    await self.login(self.username, self.password)
-                    return results, results_status
+                    try:
+                        await self.login(self.username, self.password)
+                        return await self._read_tags(tags=tags, results=results, results_status=results_status)
+                    except StatusException as status_exec:
+                        _LOGGER.warning(f"StatusException (_read_tags) while trying to login {status_exec}")
+                        return None, None
+
+                if response.startswith("#E_TOO_MANY_USERS"):
+                    return None
 
                 for tag in tags:
                     match = re.search(
@@ -519,14 +544,20 @@ class EcotouchBridge:
         results = {}
         results_status = {}
         # _LOGGER.info(f"requesting '{args}' [tags: {tags}, values: {value}]")
-        async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
+        async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
             async with session.get(f"http://{self.hostname}/cgi/writeTags", params=args) as resp:
                 response = await resp.text()  # pylint: disable=invalid-name
                 if response.startswith("#E_NEED_LOGIN"):
-                    await self.login(self.username, self.password)  # pylint: disable=possibly-unused-variable
-                    res = await self._encode_tag(tags, value)
-                    return res
+                    try:
+                        await self.login(self.username, self.password)
+                        return await self._write_tags(tags=tags, value=value)
+                    except StatusException as status_exec:
+                        _LOGGER.warning(f"StatusException (_write_tags) while trying to login {status_exec}")
+                        return None
+                if response.startswith("#E_TOO_MANY_USERS"):
+                    return None
+
                 ###
                 for tag in tags:
                     match = re.search(

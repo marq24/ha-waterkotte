@@ -16,7 +16,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers import device_registry as DeviceReg
 from homeassistant.helpers import entity_registry as EntityReg
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag, TooManyUsersException
 from .api import WaterkotteHeatpumpApiClient
 
 from .const import (
@@ -192,26 +192,22 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         """Update data via library."""
         try:
             await self.api.login()
-            _LOGGER.info(f"number of tags to query: {len(self.api.tags)}")
-            # if len(self.api.tags) == 0:
-            #    tags = self.generateTagList(self.__hass, self._config_entry.entry_id)
-            #    self.api.tags = tags
-
+            _LOGGER.info(f"number of entities to query: {len(self.api.tags)} (1 entity can consist of n-tags)")
             result = await self.api.async_get_data()
-            _LOGGER.info(f"number of tag-values read: {len(result)}")
+            _LOGGER.info(f"number of entity values read: {len(result)}")
 
             if self.data is None:
                 self.data = {}
+
             for a_tag_in_result in result:
-                # print(f"{key}:{tagdatas[key]}")
                 if result[a_tag_in_result]["status"] == "E_OK":
-                    # self.data.update(tagdatas[key])
-                    # self.data.update({key:tagdatas[key]})
                     self.data[a_tag_in_result] = result[a_tag_in_result]
-                    # self.data =
             return self.data
+
         except UpdateFailed as exception:
             raise UpdateFailed() from exception
+        except TooManyUsersException as too_many_users:
+            raise UpdateFailed() from too_many_users
 
     async def async_write_tag(self, tag: EcotouchTag, value):
         """Update single data"""

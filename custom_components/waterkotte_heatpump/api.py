@@ -5,7 +5,8 @@ import logging
 
 import aiohttp
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import EASYCON, ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchBridge, EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchBridge, EcotouchTag, \
+    TooManyUsersException
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.easycon import EasyconBridge
 
 TIMEOUT = 10
@@ -56,13 +57,24 @@ class WaterkotteHeatpumpApiClient:
         if self._client.auth_cookies is None:
             try:
                 await self._client.login(self._username, self._password)
+
+            except TooManyUsersException as too_may_users:
+                _LOGGER.warning(f"TooManyUsers while try to login: {too_may_users}")
+                await asyncio.sleep(30)
+                try:
+                    await self._client.login(self._username, self._password)
+                except Exception as ex1:
+                    _LOGGER.error(f"Error while RETRY login: {ex1}", ex1)
+
             except Exception as exception:  # pylint: disable=broad-except
                 _LOGGER.error(f"Error while login: {exception}", exception)
                 await asyncio.sleep(15)
                 await self._client.logout()
-                await self._client.login(self._username, self._password)
+                try:
+                    await self._client.login(self._username, self._password)
+                except Exception as ex1:
+                    _LOGGER.error(f"Error while RETRY login: {ex1}", ex1)
 
-        # return ret
     async def logout(self) -> None:
         await self._client.logout()
 
