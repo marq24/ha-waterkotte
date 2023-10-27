@@ -207,6 +207,8 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         except UpdateFailed as exception:
             raise UpdateFailed() from exception
         except TooManyUsersException as too_many_users:
+            _LOGGER.info(f"TooManyUsers response from waterkotte - waiting 30sec and then retry...")
+            await asyncio.sleep(30)
             raise UpdateFailed() from too_many_users
 
     async def async_write_tag(self, tag: EcotouchTag, value):

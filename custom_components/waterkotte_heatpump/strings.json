@@ -15,7 +15,9 @@
       "state_cooling4way": {"name": "4-way valve"},
       "status_heating": {"name": "Heating mode"},
       "status_water": {"name": "Hot water mode"},
-      "status_cooling": {"name": "Cooling mode"}
+      "status_cooling": {"name": "Cooling mode"},
+      "state_blocking_time": {"name": "Source pump"},
+      "state_test_run": {"name": "Test run"}
     },
     "number": {
       "temperature_return_setpoint": {"name": "T setpoint"},

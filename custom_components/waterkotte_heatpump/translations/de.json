@@ -15,7 +15,9 @@
       "state_cooling4way": {"name": "4-Wege Ventil"},
       "status_heating": {"name": "Heizbetrieb"},
       "status_water": {"name": "Warmwasserbetrieb"},
-      "status_cooling": {"name": "Kühlbetrieb"}
+      "status_cooling": {"name": "Kühlbetrieb"},
+      "state_blocking_time": {"name": "Quellenpumpe"},
+      "state_test_run": {"name": "Testlauf"}
     },
     "number": {
       "temperature_return_setpoint": {"name": "T Sollwert"},

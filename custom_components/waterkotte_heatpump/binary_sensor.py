@@ -190,6 +190,28 @@ SENSOR_TYPES = {
     #     None,
     #     None,
     # ],
+    "STATE_BLOCKING_TIME": [
+        "Blockingtime",
+        EcotouchTag.STATE_BLOCKING_TIME,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        "mdi:block-helper",
+        False,
+        None,
+        None,
+        "heatsrcpump"
+    ],
+    "STATE_TEST_RUN": [
+        "Testrun",
+        EcotouchTag.STATE_TEST_RUN,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        "mdi:block-helper",
+        True,
+        None,
+        None,
+        "heatsrcpump"
+    ]
 }
 
 

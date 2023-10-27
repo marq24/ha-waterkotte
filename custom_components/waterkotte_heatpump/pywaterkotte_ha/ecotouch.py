@@ -1,5 +1,4 @@
 """ ecotouch main module"""
-import asyncio
 import aiohttp
 import re
 import logging
@@ -71,6 +70,9 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_BUFFERTANK = TagData(["A16"], "°C")
     TEMPERATURE_ROOM = TagData(["A17"], "°C")
     TEMPERATURE_ROOM_1H = TagData(["A18"], "°C")
+    # TODO - CHECK... [currently no Sensors based on these tags]
+    TEMPERATURE_ROOM_TARGET = TagData(["A100"], "°C", writeable=True)
+    ROOM_INFLUENCE = TagData(["A101"], "%", writeable=True)
 
     TEMPERATURE_SOLAR = TagData(["A21"], "°C")
     TEMPERATURE_SOLAR_EXIT = TagData(["A22"], "°C")
@@ -84,8 +86,11 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     COP_COOLING = TagData(["A29"], "")
 
     # ENERGY-YEAR-BALANCE
-    COP_HEATING_YEAR = TagData(["A460"], "")
+    COP_HEATPUMP_YEAR = TagData(["A460"], "")
     COP_TOTAL_SYSTEM_YEAR = TagData(["A461"], "")
+    COP_HEATING_YEAR = TagData(["A695"])
+    COP_HOT_WATER_YEAR = TagData(["A697"])
+
     ENERGY_CONSUMPTION_TOTAL_YEAR = TagData(["A450", "A451"], "kWh")
     COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR = TagData(["A444", "A445"], "kWh")
     SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR = TagData(["A446", "A447"], "kWh")
@@ -93,7 +98,14 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     ENERGY_PRODUCTION_TOTAL_YEAR = TagData(["A458", "A459"], "kWh")
     HEATING_ENERGY_PRODUCTION_YEAR = TagData(["A452", "A453"], "kWh")
     HOT_WATER_ENERGY_PRODUCTION_YEAR = TagData(["A454", "A455"], "kWh")
+    POOL_ENERGY_PRODUCTION_YEAR = TagData(["A456", "A457"], "kWh")
     COOLING_ENERGY_YEAR = TagData(["A462", "A463"], "kWh")
+
+    # The LAST12M values for ENERGY_CONSUMPTION_TOTAL (also the individual values for compressor, sourcepump & e-heater
+    # will be calculated based on values for each month (and will be summarized in the FE))
+    # The same applies to the ENERGY_PRODUCTION_TOTAL (with the individual values for heating, hot_water & pool)
+    COP_TOTAL_SYSTEM_LAST12M = TagData(["A435"])
+    COOLING_ENERGY_LAST12M = TagData(["A436"], "kWh")
 
     # Temperature stuff
     TEMPERATURE_HEATING = TagData(["A30"], "°C")
@@ -247,6 +259,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
                           writeable=True)
     ENABLE_PV = TagData(["I41"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
                         writeable=True)
+
     STATE_SOURCEPUMP = TagData(["I51"], bit=0)
     STATE_HEATINGPUMP = TagData(["I51"], bit=1)
     STATE_EVD = TagData(["I51"], bit=2)
@@ -279,6 +292,9 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     MANUAL_COOLVALVE = TagData(["I1297"])
     MANUAL_4WAYVALVE = TagData(["I1299"])
     MANUAL_MULTIEXT = TagData(["I1319"])
+
+    STATE_BLOCKING_TIME = TagData(["D71"])
+    STATE_TEST_RUN = TagData(["D581"])
 
     # SERVICE_HEATING = TagData(["D251"])
     # SERVICE_COOLING = TagData(["D252"])
@@ -353,7 +369,7 @@ class EcotouchBridge:
 
                 tc = content.replace('\n', '<nl>')
                 tc = tc.replace('\r', '<cr>')
-                _LOGGER.info(f"LOGIN status:{response.status} content: {tc}")
+                _LOGGER.info(f"LOGIN status:{response.status} response: {tc}")
 
                 parsed_response = self.get_status_response(content)
                 if parsed_response != "S_OK":
