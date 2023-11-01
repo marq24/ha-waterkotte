@@ -53,7 +53,13 @@
       "temperature_mix3_hc_heating_norm": {"name": "T Heizkreis Norm"},
       "temperature_mix3_hc_max": {"name": "Maximale Temperatur im Mischerkreis"},
       "temperature_water_disinfection": {"name": "geforderte Temperatur"},
-      "schedule_water_disinfection_duration": {"name": "max.Laufzeit"}
+      "schedule_water_disinfection_duration": {"name": "max.Laufzeit"},
+      "temperature_pool_setpoint": {"name": "geforderte Temperatur"},
+      "temperature_pool_hysteresis": {"name": "Schaltdifferenz Sollwert"},
+      "temperature_pool_hc_limit": {"name": "T Heizgrenze"},
+      "temperature_pool_hc_target": {"name": "T Heizgrenze Soll"},
+      "temperature_pool_hc_outdoor_norm": {"name": "T Norm-Außen"},
+      "temperature_pool_hc_norm": {"name": "T Heizkreis Norm"}
     },
     "select": {
       "temperature_heating_mode": {
@@ -80,6 +86,7 @@
       "energy_production_total_year": {"name": "Thermische Energie Jahresproduktion"},
       "heating_energy_production_year": {"name": "Heizenergie Jahresproduktion"},
       "hot_water_energy_production_year": {"name": "Warmwasserenergie Jahresproduktion"},
+      "pool_energy_production_year": {"name": "Poolenergie Jahresproduktion"},
       "cooling_energy_year": {"name": "Kältearbeit im Jahr"},
       "temperature_outside": {"name": "Außentemperatur"},
       "temperature_outside_1h": {"name": "Außentemperatur 1h"},

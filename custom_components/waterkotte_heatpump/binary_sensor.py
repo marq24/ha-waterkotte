@@ -119,7 +119,7 @@ SENSOR_TYPES = {
         BinarySensorDeviceClass.RUNNING,
         None,
         "mdi:pool",
-        True,
+        False,
         None,
         None,
         "pool"

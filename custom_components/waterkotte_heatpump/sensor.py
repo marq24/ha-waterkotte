@@ -538,6 +538,17 @@ SENSOR_TYPES = {
         None,
         SensorStateClass.TOTAL_INCREASING
     ],
+    "POOL_ENERGY_PRODUCTION_YEAR":[
+        "POOL_ENERGY_PRODUCTION_YEAR",
+        EcotouchTag.POOL_ENERGY_PRODUCTION_YEAR,
+        SensorDeviceClass.ENERGY,
+        ENERGY_KILO_WATT_HOUR,
+        "mdi:pool-thermometer",
+        False,
+        None,
+        None,
+        SensorStateClass.TOTAL_INCREASING
+    ],
     "COOLING_ENERGY_YEAR":[
         "COOLING_ENERGY_YEAR",
         EcotouchTag.COOLING_ENERGY_YEAR,

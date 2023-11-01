@@ -53,7 +53,13 @@
       "temperature_mix3_hc_heating_norm": {"name": "T norm heating circle"},
       "temperature_mix3_hc_max": {"name": "Max. temperature in mixing circle"},
       "temperature_water_disinfection": {"name": "Demanded temperature"},
-      "schedule_water_disinfection_duration": {"name": "Max. runtime"}
+      "schedule_water_disinfection_duration": {"name": "Max. runtime"},
+      "temperature_pool_setpoint": {"name": "Demanded temperature"},
+      "temperature_pool_hysteresis": {"name": "Hysteresis setpoint"},
+      "temperature_pool_hc_limit": {"name": "T heating limit"},
+      "temperature_pool_hc_target": {"name": "T heating limit target"},
+      "temperature_pool_hc_outdoor_norm": {"name": "T norm outdoor"},
+      "temperature_pool_hc_norm": {"name": "T norm heating circle"}
     },
     "select": {
       "temperature_heating_mode": {
@@ -80,6 +86,7 @@
       "energy_production_total_year": {"name": "Thermal year performance"},
       "heating_energy_production_year": {"name": "Heating year performance"},
       "hot_water_energy_production_year": {"name": "Hot water year performance"},
+      "pool_energy_production_year": {"name": "Pool year performance"},
       "cooling_energy_year": {"name": "Cooling year performance"},
       "temperature_outside": {"name": "Outdoor temperature"},
       "temperature_outside_1h": {"name": "Outdoor temperature 1h"},
