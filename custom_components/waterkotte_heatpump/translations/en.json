@@ -53,7 +53,7 @@
       "status_heating": {"name": "Heating mode"},
       "status_water": {"name": "Hot water mode"},
       "status_cooling": {"name": "Cooling mode"},
-      "state_blocking_time": {"name": "Source pump"},
+      "state_blocking_time": {"name": "Blocking time"},
       "state_test_run": {"name": "Test run"}
     },
     "number": {

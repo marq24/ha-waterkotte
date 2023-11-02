@@ -16,7 +16,7 @@
       "status_heating": {"name": "Heizbetrieb"},
       "status_water": {"name": "Warmwasserbetrieb"},
       "status_cooling": {"name": "Kühlbetrieb"},
-      "state_blocking_time": {"name": "Quellenpumpe"},
+      "state_blocking_time": {"name": "Sperrzeit"},
       "state_test_run": {"name": "Testlauf"}
     },
     "number": {
