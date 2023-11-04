@@ -33,7 +33,6 @@ class StatusException(Exception):
 
 class TooManyUsersException(StatusException):
     """A TooManyUsers Exception."""
-
     # pass
 
 
@@ -335,6 +334,24 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # ENERGY_HEAT_SOURCE_PUMP = TagData("I1930")
     # ENERGY_EXTERNAL_HEATER = TagData("I1931")
 
+    # I1270 always returns 2 (here at home)
+    #I1270_HEATING_CIRCULATION_PUMP = TagData(["I1270"])
+    # D1273 "Heizungsumwäzpumpe ET 6900 Q" does not change it's value
+    #HEATING_CIRCULATION_PUMP_D1273 = TagData(["D1273"], writeable=True)
+    HEATING_CIRCULATION_PUMP_D425 = TagData(["D425"])
+    BUFFERTANK_CIRCULATION_PUMP_D377 = TagData(["D377"])
+    POOL_CIRCULATION_PUMP_D425 = TagData(["D549"])
+    MIX1_CIRCULATION_PUMP_D248 = TagData(["D248"])
+    MIX2_CIRCULATION_PUMP_D291 = TagData(["D291"])
+    MIX3_CIRCULATION_PUMP_D334 = TagData(["D334"])
+    # alternative MIX pump tags...
+    MIX1_CIRCULATION_PUMP_D563 = TagData(["D563"])
+    MIX2_CIRCULATION_PUMP_D564 = TagData(["D564"])
+    MIX3_CIRCULATION_PUMP_D565 = TagData(["D565"])
+
+    PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103 = TagData(["D1103"], writeable=True)
+    PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104 = TagData(["D1104"], writeable=True)
+
     def __hash__(self) -> int:
         return hash(self.name)
 
@@ -381,7 +398,7 @@ class EcotouchBridge:
                 parsed_response = self.get_status_response(content)
                 if parsed_response != "S_OK":
                     if parsed_response.startswith("E_TOO_MANY_USERS"):
-                        raise TooManyUsersException("TOO MANY USERS")
+                        raise TooManyUsersException("TOO_MANY_USERS")
                     else:
                         raise StatusException(f"Error while LOGIN: status: {parsed_response}")
                 self.auth_cookies = response.cookies
@@ -451,17 +468,20 @@ class EcotouchBridge:
         for i in range(len(tags)):
             args[f"t{(i + 1)}"] = tags[i]
 
-        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.hostname}")
+        # also the readTags have a timestamp in each request...
+        args["_"] = str(int(round(datetime.now().timestamp()*1000)))
 
+        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.hostname}")
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
             async with session.get(f"http://{self.hostname}/cgi/readTags", params=args) as resp:
+                _LOGGER.debug(f"requested: {resp.url}")
                 response = await resp.text()
                 if response.startswith("#E_NEED_LOGIN"):
                     try:
                         await self.login(self.username, self.password)
                         return await self._read_tags(tags=tags, results=results, results_status=results_status)
                     except StatusException as status_exec:
-                        _LOGGER.warning(f"StatusException (_read_tags) while trying to login {status_exec}")
+                        _LOGGER.warning(f"StatusException (_read_tags) while trying to login: {status_exec}")
                         return None, None
 
                 if response.startswith("#E_TOO_MANY_USERS"):
@@ -547,7 +567,7 @@ class EcotouchBridge:
         args = {}
         args["n"] = len(tags)
         args["returnValue"] = "true"
-        args["rnd"] = str(datetime.timestamp(datetime.now()))
+        args["rnd"] = str(int(round(datetime.now().timestamp()*1000)))#str(datetime.timestamp(datetime.now()))
         # for i in range(len(tags)):
         #    args[f"t{(i + 1)}"] = tags[i]
         # for i in range(len(tag.tags)):
@@ -576,7 +596,7 @@ class EcotouchBridge:
                         await self.login(self.username, self.password)
                         return await self._write_tags(tags=tags, value=value)
                     except StatusException as status_exec:
-                        _LOGGER.warning(f"StatusException (_write_tags) while trying to login {status_exec}")
+                        _LOGGER.warning(f"StatusException (_write_tags) while trying to login: {status_exec}")
                         return None
                 if response.startswith("#E_TOO_MANY_USERS"):
                     return None

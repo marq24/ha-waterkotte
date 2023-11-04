@@ -17,7 +17,14 @@
       "status_water": {"name": "Hot water mode"},
       "status_cooling": {"name": "Cooling mode"},
       "state_blocking_time": {"name": "Blocking time"},
-      "state_test_run": {"name": "Test run"}
+      "state_test_run": {"name": "Test run"},
+      "heating_circulation_pump_d425": {"name": "Circulation pump heating"},
+      "buffertank_circulation_pump_d377": {"name": "Circulation pump buffer tank"},
+      "pool_circulation_pump_d425": {"name": "Circulation pump pool"},
+      "mix1_circulation_pump_d248": {"name": "Circulation pump mixer 1"},
+      "mix1_circulation_pump_d291": {"name": "Circulation pump mixer 2"},
+      "mix1_circulation_pump_d334": {"name": "Circulation pump mixer 3"},
+      "mix1_circulation_pump_d563": {"name": "Circulation pump mixer 1 [D563]"}
     },
     "number": {
       "temperature_return_setpoint": {"name": "T setpoint"},
@@ -147,7 +154,9 @@
       "schedule_water_disinfection_4th": {"name": "Thursday"},
       "schedule_water_disinfection_5fr": {"name": "Friday"},
       "schedule_water_disinfection_6sa": {"name": "Saturday"},
-      "schedule_water_disinfection_7su": {"name": "Sunday"}
+      "schedule_water_disinfection_7su": {"name": "Sunday"},
+      "permanent_heating_circulation_pump_winter_d1103": {"name": "Continuous operation heating pump during heating period"},
+      "permanent_heating_circulation_pump_summer_d1104": {"name": "Continuous operation heating pump during cooling period"}
     }
   }
 }

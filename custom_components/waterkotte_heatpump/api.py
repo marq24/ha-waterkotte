@@ -58,13 +58,9 @@ class WaterkotteHeatpumpApiClient:
             try:
                 await self._client.login(self._username, self._password)
 
-            except TooManyUsersException as too_may_users:
-                _LOGGER.warning(f"TooManyUsers while try to login - will retry in 30sec: {too_may_users}")
+            except TooManyUsersException:
+                _LOGGER.warning(f"TooManyUsers while try to login - will just sleep 30sec")
                 await asyncio.sleep(30)
-                try:
-                    await self._client.login(self._username, self._password)
-                except Exception as ex1:
-                    _LOGGER.error(f"Error while RETRY login: {ex1}", ex1)
 
             except Exception as exception:  # pylint: disable=broad-except
                 _LOGGER.error(f"Error while login will retry in 15sec: {exception}", exception)
@@ -73,7 +69,7 @@ class WaterkotteHeatpumpApiClient:
                 try:
                     await self._client.login(self._username, self._password)
                 except Exception as ex1:
-                    _LOGGER.error(f"Error while RETRY login: {ex1}", ex1)
+                    _LOGGER.error(f"Error while RETRY login", ex1)
 
     async def logout(self) -> None:
         await self._client.logout()

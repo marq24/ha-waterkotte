@@ -17,7 +17,14 @@
       "status_water": {"name": "Warmwasserbetrieb"},
       "status_cooling": {"name": "Kühlbetrieb"},
       "state_blocking_time": {"name": "Sperrzeit"},
-      "state_test_run": {"name": "Testlauf"}
+      "state_test_run": {"name": "Testlauf"},
+      "heating_circulation_pump_d425": {"name": "Umwälzpumpe Heizung"},
+      "buffertank_circulation_pump_d377": {"name": "Umwälzpumpe Speichertank"},
+      "pool_circulation_pump_d425": {"name": "Umwälzpumpe Pool"},
+      "mix1_circulation_pump_d248": {"name": "Umwälzpumpe Mischer 1"},
+      "mix1_circulation_pump_d291": {"name": "Umwälzpumpe Mischer 2"},
+      "mix1_circulation_pump_d334": {"name": "Umwälzpumpe Mischer 3"},
+      "mix1_circulation_pump_d563": {"name": "Umwälzpumpe Mischer 1 [D563]"}
     },
     "number": {
       "temperature_return_setpoint": {"name": "T Sollwert"},
@@ -147,7 +154,9 @@
       "schedule_water_disinfection_4th": {"name": "Donnerstag"},
       "schedule_water_disinfection_5fr": {"name": "Freitag"},
       "schedule_water_disinfection_6sa": {"name": "Samstag"},
-      "schedule_water_disinfection_7su": {"name": "Sonntag"}
+      "schedule_water_disinfection_7su": {"name": "Sonntag"},
+      "permanent_heating_circulation_pump_winter_d1103": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Heizperiode"},
+      "permanent_heating_circulation_pump_summer_d1104": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Kühlperiode"}
     }
   }
 }

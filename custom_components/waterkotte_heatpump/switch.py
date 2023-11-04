@@ -92,6 +92,37 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    # This D1273 switch has unfortunately no function
+    # "HEATING_CIRCULATION_PUMP_D1273": [
+    #    "Heating circulation pump 1273",
+    #    EcotouchTag.HEATING_CIRCULATION_PUMP_D1273,
+    #    None,
+    #    None,
+    #    None,
+    #    True,
+    #    None,
+    #    None,
+    # ],
+    "PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103": [
+        "PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103",
+        EcotouchTag.PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103,
+        None,
+        None,
+        None,
+        True,
+        None,
+        None,
+    ],
+    "PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104": [
+        "PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104",
+        EcotouchTag.PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104,
+        None,
+        None,
+        None,
+        False,
+        None,
+        None,
+    ],
 }
 
 
@@ -148,9 +179,11 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
                 if "value" in value_and_state:
                     value = value_and_state["value"]
                 else:
-                    _LOGGER.info(f"is_on: for {self._type} could not read value from data: {value_and_state}")
+                    _LOGGER.debug(f"is_on: for {self._type} could not read value from data: {value_and_state}")
             else:
-                _LOGGER.info(f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
+                if len(self._coordinator.data) > 0:
+                    _LOGGER.debug(
+                        f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
             if value is None or value == "":
                 value = None
         except KeyError:
@@ -169,21 +202,29 @@ class WaterkotteHeatpumpSwitch(WaterkotteHeatpumpEntity, SwitchEntity):
     def icon(self):
         """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
-            try:
-                if (self._type == "holiday_enabled" and self.eco_tag in self._coordinator.data):
-                    if self._coordinator.data[self.eco_tag]["value"] is True:
+            if self.is_on:
+                match self._type:
+                    case "HOLIDAY_ENABLED":
                         return "mdi:calendar-check"
-                    else:
+                    case "HEATING_CIRCULATION_PUMP_D1273" | \
+                         "PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103" | \
+                         "PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104":
+                        return "mdi:pump"
+                    case _:
+                        return None
+            else:
+                match self._type:
+                    case "HOLIDAY_ENABLED":
                         return "mdi:calendar-blank"
-                else:
-                    return None
-            except KeyError:
-                _LOGGER.warning(
-                    f"KeyError in switch.icon: should have value? data:{self._coordinator.data[self.eco_tag]}")
-            except TypeError:
-                return None
-        return SENSOR_TYPES[self._type][4]
-        # return ICON
+                    case "HEATING_CIRCULATION_PUMP_D1273" | \
+                         "PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103" | \
+                         "PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104":
+                        return "mdi:pump-off"
+                    case _:
+                        return None
+        else:
+            return SENSOR_TYPES[self._type][4]
+            # return ICON
 
     # @property
     # def is_on(self):

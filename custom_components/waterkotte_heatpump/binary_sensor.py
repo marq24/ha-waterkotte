@@ -180,7 +180,7 @@ SENSOR_TYPES = {
         None,
         "I138"
     ],
-    # "holiday_enabled": [
+    # "HOLIDAY_ENABLED": [
     #     "Holiday Mode",
     #     EcotouchTag.HOLIDAY_ENABLED,
     #     BinarySensorDeviceClass.RUNNING,
@@ -211,7 +211,80 @@ SENSOR_TYPES = {
         None,
         None,
         "heatsrcpump"
-    ]
+    ],
+    # this is just indicates if the heating circulation pump is running -
+    # unfortunately this can't TAG is not writable (at least write does
+    # not have any effect)
+    "HEATING_CIRCULATION_PUMP_D425": [
+        "Heating circulation pump",
+        EcotouchTag.HEATING_CIRCULATION_PUMP_D425,
+        None,
+        None,
+        None,
+        True,
+        None,
+        None,
+    ],
+    "BUFFERTANK_CIRCULATION_PUMP_D377": [
+        "Buffertank circulation pump",
+        EcotouchTag.BUFFERTANK_CIRCULATION_PUMP_D377,
+        None,
+        None,
+        None,
+        True,
+        None,
+        None,
+    ],
+    "POOL_CIRCULATION_PUMP_D425": [
+        "Pool circulation pump",
+        EcotouchTag.POOL_CIRCULATION_PUMP_D425,
+        None,
+        None,
+        None,
+        False,
+        None,
+        None,
+    ],
+    "MIX1_CIRCULATION_PUMP_D248": [
+        "Mix1 circulation pump",
+        EcotouchTag.MIX1_CIRCULATION_PUMP_D248,
+        None,
+        None,
+        None,
+        True,
+        None,
+        None,
+    ],
+    "MIX2_CIRCULATION_PUMP_D291": [
+        "Mix2 circulation pump",
+        EcotouchTag.MIX2_CIRCULATION_PUMP_D291,
+        None,
+        None,
+        None,
+        False,
+        None,
+        None,
+    ],
+    "MIX3_CIRCULATION_PUMP_D334": [
+        "Mix3 circulation pump",
+        EcotouchTag.MIX3_CIRCULATION_PUMP_D334,
+        None,
+        None,
+        None,
+        False,
+        None,
+        None,
+    ],
+    #"MIX1_CIRCULATION_PUMP_D563": [
+    #    "Mix1 circulation pump",
+    #    EcotouchTag.MIX1_CIRCULATION_PUMP_D563,
+    #    None,
+    #    None,
+    #    None,
+    #    True,
+    #    None,
+    #    None,
+    #]
 }
 
 
@@ -259,9 +332,10 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
                 if "value" in value_and_state:
                     value = value_and_state["value"]
                 else:
-                    _LOGGER.info(f"is_on: for {self._type} could not read value from data: {value_and_state}")
+                    _LOGGER.debug(f"is_on: for {self._type} could not read value from data: {value_and_state}")
             else:
-                _LOGGER.info(f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
+                if len(self._coordinator.data) > 0:
+                    _LOGGER.debug(f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
             if value is None or value == "":
                 value = None
         except KeyError:
@@ -284,19 +358,35 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
 
     @property
     def icon(self):
-        """Return the icon of the sensor."""
         if SENSOR_TYPES[self._type][4] is None:
-            try:
-                if self._type == "holiday_enabled" and 'value' in self._coordinator.data[self.eco_tag]:
-                    if self._coordinator.data[self.eco_tag]["value"] is True:
+            if self.is_on:
+                match self._type:
+                    case "HOLIDAY_ENABLED":
                         return "mdi:calendar-check"
-                    else:
+                    case "HEATING_CIRCULATION_PUMP_D425" | \
+                         "BUFFERTANK_CIRCULATION_PUMP_D377" | \
+                         "POOL_CIRCULATION_PUMP_D425" | \
+                         "MIX1_CIRCULATION_PUMP_D248" | \
+                         "MIX2_CIRCULATION_PUMP_D291" | \
+                         "MIX3_CIRCULATION_PUMP_D334":
+                        return "mdi:pump"
+                    case _:
+                        return None
+            else:
+                match self._type:
+                    case "HOLIDAY_ENABLED":
                         return "mdi:calendar-blank"
-                else:
-                    return None
-            except KeyError:
-                _LOGGER.warning(f"KeyError in binary_sensor.icon: should have value? data:{self._coordinator.data[self.eco_tag]}")  # pylint: disable=line-too-long
-        return SENSOR_TYPES[self._type][4]
+                    case "HEATING_CIRCULATION_PUMP_D425" | \
+                         "BUFFERTANK_CIRCULATION_PUMP_D377" | \
+                         "POOL_CIRCULATION_PUMP_D425" | \
+                         "MIX1_CIRCULATION_PUMP_D248" | \
+                         "MIX2_CIRCULATION_PUMP_D291" | \
+                         "MIX3_CIRCULATION_PUMP_D334":
+                        return "mdi:pump-off"
+                    case _:
+                        return None
+        else:
+            return SENSOR_TYPES[self._type][4]
 
     @property
     def device_class(self):
