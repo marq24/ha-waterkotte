@@ -146,7 +146,8 @@ SENSOR_TYPES = {
         None,
         "4wayvalve"
     ],
-    # status sensors
+
+    # status sensors (Operation Mode 0=off, 1=on or 2=disabled)
     "STATUS_HEATING": [
         "Status Heating",
         EcotouchTag.STATUS_HEATING,
@@ -167,7 +168,7 @@ SENSOR_TYPES = {
         True,
         None,
         None,
-        "I139"
+        "I138"
     ],
     "STATUS_COOLING": [
         "Status Cooling",
@@ -178,17 +179,73 @@ SENSOR_TYPES = {
         True,
         None,
         None,
-        "I138"
+        "I139"
     ],
-    # "HOLIDAY_ENABLED": [
-    #     "Holiday Mode",
-    #     EcotouchTag.HOLIDAY_ENABLED,
+    "STATUS_POOL": [
+        "Status Pool",
+        EcotouchTag.STATUS_POOL,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        "mdi:pool-thermometer",
+        False,
+        None,
+        None,
+        "I140"
+    ],
+    "STATUS_SOLAR": [
+        "Status Solar",
+        EcotouchTag.STATUS_SOLAR,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        "mdi:solar-power-variant",
+        False,
+        None,
+        None,
+        "I141"
+    ],
+    # "STATUS_HEATING_CIRCULATION_PUMP": [
+    #     "Status circulation pump heating",
+    #     EcotouchTag.STATUS_HEATING_CIRCULATION_PUMP,
     #     BinarySensorDeviceClass.RUNNING,
     #     None,
-    #     None,
+    #     "mdi:pump",
     #     True,
     #     None,
     #     None,
+    #     "I1270"
+    # ],
+    # "STATUS_SOLAR_CIRCULATION_PUMP": [
+    #     "Status circulation pump Solar",
+    #     EcotouchTag.STATUS_SOLAR_CIRCULATION_PUMP,
+    #     BinarySensorDeviceClass.RUNNING,
+    #     None,
+    #     "mdi:pump",
+    #     False,
+    #     None,
+    #     None,
+    #     "I1287"
+    # ],
+    # "STATUS_BUFFER_TANK_CIRCULATION_PUMP": [
+    #     "Status circulation pump buffer tank",
+    #     EcotouchTag.STATUS_BUFFER_TANK_CIRCULATION_PUMP,
+    #     BinarySensorDeviceClass.RUNNING,
+    #     None,
+    #     "mdi:pump",
+    #     True,
+    #     None,
+    #     None,
+    #     "I1291"
+    # ],
+    # "STATUS_COMPRESSOR": [
+    #     "Status compressor",
+    #     EcotouchTag.STATUS_COMPRESSOR,
+    #     BinarySensorDeviceClass.RUNNING,
+    #     None,
+    #     "mdi:gauge",
+    #     True,
+    #     None,
+    #     None,
+    #     "I1307"
     # ],
     "STATE_BLOCKING_TIME": [
         "Blockingtime",
@@ -215,9 +272,9 @@ SENSOR_TYPES = {
     # this is just indicates if the heating circulation pump is running -
     # unfortunately this can't TAG is not writable (at least write does
     # not have any effect)
-    "HEATING_CIRCULATION_PUMP_D425": [
+    "STATE_HEATING_CIRCULATION_PUMP_D425": [
         "Heating circulation pump",
-        EcotouchTag.HEATING_CIRCULATION_PUMP_D425,
+        EcotouchTag.STATE_HEATING_CIRCULATION_PUMP_D425,
         None,
         None,
         None,
@@ -225,9 +282,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "BUFFERTANK_CIRCULATION_PUMP_D377": [
+    "STATE_BUFFERTANK_CIRCULATION_PUMP_D377": [
         "Buffertank circulation pump",
-        EcotouchTag.BUFFERTANK_CIRCULATION_PUMP_D377,
+        EcotouchTag.STATE_BUFFERTANK_CIRCULATION_PUMP_D377,
         None,
         None,
         None,
@@ -235,9 +292,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "POOL_CIRCULATION_PUMP_D425": [
+    "STATE_POOL_CIRCULATION_PUMP_D425": [
         "Pool circulation pump",
-        EcotouchTag.POOL_CIRCULATION_PUMP_D425,
+        EcotouchTag.STATE_POOL_CIRCULATION_PUMP_D425,
         None,
         None,
         None,
@@ -245,9 +302,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "MIX1_CIRCULATION_PUMP_D248": [
+    "STATE_MIX1_CIRCULATION_PUMP_D248": [
         "Mix1 circulation pump",
-        EcotouchTag.MIX1_CIRCULATION_PUMP_D248,
+        EcotouchTag.STATE_MIX1_CIRCULATION_PUMP_D248,
         None,
         None,
         None,
@@ -255,9 +312,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "MIX2_CIRCULATION_PUMP_D291": [
+    "STATE_MIX2_CIRCULATION_PUMP_D291": [
         "Mix2 circulation pump",
-        EcotouchTag.MIX2_CIRCULATION_PUMP_D291,
+        EcotouchTag.STATE_MIX2_CIRCULATION_PUMP_D291,
         None,
         None,
         None,
@@ -265,9 +322,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "MIX3_CIRCULATION_PUMP_D334": [
+    "STATE_MIX3_CIRCULATION_PUMP_D334": [
         "Mix3 circulation pump",
-        EcotouchTag.MIX3_CIRCULATION_PUMP_D334,
+        EcotouchTag.STATE_MIX3_CIRCULATION_PUMP_D334,
         None,
         None,
         None,
@@ -275,7 +332,7 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    #"MIX1_CIRCULATION_PUMP_D563": [
+    # "MIX1_CIRCULATION_PUMP_D563": [
     #    "Mix1 circulation pump",
     #    EcotouchTag.MIX1_CIRCULATION_PUMP_D563,
     #    None,
@@ -284,7 +341,7 @@ SENSOR_TYPES = {
     #    True,
     #    None,
     #    None,
-    #]
+    # ]
 }
 
 
@@ -335,9 +392,14 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
                     _LOGGER.debug(f"is_on: for {self._type} could not read value from data: {value_and_state}")
             else:
                 if len(self._coordinator.data) > 0:
-                    _LOGGER.debug(f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
+                    _LOGGER.debug(
+                        f"is_on: for {self._type} could not be found in available data: {self._coordinator.data}")
             if value is None or value == "":
                 value = None
+
+            # if value is not None and str(self._type).startswith("STATUS"):
+            #    _LOGGER.debug(f"{self._type} -> {value}")
+
         except KeyError:
             _LOGGER.warning(f"is_on caused KeyError for: {self._type}")
             value = None
@@ -361,27 +423,29 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
         if SENSOR_TYPES[self._type][4] is None:
             if self.is_on:
                 match self._type:
-                    case "HOLIDAY_ENABLED":
-                        return "mdi:calendar-check"
-                    case "HEATING_CIRCULATION_PUMP_D425" | \
-                         "BUFFERTANK_CIRCULATION_PUMP_D377" | \
-                         "POOL_CIRCULATION_PUMP_D425" | \
-                         "MIX1_CIRCULATION_PUMP_D248" | \
-                         "MIX2_CIRCULATION_PUMP_D291" | \
-                         "MIX3_CIRCULATION_PUMP_D334":
+                    case "STATE_HEATING_CIRCULATION_PUMP_D425" | \
+                         "STATE_BUFFERTANK_CIRCULATION_PUMP_D377" | \
+                         "STATE_POOL_CIRCULATION_PUMP_D425" | \
+                         "STATE_MIX1_CIRCULATION_PUMP_D248" | \
+                         "STATE_MIX2_CIRCULATION_PUMP_D291" | \
+                         "STATE_MIX3_CIRCULATION_PUMP_D334" | \
+                         "STATUS_HEATING_CIRCULATION_PUMP" | \
+                         "STATUS_SOLAR_CIRCULATION_PUMP" | \
+                         "STATUS_BUFFER_TANK_CIRCULATION_PUMP":
                         return "mdi:pump"
                     case _:
                         return None
             else:
                 match self._type:
-                    case "HOLIDAY_ENABLED":
-                        return "mdi:calendar-blank"
-                    case "HEATING_CIRCULATION_PUMP_D425" | \
-                         "BUFFERTANK_CIRCULATION_PUMP_D377" | \
-                         "POOL_CIRCULATION_PUMP_D425" | \
-                         "MIX1_CIRCULATION_PUMP_D248" | \
-                         "MIX2_CIRCULATION_PUMP_D291" | \
-                         "MIX3_CIRCULATION_PUMP_D334":
+                    case "STATE_HEATING_CIRCULATION_PUMP_D425" | \
+                         "STATE_BUFFERTANK_CIRCULATION_PUMP_D377" | \
+                         "STATE_POOL_CIRCULATION_PUMP_D425" | \
+                         "STATE_MIX1_CIRCULATION_PUMP_D248" | \
+                         "STATE_MIX2_CIRCULATION_PUMP_D291" | \
+                         "STATE_MIX3_CIRCULATION_PUMP_D334" | \
+                         "STATUS_HEATING_CIRCULATION_PUMP" | \
+                         "STATUS_SOLAR_CIRCULATION_PUMP" | \
+                         "STATUS_BUFFER_TANK_CIRCULATION_PUMP":
                         return "mdi:pump-off"
                     case _:
                         return None

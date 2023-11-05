@@ -29,7 +29,7 @@ SENSOR_TYPES = {
         0,
         100,
         DEFAULT_STEP,
-        NumberMode.AUTO,
+        NumberMode.BOX,
     ],
 
     # Cooling/Kuehlung...
@@ -65,8 +65,8 @@ SENSOR_TYPES = {
         EcotouchTag.TEMPERATURE_HEATING_SETPOINT,
         NumberDeviceClass.TEMPERATURE,
         "mdi:radiator",
-        False,
-        0,
+        True,
+        15,
         60,
         TENTH_STEP,
         NumberMode.BOX,

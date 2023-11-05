@@ -5,7 +5,7 @@
       "state_heatingpump": {"name": "Wärmepumpe"},
       "state_evd": {"name": "EVD (Überhitzungsregler)"},
       "state_compressor": {"name": "Verdichter"},
-      "state_compressor2": {"name": "Verdichter"},
+      "state_compressor2": {"name": "Verdichter II"},
       "state_external_heater": {"name": "Heizstab"},
       "state_alarm": {"name": "Meldungen"},
       "state_cooling": {"name": "Kühlen"},
@@ -16,15 +16,21 @@
       "status_heating": {"name": "Heizbetrieb"},
       "status_water": {"name": "Warmwasserbetrieb"},
       "status_cooling": {"name": "Kühlbetrieb"},
+      "status_pool": {"name":  "Pool-Heizbetrieb"},
+      "status_solar": {"name":  "Solarbetrieb"},
+      "status_heating_circulation_pump": {"name":  "Umwälzpumpenbetrieb Heizung"},
+      "status_solar_circulation_pump": {"name":  "Umwälzpumpenbetrieb Solar"},
+      "status_buffer_tank_circulation_pump": {"name":  "Umwälzpumpenbetrieb Pufferspeicher"},
+      "status_compressor": {"name":  "Verdichterbetrieb"},
       "state_blocking_time": {"name": "Sperrzeit"},
       "state_test_run": {"name": "Testlauf"},
-      "heating_circulation_pump_d425": {"name": "Umwälzpumpe Heizung"},
-      "buffertank_circulation_pump_d377": {"name": "Umwälzpumpe Speichertank"},
-      "pool_circulation_pump_d425": {"name": "Umwälzpumpe Pool"},
-      "mix1_circulation_pump_d248": {"name": "Umwälzpumpe Mischer 1"},
-      "mix1_circulation_pump_d291": {"name": "Umwälzpumpe Mischer 2"},
-      "mix1_circulation_pump_d334": {"name": "Umwälzpumpe Mischer 3"},
-      "mix1_circulation_pump_d563": {"name": "Umwälzpumpe Mischer 1 [D563]"}
+      "state_heating_circulation_pump_d425": {"name": "Umwälzpumpe Heizung"},
+      "state_buffertank_circulation_pump_d377": {"name": "Umwälzpumpe Pufferspeicher"},
+      "state_pool_circulation_pump_d425": {"name": "Umwälzpumpe Pool"},
+      "state_mix1_circulation_pump_d248": {"name": "Umwälzpumpe Mischer 1"},
+      "state_mix2_circulation_pump_d291": {"name": "Umwälzpumpe Mischer 2"},
+      "state_mix3_circulation_pump_d334": {"name": "Umwälzpumpe Mischer 3"},
+      "state_mix1_circulation_pump_d563": {"name": "Umwälzpumpe Mischer 1 [D563]"}
     },
     "number": {
       "temperature_return_setpoint": {"name": "T Sollwert"},
@@ -83,7 +89,9 @@
       "enable_cooling": {"name": "Betriebsmodus Kühlung"},
       "enable_heating": {"name": "Betriebsmodus Heizung"},
       "enable_pv": {"name": "Betriebsmodus PV"},
-      "enable_warmwater": {"name": "Betriebsmodus Warmwasser"}
+      "enable_warmwater": {"name": "Betriebsmodus Warmwasser"},
+      "enable_pool": {"name": "Betriebsmodus Pool"},
+      "enable_external_heater": {"name": "Betriebsmodus Heizstab"}
     },
     "sensor": {
       "energy_consumption_total_year": {"name": "Elektrische Arbeit Jahresverbrauch"},

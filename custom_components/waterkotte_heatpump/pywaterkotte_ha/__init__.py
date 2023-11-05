@@ -171,6 +171,17 @@ class TagData(NamedTuple):
         else:
             return "Error"
 
+    def _necode_ro_status(self, value, encoded_values):
+        assert len(self.tags) == 1
+        ecotouch_tag = self.tags[0]
+        assert ecotouch_tag[0] in ["I"]
+        if value == "off":
+            encoded_values[ecotouch_tag] = "0"
+        elif value == "on":
+            encoded_values[ecotouch_tag] = "1"
+        elif value == "disabled":
+            encoded_values[ecotouch_tag] = "2"
+
     def _decode_ro_series(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
         return SERIES[int(str_vals[0])] if str_vals[0] else ""
 

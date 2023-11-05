@@ -263,7 +263,21 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
                                writeable=True)
     ENABLE_POOL = TagData(["I33"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
                           writeable=True)
+    ENABLE_EXTERNAL_HEATER = TagData(["I35"], decode_function=TagData._decode_state,
+                                     encode_function=TagData._encode_state, writeable=True)
     ENABLE_PV = TagData(["I41"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                        writeable=True)
+
+    # UNKNOWN OPERATION-ENABLE Switches!
+    ENABLE_X1 = TagData(["I34"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                        writeable=True)
+    ENABLE_X2 = TagData(["I36"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                        writeable=True)
+    ENABLE_X3 = TagData(["I37"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                        writeable=True)
+    ENABLE_X4 = TagData(["I40"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                        writeable=True)
+    ENABLE_X5 = TagData(["I42"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
                         writeable=True)
 
     STATE_SOURCEPUMP = TagData(["I51"], bit=0)
@@ -281,23 +295,38 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     ALARM = TagData(["I52"])
     INTERRUPTIONS = TagData(["I53"])
     STATE_SERVICE = TagData(["I135"])
+
     STATUS_HEATING = TagData(["I137"], decode_function=TagData._decode_ro_status)
     STATUS_COOLING = TagData(["I138"], decode_function=TagData._decode_ro_status)
     STATUS_WATER = TagData(["I139"], decode_function=TagData._decode_ro_status)
-    INFO_SERIES = TagData(["I105"], decode_function=TagData._decode_ro_series)
-    INFO_ID = TagData(["I110"], decode_function=TagData._decode_ro_id)
-    INFO_SERIAL = TagData(["I114", "I115"], writeable=False, decode_function=TagData._decode_ro_sn)
-    ADAPT_HEATING = TagData(["I263"], writeable=True)
-    MANUAL_HEATINGPUMP = TagData(["I1270"])
+    STATUS_POOL = TagData(["I140"], decode_function=TagData._decode_ro_status)
+    STATUS_SOLAR = TagData(["I141"], decode_function=TagData._decode_ro_status)
+    # returned 2='disabled' (even if the pump is running) - could be, that this TAG has to be set to 1='on' in order
+    # to allow manual enable/disable the pump??? So it's then better to rename this then operation_mode and move it to
+    # the switch section (just like the 'ENABLE_*' tags)
+    STATUS_HEATING_CIRCULATION_PUMP = TagData(["I1270"], decode_function=TagData._decode_ro_status,
+                                              encode_function=TagData._necode_ro_status)
     MANUAL_SOURCEPUMP = TagData(["I1281"])
+    # see STATUS_HEATING_CIRCULATION_PUMP
+    STATUS_SOLAR_CIRCULATION_PUMP = TagData(["I1287"], decode_function=TagData._decode_ro_status,
+                                              encode_function=TagData._necode_ro_status)
     MANUAL_SOLARPUMP1 = TagData(["I1287"])
     MANUAL_SOLARPUMP2 = TagData(["I1289"])
-    MANUAL_TANKPUMP = TagData(["I1291"])
+    # see STATUS_HEATING_CIRCULATION_PUMP
+    STATUS_BUFFER_TANK_CIRCULATION_PUMP = TagData(["I1291"], decode_function=TagData._decode_ro_status,
+                                            encode_function=TagData._necode_ro_status)
     MANUAL_VALVE = TagData(["I1293"])
     MANUAL_POOLVALVE = TagData(["I1295"])
     MANUAL_COOLVALVE = TagData(["I1297"])
     MANUAL_4WAYVALVE = TagData(["I1299"])
+    # see STATUS_HEATING_CIRCULATION_PUMP
+    STATUS_COMPRESSOR = TagData(["I1307"], decode_function=TagData._decode_ro_status)
     MANUAL_MULTIEXT = TagData(["I1319"])
+
+    INFO_SERIES = TagData(["I105"], decode_function=TagData._decode_ro_series)
+    INFO_ID = TagData(["I110"], decode_function=TagData._decode_ro_id)
+    INFO_SERIAL = TagData(["I114", "I115"], writeable=False, decode_function=TagData._decode_ro_sn)
+    ADAPT_HEATING = TagData(["I263"], writeable=True)
 
     STATE_BLOCKING_TIME = TagData(["D71"])
     STATE_TEST_RUN = TagData(["D581"])
@@ -334,23 +363,23 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # ENERGY_HEAT_SOURCE_PUMP = TagData("I1930")
     # ENERGY_EXTERNAL_HEATER = TagData("I1931")
 
-    # I1270 always returns 2 (here at home)
-    #I1270_HEATING_CIRCULATION_PUMP = TagData(["I1270"])
     # D1273 "Heizungsumwäzpumpe ET 6900 Q" does not change it's value
-    #HEATING_CIRCULATION_PUMP_D1273 = TagData(["D1273"], writeable=True)
-    HEATING_CIRCULATION_PUMP_D425 = TagData(["D425"])
-    BUFFERTANK_CIRCULATION_PUMP_D377 = TagData(["D377"])
-    POOL_CIRCULATION_PUMP_D425 = TagData(["D549"])
-    MIX1_CIRCULATION_PUMP_D248 = TagData(["D248"])
-    MIX2_CIRCULATION_PUMP_D291 = TagData(["D291"])
-    MIX3_CIRCULATION_PUMP_D334 = TagData(["D334"])
+    # HEATING_CIRCULATION_PUMP_D1273 = TagData(["D1273"], writeable=True)
+    STATE_HEATING_CIRCULATION_PUMP_D425 = TagData(["D425"])
+    STATE_BUFFERTANK_CIRCULATION_PUMP_D377 = TagData(["D377"])
+    STATE_POOL_CIRCULATION_PUMP_D425 = TagData(["D549"])
+    STATE_MIX1_CIRCULATION_PUMP_D248 = TagData(["D248"])
+    STATE_MIX2_CIRCULATION_PUMP_D291 = TagData(["D291"])
+    STATE_MIX3_CIRCULATION_PUMP_D334 = TagData(["D334"])
     # alternative MIX pump tags...
-    MIX1_CIRCULATION_PUMP_D563 = TagData(["D563"])
-    MIX2_CIRCULATION_PUMP_D564 = TagData(["D564"])
-    MIX3_CIRCULATION_PUMP_D565 = TagData(["D565"])
+    STATE_MIX1_CIRCULATION_PUMP_D563 = TagData(["D563"])
+    STATE_MIX2_CIRCULATION_PUMP_D564 = TagData(["D564"])
+    STATE_MIX3_CIRCULATION_PUMP_D565 = TagData(["D565"])
 
     PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103 = TagData(["D1103"], writeable=True)
     PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104 = TagData(["D1104"], writeable=True)
+
+    # lngA520 = ["Vollbetriebsstunden", "Operating hours", "Heures activit\xe9"],
 
     def __hash__(self) -> int:
         return hash(self.name)
@@ -469,7 +498,7 @@ class EcotouchBridge:
             args[f"t{(i + 1)}"] = tags[i]
 
         # also the readTags have a timestamp in each request...
-        args["_"] = str(int(round(datetime.now().timestamp()*1000)))
+        args["_"] = str(int(round(datetime.now().timestamp() * 1000)))
 
         _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.hostname}")
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
@@ -567,7 +596,7 @@ class EcotouchBridge:
         args = {}
         args["n"] = len(tags)
         args["returnValue"] = "true"
-        args["rnd"] = str(int(round(datetime.now().timestamp()*1000)))#str(datetime.timestamp(datetime.now()))
+        args["rnd"] = str(int(round(datetime.now().timestamp() * 1000)))  # str(datetime.timestamp(datetime.now()))
         # for i in range(len(tags)):
         #    args[f"t{(i + 1)}"] = tags[i]
         # for i in range(len(tag.tags)):

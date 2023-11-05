@@ -15,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 # Sensor types are defined as:
 #   variable -> [0]title, [1] EcoTouchTag, [2]device_class, [3]units, [4]icon, [5]enabled_by_default, [6]options, [7]entity_category #pylint: disable=line-too-long
 SENSOR_TYPES = {
-    "enable_cooling": [
+    "ENABLE_COOLING": [
         "Enable Cooling",
         EcotouchTag.ENABLE_COOLING,
         DEVICE_CLASS_ENUM,
@@ -25,7 +25,7 @@ SENSOR_TYPES = {
         ENUM_OFFAUTOMANUAL,
         None,
     ],
-    "enable_heating": [
+    "ENABLE_HEATING": [
         "Enable Heating",
         EcotouchTag.ENABLE_HEATING,
         DEVICE_CLASS_ENUM,
@@ -35,7 +35,7 @@ SENSOR_TYPES = {
         ENUM_OFFAUTOMANUAL,
         None,
     ],
-    "enable_pv": [
+    "ENABLE_PV": [
         "Enable PV",
         EcotouchTag.ENABLE_PV,
         DEVICE_CLASS_ENUM,
@@ -45,7 +45,7 @@ SENSOR_TYPES = {
         ENUM_OFFAUTOMANUAL,
         None,
     ],
-    "enable_warmwater": [
+    "ENABLE_WARMWATER": [
         "Enable Warmwater",
         EcotouchTag.ENABLE_WARMWATER,
         DEVICE_CLASS_ENUM,
@@ -55,14 +55,34 @@ SENSOR_TYPES = {
         ENUM_OFFAUTOMANUAL,
         None,
     ],
+    "ENABLE_POOL": [
+        "Enable Pool",
+        EcotouchTag.ENABLE_POOL,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:pool-thermometer",
+        False,
+        ENUM_OFFAUTOMANUAL,
+        None,
+    ],
+    "ENABLE_EXTERNAL_HEATER": [
+        "Enable external heater",
+        EcotouchTag.ENABLE_EXTERNAL_HEATER,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:heating-coil",
+        True,
+        ENUM_OFFAUTOMANUAL,
+        None,
+    ],
     # I265
-    "temperature_heating_mode": [
+    "TEMPERATURE_HEATING_MODE": [
         "Heating Control",
         EcotouchTag.TEMPERATURE_HEATING_MODE,
         DEVICE_CLASS_ENUM,
         None,
         "mdi:radiator",
-        False,
+        True,
         ENUM_HEATING_MODE,
         None,
     ],
