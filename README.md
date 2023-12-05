@@ -5,14 +5,13 @@
 **This component will set up the following platforms.**
 
 | Platform        | Description                                          |
-| --------------- |------------------------------------------------------|
+|-----------------|------------------------------------------------------|
 | `binary_sensor` | Show something `True` or `False`.                    |
 | `sensor`        | Show info from Waterkotte Heatpump API.              |
 | `switch`        | Switch something `True` or `False`.                  |
 | `select`        | Select a value from options.                         |
 | `number`        | adjustable Temperatures (demanded or heating curves) |
-| `service`       | Provides services to interact with heatpump |
-
+| `service`       | Provides services to interact with heatpump          |
 
 [![hacs_badge][hacsbadge]][hacs] [![BuyMeCoffee][buymecoffeebadge]][buymecoffee] [![PayPal][paypalbadge]][paypal]
 
@@ -24,13 +23,11 @@ Credit's have to go to the original creator of the HA integration [@pattisonmich
 
 ### Switch to Tibber!
 
-Are you still customer of (IMHO totally overpriced) SENEC.Cloud as electricity provider? Be smart switch to Tibber -
-that's what I did in october 2023.
-
-If you want to join Tibber (become a customer), you might want to use my personal invitation link. When you use this
-link, Tibber will we grant you and me a bonus of 50,-€ for each of us. This bonus then can be used in the Tibber store
-(not for your power bill) - e.g. to buy a Tibber Bridge. If you are already a Tibber customer and have not used an
-invitation link yet, you can also enter one afterward in the Tibber App.
+Be smart switch to Tibber - that's what I did in october 2023. If you want to join Tibber (become a customer), you might
+want to use my personal invitation link. When you use this link, Tibber will we grant you and me a bonus of 50,-€ for
+each of us. This bonus then can be used in the Tibber store (not for your power bill) - e.g. to buy a Tibber Bridge. If
+you are already a Tibber customer and have not used an invitation link yet, you can also enter one afterward in the
+Tibber App.
 
 Please consider [using my personal Tibber invitation link to join Tibber today](https://invite.tibber.com/6o0kqvzf) or
 Enter the following code: 6o0kqvzf (six, oscar, zero, kilo, quebec, victor, zulu, foxtrot) afterward in the Tibber
@@ -39,16 +36,22 @@ App - TIA!
 ---
 
 ## What you get [2023.12.05]
+
 [![sampleview](https://github.com/marq24/ha-waterkotte/raw/master/sample-view-s.png)](https://github.com/marq24/ha-waterkotte/raw/master/sample-view.png)
 
 ## Installation
+
 ### HACS
+
 1. Add a custom integration repository to HACS: [ha-waterkotte](https://github.com/marq24/ha-waterkotte)
 1. Install the custom integration
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]"
 1. Setup the waterkotte custom integration as described below
+
   <!--1. In HACS Store, search for [***marq24/ha-waterkotte***]-->
+
 ### Manual
+
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
 3. In the `custom_components` directory (folder) create a new folder called `waterkotte_heatpump`.
@@ -69,58 +72,82 @@ Most of the available sensors are __not__ enabled by default.
 The Integration provides currently 4 services:
 
 ### Setting dates & times
+
 - set_holiday
 
-    To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
+  To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start`
+  and `end` parameter.
 
 - set_time
 
-    To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and set `time` parameter (seconds will be ignored).
+  To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and
+  set `time` parameter (seconds will be ignored).
 
 ### Get Energy Balance
 
 - get_energy_balance
 
-    Retrieves the overall energy consumption data for the year
+  Retrieves the overall energy consumption data for the year
 
 - get_energy_balance_monthly
 
-    Retrieves the monthly breakdown energy consumption data for a moving 12 month window. 1 = January, 2 = February, etc...
+  Retrieves the monthly breakdown energy consumption data for a moving 12 month window. 1 = January, 2 = February,
+  etc...
 
 ## Troubleshooting
 
 ### Sessions
 
-The Heatpump only allows 2 sessions and there is not way to close a session. Sometimes you will get an error about the login. Just wait a few minutes and it should auto correct itself. Session usually time out within about 5 min.
+The Heatpump only allows 2 sessions and there is not way to close a session. Sometimes you will get an error about the
+login. Just wait a few minutes and it should auto correct itself. Session usually time out within about 5 min.
 
 ### Stale Data
 
-The Heatpump will not always respond with data. This happens usually after the system changes status, e.g. start/stop the heating. There is not much we can do about this unfortunately. I try to cache the data in possible for a better UX.
+The Heatpump will not always respond with data. This happens usually after the system changes status, e.g. start/stop
+the heating. There is not much we can do about this unfortunately. I try to cache the data in possible for a better UX.
 
 ## Credits
-This project is a fork from [@pattisonmichael](https://github.com/pattisonmichael)'s [Waterkotte-Integration](https://github.com/pattisonmichael/waterkotte-integration)
 
-The original project was generated from [@oncleben31](https://github.com/oncleben31)'s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.
+This project is a fork from [@pattisonmichael](https://github.com/pattisonmichael)'
+s [Waterkotte-Integration](https://github.com/pattisonmichael/waterkotte-integration)
 
-The original code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [integration_blueprint](https://github.com/custom-components/integration_blueprint) template
+The original project was generated from [@oncleben31](https://github.com/oncleben31)'
+s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component)
+template.
+
+The original code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'
+s [integration_blueprint](https://github.com/custom-components/integration_blueprint) template
 
 [hacs]: https://hacs.xyz
+
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge&logo=homeassistantcommunitystore&logoColor=ccc
 
 [buymecoffee]: https://www.buymeacoffee.com/marquardt24
+
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a-coffee-blue.svg?style=for-the-badge&logo=buymeacoffee&logoColor=ccc
 
 [paypal]: https://paypal.me/marq24
+
 [paypalbadge]: https://img.shields.io/badge/paypal-me-blue.svg?style=for-the-badge&logo=paypal&logoColor=ccc
 
 [commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/ha-waterkotte.svg?style=for-the-badge
+
 [commits]: https://github.com/marq24/ha-waterkotte/commits/main
+
 [discord]: https://discord.gg/Qa5fW2R
+
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
+
 [logoimg]: logo.png
+
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
+
 [forum]: https://community.home-assistant.io/
+
 [license-shield]: https://img.shields.io/github/license/marq24/ha-waterkotte.svg?style=for-the-badge
+
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40marq24-blue.svg?style=for-the-badge
+
 [releases-shield]: https://img.shields.io/github/release/marq24/ha-waterkotte.svg?style=for-the-badge
+
 [releases]: https://github.com/marq24/ha-waterkotte/releases
