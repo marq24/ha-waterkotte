@@ -85,19 +85,20 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     COP_COOLING = TagData(["A29"], "")
 
     # ENERGY-YEAR-BALANCE
-    COP_HEATPUMP_YEAR = TagData(["A460"], "")
+    COP_HEATPUMP_YEAR = TagData(["A460"], "")  # HEATPUMP_COP
+    COP_HEATPUMP_ACTUAL_YEAR_INFO = TagData(["I1261"], decode_function=TagData._decode_year) # HEATPUMP_COP_YEAR
     COP_TOTAL_SYSTEM_YEAR = TagData(["A461"], "")
     COP_HEATING_YEAR = TagData(["A695"])
     COP_HOT_WATER_YEAR = TagData(["A697"])
 
     ENERGY_CONSUMPTION_TOTAL_YEAR = TagData(["A450", "A451"], "kWh")
-    COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR = TagData(["A444", "A445"], "kWh")
-    SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR = TagData(["A446", "A447"], "kWh")
-    ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR = TagData(["A448", "A449"], "kWh")
+    COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR = TagData(["A444", "A445"], "kWh") #ANUAL_CONSUMPTION_COMPRESSOR
+    SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR = TagData(["A446", "A447"], "kWh") #ANUAL_CONSUMPTION_SOURCEPUMP
+    ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR = TagData(["A448", "A449"], "kWh") #ANUAL_CONSUMPTION_EXTERNALHEATER
     ENERGY_PRODUCTION_TOTAL_YEAR = TagData(["A458", "A459"], "kWh")
-    HEATING_ENERGY_PRODUCTION_YEAR = TagData(["A452", "A453"], "kWh")
-    HOT_WATER_ENERGY_PRODUCTION_YEAR = TagData(["A454", "A455"], "kWh")
-    POOL_ENERGY_PRODUCTION_YEAR = TagData(["A456", "A457"], "kWh")
+    HEATING_ENERGY_PRODUCTION_YEAR = TagData(["A452", "A453"], "kWh") #ANUAL_CONSUMPTION_HEATING
+    HOT_WATER_ENERGY_PRODUCTION_YEAR = TagData(["A454", "A455"], "kWh") #ANUAL_CONSUMPTION_WATER
+    POOL_ENERGY_PRODUCTION_YEAR = TagData(["A456", "A457"], "kWh") #ANUAL_CONSUMPTION_POOL
     COOLING_ENERGY_YEAR = TagData(["A462", "A463"], "kWh")
 
     # The LAST12M values for ENERGY_CONSUMPTION_TOTAL (also the individual values for compressor, sourcepump & e-heater
@@ -105,6 +106,98 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # The same applies to the ENERGY_PRODUCTION_TOTAL (with the individual values for heating, hot_water & pool)
     COP_TOTAL_SYSTEM_LAST12M = TagData(["A435"])
     COOLING_ENERGY_LAST12M = TagData(["A436"], "kWh")
+
+    ENG_CONSUMPTION_COMPRESSOR01 = TagData(["A782"])
+    ENG_CONSUMPTION_COMPRESSOR02 = TagData(["A783"])
+    ENG_CONSUMPTION_COMPRESSOR03 = TagData(["A784"])
+    ENG_CONSUMPTION_COMPRESSOR04 = TagData(["A785"])
+    ENG_CONSUMPTION_COMPRESSOR05 = TagData(["A786"])
+    ENG_CONSUMPTION_COMPRESSOR06 = TagData(["A787"])
+    ENG_CONSUMPTION_COMPRESSOR07 = TagData(["A788"])
+    ENG_CONSUMPTION_COMPRESSOR08 = TagData(["A789"])
+    ENG_CONSUMPTION_COMPRESSOR09 = TagData(["A790"])
+    ENG_CONSUMPTION_COMPRESSOR10 = TagData(["A791"])
+    ENG_CONSUMPTION_COMPRESSOR11 = TagData(["A792"])
+    ENG_CONSUMPTION_COMPRESSOR12 = TagData(["A793"])
+
+    ENG_CONSUMPTION_SOURCEPUMP01 = TagData(["A794"])
+    ENG_CONSUMPTION_SOURCEPUMP02 = TagData(["A795"])
+    ENG_CONSUMPTION_SOURCEPUMP03 = TagData(["A796"])
+    ENG_CONSUMPTION_SOURCEPUMP04 = TagData(["A797"])
+    ENG_CONSUMPTION_SOURCEPUMP05 = TagData(["A798"])
+    ENG_CONSUMPTION_SOURCEPUMP06 = TagData(["A799"])
+    ENG_CONSUMPTION_SOURCEPUMP07 = TagData(["A800"])
+    ENG_CONSUMPTION_SOURCEPUMP08 = TagData(["A802"])
+    ENG_CONSUMPTION_SOURCEPUMP09 = TagData(["A804"])
+    ENG_CONSUMPTION_SOURCEPUMP10 = TagData(["A805"])
+    ENG_CONSUMPTION_SOURCEPUMP11 = TagData(["A806"])
+    ENG_CONSUMPTION_SOURCEPUMP12 = TagData(["A807"])
+
+    #Docs say it should start at 806 for external heater but there is an overlapp to source pump
+    ENG_CONSUMPTION_EXTERNALHEATER01 = TagData(["A808"])
+    ENG_CONSUMPTION_EXTERNALHEATER02 = TagData(["A809"])
+    ENG_CONSUMPTION_EXTERNALHEATER03 = TagData(["A810"])
+    ENG_CONSUMPTION_EXTERNALHEATER04 = TagData(["A811"])
+    ENG_CONSUMPTION_EXTERNALHEATER05 = TagData(["A812"])
+    ENG_CONSUMPTION_EXTERNALHEATER06 = TagData(["A813"])
+    ENG_CONSUMPTION_EXTERNALHEATER07 = TagData(["A814"])
+    ENG_CONSUMPTION_EXTERNALHEATER08 = TagData(["A815"])
+    ENG_CONSUMPTION_EXTERNALHEATER09 = TagData(["A816"])
+    ENG_CONSUMPTION_EXTERNALHEATER10 = TagData(["A817"])
+    ENG_CONSUMPTION_EXTERNALHEATER11 = TagData(["A818"])
+    ENG_CONSUMPTION_EXTERNALHEATER12 = TagData(["A819"])
+
+    ENG_PRODUCTION_HEATING01 = TagData(["A830"])
+    ENG_PRODUCTION_HEATING02 = TagData(["A831"])
+    ENG_PRODUCTION_HEATING03 = TagData(["A832"])
+    ENG_PRODUCTION_HEATING04 = TagData(["A833"])
+    ENG_PRODUCTION_HEATING05 = TagData(["A834"])
+    ENG_PRODUCTION_HEATING06 = TagData(["A835"])
+    ENG_PRODUCTION_HEATING07 = TagData(["A836"])
+    ENG_PRODUCTION_HEATING08 = TagData(["A837"])
+    ENG_PRODUCTION_HEATING09 = TagData(["A838"])
+    ENG_PRODUCTION_HEATING10 = TagData(["A839"])
+    ENG_PRODUCTION_HEATING11 = TagData(["A840"])
+    ENG_PRODUCTION_HEATING12 = TagData(["A841"])
+
+    ENG_PRODUCTION_WARMWATER01 = TagData(["A842"])
+    ENG_PRODUCTION_WARMWATER02 = TagData(["A843"])
+    ENG_PRODUCTION_WARMWATER03 = TagData(["A844"])
+    ENG_PRODUCTION_WARMWATER04 = TagData(["A845"])
+    ENG_PRODUCTION_WARMWATER05 = TagData(["A846"])
+    ENG_PRODUCTION_WARMWATER06 = TagData(["A847"])
+    ENG_PRODUCTION_WARMWATER07 = TagData(["A848"])
+    ENG_PRODUCTION_WARMWATER08 = TagData(["A849"])
+    ENG_PRODUCTION_WARMWATER09 = TagData(["A850"])
+    ENG_PRODUCTION_WARMWATER10 = TagData(["A851"])
+    ENG_PRODUCTION_WARMWATER11 = TagData(["A852"])
+    ENG_PRODUCTION_WARMWATER12 = TagData(["A853"])
+
+    ENG_PRODUCTION_POOL01 = TagData(["A854"])
+    ENG_PRODUCTION_POOL02 = TagData(["A855"])
+    ENG_PRODUCTION_POOL03 = TagData(["A856"])
+    ENG_PRODUCTION_POOL04 = TagData(["A857"])
+    ENG_PRODUCTION_POOL05 = TagData(["A858"])
+    ENG_PRODUCTION_POOL06 = TagData(["A859"])
+    ENG_PRODUCTION_POOL07 = TagData(["A860"])
+    ENG_PRODUCTION_POOL08 = TagData(["A861"])
+    ENG_PRODUCTION_POOL09 = TagData(["A862"])
+    ENG_PRODUCTION_POOL10 = TagData(["A863"])
+    ENG_PRODUCTION_POOL11 = TagData(["A864"])
+    ENG_PRODUCTION_POOL12 = TagData(["A865"])
+
+    ENG_HEATPUMP_COP_MONTH01 = TagData(["A924"])
+    ENG_HEATPUMP_COP_MONTH02 = TagData(["A925"])
+    ENG_HEATPUMP_COP_MONTH03 = TagData(["A926"])
+    ENG_HEATPUMP_COP_MONTH04 = TagData(["A927"])
+    ENG_HEATPUMP_COP_MONTH05 = TagData(["A928"])
+    ENG_HEATPUMP_COP_MONTH06 = TagData(["A929"])
+    ENG_HEATPUMP_COP_MONTH07 = TagData(["A930"])
+    ENG_HEATPUMP_COP_MONTH08 = TagData(["A930"])
+    ENG_HEATPUMP_COP_MONTH09 = TagData(["A931"])
+    ENG_HEATPUMP_COP_MONTH10 = TagData(["A932"])
+    ENG_HEATPUMP_COP_MONTH11 = TagData(["A933"])
+    ENG_HEATPUMP_COP_MONTH12 = TagData(["A934"])
 
     # Temperature stuff
     TEMPERATURE_HEATING = TagData(["A30"], "°C")
@@ -187,20 +280,20 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_POOL_HC_NORM = TagData(["A748"], "°C", writeable=True)
     TEMPERATURE_POOL_HC_RESULT = TagData(["A752"], "°C")
 
-    TEMPERATURE_MIX1 = TagData(["A44"], "°C")
-    TEMPERATURE_MIX1_DEMAND = TagData(["A45"], "°C")
-    TEMPERATURE_MIX1_ADJUST = TagData(["I776"], "K", writeable=True)
+    TEMPERATURE_MIX1 = TagData(["A44"], "°C") #TEMPERATURE_MIXING1_CURRENT
+    TEMPERATURE_MIX1_DEMAND = TagData(["A45"], "°C") #TEMPERATURE_MIXING1_SET
+    TEMPERATURE_MIX1_ADJUST = TagData(["I776"], "K", writeable=True) # ADAPT_MIXING1
     TEMPERATURE_MIX1_PV_CHANGE = TagData(["A1094"], "K", writeable=True)
     TEMPERATURE_MIX1_PERCENT = TagData(["A510"], "%")
-    TEMPERATURE_MIX1_HC_LIMIT = TagData(["A276"], "°C", writeable=True)
-    TEMPERATURE_MIX1_HC_TARGET = TagData(["A277"], "°C", writeable=True)
-    TEMPERATURE_MIX1_HC_OUTDOOR_NORM = TagData(["A274"], "°C", writeable=True)
-    TEMPERATURE_MIX1_HC_HEATING_NORM = TagData(["A275"], "°C", writeable=True)
-    TEMPERATURE_MIX1_HC_MAX = TagData(["A278"], "°C", writeable=True)
+    TEMPERATURE_MIX1_HC_LIMIT = TagData(["A276"], "°C", writeable=True) #T_HEATING_LIMIT_MIXING1
+    TEMPERATURE_MIX1_HC_TARGET = TagData(["A277"], "°C", writeable=True) #T_HEATING_LIMIT_TARGET_MIXING1
+    TEMPERATURE_MIX1_HC_OUTDOOR_NORM = TagData(["A274"], "°C", writeable=True) #T_NORM_OUTDOOR_MIXING1
+    TEMPERATURE_MIX1_HC_HEATING_NORM = TagData(["A275"], "°C", writeable=True) #T_NORM_HEATING_CICLE_MIXING1
+    TEMPERATURE_MIX1_HC_MAX = TagData(["A278"], "°C", writeable=True) #MAX_TEMP_MIXING1
 
-    TEMPERATURE_MIX2 = TagData(["A46"], "°C")
-    TEMPERATURE_MIX2_DEMAND = TagData(["A47"], "°C")
-    TEMPERATURE_MIX2_ADJUST = TagData(["I896"], "K", writeable=True)
+    TEMPERATURE_MIX2 = TagData(["A46"], "°C") #TEMPERATURE_MIXING2_CURRENT
+    TEMPERATURE_MIX2_DEMAND = TagData(["A47"], "°C") #TEMPERATURE_MIXING2_SET
+    TEMPERATURE_MIX2_ADJUST = TagData(["I896"], "K", writeable=True) # ADAPT_MIXING2
     TEMPERATURE_MIX2_PV_CHANGE = TagData(["A1095"], "K", writeable=True)
     TEMPERATURE_MIX2_PERCENT = TagData(["A512"], "%")
     TEMPERATURE_MIX2_HC_LIMIT = TagData(["A322"], "°C", writeable=True)
@@ -209,9 +302,9 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_MIX2_HC_HEATING_NORM = TagData(["A321"], "°C", writeable=True)
     TEMPERATURE_MIX2_HC_MAX = TagData(["A324"], "°C", writeable=True)
 
-    TEMPERATURE_MIX3 = TagData(["A48"], "°C")
-    TEMPERATURE_MIX3_DEMAND = TagData(["A49"], "°C")
-    TEMPERATURE_MIX3_ADJUST = TagData(["I1017"], "K", writeable=True)
+    TEMPERATURE_MIX3 = TagData(["A48"], "°C") #TEMPERATURE_MIXING3_CURRENT
+    TEMPERATURE_MIX3_DEMAND = TagData(["A49"], "°C") #TEMPERATURE_MIXING3_SET
+    TEMPERATURE_MIX3_ADJUST = TagData(["I1017"], "K", writeable=True) # ADAPT_MIXING3
     TEMPERATURE_MIX3_PV_CHANGE = TagData(["A1096"], "K", writeable=True)
     TEMPERATURE_MIX3_PERCENT = TagData(["A514"], "%")
     TEMPERATURE_MIX3_HC_LIMIT = TagData(["A368"], "°C", writeable=True)
@@ -265,6 +358,12 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
                           writeable=True)
     ENABLE_EXTERNAL_HEATER = TagData(["I35"], decode_function=TagData._decode_state,
                                      encode_function=TagData._encode_state, writeable=True)
+    ENABLE_MIXING1 = TagData(["I37"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                             writeable=True)
+    ENABLE_MIXING2 = TagData(["I38"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                             writeable=True)
+    ENABLE_MIXING3 = TagData(["I39"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
+                             writeable=True)
     ENABLE_PV = TagData(["I41"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
                         writeable=True)
 
@@ -272,8 +371,6 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     ENABLE_X1 = TagData(["I34"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
                         writeable=True)
     ENABLE_X2 = TagData(["I36"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
-                        writeable=True)
-    ENABLE_X3 = TagData(["I37"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
                         writeable=True)
     ENABLE_X4 = TagData(["I40"], decode_function=TagData._decode_state, encode_function=TagData._encode_state,
                         writeable=True)
@@ -305,16 +402,16 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # to allow manual enable/disable the pump??? So it's then better to rename this then operation_mode and move it to
     # the switch section (just like the 'ENABLE_*' tags)
     STATUS_HEATING_CIRCULATION_PUMP = TagData(["I1270"], decode_function=TagData._decode_ro_status,
-                                              encode_function=TagData._necode_ro_status)
+                                              encode_function=TagData._encode_ro_status)
     MANUAL_SOURCEPUMP = TagData(["I1281"])
     # see STATUS_HEATING_CIRCULATION_PUMP
     STATUS_SOLAR_CIRCULATION_PUMP = TagData(["I1287"], decode_function=TagData._decode_ro_status,
-                                              encode_function=TagData._necode_ro_status)
+                                            encode_function=TagData._encode_ro_status)
     MANUAL_SOLARPUMP1 = TagData(["I1287"])
     MANUAL_SOLARPUMP2 = TagData(["I1289"])
     # see STATUS_HEATING_CIRCULATION_PUMP
     STATUS_BUFFER_TANK_CIRCULATION_PUMP = TagData(["I1291"], decode_function=TagData._decode_ro_status,
-                                            encode_function=TagData._necode_ro_status)
+                                                  encode_function=TagData._encode_ro_status)
     MANUAL_VALVE = TagData(["I1293"])
     MANUAL_POOLVALVE = TagData(["I1295"])
     MANUAL_COOLVALVE = TagData(["I1297"])

@@ -171,7 +171,7 @@ class TagData(NamedTuple):
         else:
             return "Error"
 
-    def _necode_ro_status(self, value, encoded_values):
+    def _encode_ro_status(self, value, encoded_values):
         assert len(self.tags) == 1
         ecotouch_tag = self.tags[0]
         assert ecotouch_tag[0] in ["I"]
@@ -209,6 +209,10 @@ class TagData(NamedTuple):
         s2 = (sn1 - 1000 if math.floor(sn1 / 1000) > 0 else sn1)  # pylint: disable=invalid-name
         s2 = "0" + str(s2) if s2 < 10 else s2  # pylint: disable=invalid-name
         return str(s1) + str(s2) + str(sn2)
+
+    def _decode_year(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+        assert len(self.tags) == 1
+        return int(str_vals[0]) + 2000
 
     tags: Collection[str]
     unit: str = None

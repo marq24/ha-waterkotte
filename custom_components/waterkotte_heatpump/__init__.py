@@ -5,10 +5,10 @@ import asyncio
 import logging
 
 from datetime import timedelta
-from typing import List
+from typing import List, Sequence
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config
+from homeassistant.core import Config, SupportsResponse
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -140,6 +140,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
     hass.services.async_register(DOMAIN, "set_holiday", service.set_holiday)
     hass.services.async_register(DOMAIN, "set_disinfection_start_time", service.set_disinfection_start_time)
+    hass.services.async_register(DOMAIN, "get_energy_balance", service.get_energy_balance,
+                                 supports_response=SupportsResponse.ONLY)
+    hass.services.async_register(DOMAIN, "get_energy_balance_monthly", service.get_energy_balance_monthly,
+                                 supports_response=SupportsResponse.ONLY)
     return True
 
 
@@ -220,6 +224,11 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         else:
             _LOGGER.error(f"could not write value: '{value}' to: {tag} result was: {result}")
         # self.data[result[0]]
+
+    async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
+        """Get data from the API."""
+        ret = await self.api.async_read_values(tags)
+        return ret
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
