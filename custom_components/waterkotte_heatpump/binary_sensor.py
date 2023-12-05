@@ -22,7 +22,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_SOURCEPUMP,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:snowflake-thermometer",
+        None,
         True,
         None,
         None,
@@ -32,7 +32,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_HEATINGPUMP,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         True,
         None,
         None,
@@ -42,7 +42,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_EVD,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         False,
         None,
         None,
@@ -52,7 +52,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_COMPRESSOR,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         False,
         None,
         None,
@@ -62,7 +62,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_COMPRESSOR2,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         False,
         None,
         None,
@@ -72,7 +72,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_EXTERNAL_HEATER,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         False,
         None,
         None,
@@ -82,7 +82,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_ALARM,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         False,
         None,
         None,
@@ -92,7 +92,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_COOLING,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         False,
         None,
         None,
@@ -102,7 +102,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_WATER,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         False,
         None,
         None,
@@ -112,7 +112,7 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_POOL,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
         True,
         None,
         None,
@@ -132,7 +132,37 @@ SENSOR_TYPES = {
         EcotouchTag.STATE_COOLING4WAY,
         BinarySensorDeviceClass.RUNNING,
         None,
-        "mdi:weather-partly-cloudy",
+        None,
+        False,
+        None,
+        None,
+    ],
+    "heatingmode_mixing1": [
+        "Heating mode Mixing 1",
+        EcotouchTag.HEATINGMODE_MIXING1,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        None,
+        False,
+        None,
+        None,
+    ],
+    "heatingmode_mixing2": [
+        "Heating mode Mixing 2",
+        EcotouchTag.HEATINGMODE_MIXING2,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        None,
+        False,
+        None,
+        None,
+    ],
+    "heatingmode_mixing3": [
+        "Heating mode Mixing 3",
+        EcotouchTag.HEATINGMODE_MIXING3,
+        BinarySensorDeviceClass.RUNNING,
+        None,
+        None,
         False,
         None,
         None,
@@ -150,63 +180,6 @@ SENSOR_TYPES = {
 
 
 }
-"""
-
-
-    TEMPERATURE_WATER_SETPOINT = TagData(["A37"], "°C", writeable=True)
-    TEMPERATURE_WATER_SETPOINT2 = TagData(["A38"], "°C", writeable=True)
-    TEMPERATURE_POOL_SETPOINT = TagData(["A40"], "°C", writeable=True)
-    TEMPERATURE_POOL_SETPOINT2 = TagData(["A41"], "°C", writeable=True)
-    COMPRESSOR_POWER = TagData(["A50"], "?°C")
-
-    HYSTERESIS_HEATING = TagData(["A61"], "?")
-
-    NVI_NORM_AUSSEN = TagData(["A91"], "?")
-    NVI_HEIZKREIS_NORM = TagData(["A92"], "?")
-    NVI_T_HEIZGRENZE = TagData(["A93"], "?°C")
-    NVI_T_HEIZGRENZE_SOLL = TagData(["A94"], "?°C")
-    MAX_VL_TEMP = TagData(["A95"], "°C")
-    TEMP_SET_0_DEG = TagData(["A97"], "°C")
-    COOL_ENABLE_TEMP = TagData(["A108"], "°C")
-    NVI_SOLL_KUEHLEN = TagData(["A109"], "°C")
-    TEMPCHANGE_HEATING_PV = TagData(["A682"], "°C")
-    TEMPCHANGE_COOLING_PV = TagData(["A683"], "°C")
-    TEMPCHANGE_WARMWATER_PV = TagData(["A684"], "°C")
-    TEMPCHANGE_POOL_PV = TagData(["A685"], "°C")
-
-    DATE_DAY = TagData(["I5"])
-    DATE_MONTH = TagData(["I6"])
-    DATE_YEAR = TagData(["I7"])
-    TIME_HOUR = TagData(["I8"])
-    TIME_MINUTE = TagData(["I9"])
-    OPERATING_HOURS_COMPRESSOR_1 = TagData(["I10"])
-    OPERATING_HOURS_COMPRESSOR_2 = TagData(["I14"])
-    OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
-    OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
-    OPERATING_HOURS_SOLAR = TagData(["I22"])
-    ENABLE_HEATING = TagData(["I30"], read_function=_parse_state)
-    ENABLE_COOLING = TagData(["I31"], read_function=_parse_state)
-    ENABLE_WARMWATER = TagData(["I32"], read_function=_parse_state)
-    ENABLE_POOL = TagData(["I33"], read_function=_parse_state)
-    ENABLE_PV = TagData(["I41"], read_function=_parse_state)
-
-    ALARM = TagData(["I52"])
-    INTERRUPTIONS = TagData(["I53"])
-    STATE_SERVICE = TagData(["I135"])
-    STATUS_HEATING = TagData(["I37"])
-    STATUS_COOLING = TagData(["I38"])
-    STATUS_WATER = TagData(["I39"])
-    ADAPT_HEATING = TagData(["I263"], writeable=True)
-    MANUAL_HEATINGPUMP = TagData(["I1270"])
-    MANUAL_SOURCEPUMP = TagData(["I1281"])
-    MANUAL_SOLARPUMP1 = TagData(["I1287"])
-    MANUAL_SOLARPUMP2 = TagData(["I1289"])
-    MANUAL_TANKPUMP = TagData(["I1291"])
-    MANUAL_VALVE = TagData(["I1293"])
-    MANUAL_POOLVALVE = TagData(["I1295"])
-    MANUAL_COOLVALVE = TagData(["I1297"])
-    MANUAL_4WAYVALVE = TagData(["I1299"])
-    MANUAL_MULTIEXT = TagData(["I1319"]) """
 
 # async def async_setup_entry(hass, entry, async_add_devices):
 #     """Setup binary_sensor platform."""
@@ -266,7 +239,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
                 value = None
         except KeyError:
             value = None
-            print(value)
+            #print(value)
         except TypeError:
             return None
         return value

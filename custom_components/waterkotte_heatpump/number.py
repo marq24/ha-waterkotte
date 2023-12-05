@@ -104,7 +104,7 @@ SENSOR_TYPES = {
         NumberDeviceClass.TEMPERATURE,
         0,
         "mdi:snowflake-thermometer",
-        True,
+        False,
         100,
         0.1,
     ],
@@ -114,62 +114,224 @@ SENSOR_TYPES = {
         DEVICE_CLASS_ENUM,
         0,
         "mdi:snowflake-thermometer",
-        True,
+        False,
+        100,
+        0.1,
+    ],
+    "temperature_mixing1_set": [
+        "Temperature Mixing1 Set",
+        EcotouchTag.TEMPERATURE_MIXING1_SET,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        "mdi:snowflake-thermometer",
+        False,
+        100,
+        0.1,
+    ],
+    "temperature_mixing2_set": [
+        "Temperature Mixing2 Set",
+        EcotouchTag.TEMPERATURE_MIXING2_SET,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        "mdi:snowflake-thermometer",
+        False,
+        100,
+        0.1,
+    ],
+    "temperature_mixing3_set": [
+        "Temperature Mixing3 Set",
+        EcotouchTag.TEMPERATURE_MIXING3_SET,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        "mdi:snowflake-thermometer",
+        False,
+        100,
+        0.1,
+    ],
+    "adapt_mixing1": [
+        "Adapt Mixing1",
+        EcotouchTag.ADAPT_MIXING1,
+        NumberDeviceClass.TEMPERATURE,
+        -2,
+        "mdi:snowflake-thermometer",
+        False,
+        2,
+        0.5,
+    ],
+    "adapt_mixing2": [
+        "Adapt Mixing2",
+        EcotouchTag.ADAPT_MIXING2,
+        NumberDeviceClass.TEMPERATURE,
+        -2,
+        "mdi:snowflake-thermometer",
+        False,
+        2,
+        0.5,
+    ],
+    "adapt_mixing3": [
+        "Adapt Mixing3",
+        EcotouchTag.ADAPT_MIXING3,
+        NumberDeviceClass.TEMPERATURE,
+        -2,
+        "mdi:snowflake-thermometer",
+        False,
+        2,
+        0.5,
+    ],
+
+    "t_heating_limit_mixing1": [
+        "T Heating limit Mixing 1",
+        EcotouchTag.T_HEATING_LIMIT_MIXING1,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "t_heating_limit_target_mixing1": [
+        "T Heating limit target Mixing 1",
+        EcotouchTag.T_HEATING_LIMIT_TARGET_MIXING1,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "t_norm_outdoor_mixing1": [
+        "T norm outdoor Mixing 1",
+        EcotouchTag.T_NORM_OUTDOOR_MIXING1,
+        NumberDeviceClass.TEMPERATURE,
+        -15,
+        None,
+        False,
+        50,
+        0.1,
+    ],
+    "t_norm_heating_circle_mixing1": [
+        "T norm heating circle Mixing 1",
+        EcotouchTag.T_HEATING_LIMIT_MIXING1,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "max_temp_mixing1": [
+        "Max temperature in Mixing 1",
+        EcotouchTag.MAX_TEMP_MIXING1,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+
+    "t_heating_limit_mixing2": [
+        "T Heating limit Mixing 2",
+        EcotouchTag.T_HEATING_LIMIT_MIXING2,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "t_heating_limit_target_mixing2": [
+        "T Heating limit target Mixing 2",
+        EcotouchTag.T_HEATING_LIMIT_TARGET_MIXING2,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "t_norm_outdoor_mixing2": [
+        "T norm outdoor Mixing 2",
+        EcotouchTag.T_NORM_OUTDOOR_MIXING2,
+        NumberDeviceClass.TEMPERATURE,
+        -15,
+        None,
+        False,
+        50,
+        0.1,
+    ],
+    "t_norm_heating_circle_mixing2": [
+        "T norm heating circle Mixing 2",
+        EcotouchTag.T_HEATING_LIMIT_MIXING2,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "max_temp_mixing2": [
+        "Max temperature in Mixing 2",
+        EcotouchTag.MAX_TEMP_MIXING2,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+
+    "t_heating_limit_mixing3": [
+        "T Heating limit Mixing 3",
+        EcotouchTag.T_HEATING_LIMIT_MIXING3,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "t_heating_limit_target_mixing3": [
+        "T Heating limit target Mixing 3",
+        EcotouchTag.T_HEATING_LIMIT_TARGET_MIXING3,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "t_norm_outdoor_mixing3": [
+        "T norm outdoor Mixing 3",
+        EcotouchTag.T_NORM_OUTDOOR_MIXING3,
+        NumberDeviceClass.TEMPERATURE,
+        -15,
+        None,
+        False,
+        50,
+        0.1,
+    ],
+    "t_norm_heating_circle_mixing3": [
+        "T norm heating circle Mixing 3",
+        EcotouchTag.T_HEATING_LIMIT_MIXING3,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
+        100,
+        0.1,
+    ],
+    "max_temp_mixing3": [
+        "Max temperature in Mixing 3",
+        EcotouchTag.MAX_TEMP_MIXING3,
+        NumberDeviceClass.TEMPERATURE,
+        0,
+        None,
+        False,
         100,
         0.1,
     ],
 }
-"""
-
-    TEMPERATURE_HEATING_SET = TagData(["A31"], "°C")
-    TEMPERATURE_HEATING_SET2 = TagData(["A32"], "°C")
-    TEMPERATURE_COOLING_SET = TagData(["A34"], "°C")
-    TEMPERATURE_COOLING_SET2 = TagData(["A35"], "°C")
-    TEMPERATURE_WATER_SETPOINT = TagData(["A37"], "°C", writeable=True)
-    TEMPERATURE_WATER_SETPOINT2 = TagData(["A38"], "°C", writeable=True)
-    TEMPERATURE_POOL_SETPOINT = TagData(["A40"], "°C", writeable=True)
-    TEMPERATURE_POOL_SETPOINT2 = TagData(["A41"], "°C", writeable=True)
-    COMPRESSOR_POWER = TagData(["A50"], "?°C")
-
-    HYSTERESIS_HEATING = TagData(["A61"], "?")
-
-    NVI_NORM_AUSSEN = TagData(["A91"], "?")
-    NVI_HEIZKREIS_NORM = TagData(["A92"], "?")
-    NVI_T_HEIZGRENZE = TagData(["A93"], "?°C")
-    NVI_T_HEIZGRENZE_SOLL = TagData(["A94"], "?°C")
-    MAX_VL_TEMP = TagData(["A95"], "°C")
-    TEMP_SET_0_DEG = TagData(["A97"], "°C")
-    COOL_ENABLE_TEMP = TagData(["A108"], "°C")
-    NVI_SOLL_KUEHLEN = TagData(["A109"], "°C")
-    TEMPCHANGE_HEATING_PV = TagData(["A682"], "°C")
-    TEMPCHANGE_COOLING_PV = TagData(["A683"], "°C")
-    TEMPCHANGE_WARMWATER_PV = TagData(["A684"], "°C")
-    TEMPCHANGE_POOL_PV = TagData(["A685"], "°C")
-
-    DATE_DAY = TagData(["I5"])
-    DATE_MONTH = TagData(["I6"])
-    DATE_YEAR = TagData(["I7"])
-    TIME_HOUR = TagData(["I8"])
-    TIME_MINUTE = TagData(["I9"])
-    OPERATING_HOURS_COMPRESSOR_1 = TagData(["I10"])
-    OPERATING_HOURS_COMPRESSOR_2 = TagData(["I14"])
-    OPERATING_HOURS_CIRCULATION_PUMP = TagData(["I18"])
-    OPERATING_HOURS_SOURCE_PUMP = TagData(["I20"])
-    OPERATING_HOURS_SOLAR = TagData(["I22"])
-
-    ALARM = TagData(["I52"])
-    INTERRUPTIONS = TagData(["I53"])
-    ADAPT_HEATING = TagData(["I263"], writeable=True)
-    MANUAL_HEATINGPUMP = TagData(["I1270"])
-    MANUAL_SOURCEPUMP = TagData(["I1281"])
-    MANUAL_SOLARPUMP1 = TagData(["I1287"])
-    MANUAL_SOLARPUMP2 = TagData(["I1289"])
-    MANUAL_TANKPUMP = TagData(["I1291"])
-    MANUAL_VALVE = TagData(["I1293"])
-    MANUAL_POOLVALVE = TagData(["I1295"])
-    MANUAL_COOLVALVE = TagData(["I1297"])
-    MANUAL_4WAYVALVE = TagData(["I1299"])
-    MANUAL_MULTIEXT = TagData(["I1319"]) """
 
 ADAPT_LOOKUP = [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]
 

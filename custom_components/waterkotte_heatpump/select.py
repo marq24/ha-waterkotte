@@ -77,6 +77,36 @@ SENSOR_TYPES = {
         ENUM_OFFAUTOMANUAL,
         None,
     ],
+    "enable_mixing1": [
+        "Enable Mixing 1",
+        EcotouchTag.ENABLE_MIXING1,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:water-thermometer",
+        False,
+        ENUM_OFFAUTOMANUAL,
+        None,
+    ],
+    "enable_mixing2": [
+        "Enable Mixing 2",
+        EcotouchTag.ENABLE_MIXING2,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:water-thermometer",
+        False,
+        ENUM_OFFAUTOMANUAL,
+        None,
+    ],
+    "enable_mixing3": [
+        "Enable Mixing 3",
+        EcotouchTag.ENABLE_MIXING3,
+        DEVICE_CLASS_ENUM,
+        None,
+        "mdi:water-thermometer",
+        False,
+        ENUM_OFFAUTOMANUAL,
+        None,
+    ],
 }
 """
 

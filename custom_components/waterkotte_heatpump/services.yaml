@@ -39,3 +39,14 @@ set_holiday:
       required: true
       selector:
         datetime:
+
+get_energy_balance:
+  # Service name as shown in UI
+  name: Get Current Year Energy Balance
+  # Description of the service
+  description: Get the energy balance by different usage for the current year
+get_energy_balance_monthly:
+  # Service name as shown in UI
+  name: Get rolling 12 Month breakdown
+  # Description of the service
+  description: Gets the energy balance breakdown per month in a rolling 12 month window

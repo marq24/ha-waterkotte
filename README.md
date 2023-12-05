@@ -23,6 +23,8 @@
 | `sensor`        | Show info from Waterkotte Heatpump API. |
 | `switch`        | Switch something `True` or `False`.     |
 | `select`        | Select a value from options.            |
+| `number`        | Change a numeric value.                 |
+| `service`       | Provides services to interact with heatpump |
 
 ![logo][logoimg]
 
@@ -51,6 +53,19 @@ Use the Config flow to add the integration. You will need the IP/Hostname and Us
 Not all available sensors are enabled by default.
 
 To set the the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
+
+## Services
+
+The Integration provides currently 3 services:
+- set_holiday
+  Allows to set the start and end datetimes for the holiday mode
+
+- get_energy_balance
+  Retrieves the overall energy consumption data for the year
+
+- get_energy_balance_monthly
+  Retrieves the monthly breakdown energy consumption data for a moving 12 month window.
+  1 = January, 2 = February, etc...
 
 ## Troubleshooting
 

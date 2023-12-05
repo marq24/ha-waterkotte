@@ -8,6 +8,7 @@ import asyncio
 import logging
 import re
 import json
+from typing import Sequence
 from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config
@@ -20,7 +21,7 @@ from homeassistant.helpers.entity_registry import async_entries_for_device
 from homeassistant.helpers.entity_registry import async_get as getEntityRegistry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import device_registry as dr
-
+from homeassistant.core import SupportsResponse
 from pywaterkotte.ecotouch import EcotouchTag
 from .api import WaterkotteHeatpumpApiClient
 from .const import CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID
@@ -150,6 +151,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     service = waterkotteservice.WaterkotteHeatpumpService(hass, entry, coordinator)
 
     hass.services.async_register(DOMAIN, "set_holiday", service.set_holiday)
+    hass.services.async_register(DOMAIN, "get_energy_balance", service.get_energy_balance,supports_response=SupportsResponse.ONLY)
+    hass.services.async_register(DOMAIN, "get_energy_balance_monthly", service.get_energy_balance_monthly,supports_response=SupportsResponse.ONLY)
     return True
 
 
@@ -238,6 +241,10 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         self.data[tag]["value"] = res[tag.tags[0]]["value"]
         # self.data[result[0]]
 
+    async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
+        """Get data from the API."""
+        ret = await self.api.async_read_values(tags)
+        return ret
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
