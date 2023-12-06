@@ -1,6 +1,15 @@
-# Waterkotte Heatpump [+2020] Integration for Home Assistant
+# Home Assistant Integration for Waterkotte Heatpumps [+2020]
 
 ![logo](https://github.com/marq24/ha-waterkotte/raw/master/logo.png)
+
+This Home Assistant Integration is providing information from the German heatpump pioneer Waterkotte. In addition and
+where possible functions are provided to control the system.
+
+All data will be fetched (or send) to your Waterkotte via the build in webserver of the unit. So the functionality is
+based on the data and settings that are available also via the frontend that you can directly access via a web-browser.
+
+Please be aware, that we are developing this integration to best of our knowledge and belief, but cant give a guarantee.
+Therefore, use this integration **at your own risk**.
 
 **This component will set up the following platforms.**
 
@@ -16,24 +25,6 @@
 [![hacs_badge][hacsbadge]][hacs] [![BuyMeCoffee][buymecoffeebadge]][buymecoffee] [![PayPal][paypalbadge]][paypal]
 
 Credit's have to go to the original creator of the HA integration [@pattisonmichael](https://github.com/pattisonmichael)
-
----
-
-###### Advertisement / Werbung
-
-### Switch to Tibber!
-
-Be smart switch to Tibber - that's what I did in october 2023. If you want to join Tibber (become a customer), you might
-want to use my personal invitation link. When you use this link, Tibber will we grant you and me a bonus of 50,-€ for
-each of us. This bonus then can be used in the Tibber store (not for your power bill) - e.g. to buy a Tibber Bridge. If
-you are already a Tibber customer and have not used an invitation link yet, you can also enter one afterward in the
-Tibber App.
-
-Please consider [using my personal Tibber invitation link to join Tibber today](https://invite.tibber.com/6o0kqvzf) or
-Enter the following code: 6o0kqvzf (six, oscar, zero, kilo, quebec, victor, zulu, foxtrot) afterward in the Tibber
-App - TIA!
-
----
 
 ## What you get [2023.12.05]
 
@@ -60,12 +51,29 @@ App - TIA!
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]"
 
-## Configuration is done in the UI
+## Adding or enabling the integration
 
-Use the Config flow to add the integration. You will need the IP/Hostname and Username/Password to log in.
-<!---->
+### My Home Assistant (2021.3+)
 
-Most of the available sensors are __not__ enabled by default.
+Just click the following Button to start the configuration automatically:
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=waterkotte)
+
+### Manual
+
+Use the following steps for a manual configuration by adding the custom integration using the web interface and follow
+instruction on screen:
+
+- Go to `Configuration -> Integrations` and add "Waterkotte" integration
+- Provide display name for the device, and it's address (hostname or IP)
+- Select the number of TAGs that can be fetched in a single call to your device (older devices might need to adjust this
+  value - for my in 2022 installed Waterkotte 75 is totally fine)
+- Provide area where the heatpump is located
+
+After the integration was added you can use the 'config' button to adjust your settings and you can additionally modify
+the update intervall
+
+Please note, that most of the available sensors are __not__ enabled by default.
 
 ## Services
 
@@ -73,23 +81,23 @@ The Integration provides currently 4 services:
 
 ### Setting dates & times
 
-- set_holiday
+- SET_HOLIDAY
 
   To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start`
   and `end` parameter.
 
-- set_time
+- SET_TIME
 
   To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and
   set `time` parameter (seconds will be ignored).
 
 ### Get Energy Balance
 
-- get_energy_balance
+- GET_ENERGY_BALANCE
 
   Retrieves the overall energy consumption data for the year
 
-- get_energy_balance_monthly
+- GET_ENERGY_BALANCE_MONTHLY
 
   Retrieves the monthly breakdown energy consumption data for a moving 12 month window. 1 = January, 2 = February,
   etc...
@@ -118,36 +126,41 @@ template.
 The original code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'
 s [integration_blueprint](https://github.com/custom-components/integration_blueprint) template
 
-[hacs]: https://hacs.xyz
+---
 
+###### Advertisement / Werbung - alternative way to support me
+
+### Switch to Tibber!
+
+Be smart switch to Tibber - that's what I did in october 2023. If you want to join Tibber (become a customer), you might
+want to use my personal invitation link. When you use this link, Tibber will we grant you and me a bonus of 50,-€ for
+each of us. This bonus then can be used in the Tibber store (not for your power bill) - e.g. to buy a Tibber Bridge. If
+you are already a Tibber customer and have not used an invitation link yet, you can also enter one afterward in the
+Tibber App.
+
+Please consider [using my personal Tibber invitation link to join Tibber today](https://invite.tibber.com/6o0kqvzf) or
+Enter the following code: 6o0kqvzf (six, oscar, zero, kilo, quebec, victor, zulu, foxtrot) afterward in the Tibber App -
+TIA!
+
+---
+
+[hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge&logo=homeassistantcommunitystore&logoColor=ccc
 
 [buymecoffee]: https://www.buymeacoffee.com/marquardt24
-
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a-coffee-blue.svg?style=for-the-badge&logo=buymeacoffee&logoColor=ccc
 
 [paypal]: https://paypal.me/marq24
-
 [paypalbadge]: https://img.shields.io/badge/paypal-me-blue.svg?style=for-the-badge&logo=paypal&logoColor=ccc
 
 [commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/ha-waterkotte.svg?style=for-the-badge
-
 [commits]: https://github.com/marq24/ha-waterkotte/commits/main
-
 [discord]: https://discord.gg/Qa5fW2R
-
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-
 [logoimg]: logo.png
-
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
-
 [forum]: https://community.home-assistant.io/
-
 [license-shield]: https://img.shields.io/github/license/marq24/ha-waterkotte.svg?style=for-the-badge
-
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40marq24-blue.svg?style=for-the-badge
-
 [releases-shield]: https://img.shields.io/github/release/marq24/ha-waterkotte.svg?style=for-the-badge
-
 [releases]: https://github.com/marq24/ha-waterkotte/releases
