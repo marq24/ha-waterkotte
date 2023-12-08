@@ -9,6 +9,6 @@
     "@pattisonmichael"
   ],
   "requirements": ["pywaterkotte2==0.0.12"],
-  "version": "0.1.00",
+  "version": "0.1.01",
   "iot_class": "local_polling"
 }
