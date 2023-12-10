@@ -225,7 +225,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                 self.data = {}
             for key in tagdatas:
                 # print(f"{key}:{tagdatas[key]}")
-                if tagdatas[key]["status"] == "E_OK":
+                if tagdatas[key]["status"] == "S_OK":
                     # self.data.update(tagdatas[key])
                     # self.data.update({key:tagdatas[key]})
                     self.data[key] = tagdatas[key]
