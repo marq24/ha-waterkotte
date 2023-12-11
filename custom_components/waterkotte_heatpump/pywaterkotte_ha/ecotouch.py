@@ -638,7 +638,8 @@ class EcotouchBridge:
 
                         results[tag] = None
                     else:
-                        results_status[tag] = "E_OK"
+                        #results_status[tag] = "S_OK"
+                        results_status[tag] = match.group("status")
                         results[tag] = match.group("value")
 
         return results, results_status
@@ -668,7 +669,7 @@ class EcotouchBridge:
 
                 all_ok = True
                 for a_tag in e_status:
-                    if e_status[a_tag] != "E_OK":
+                    if e_status[a_tag] != "S_OK":
                         all_ok = False
 
                 if all_ok:
@@ -753,7 +754,8 @@ class EcotouchBridge:
 
                         results[tag] = None
                     else:
-                        results_status[tag] = "E_OK"
+                        #results_status[tag] = "S_OK"
+                        results_status[tag] = match.group("status")
                         results[tag] = match.group("value")
 
             return results, results_status

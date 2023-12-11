@@ -117,7 +117,7 @@ class EasyconBridge(EcotouchBridge):
 
                         results[tag] = None
                     else:
-                        results_status[tag] = "E_OK"
+                        results_status[tag] = "S_OK"
                         if valType == "ANALOG":
                             results[tag] = str(float(match.text) * 10.0)
                         else:
@@ -161,7 +161,7 @@ class EasyconBridge(EcotouchBridge):
                 if r.find("Operation completed succesfully") > 0 and resp.status == 200:
 
                     for i, tag in enumerate(tags):
-                        resultsStatus[tag] = "E_OK"
+                        resultsStatus[tag] = "S_OK"
                         results[tag] = list(value)[i]
 
             return results, resultsStatus

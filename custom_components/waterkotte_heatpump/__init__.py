@@ -204,7 +204,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                 self.data = {}
 
             for a_tag_in_result in result:
-                if result[a_tag_in_result]["status"] == "E_OK":
+                if result[a_tag_in_result]["status"] == "S_OK":
                     self.data[a_tag_in_result] = result[a_tag_in_result]
             return self.data
 
