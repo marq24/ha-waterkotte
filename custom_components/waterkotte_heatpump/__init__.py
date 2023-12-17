@@ -200,7 +200,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
                             .entities[entity]
                             .unique_id
                         )
-                        print(f"Entity: {entity} Tag: {tag.upper()}")
+                        _LOGGER.debug(f"Entity: {entity} Tag: {tag.upper()}")
                         # match = re.search(r"^.*\.(.*)_waterkotte_heatpump", entity)
                         # match = re.search(r"^.*\.(.*)", entity)
                         if tag is not None and tag.upper() in EcotouchTag.__members__:
@@ -238,6 +238,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         """Update single data"""
         res = await self.api.async_write_value(tag, value)
         # print(res)
+        _LOGGER.debug("async_write_tag: Result of writing Tag: ", res)
         self.data[tag]["value"] = res[tag.tags[0]]["value"]
         # self.data[result[0]]
 

@@ -39,9 +39,9 @@ class WaterkotteHeatpumpApiClient:
         # self._hass = hass
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = Ecotouch(host)
+            self._client = Ecotouch(host,_LOGGER)
         elif systemType == EASYCON:
-            self._client = Easycon(host)
+            self._client = Easycon(host,_LOGGER)
         else:
             print("Error unknown System type!")
         # self._entities = []
