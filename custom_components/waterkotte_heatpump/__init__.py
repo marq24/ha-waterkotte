@@ -238,8 +238,15 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
         """Update single data"""
         res = await self.api.async_write_value(tag, value)
         # print(res)
-        _LOGGER.debug("async_write_tag: Result of writing Tag: ", res)
-        self.data[tag]["value"] = res[tag.tags[0]]["value"]
+        _LOGGER.debug(f"async_write_tag: Result of writing Tag: {res}")
+        try:
+        #ntag=tag.tags[0]
+        #val=res[ntag]["value"]
+        #origval=self.data[tag]["value"]
+        #self.data[tag]["value"]=val
+            self.data[tag]["value"] = res[tag.tags[0]]["value"]
+        except Exception as e:
+            _LOGGER.debug(f"async_write_tag: EXCEPTION: {e}")
         # self.data[result[0]]
 
     async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
