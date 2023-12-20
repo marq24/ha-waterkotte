@@ -26,7 +26,7 @@
       "state_test_run": {"name": "Test run"},
       "state_heating_circulation_pump_d425": {"name": "Circulation pump heating"},
       "state_buffertank_circulation_pump_d377": {"name": "Circulation pump buffer tank"},
-      "state_pool_circulation_pump_d425": {"name": "Circulation pump pool"},
+      "state_pool_circulation_pump_d549": {"name": "Circulation pump pool"},
       "state_mix1_circulation_pump_d248": {"name": "Circulation pump mixer 1"},
       "state_mix2_circulation_pump_d291": {"name": "Circulation pump mixer 2"},
       "state_mix3_circulation_pump_d334": {"name": "Circulation pump mixer 3"},

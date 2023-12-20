@@ -26,7 +26,7 @@
       "state_test_run": {"name": "Testlauf"},
       "state_heating_circulation_pump_d425": {"name": "Umwälzpumpe Heizung"},
       "state_buffertank_circulation_pump_d377": {"name": "Umwälzpumpe Pufferspeicher"},
-      "state_pool_circulation_pump_d425": {"name": "Umwälzpumpe Pool"},
+      "state_pool_circulation_pump_d549": {"name": "Umwälzpumpe Pool"},
       "state_mix1_circulation_pump_d248": {"name": "Umwälzpumpe Mischer 1"},
       "state_mix2_circulation_pump_d291": {"name": "Umwälzpumpe Mischer 2"},
       "state_mix3_circulation_pump_d334": {"name": "Umwälzpumpe Mischer 3"},

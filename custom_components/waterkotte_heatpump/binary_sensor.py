@@ -292,9 +292,9 @@ SENSOR_TYPES = {
         None,
         None,
     ],
-    "STATE_POOL_CIRCULATION_PUMP_D425": [
+    "STATE_POOL_CIRCULATION_PUMP_D549": [
         "Pool circulation pump",
-        EcotouchTag.STATE_POOL_CIRCULATION_PUMP_D425,
+        EcotouchTag.STATE_POOL_CIRCULATION_PUMP_D549,
         None,
         None,
         None,
@@ -425,7 +425,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
                 match self._type:
                     case "STATE_HEATING_CIRCULATION_PUMP_D425" | \
                          "STATE_BUFFERTANK_CIRCULATION_PUMP_D377" | \
-                         "STATE_POOL_CIRCULATION_PUMP_D425" | \
+                         "STATE_POOL_CIRCULATION_PUMP_D549" | \
                          "STATE_MIX1_CIRCULATION_PUMP_D248" | \
                          "STATE_MIX2_CIRCULATION_PUMP_D291" | \
                          "STATE_MIX3_CIRCULATION_PUMP_D334" | \
@@ -439,7 +439,7 @@ class WaterkotteHeatpumpBinarySensor(WaterkotteHeatpumpEntity, BinarySensorEntit
                 match self._type:
                     case "STATE_HEATING_CIRCULATION_PUMP_D425" | \
                          "STATE_BUFFERTANK_CIRCULATION_PUMP_D377" | \
-                         "STATE_POOL_CIRCULATION_PUMP_D425" | \
+                         "STATE_POOL_CIRCULATION_PUMP_D549" | \
                          "STATE_MIX1_CIRCULATION_PUMP_D248" | \
                          "STATE_MIX2_CIRCULATION_PUMP_D291" | \
                          "STATE_MIX3_CIRCULATION_PUMP_D334" | \
