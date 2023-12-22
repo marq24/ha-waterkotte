@@ -236,6 +236,7 @@ class WaterkotteHeatpumpDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def async_write_tag(self, tag: EcotouchTag, value):
         """Update single data"""
+        _LOGGER.debug(f"async_write_tag: Writing Tag: {tag}, value: {value}")
         res = await self.api.async_write_value(tag, value)
         # print(res)
         _LOGGER.debug(f"async_write_tag: Result of writing Tag: {res}")

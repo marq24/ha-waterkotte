@@ -387,7 +387,7 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
             value = self._coordinator.data[sensor[1]]["value"]
             if value is None or value == "":
                 return "unknown"
-            if self._type == "adapt_heating":
+            if self._type in ("adapt_heating","adapt_mixing1","adapt_mixing2","adapt_mixing3"):
                 value = ADAPT_LOOKUP[value]
         except KeyError:
             return "unknown"
@@ -406,7 +406,7 @@ class WaterkotteHeatpumpSelect(NumberEntity, WaterkotteHeatpumpEntity):
         try:
             # print(option)
             # await self._coordinator.api.async_write_value(SENSOR_TYPES[self._type][1], option)
-            if self._type == "adapt_heating":
+            if self._type in ("adapt_heating","adapt_mixing1","adapt_mixing2","adapt_mixing3"):
                 value = ADAPT_LOOKUP.index(value)
             await self._coordinator.async_write_tag(SENSOR_TYPES[self._type][1], value)
         except ValueError:
