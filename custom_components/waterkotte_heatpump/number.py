@@ -2,6 +2,7 @@
 import logging
 
 from homeassistant.components.number import NumberEntity, NumberDeviceClass, DEFAULT_STEP, NumberMode
+from homeassistant.const import UnitOfTemperature, UnitOfTime
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
@@ -30,6 +31,7 @@ SENSOR_TYPES = {
         100,
         DEFAULT_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
 
     # Cooling/Kuehlung...
@@ -44,6 +46,7 @@ SENSOR_TYPES = {
         26,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A108
     "TEMPERATURE_COOLING_OUTDOOR_LIMIT": [
@@ -56,6 +59,7 @@ SENSOR_TYPES = {
         100,
         DEFAULT_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
 
     # Heizung
@@ -70,6 +74,7 @@ SENSOR_TYPES = {
         60,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_HEATING_ADJUST": [
         "Temperature heating Adjustment",
@@ -81,6 +86,7 @@ SENSOR_TYPES = {
         2,
         FIFTH_STEP,
         NumberMode.SLIDER,
+        UnitOfTemperature.KELVIN,
     ],
     "TEMPERATURE_HEATING_HYSTERESIS": [
         "Temperature heating Hysteresis",
@@ -92,6 +98,7 @@ SENSOR_TYPES = {
         10,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.KELVIN,
     ],
     "TEMPERATURE_MIX1_ADJUST": [
         "Temperature mixing circle 1 Adjustment",
@@ -103,6 +110,7 @@ SENSOR_TYPES = {
         2,
         FIFTH_STEP,
         NumberMode.SLIDER,
+        UnitOfTemperature.KELVIN,
     ],
     "TEMPERATURE_MIX2_ADJUST": [
         "Temperature mixing circle 2 Adjustment",
@@ -114,6 +122,7 @@ SENSOR_TYPES = {
         2,
         FIFTH_STEP,
         NumberMode.SLIDER,
+        UnitOfTemperature.KELVIN,
     ],
     "TEMPERATURE_MIX3_ADJUST": [
         "Temperature mixing circle 3 Adjustment",
@@ -125,6 +134,7 @@ SENSOR_TYPES = {
         2,
         FIFTH_STEP,
         NumberMode.SLIDER,
+        UnitOfTemperature.KELVIN,
     ],
 
     # Heizung - Heizkennlinie
@@ -139,6 +149,7 @@ SENSOR_TYPES = {
         35,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A94
     "TEMPERATURE_HEATING_HC_TARGET": [
@@ -151,6 +162,7 @@ SENSOR_TYPES = {
         65,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A91
     "TEMPERATURE_HEATING_HC_OUTDOOR_NORM": [
@@ -163,6 +175,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A92
     "TEMPERATURE_HEATING_HC_NORM": [
@@ -175,6 +188,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A95
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MAX": [
@@ -187,6 +201,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A104
     "TEMPERATURE_HEATING_SETPOINTLIMIT_MIN": [
@@ -199,6 +214,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
 
     # A38 - Warmwasser
@@ -212,6 +228,7 @@ SENSOR_TYPES = {
         70,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_WATER_HYSTERESIS": [
         "Temperature Hot Water Hysteresis",
@@ -223,6 +240,7 @@ SENSOR_TYPES = {
         10,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.KELVIN,
     ],
 
     # Mischerkreis 1 Heizkennlinie
@@ -237,6 +255,7 @@ SENSOR_TYPES = {
         35,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A277
     "TEMPERATURE_MIX1_HC_TARGET": [
@@ -249,6 +268,7 @@ SENSOR_TYPES = {
         65,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A274
     "TEMPERATURE_MIX1_HC_OUTDOOR_NORM": [
@@ -261,6 +281,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A275
     "TEMPERATURE_MIX1_HC_HEATING_NORM": [
@@ -273,6 +294,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # A278
     "TEMPERATURE_MIX1_HC_MAX": [
@@ -285,6 +307,7 @@ SENSOR_TYPES = {
         72,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
 
     # Mischerkreis 2 Heizkennlinie
@@ -298,6 +321,7 @@ SENSOR_TYPES = {
         35,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX2_HC_TARGET": [
         "Temperature mixing circle 2 heating limit target",
@@ -309,6 +333,7 @@ SENSOR_TYPES = {
         65,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX2_HC_OUTDOOR_NORM": [
         "Temperature mixing circle 2 norm outdoor",
@@ -320,6 +345,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX2_HC_HEATING_NORM": [
         "Temperature mixing circle 2 norm heating circle",
@@ -331,6 +357,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX2_HC_MAX": [
         "Temperature mixing circle 2 Limit for setpoint (Max.)",
@@ -342,6 +369,7 @@ SENSOR_TYPES = {
         72,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
 
     # Mischerkreis 3 Heizkennlinie
@@ -355,6 +383,7 @@ SENSOR_TYPES = {
         35,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX3_HC_TARGET": [
         "Temperature mixing circle 3 heating limit target",
@@ -366,6 +395,7 @@ SENSOR_TYPES = {
         65,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX3_HC_OUTDOOR_NORM": [
         "Temperature mixing circle 3 norm outdoor",
@@ -377,6 +407,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX3_HC_HEATING_NORM": [
         "Temperature mixing circle 3 norm heating circle",
@@ -388,6 +419,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_MIX3_HC_MAX": [
         "Temperature mixing circle 3 Limit for setpoint (Max.)",
@@ -399,6 +431,7 @@ SENSOR_TYPES = {
         72,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
 
     # Pool-Temperature Setpoint's
@@ -412,6 +445,7 @@ SENSOR_TYPES = {
         75,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_POOL_HYSTERESIS": [
         "Temperature Pool Hysteresis",
@@ -423,6 +457,7 @@ SENSOR_TYPES = {
         10,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.KELVIN,
     ],
     "TEMPERATURE_POOL_HC_LIMIT": [
         "Temperature Pool heating curve heating limit",
@@ -434,6 +469,7 @@ SENSOR_TYPES = {
         35,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_POOL_HC_TARGET": [
         "Temperature Pool heating curve heating limit target",
@@ -445,6 +481,7 @@ SENSOR_TYPES = {
         65,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_POOL_HC_OUTDOOR_NORM": [
         "Temperature Pool heating curve norm outdoor",
@@ -456,6 +493,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     "TEMPERATURE_POOL_HC_NORM": [
         "Temperature Pool heating curve norm",
@@ -467,6 +505,7 @@ SENSOR_TYPES = {
         99,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
 
     # Water disinfection start time & duration -> weekdays will be set in
@@ -481,6 +520,7 @@ SENSOR_TYPES = {
         70,
         TENTH_STEP,
         NumberMode.BOX,
+        UnitOfTemperature.CELSIUS,
     ],
     # "SCHEDULE_WATER_DISINFECTION_START_HOUR": [
     #     "Water disinfection start time (hour)",
@@ -514,6 +554,20 @@ SENSOR_TYPES = {
         23,
         DEFAULT_STEP,
         NumberMode.SLIDER,
+        UnitOfTime.HOURS,
+    ],
+
+    "SOURCE_PUMP_CAPTURE_TEMPERATURE_A479": [
+        "Heat source pump - ΔT heat source",
+        EcotouchTag.SOURCE_PUMP_CAPTURE_TEMPERATURE_A479,
+        NumberDeviceClass.TEMPERATURE,
+        "mdi:thermometer",
+        False,
+        0,
+        40,
+        TENTH_STEP,
+        NumberMode.BOX,
+        UnitOfTemperature.KELVIN,
     ],
 }
 
@@ -542,6 +596,8 @@ class WaterkotteHeatpumpNumber(NumberEntity, WaterkotteHeatpumpEntity):
         self._entry_data = entry.data
         self._device_id = entry.entry_id
         self._attr_translation_key = self._type.lower()
+        if len(SENSOR_TYPES[self._type]) > 9:
+            self._attr_native_unit_of_measurement = SENSOR_TYPES[self._type][9]
         super().__init__(hass_data, entry)
 
     @property

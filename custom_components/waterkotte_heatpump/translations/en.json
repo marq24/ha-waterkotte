@@ -109,7 +109,8 @@
       "temperature_pool_hc_limit": {"name": "T heating limit"},
       "temperature_pool_hc_target": {"name": "T heating limit target"},
       "temperature_pool_hc_outdoor_norm": {"name": "T norm outdoor"},
-      "temperature_pool_hc_norm": {"name": "T norm heating circle"}
+      "temperature_pool_hc_norm": {"name": "T norm heating circle"},
+      "source_pump_capture_temperature_a479":{"name":  "Heat source pump - ΔT heat source"}
     },
     "select": {
       "temperature_heating_mode": {

@@ -478,6 +478,20 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
 
     # lngA520 = ["Vollbetriebsstunden", "Operating hours", "Heures activit\xe9"],
 
+    # assuming that I1752 will be set to "Spreizung"=0 the A479 is a DELTA Temperature
+    # lngA479 = ΔT Wärmequelle - ["T Wärmequelle", "T heat source", "T captage"],
+    SOURCE_PUMP_CAPTURE_TEMPERATURE_A479 = TagData(["A479"], writeable=True)
+
+    SGREADY_SWITCH_D795 = TagData(["D795"], writeable=True)
+    #lngD796 = ["SG1: EVU-Sperre", "SG1: Extern switch off", "SG1: Coupure externe"],
+    SGREADY_SG1_EXTERN_OFF_SWITCH_D796 = TagData(["D796"], writeable=False)
+    #lngD797 = ["SG2: Normalbetrieb", "SG2: Normal operation", "SG2: Fonction normal"],
+    SGREADY_SG2_NORMAL_D797 = TagData(["D797"], writeable=False)
+    #lngD798 = ["SG3: Sollwerterh.", "SG3: Setpoint change", "SG3: Augment. consigne"],
+    SGREADY_SG3_SETPOINT_CHANGE_D798 = TagData(["D798"], writeable=False)
+    #lngD799 = ["SG4: Zwangslauf", "SG4: Forced run", "SG4: Marche forc\xe9e"],
+    SGREADY_SG4_FORCE_RUN_D799 = TagData(["D799"], writeable=False)
+
     def __hash__(self) -> int:
         return hash(self.name)
 

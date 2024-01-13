@@ -72,7 +72,8 @@
       "temperature_pool_hc_limit": {"name": "T Heizgrenze"},
       "temperature_pool_hc_target": {"name": "T Heizgrenze Soll"},
       "temperature_pool_hc_outdoor_norm": {"name": "T Norm-Außen"},
-      "temperature_pool_hc_norm": {"name": "T Heizkreis Norm"}
+      "temperature_pool_hc_norm": {"name": "T Heizkreis Norm"},
+      "source_pump_capture_temperature_a479":{"name":  "Wärmequellenpumpe - ΔT Wärmequelle"}
     },
     "select": {
       "temperature_heating_mode": {

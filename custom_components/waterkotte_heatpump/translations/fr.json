@@ -40,6 +40,9 @@
           "hm5": "Consigne circuit mélangeur"
         }
       }
+    },
+    "number": {
+      "source_pump_capture_temperature_a479":{"name":  "Pompe captage - ΔT captage"}
     }
   }
 }
