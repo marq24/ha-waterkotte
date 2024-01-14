@@ -2,14 +2,12 @@
 
 ![logo](https://github.com/marq24/ha-waterkotte/raw/master/logo.png)
 
-This Home Assistant Integration is providing information from the German heatpump pioneer Waterkotte. In addition and
-where possible functions are provided to control the system.
+This Home Assistant Integration is providing information from the German heatpump pioneer Waterkotte. In addition and where possible functions are provided to control the system.
 
-All data will be fetched (or send) to your Waterkotte via the build in webserver of the unit. So the functionality is
-based on the data and settings that are available also via the frontend that you can directly access via a web-browser.
+All data will be fetched (or send) to your Waterkotte via the build in webserver of the unit. So the functionality is based on the data and settings that are available also via the frontend that you can directly access via a web-browser.
 
-Please be aware, that we are developing this integration to best of our knowledge and belief, but cant give a guarantee.
-Therefore, use this integration **at your own risk**.
+## Disclaimer
+Please be aware, that we are developing this integration to best of our knowledge and belief, but cant give a guarantee. Therefore, use this integration **at your own risk**.
 
 **This component will set up the following platforms.**
 
@@ -61,17 +59,14 @@ Just click the following Button to start the configuration automatically:
 
 ### Manual
 
-Use the following steps for a manual configuration by adding the custom integration using the web interface and follow
-instruction on screen:
+Use the following steps for a manual configuration by adding the custom integration using the web interface and follow instruction on screen:
 
 - Go to `Configuration -> Integrations` and add "Waterkotte" integration
 - Provide display name for the device, and it's address (hostname or IP)
-- Select the number of TAGs that can be fetched in a single call to your device (older devices might need to adjust this
-  value - for my in 2022 installed Waterkotte 75 is totally fine)
+- Select the number of TAGs that can be fetched in a single call to your device (older devices might need to adjust this value - for my in 2022 installed Waterkotte 75 is totally fine)
 - Provide area where the heatpump is located
 
-After the integration was added you can use the 'config' button to adjust your settings and you can additionally modify
-the update intervall
+After the integration was added you can use the 'config' button to adjust your settings and you can additionally modify the update intervall
 
 Please note, that most of the available sensors are __not__ enabled by default.
 
@@ -83,13 +78,11 @@ The Integration provides currently 4 services:
 
 - SET_HOLIDAY
 
-  To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start`
-  and `end` parameter.
+  To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
 
 - SET_TIME
 
-  To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and
-  set `time` parameter (seconds will be ignored).
+  To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and set `time` parameter (seconds will be ignored).
 
 ### Get Energy Balance
 
@@ -99,20 +92,17 @@ The Integration provides currently 4 services:
 
 - GET_ENERGY_BALANCE_MONTHLY
 
-  Retrieves the monthly breakdown energy consumption data for a moving 12 month window. 1 = January, 2 = February,
-  etc...
+  Retrieves the monthly breakdown energy consumption data for a moving 12 month window. 1 = January, 2 = February, etc...
 
 ## Troubleshooting
 
 ### Sessions
 
-The Heatpump only allows 2 sessions and there is not way to close a session. Sometimes you will get an error about the
-login. Just wait a few minutes and it should auto correct itself. Session usually time out within about 5 min.
+The Heatpump only allows 2 sessions and there is not way to close a session. Sometimes you will get an error about the login. Just wait a few minutes and it should auto correct itself. Session usually time out within about 5 min.
 
 ### Stale Data
 
-The Heatpump will not always respond with data. This happens usually after the system changes status, e.g. start/stop
-the heating. There is not much we can do about this unfortunately. I try to cache the data in possible for a better UX.
+The Heatpump will not always respond with data. This happens usually after the system changes status, e.g. start/stop the heating. There is not much we can do about this unfortunately. I try to cache the data in possible for a better UX.
 
 ## Credits
 
@@ -132,15 +122,9 @@ s [integration_blueprint](https://github.com/custom-components/integration_bluep
 
 ### Switch to Tibber!
 
-Be smart switch to Tibber - that's what I did in october 2023. If you want to join Tibber (become a customer), you might
-want to use my personal invitation link. When you use this link, Tibber will we grant you and me a bonus of 50,-€ for
-each of us. This bonus then can be used in the Tibber store (not for your power bill) - e.g. to buy a Tibber Bridge. If
-you are already a Tibber customer and have not used an invitation link yet, you can also enter one afterward in the
-Tibber App.
+Be smart switch to Tibber - that's what I did in october 2023. If you want to join Tibber (become a customer), you might want to use my personal invitation link. When you use this link, Tibber will we grant you and me a bonus of 50,-€ for each of us. This bonus then can be used in the Tibber store (not for your power bill) - e.g. to buy a Tibber Bridge. If you are already a Tibber customer and have not used an invitation link yet, you can also enter one afterward in the Tibber App.
 
-Please consider [using my personal Tibber invitation link to join Tibber today](https://invite.tibber.com/6o0kqvzf) or
-Enter the following code: 6o0kqvzf (six, oscar, zero, kilo, quebec, victor, zulu, foxtrot) afterward in the Tibber App -
-TIA!
+Please consider [using my personal Tibber invitation link to join Tibber today](https://invite.tibber.com/6o0kqvzf) or Enter the following code: 6o0kqvzf (six, oscar, zero, kilo, quebec, victor, zulu, foxtrot) afterward in the Tibber App - TIA!
 
 ---
 
