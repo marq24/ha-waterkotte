@@ -6,10 +6,9 @@ This Home Assistant Integration is providing information from the German heatpum
 
 All data will be fetched (or send) to your Waterkotte via the build in webserver of the unit. So the functionality is based on the data and settings that are available also via the frontend that you can directly access via a web-browser.
 
-## Disclaimer
-Please be aware, that we are developing this integration to best of our knowledge and belief, but cant give a guarantee. Therefore, use this integration **at your own risk**.
+[![hacs_badge][hacsbadge]][hacs] [![BuyMeCoffee][buymecoffeebadge]][buymecoffee] [![PayPal][paypalbadge]][paypal]
 
-**This component will set up the following platforms.**
+## This component will set up the following platforms
 
 | Platform        | Description                                          |
 |-----------------|------------------------------------------------------|
@@ -20,9 +19,11 @@ Please be aware, that we are developing this integration to best of our knowledg
 | `number`        | adjustable Temperatures (demanded or heating curves) |
 | `service`       | Provides services to interact with heatpump          |
 
-[![hacs_badge][hacsbadge]][hacs] [![BuyMeCoffee][buymecoffeebadge]][buymecoffee] [![PayPal][paypalbadge]][paypal]
-
 Credit's have to go to the original creator of the HA integration [@pattisonmichael](https://github.com/pattisonmichael)
+
+## Disclaimer
+
+Please be aware, that we are developing this integration to best of our knowledge and belief, but cant give a guarantee. Therefore, use this integration **at your own risk**.
 
 ## What you get [2023.12.05]
 
