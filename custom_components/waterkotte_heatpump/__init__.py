@@ -7,7 +7,7 @@ import logging
 from datetime import timedelta
 from typing import List, Sequence
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import Config, SupportsResponse
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -124,10 +124,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         raise ConfigEntryNotReady
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
-    for platform in PLATFORMS:
-        await hass.config_entries.async_forward_entry_setup(entry, platform)
 
-    entry.add_update_listener(async_reload_entry)
+    for platform in PLATFORMS:
+        hass.async_create_task(hass.config_entries.async_forward_entry_setup(entry, platform))
+
+    if entry.state != ConfigEntryState.LOADED:
+        entry.add_update_listener(async_reload_entry)
 
     # after all sensors for the different platforms have been registered we can create the list
     # of all active tags - so that we only query the information from the heatpump that is currently
@@ -235,16 +237,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in PLATFORMS
-            ]
-        )
-    )
+    unloaded = all(await asyncio.gather(*[
+        hass.config_entries.async_forward_entry_unload(entry, platform)
+        for platform in PLATFORMS
+    ]))
     if unloaded:
-        hass.data[DOMAIN].pop(entry.entry_id)
+        if DOMAIN in hass.data and entry.entry_id in hass.data[DOMAIN]:
+            hass.data[DOMAIN].pop(entry.entry_id)
 
     await coordinator.api._client.logout()
     return unloaded
