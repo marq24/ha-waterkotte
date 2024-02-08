@@ -629,15 +629,13 @@ class EcotouchBridge:
 
                 for tag in tags:
                     match = re.search(
-                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
-                        # pylint: disable=anomalous-backslash-in-string
+                        rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
                         response,
                         re.MULTILINE,
                     )
                     if match is None:
                         match = re.search(
-                            # r"#%s\tE_INACTIVETAG" % tag,
-                            f"#{tag}\tE_INACTIVETAG",
+                            rf"#{tag}\tE_INACTIVETAG",
                             response,
                             re.MULTILINE,
                         )
@@ -745,17 +743,15 @@ class EcotouchBridge:
                 ###
                 for tag in tags:
                     match = re.search(
-                        f"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
-                        # pylint: disable=anomalous-backslash-in-string
+                        rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
                         response,
-                        re.MULTILINE,
+                        re.MULTILINE
                     )
                     if match is None:
                         match = re.search(
-                            # r"#%s\tE_INACTIVETAG" % tag,
-                            f"#{tag}\tE_INACTIVETAG",
+                            rf"#{tag}\tE_INACTIVETAG",
                             response,
-                            re.MULTILINE,
+                            re.MULTILINE
                         )
                         # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                         if match is None:
