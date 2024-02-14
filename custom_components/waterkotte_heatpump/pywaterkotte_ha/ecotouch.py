@@ -15,6 +15,7 @@ from typing import (
 )
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import TagData, InvalidValueException
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import TRANSLATIONS
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -86,19 +87,19 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
 
     # ENERGY-YEAR-BALANCE
     COP_HEATPUMP_YEAR = TagData(["A460"], "")  # HEATPUMP_COP
-    COP_HEATPUMP_ACTUAL_YEAR_INFO = TagData(["I1261"], decode_function=TagData._decode_year) # HEATPUMP_COP_YEAR
+    COP_HEATPUMP_ACTUAL_YEAR_INFO = TagData(["I1261"], decode_function=TagData._decode_year)  # HEATPUMP_COP_YEAR
     COP_TOTAL_SYSTEM_YEAR = TagData(["A461"], "")
     COP_HEATING_YEAR = TagData(["A695"])
     COP_HOT_WATER_YEAR = TagData(["A697"])
 
     ENERGY_CONSUMPTION_TOTAL_YEAR = TagData(["A450", "A451"], "kWh")
-    COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR = TagData(["A444", "A445"], "kWh") #ANUAL_CONSUMPTION_COMPRESSOR
-    SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR = TagData(["A446", "A447"], "kWh") #ANUAL_CONSUMPTION_SOURCEPUMP
-    ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR = TagData(["A448", "A449"], "kWh") #ANUAL_CONSUMPTION_EXTERNALHEATER
+    COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR = TagData(["A444", "A445"], "kWh")  # ANUAL_CONSUMPTION_COMPRESSOR
+    SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR = TagData(["A446", "A447"], "kWh")  # ANUAL_CONSUMPTION_SOURCEPUMP
+    ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR = TagData(["A448", "A449"], "kWh")  # ANUAL_CONSUMPTION_EXTERNALHEATER
     ENERGY_PRODUCTION_TOTAL_YEAR = TagData(["A458", "A459"], "kWh")
-    HEATING_ENERGY_PRODUCTION_YEAR = TagData(["A452", "A453"], "kWh") #ANUAL_CONSUMPTION_HEATING
-    HOT_WATER_ENERGY_PRODUCTION_YEAR = TagData(["A454", "A455"], "kWh") #ANUAL_CONSUMPTION_WATER
-    POOL_ENERGY_PRODUCTION_YEAR = TagData(["A456", "A457"], "kWh") #ANUAL_CONSUMPTION_POOL
+    HEATING_ENERGY_PRODUCTION_YEAR = TagData(["A452", "A453"], "kWh")  # ANUAL_CONSUMPTION_HEATING
+    HOT_WATER_ENERGY_PRODUCTION_YEAR = TagData(["A454", "A455"], "kWh")  # ANUAL_CONSUMPTION_WATER
+    POOL_ENERGY_PRODUCTION_YEAR = TagData(["A456", "A457"], "kWh")  # ANUAL_CONSUMPTION_POOL
     COOLING_ENERGY_YEAR = TagData(["A462", "A463"], "kWh")
 
     # The LAST12M values for ENERGY_CONSUMPTION_TOTAL (also the individual values for compressor, sourcepump & e-heater
@@ -133,7 +134,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     ENG_CONSUMPTION_SOURCEPUMP11 = TagData(["A806"])
     ENG_CONSUMPTION_SOURCEPUMP12 = TagData(["A807"])
 
-    #Docs say it should start at 806 for external heater but there is an overlapp to source pump
+    # Docs say it should start at 806 for external heater but there is an overlapp to source pump
     ENG_CONSUMPTION_EXTERNALHEATER01 = TagData(["A808"])
     ENG_CONSUMPTION_EXTERNALHEATER02 = TagData(["A809"])
     ENG_CONSUMPTION_EXTERNALHEATER03 = TagData(["A810"])
@@ -280,20 +281,20 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_POOL_HC_NORM = TagData(["A748"], "°C", writeable=True)
     TEMPERATURE_POOL_HC_RESULT = TagData(["A752"], "°C")
 
-    TEMPERATURE_MIX1 = TagData(["A44"], "°C") #TEMPERATURE_MIXING1_CURRENT
-    TEMPERATURE_MIX1_DEMAND = TagData(["A45"], "°C") #TEMPERATURE_MIXING1_SET
-    TEMPERATURE_MIX1_ADJUST = TagData(["I776"], "K", writeable=True) # ADAPT_MIXING1
+    TEMPERATURE_MIX1 = TagData(["A44"], "°C")  # TEMPERATURE_MIXING1_CURRENT
+    TEMPERATURE_MIX1_DEMAND = TagData(["A45"], "°C")  # TEMPERATURE_MIXING1_SET
+    TEMPERATURE_MIX1_ADJUST = TagData(["I776"], "K", writeable=True)  # ADAPT_MIXING1
     TEMPERATURE_MIX1_PV_CHANGE = TagData(["A1094"], "K", writeable=True)
     TEMPERATURE_MIX1_PERCENT = TagData(["A510"], "%")
-    TEMPERATURE_MIX1_HC_LIMIT = TagData(["A276"], "°C", writeable=True) #T_HEATING_LIMIT_MIXING1
-    TEMPERATURE_MIX1_HC_TARGET = TagData(["A277"], "°C", writeable=True) #T_HEATING_LIMIT_TARGET_MIXING1
-    TEMPERATURE_MIX1_HC_OUTDOOR_NORM = TagData(["A274"], "°C", writeable=True) #T_NORM_OUTDOOR_MIXING1
-    TEMPERATURE_MIX1_HC_HEATING_NORM = TagData(["A275"], "°C", writeable=True) #T_NORM_HEATING_CICLE_MIXING1
-    TEMPERATURE_MIX1_HC_MAX = TagData(["A278"], "°C", writeable=True) #MAX_TEMP_MIXING1
+    TEMPERATURE_MIX1_HC_LIMIT = TagData(["A276"], "°C", writeable=True)  # T_HEATING_LIMIT_MIXING1
+    TEMPERATURE_MIX1_HC_TARGET = TagData(["A277"], "°C", writeable=True)  # T_HEATING_LIMIT_TARGET_MIXING1
+    TEMPERATURE_MIX1_HC_OUTDOOR_NORM = TagData(["A274"], "°C", writeable=True)  # T_NORM_OUTDOOR_MIXING1
+    TEMPERATURE_MIX1_HC_HEATING_NORM = TagData(["A275"], "°C", writeable=True)  # T_NORM_HEATING_CICLE_MIXING1
+    TEMPERATURE_MIX1_HC_MAX = TagData(["A278"], "°C", writeable=True)  # MAX_TEMP_MIXING1
 
-    TEMPERATURE_MIX2 = TagData(["A46"], "°C") #TEMPERATURE_MIXING2_CURRENT
-    TEMPERATURE_MIX2_DEMAND = TagData(["A47"], "°C") #TEMPERATURE_MIXING2_SET
-    TEMPERATURE_MIX2_ADJUST = TagData(["I896"], "K", writeable=True) # ADAPT_MIXING2
+    TEMPERATURE_MIX2 = TagData(["A46"], "°C")  # TEMPERATURE_MIXING2_CURRENT
+    TEMPERATURE_MIX2_DEMAND = TagData(["A47"], "°C")  # TEMPERATURE_MIXING2_SET
+    TEMPERATURE_MIX2_ADJUST = TagData(["I896"], "K", writeable=True)  # ADAPT_MIXING2
     TEMPERATURE_MIX2_PV_CHANGE = TagData(["A1095"], "K", writeable=True)
     TEMPERATURE_MIX2_PERCENT = TagData(["A512"], "%")
     TEMPERATURE_MIX2_HC_LIMIT = TagData(["A322"], "°C", writeable=True)
@@ -302,9 +303,9 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     TEMPERATURE_MIX2_HC_HEATING_NORM = TagData(["A321"], "°C", writeable=True)
     TEMPERATURE_MIX2_HC_MAX = TagData(["A324"], "°C", writeable=True)
 
-    TEMPERATURE_MIX3 = TagData(["A48"], "°C") #TEMPERATURE_MIXING3_CURRENT
-    TEMPERATURE_MIX3_DEMAND = TagData(["A49"], "°C") #TEMPERATURE_MIXING3_SET
-    TEMPERATURE_MIX3_ADJUST = TagData(["I1017"], "K", writeable=True) # ADAPT_MIXING3
+    TEMPERATURE_MIX3 = TagData(["A48"], "°C")  # TEMPERATURE_MIXING3_CURRENT
+    TEMPERATURE_MIX3_DEMAND = TagData(["A49"], "°C")  # TEMPERATURE_MIXING3_SET
+    TEMPERATURE_MIX3_ADJUST = TagData(["I1017"], "K", writeable=True)  # ADAPT_MIXING3
     TEMPERATURE_MIX3_PV_CHANGE = TagData(["A1096"], "K", writeable=True)
     TEMPERATURE_MIX3_PERCENT = TagData(["A514"], "%")
     TEMPERATURE_MIX3_HC_LIMIT = TagData(["A368"], "°C", writeable=True)
@@ -389,8 +390,13 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     STATE_POOL = TagData(["I51"], bit=9)
     STATE_SOLAR = TagData(["I51"], bit=10)
     STATE_COOLING4WAY = TagData(["I51"], bit=11)
-    ALARM = TagData(["I52"])
-    INTERRUPTIONS = TagData(["I53"])
+
+    # we do not have any valid information about the meaning after the bit=8...
+    # https://github.com/flautze/home_assistant_waterkotte/issues/1#issuecomment-1916288553
+    #ALARM_BITS = TagData(["I52"], bits=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], translate=True)
+    ALARM_BITS = TagData(["I52"], bits=[0, 1, 2, 3, 4, 5, 6, 7, 8], translate=True)
+    INTERRUPTION_BITS = TagData(["I53"], bits=[0, 1, 2, 3, 4, 5, 6], translate=True)
+
     STATE_SERVICE = TagData(["I135"])
 
     STATUS_HEATING = TagData(["I137"], decode_function=TagData._decode_ro_status)
@@ -483,13 +489,13 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     SOURCE_PUMP_CAPTURE_TEMPERATURE_A479 = TagData(["A479"], writeable=True)
 
     SGREADY_SWITCH_D795 = TagData(["D795"], writeable=True)
-    #lngD796 = ["SG1: EVU-Sperre", "SG1: Extern switch off", "SG1: Coupure externe"],
+    # lngD796 = ["SG1: EVU-Sperre", "SG1: Extern switch off", "SG1: Coupure externe"],
     SGREADY_SG1_EXTERN_OFF_SWITCH_D796 = TagData(["D796"], writeable=False)
-    #lngD797 = ["SG2: Normalbetrieb", "SG2: Normal operation", "SG2: Fonction normal"],
+    # lngD797 = ["SG2: Normalbetrieb", "SG2: Normal operation", "SG2: Fonction normal"],
     SGREADY_SG2_NORMAL_D797 = TagData(["D797"], writeable=False)
-    #lngD798 = ["SG3: Sollwerterh.", "SG3: Setpoint change", "SG3: Augment. consigne"],
+    # lngD798 = ["SG3: Sollwerterh.", "SG3: Setpoint change", "SG3: Augment. consigne"],
     SGREADY_SG3_SETPOINT_CHANGE_D798 = TagData(["D798"], writeable=False)
-    #lngD799 = ["SG4: Zwangslauf", "SG4: Forced run", "SG4: Marche forc\xe9e"],
+    # lngD799 = ["SG4: Zwangslauf", "SG4: Forced run", "SG4: Marche forc\xe9e"],
     SGREADY_SG4_FORCE_RUN_D799 = TagData(["D799"], writeable=False)
 
     def __hash__(self) -> int:
@@ -504,11 +510,17 @@ class EcotouchBridge:
 
     auth_cookies = None
 
-    def __init__(self, host, tagsPerRequest: int = 10):
+    def __init__(self, host, tagsPerRequest: int = 10, lang: str = "en"):
         self.hostname = host
         self.username = "waterkotte"
         self.password = "waterkotte"
         self.tagsPerRequest = min(tagsPerRequest, 75)
+        self.lang_map = None
+
+        if lang in TRANSLATIONS:
+           self.lang_map = TRANSLATIONS[lang]
+        else:
+           self.lang_map = TRANSLATIONS["en"]
 
     # extracts statuscode from response
     def get_status_response(self, r):  # pylint: disable=invalid-name
@@ -576,6 +588,21 @@ class EcotouchBridge:
                         "value": a_eco_tag.decode_function(a_eco_tag, t_values),
                         "status": t_states[0]
                     }
+
+                    if a_eco_tag.translate and a_eco_tag.tags[0] in self.lang_map:
+                        value_map = self.lang_map[a_eco_tag.tags[0]]
+                        final_value = ""
+                        temp_values = result[a_eco_tag]["value"]
+                        for idx in range(len(temp_values)):
+                            if temp_values[idx]:
+                                final_value = final_value + ", " + str(value_map[idx])
+
+                        # we need to trim the firsts initial added ', '
+                        if len(final_value)>0:
+                            final_value = final_value[2:]
+
+                        result[a_eco_tag]["value"] = final_value
+
                 except KeyError:
                     _LOGGER.warning(
                         f"Key Error while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}")
@@ -650,7 +677,7 @@ class EcotouchBridge:
 
                         results[tag] = None
                     else:
-                        #results_status[tag] = "S_OK"
+                        # results_status[tag] = "S_OK"
                         results_status[tag] = match.group("status")
                         results[tag] = match.group("value")
 
@@ -764,7 +791,7 @@ class EcotouchBridge:
 
                         results[tag] = None
                     else:
-                        #results_status[tag] = "S_OK"
+                        # results_status[tag] = "S_OK"
                         results_status[tag] = match.group("status")
                         results[tag] = match.group("value")
 

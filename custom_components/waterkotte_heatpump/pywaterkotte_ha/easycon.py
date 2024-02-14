@@ -76,52 +76,59 @@ class EasyconBridge(EcotouchBridge):
 
         async with aiohttp.ClientSession(cookies=self.auth_cookies) as session:
 
-            async with session.get(
-                    f"http://{self.hostname}/config/xml.cgi?{query[1:]}"
-            ) as resp:
-                r = await resp.text()  # pylint: disable=invalid-name
-                tree = ET.fromstring(r)
-                root = tree[0]
+            async with session.get(f"http://{self.hostname}/config/xml.cgi?{query[1:]}") as response:
+                async with response:
+                    if response.status == 200:
+                        try:
+                            r = await response.text()  # pylint: disable=invalid-name
+                            tree = ET.fromstring(r)
+                            root = tree[0]
 
-                for tagType in root:
-                    for tag in tagType:
-                        if int(tag[0].text) < 50:
-                            print(f"{tagType.tag[0]}{tag[0].text}={tag[1].text}")
+                            for tagType in root:
+                                for tag in tagType:
+                                    if int(tag[0].text) < 50:
+                                        print(f"{tagType.tag[0]}{tag[0].text}={tag[1].text}")
 
-                # return None, None
+                            # return None, None
+                        except Exception as exc:
+                            _LOGGER.debug(f"Response was: {r} caused {exc}")
+                            raise Exception(f"Error in easycon.py parsing. Received: {r}")
 
-                for tag in tags:
-                    if tag[0] == "D":
-                        valType = "DIGITAL"
-                    elif tag[0] == "I":
-                        valType = "INTEGER"
-                    elif tag[0] == "A":
-                        valType = "ANALOG"
-                    match = root.find(f".//{valType}/*/INDEX[.='{tag[1:]}']/../VALUE")
-                    if match is None:
-                        match = re.search(
-                            # r"#%s\tE_INACTIVETAG" % tag,
-                            f"#{tag}\tE_INACTIVETAG",
-                            r,
-                            re.MULTILINE,
-                        )
-                        # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
-                        # print("Tag: %s is inactive!", tag)
-                        if match is None:
-                            # raise Exception(tag + " tag not found in response")
-                            _LOGGER.warning("Tag: %s not found in response!", tag)
-                            results_status[tag] = "E_NOTFOUND"
-                        else:
-                            # if val_status == "E_INACTIVE":
-                            results_status[tag] = "E_INACTIVE"
+                        for tag in tags:
+                            if tag[0] == "D":
+                                valType = "DIGITAL"
+                            elif tag[0] == "I":
+                                valType = "INTEGER"
+                            elif tag[0] == "A":
+                                valType = "ANALOG"
+                            match = root.find(f".//{valType}/*/INDEX[.='{tag[1:]}']/../VALUE")
+                            if match is None:
+                                match = re.search(
+                                    # r"#%s\tE_INACTIVETAG" % tag,
+                                    f"#{tag}\tE_INACTIVETAG",
+                                    r,
+                                    re.MULTILINE,
+                                )
+                                # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
+                                # print("Tag: %s is inactive!", tag)
+                                if match is None:
+                                    # raise Exception(tag + " tag not found in response")
+                                    _LOGGER.warning("Tag: %s not found in response!", tag)
+                                    results_status[tag] = "E_NOTFOUND"
+                                else:
+                                    # if val_status == "E_INACTIVE":
+                                    results_status[tag] = "E_INACTIVE"
 
-                        results[tag] = None
-                    else:
-                        results_status[tag] = "S_OK"
-                        if valType == "ANALOG":
-                            results[tag] = str(float(match.text) * 10.0)
-                        else:
-                            results[tag] = match.text
+                                results[tag] = None
+                            else:
+                                results_status[tag] = "S_OK"
+                                if valType == "ANALOG":
+                                    results[tag] = str(float(match.text) * 10.0)
+                                else:
+                                    results[tag] = match.text
+                    elif response.status == 404:
+                        _LOGGER.debug(f"http 404 caused by requesting {response.url} - full: {response}")
+                        raise FileNotFoundError(f"HTTP 404 {response.url}")
 
         return results, results_status
 

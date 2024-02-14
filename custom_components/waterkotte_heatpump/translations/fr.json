@@ -10,7 +10,8 @@
       }
     },
     "error": {
-      "auth": "Identifiant ou mot de passe erroné."
+      "auth": "Identifiant ou mot de passe erroné.",
+      "type": "No connection to Waterkotte possible - are you sure that you have selected the correct System Type?"
     },
     "abort": {
       "single_instance_allowed": "Une seule instance est autorisée."

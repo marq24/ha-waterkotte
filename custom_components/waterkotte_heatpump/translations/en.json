@@ -14,7 +14,8 @@
       }
     },
     "error": {
-      "auth": "Username/Password is wrong."
+      "auth": "Username/Password is wrong.",
+      "type": "No connection to Waterkotte possible - are you sure that you have selected the correct System Type?"
     },
     "abort": {
       "single_instance_allowed": "Only a single instance is allowed."
@@ -190,7 +191,9 @@
       "holiday_start_time": {"name": "Holiday start"},
       "holiday_end_time": {"name": "Holiday end"},
       "schedule_water_disinfection_start_time": {"name": "Start time"},
-      "state_service": {"name": "Service data"}
+      "state_service": {"name": "Service data"},
+      "alarm_bits": {"name":  "Malfunctions"},
+      "interruption_bits": {"name":  "Interruptions"}
     },
     "switch": {
       "holiday_enabled": {"name": "Holiday"},

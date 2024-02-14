@@ -24,7 +24,8 @@ class WaterkotteHeatpumpApiClient:
         session: aiohttp.ClientSession,
         tags: str,
         systemType: str,
-        tagsPerRequest: int
+        tagsPerRequest: int,
+        lang: str
     ) -> None:
         """Sample API Client."""
         self._username = username
@@ -33,7 +34,7 @@ class WaterkotteHeatpumpApiClient:
         self._host = host
         self._systemType = systemType
         if systemType == ECOTOUCH:
-            self._client = EcotouchBridge(host, tagsPerRequest)
+            self._client = EcotouchBridge(host, tagsPerRequest, lang)
         elif systemType == EASYCON:
             self._client = EasyconBridge(host)
         else:

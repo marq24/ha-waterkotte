@@ -25,9 +25,11 @@ Credit's have to go to the original creator of the HA integration [@pattisonmich
 
 Please be aware, that we are developing this integration to best of our knowledge and belief, but cant give a guarantee. Therefore, use this integration **at your own risk**.
 
-## What you get [2023.12.05]
+## What you get [2024.02.15]
 
 [![sampleview](https://github.com/marq24/ha-waterkotte/raw/master/sample-view-s.png)](https://github.com/marq24/ha-waterkotte/raw/master/sample-view.png)
+
+[get dashboard sources](https://github.com/marq24/ha-waterkotte/sample-view.yaml)
 
 ## Installation
 

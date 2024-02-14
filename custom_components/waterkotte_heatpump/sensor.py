@@ -9,7 +9,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfPressure,
     UnitOfPower,
-    UnitOfEnergy
+    UnitOfEnergy, EntityCategory
 )
 
 from homeassistant.components.sensor import (
@@ -631,6 +631,26 @@ SENSOR_TYPES = {
         None,
         None,
     ],
+    "ALARM_BITS": [
+        "Alarms",
+        EcotouchTag.ALARM_BITS,
+        None,
+        None,
+        "mdi:alarm-light",
+        True,
+        None,
+        None
+    ],
+    "INTERRUPTION_BITS": [
+        "Interruptions",
+        EcotouchTag.INTERRUPTION_BITS,
+        None,
+        None,
+        "mdi:alert-circle",
+        True,
+        None,
+        None
+    ],
 }
 
 # async def async_setup_entry(hass: HomeAssistantType, entry: ConfigType, async_add_entities) -> None:
@@ -659,7 +679,6 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
 
         if len(SENSOR_TYPES[self._type]) > 8:
             self._attr_state_class = SENSOR_TYPES[self._type][8]
-            #self._attr_suggested_display_precision = 3
             self._attr_selfimplemented_display_precision = 3
         else:
             self._attr_selfimplemented_display_precision = None
@@ -688,7 +707,10 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
         try:
             value = self._coordinator.data[self.eco_tag]["value"]
             if value is None or value == "":
-                value = "unknown"
+                if self._type == "ALARM_BITS" or self._type == "INTERRUPTION_BITS":
+                    value = "none"
+                else:
+                    value = "unknown"
             else:
                 if self._attr_selfimplemented_display_precision is not None:
                     value = round(float(value), self._attr_selfimplemented_display_precision)
@@ -725,9 +747,9 @@ class WaterkotteHeatpumpSensor(SensorEntity, WaterkotteHeatpumpEntity):
 
     @property
     def entity_category(self):
-        # UNKNONW ?!
+        if self._type == "ALARM_BITS" or self._type == "INTERRUPTION_BITS":
+            return EntityCategory.DIAGNOSTIC
         return None
-
 
     @property
     def unique_id(self):

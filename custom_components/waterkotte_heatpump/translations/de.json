@@ -153,7 +153,9 @@
       "holiday_start_time": {"name": "Urlaub Start"},
       "holiday_end_time": {"name": "Urlaub Ende"},
       "schedule_water_disinfection_start_time": {"name": "Startzeit"},
-      "state_service": {"name": "Servicedaten"}
+      "state_service": {"name": "Servicedaten"},
+      "alarm_bits": {"name":  "Störungen"},
+      "interruption_bits": {"name":  "Unterbrechungen"}
     },
     "switch": {
       "holiday_enabled": {"name": "Urlaubsfunktion"},

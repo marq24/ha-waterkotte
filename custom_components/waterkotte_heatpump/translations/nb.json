@@ -10,7 +10,8 @@
       }
     },
     "error": {
-      "auth": "Brukernavn/Passord er feil."
+      "auth": "Brukernavn/Passord er feil.",
+      "type": "No connection to Waterkotte possible - are you sure that you have selected the correct System Type?"
     },
     "abort": {
       "single_instance_allowed": "Denne integrasjonen kan kun konfigureres en gang."
