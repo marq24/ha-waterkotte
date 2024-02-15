@@ -81,9 +81,9 @@ The Integration provides currently 4 services:
 
   To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
 
-- SET_TIME
+- SET_DISINFECTION_START_TIME
 
-  To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_time` and set `time` parameter (seconds will be ignored).
+  To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_disinfection_start_time` and set `starthhmm` parameter (seconds will be ignored).
 
 ### Get Energy Balance
 
