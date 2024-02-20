@@ -1,0 +1,87 @@
+# Service ID
+set_holiday:
+  # Service name as shown in UI
+  name: Set Holiday
+  # Description of the service
+  description: Sets start and end times for holiday mode.
+  # If the service accepts entity IDs, target allows the user to specify entities by entity, device, or area. If `target` is specified, `entity_id` should not be defined in the `fields` map. By default it shows only targets matching entities from the same domain as the service, but if further customization is required, target supports the entity, device, and area selectors (https://www.home-assistant.io/docs/blueprint/selectors/). Entity selector parameters will automatically be applied to device and area, and device selector parameters will automatically be applied to area.
+  #target:
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    start:
+      # Field name as shown in UI
+      name: Start Time & Date
+      # Description of the field
+      description: Set the beginning of the holiday
+      # Whether or not field is required (default = false)
+      required: true
+      # Advanced fields are only shown when the advanced mode is enabled for the user (default = false)
+      # advanced: true
+      # Example value that can be passed for this field
+      #example: "low"
+      # The default field value
+      #default: "high"
+      selector:
+        datetime:
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      #selector:
+      #  select:
+      #    options:
+      #      - "off"
+      #      - "low"
+      #      - "medium"
+      #      - "high"
+
+    end:
+      name: End Time & Date
+      description: Set the end of the holiday
+      required: true
+      selector:
+        datetime:
+
+# Service ID
+set_disinfection_start_time:
+  # Service name as shown in UI
+  name: Set disinfection start time
+  # Description of the service
+  description: Set the start time for disinfection
+  # If the service accepts entity IDs, target allows the user to specify entities by entity, device, or area. If `target` is specified, `entity_id` should not be defined in the `fields` map. By default it shows only targets matching entities from the same domain as the service, but if further customization is required, target supports the entity, device, and area selectors (https://www.home-assistant.io/docs/blueprint/selectors/). Entity selector parameters will automatically be applied to device and area, and device selector parameters will automatically be applied to area.
+  #target:
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    starthhmm:
+      # Field name as shown in UI
+      name: Disinfection Start Time
+      # Description of the field
+      description: Set the disinfection start time
+      # Whether or not field is required (default = false)
+      required: true
+      # Advanced fields are only shown when the advanced mode is enabled for the user (default = false)
+      # advanced: true
+      # Example value that can be passed for this field
+      #example: "low"
+      # The default field value
+      #default: "high"
+      selector:
+        time:
+      # Selector (https://www.home-assistant.io/docs/blueprint/selectors/) to control the input UI for this field
+      #selector:
+      #  select:
+      #    options:
+      #      - "off"
+      #      - "low"
+      #      - "medium"
+      #      - "high"
+
+get_energy_balance:
+  # Service name as shown in UI
+  name: Get Current Year Energy Balance
+  # Description of the service
+  description: Get the energy balance by different usage for the current year
+get_energy_balance_monthly:
+  # Service name as shown in UI
+  name: Get rolling 12 Month breakdown
+  # Description of the service
+  description: Gets the energy balance breakdown per month in a rolling 12 month window

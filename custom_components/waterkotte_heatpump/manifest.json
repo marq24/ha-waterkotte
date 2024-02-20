@@ -1,0 +1,15 @@
+{
+  "domain": "waterkotte_heatpump",
+  "name": "Waterkotte Heatpump [+2020]",
+  "codeowners": [
+    "@marq24",
+    "@pattisonmichael"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/marq24/ha-waterkotte",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/marq24/ha-waterkotte/issues",
+  "requirements": [],
+  "version": "2024.2.2"
+}
