@@ -14,7 +14,7 @@ from homeassistant.components.switch import SwitchEntityDescription
 
 from homeassistant.const import UnitOfTemperature, PERCENTAGE, UnitOfEnergy, UnitOfPower, UnitOfPressure, UnitOfTime
 
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import SIX_STEPS_MODES
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import HEATING_MODES
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import EcotouchTag
 
 # Base component constants
@@ -35,8 +35,7 @@ STATE_OFF: Final = "off"
 # # #### Enum Options ####
 ENUM_ONOFFAUTO: Final = [STATE_ON, STATE_OFF, STATE_AUTO]
 ENUM_OFFAUTOMANUAL: Final = [STATE_OFF, STATE_AUTO, STATE_MANUAL]
-ENUM_HEATING_MODE: Final = list(SIX_STEPS_MODES.values())
-ENUM_VENT_OPERATION_MODE: Final = list(SIX_STEPS_MODES.values())
+ENUM_HEATING_MODE: Final = list(HEATING_MODES.values())
 
 # Configuration and options
 CONF_ENABLED: Final = "enabled"
@@ -961,15 +960,6 @@ SELECT_SENSORS = [
         icon="mdi:radiator",
         entity_registry_enabled_default=True,
         options=ENUM_HEATING_MODE,
-    ),
-    ExtSelectEntityDescription(
-        key="BASICVENT_OPERATION_MODE_I4582",
-        name="basicvent_operation_mode_i4582",
-        tag=EcotouchTag.BASICVENT_OPERATION_MODE_I4582,
-        device_class=DEVICE_CLASS_ENUM,
-        icon="mdi:hvac",
-        entity_registry_enabled_default=False,
-        options=ENUM_VENT_OPERATION_MODE,
     )
 ]
 SENSOR_SENSORS = [

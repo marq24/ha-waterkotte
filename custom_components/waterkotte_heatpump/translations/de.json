@@ -143,23 +143,12 @@
       "temperature_heating_mode": {
         "name": "Heizungsregelung",
         "state": {
-          "mode0": "Witterungsgeführt",
-          "mode1": "Manuelle Sollwertvorgabe",
-          "mode2": "Sollwertvorgabe BMS",
-          "mode3": "Sollwertvorgabe EXT",
-          "mode4": "Sollwertvorgabe 0-10V",
-          "mode5": "Mischerkreis Vorgabe"
-        }
-      },
-      "basicvent_operation_mode_i4582": {
-        "name": "Lüfter Betriebsmodus",
-        "state": {
-          "mode0": "Tag",
-          "mode1": "Nacht",
-          "mode2": "Zeitprogramm",
-          "mode3": "Party",
-          "mode4": "Urlaub",
-          "mode5": "Bypass"
+          "hm0": "Witterungsgeführt",
+          "hm1": "Manuelle Sollwertvorgabe",
+          "hm2": "Sollwertvorgabe BMS",
+          "hm3": "Sollwertvorgabe EXT",
+          "hm4": "Sollwertvorgabe 0-10V",
+          "hm5": "Mischerkreis Vorgabe"
         }
       },
       "enable_cooling": {"name": "Betriebsmodus Kühlung"},
