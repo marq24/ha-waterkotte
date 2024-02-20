@@ -739,18 +739,18 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # A4508: uom: '', 'Hu Luftfeuchtigkeit Sollwert'
     BASICVENT_HUMIDITY_DEMAND_A4508 = TagData(["A4508"], writeable=False)
     # A4510: uom: '', 'Hu Luftfeuchtigkeit'
-    BASICVENT_HUMIDITY_VALUE_A4510 = TagData(["A4510"], writeable=False)
+    BASICVENT_HUMIDITY_SECOND_VALUE_A4510 = TagData(["A4510"], writeable=False)
     # A4990: uom: '', 'Luftfeuchtigkeit'
-    BASICVENT_HUMIDITY_SECOND_VALUE_A4990 = TagData(["A4990"], writeable=False)
+    BASICVENT_HUMIDITY_VALUE_A4990 = TagData(["A4990"], writeable=False)
 
     # A4512: uom: '', 'CO2-Konzentration PID'
     BASICVENT_CO2_SETPOINT_A4512 = TagData(["A4512"], writeable=True)
     # A4514: uom: '', 'CO2-Konzentration Sollwert'
     BASICVENT_CO2_DEMAND_A4514 = TagData(["A4514"], writeable=False)
     # A4516: uom: '', 'CO2-Konzentration'
-    BASICVENT_CO2_VALUE_A4516 = TagData(["A4516"], writeable=False)
+    BASICVENT_CO2_SECOND_VALUE_A4516 = TagData(["A4516"], writeable=False)
     # A4992: uom: '', 'CO2'
-    BASICVENT_CO2_SECOND_VALUE_A4992 = TagData(["A4992"], writeable=False)
+    BASICVENT_CO2_VALUE_A4992 = TagData(["A4992"], writeable=False)
 
     # A4518: uom: '', 'VOC Kohlenwasserstoffverbindungen PID'
     BASICVENT_VOC_SETPOINT_A4518 = TagData(["A4518"], writeable=True)
@@ -760,6 +760,7 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     BASICVENT_VOC_VALUE_A4522 = TagData(["A4522"], writeable=False)
 
     # I4523: uom: '', 'Luftqualitaet Messung VOC CO2 Sensor'
+
     # I4582: uom: '', opts: { type:'select', options: ['Tag','Nacht','Zeitprogramm','Party','Urlaub','Bypass'] }, 'i_Mode'
     BASICVENT_OPERATION_MODE_I4582 = TagData(["I4582"], writeable=True, decode_function=TagData._decode_six_steps_mode,
                                              encode_function=TagData._encode_six_steps_mode)
@@ -774,22 +775,22 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     # BASICVENT_INCOMMING_AIR_DRIVE_RPM
     # A4986: uom: '%', 'Analogausgang Y1' - Rotation Incoming air drive percent
     # BASICVENT_INCOMMING_AIR_DRIVE
+    # A5000: uom: '', 'T1'
+    # BASICVENT_T_INCOMMING_AIR_BEFORE_ODA
     # A4996: uom: '', 'T3'
-    # BASICVENT_T_INCOMMING_AIR
+    # BASICVENT_T_INCOMMING_AIR_AFTER_SUP
 
     # A4545: uom: '', 'Luefter 2 Rueckmeldung'
     # D1603: uom: '', 'Luefter 2 - Manuell Drehzahl'
     # A4547: uom: 'U/min', 'Luefter 2 Umdrehungen pro Minute'
-    # BASICVENT_ONGOING_AIR_DRIVE_RPM
+    # BASICVENT_OUTGOING_AIR_DRIVE_RPM
     # A4984: uom: '%', 'Analogausgang Y2' - Rotation Ongoing air drive percent
-    # BASICVENT_ONGOING_AIR_DRIVE
-    # A4994: uom: '', 'T4'
-    # BASICVENT_T_ONGOING_AIR
-
-    # A5000: uom: '', 'T1'
-    # BASICVENT_T_EXTERNAL_AIR
+    # BASICVENT_OUTGOING_AIR_DRIVE
     # A4998: uom: '', 'T2'
-    # BASICVENT_T_EXAUSTING_AIR
+    # BASICVENT_T_OUTGOING_AIR_BEFORE_ETH
+    # A4994: uom: '', 'T4'
+    # BASICVENT_T_OUTGOING_AIR_AFTER_EEH
+
 
     # D1432: uom: '', 'Bypass Aktiv' -
     # D1433: uom: '', 'HU En'
