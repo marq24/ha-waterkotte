@@ -18,7 +18,7 @@ from typing import (
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import (
     SERIES,
     SYSTEM_IDS,
-    HEATING_MODES
+    SIX_STEPS_MODES
 )
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import (
@@ -163,19 +163,19 @@ class TagData(NamedTuple):
         elif value == "manual":
             encoded_values[ecotouch_tag] = "2"
 
-    def _decode_heat_mode(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
+    def _decode_six_steps_mode(self, str_vals: List[str], *other_args):  # pylint: disable=unused-argument
         assert len(self.tags) == 1
         intVal = int(str_vals[0])
-        if intVal >= 0 and intVal <= len(HEATING_MODES):
-            return HEATING_MODES[intVal]
+        if intVal >= 0 and intVal <= len(SIX_STEPS_MODES):
+            return SIX_STEPS_MODES[intVal]
         else:
             return "Error"
 
-    def _encode_heat_mode(self, value, encoded_values):
+    def _encode_six_steps_mode(self, value, encoded_values):
         assert len(self.tags) == 1
         ecotouch_tag = self.tags[0]
         assert ecotouch_tag[0] in ["I"]
-        index = self._get_key_from_value(HEATING_MODES, value)
+        index = self._get_key_from_value(SIX_STEPS_MODES, value)
         if index is not None:
             encoded_values[ecotouch_tag] = str(index)
 
@@ -435,8 +435,8 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
 
     # TEMPERATURE_HEATING_BUFFERTANK_ROOM_SETPOINT = TagData(["A413"], "°C", writeable=True)
 
-    TEMPERATURE_HEATING_MODE = TagData(["I265"], writeable=True, decode_function=TagData._decode_heat_mode,
-                                       encode_function=TagData._encode_heat_mode)
+    TEMPERATURE_HEATING_MODE = TagData(["I265"], writeable=True, decode_function=TagData._decode_six_steps_mode,
+                                       encode_function=TagData._encode_six_steps_mode)
     # this A32 value is not visible in the GUI - and IMHO (marq24) there should
     # be no way to set the heating temperature directly - use the values of the
     # 'TEMPERATURE_HEATING_HC' instead (HC = HeatCurve)
@@ -711,6 +711,128 @@ class EcotouchTag(TagData, Enum):  # pylint: disable=function-redefined
     SGREADY_SG3_SETPOINT_CHANGE_D798 = TagData(["D798"], writeable=False)
     # lngD799 = ["SG4: Zwangslauf", "SG4: Forced run", "SG4: Marche forc\xe9e"],
     SGREADY_SG4_FORCE_RUN_D799 = TagData(["D799"], writeable=False)
+
+    ##################################################################################
+    # BASICVENT / ECOVENT Stuff...
+    # PID-Regler: Proportional-Integral-Differenzial-Regler
+    ##################################################################################
+    # A4387: uom: '', 'Energieersparnis gesamt'
+    BASICVENT_ENERGY_SAVE_TOTAL_A4387 = TagData(["A4387"], writeable=False)
+    # A4389: uom: '', 'Energieersparnis aktuell'
+    BASICVENT_ENERGY_SAVE_CURRENT_A4389 = TagData(["A4389"], writeable=False)
+    # A4391: uom: '', 'Wärmerückgewinnungsgrad'
+    BASICVENT_HEAT_RECOVERY_RATE_A4391 = TagData(["A4391"], writeable=False)
+
+    # A4498: uom: 'h', 'Luftfilter Wechsel Betriebsstunden'
+    BASICVENT_AIR_FILTER_CHANGE_OPERATING_HOURS_A4498 = TagData(["A4498"], writeable=False)
+    # A4504: uom: 'Tage', 'Luftfilter Wechsel Betriebsstunden Restlaufzeit dd'
+    BASICVENT_AIR_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504 = TagData(["A4504"], writeable=False)
+    # D1544: uom: '', 'Luftfilter Wechsel Betriebsstunden Reset'
+    BASICVENT_AIR_FILTER_CHANGE_OPERATING_HOURS_RESET_D1544 = TagData(["D1544"], writeable=False)
+    # D1469: uom: '', 'Luftfilter Wechselanzeige'
+    BASICVENT_AIR_FILTER_CHANGE_DISPLAY_D1469 = TagData(["D1469"], writeable=False)
+    # D1626: uom: '', 'Luftfilter Wechselanzeige Animation'
+    BASICVENT_AIR_FILTER_CHANGE_DISPLAY_ANIMATION_D1626 = TagData(["D1626"], writeable=False)
+
+    # A4506: uom: '', 'Hu Luftfeuchtigkeit PID'
+    BASICVENT_HUMIDITY_SETPOINT_A4506 = TagData(["A4506"], writeable=True)
+    # A4508: uom: '', 'Hu Luftfeuchtigkeit Sollwert'
+    BASICVENT_HUMIDITY_DEMAND_A4508 = TagData(["A4508"], writeable=False)
+    # A4510: uom: '', 'Hu Luftfeuchtigkeit'
+    BASICVENT_HUMIDITY_VALUE_A4510 = TagData(["A4510"], writeable=False)
+    # A4990: uom: '', 'Luftfeuchtigkeit'
+    BASICVENT_HUMIDITY_SECOND_VALUE_A4990 = TagData(["A4990"], writeable=False)
+
+    # A4512: uom: '', 'CO2-Konzentration PID'
+    BASICVENT_CO2_SETPOINT_A4512 = TagData(["A4512"], writeable=True)
+    # A4514: uom: '', 'CO2-Konzentration Sollwert'
+    BASICVENT_CO2_DEMAND_A4514 = TagData(["A4514"], writeable=False)
+    # A4516: uom: '', 'CO2-Konzentration'
+    BASICVENT_CO2_VALUE_A4516 = TagData(["A4516"], writeable=False)
+    # A4992: uom: '', 'CO2'
+    BASICVENT_CO2_SECOND_VALUE_A4992 = TagData(["A4992"], writeable=False)
+
+    # A4518: uom: '', 'VOC Kohlenwasserstoffverbindungen PID'
+    BASICVENT_VOC_SETPOINT_A4518 = TagData(["A4518"], writeable=True)
+    # A4520: uom: '', 'VOC Kohlenwasserstoffverbindungen Sollwert'
+    BASICVENT_VOC_DEMAND_A4520 = TagData(["A4520"], writeable=False)
+    # A4522: uom: '', 'VOC Kohlenwasserstoffverbindungen'
+    BASICVENT_VOC_VALUE_A4522 = TagData(["A4522"], writeable=False)
+
+    # I4523: uom: '', 'Luftqualitaet Messung VOC CO2 Sensor'
+    # I4582: uom: '', opts: { type:'select', options: ['Tag','Nacht','Zeitprogramm','Party','Urlaub','Bypass'] }, 'i_Mode'
+    BASICVENT_OPERATION_MODE_I4582 = TagData(["I4582"], writeable=True, decode_function=TagData._decode_six_steps_mode,
+                                             encode_function=TagData._encode_six_steps_mode)
+
+    # mdi:air-filter
+    # mdi:hvac
+    # mdi:wind-power
+
+    # A4549: uom: '', 'Luefter 1 Rueckmeldung'
+    # D1605: uom: '', 'Luefter 1 - Manuell Drehzahl'
+    # A4551: uom: 'U/min', 'Luefter 1 Umdrehungen pro Minute'
+    # BASICVENT_INCOMMING_AIR_DRIVE_RPM
+    # A4986: uom: '%', 'Analogausgang Y1' - Rotation Incoming air drive percent
+    # BASICVENT_INCOMMING_AIR_DRIVE
+    # A4996: uom: '', 'T3'
+    # BASICVENT_T_INCOMMING_AIR
+
+    # A4545: uom: '', 'Luefter 2 Rueckmeldung'
+    # D1603: uom: '', 'Luefter 2 - Manuell Drehzahl'
+    # A4547: uom: 'U/min', 'Luefter 2 Umdrehungen pro Minute'
+    # BASICVENT_ONGOING_AIR_DRIVE_RPM
+    # A4984: uom: '%', 'Analogausgang Y2' - Rotation Ongoing air drive percent
+    # BASICVENT_ONGOING_AIR_DRIVE
+    # A4994: uom: '', 'T4'
+    # BASICVENT_T_ONGOING_AIR
+
+    # A5000: uom: '', 'T1'
+    # BASICVENT_T_EXTERNAL_AIR
+    # A4998: uom: '', 'T2'
+    # BASICVENT_T_EXAUSTING_AIR
+
+    # D1432: uom: '', 'Bypass Aktiv' -
+    # D1433: uom: '', 'HU En'
+    # D1465: uom: '', 'Comfort-Bypass'
+    # D1466: uom: '', 'Smartbypass'
+    # D1503: uom: '', 'Holiday enabled'
+
+    #############################
+    # UNKNOWN BASIC VENT VALUES #
+    #############################
+    # A4420: uom: '', 'Luftmenge Stufe 2 - Nennlüftung NL'
+
+    # A4525: uom: '', 'Schutzfunktion Ablufttemperatur Schaltdifferenz'
+    # A4527: uom: '', 'Schutzfunktion Ablufttemperatur Unterbrechung'
+    # A4529: uom: '', 'Schutzfunktion Ablufttemperatur Warnung'
+
+    # A4531: uom: '', 'Frostschutzfunktion Fortluft EHH NotAus'
+    # A4533: uom: '', 'Frostschutzfunktion Taktbetrieb High'
+    # A4535: uom: '', 'Frostschutzfunktion Taktbetrieb Low'
+    # A4537: uom: '', 'Frostschutzfunktion Schaltdifferenz'
+    # A4539: uom: '', 'Frostschutzfunktion Fortluft EHH'
+    # A4541: uom: '', 'Frostschutzfunktion Aussenluft ODA'
+
+    # A4542: uom: '', 'Feuerstaetten Funktion FPF Betriebsmodus Abluft'
+    # A4543: uom: '', 'Feuerstaetten Funktion FPF Betriebsmodus Aussenluft'
+
+    # D1488: uom: '', 'Warnung Wxxx'
+    # D1489: uom: '', 'Fehler Fxxx'
+    # D1490: uom: '', 'Fehler Fxxx'
+    # D1491: uom: '', 'Fehler Fxxx'
+
+    # D1508: uom: '', 'Frostschutz Auskuehlschutz T1'
+    # D1507: uom: '', 'Frostschutz Auskuehlschutz T2'
+
+    # D1627: uom: '', 'Feuerstaetten Funktion FPF Animation'
+    # D1628: uom: '', 'Rauchmelder Brandschutz Funktion SDF Animation'
+    # D1629: uom: '', 'Frostschutzfunktion Aussenluft ODA FALSE OK'
+
+    # D2035: uom: '', 'Anschlussseite Rechts TRUE oder Rechts FALSE'
+    # D2036: uom: '', 'Anschlussseite Links TRUE oder Rechts FALSE'
+    # I2331: uom: '', 'TT_b_enabled[5,6]'
+    # I2484: uom: '', 'TT_b_enabled[5,2]'
+    # I2889: uom: '', 'TT_b_enabled[6,5]'
 
     def __hash__(self) -> int:
         return hash(self.name)

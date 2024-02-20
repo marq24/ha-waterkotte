@@ -2,13 +2,13 @@ from typing import Final
 
 ECOTOUCH: Final = "ECOTOUCH"
 EASYCON: Final = "EASYCON"
-HEATING_MODES: Final = {
-    0: "hm0",
-    1: "hm1",
-    2: "hm2",
-    3: "hm3",
-    4: "hm4",
-    5: "hm5"
+SIX_STEPS_MODES: Final = {
+    0: "mode0",
+    1: "mode1",
+    2: "mode2",
+    3: "mode3",
+    4: "mode4",
+    5: "mode5"
 }
 SERIES: Final = [
     "Custom",

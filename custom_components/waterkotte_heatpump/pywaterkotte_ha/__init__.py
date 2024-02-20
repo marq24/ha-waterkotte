@@ -18,7 +18,7 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import (
     EASYCON,
     SERIES,
     SYSTEM_IDS,
-    HEATING_MODES,
+    SIX_STEPS_MODES,
     TRANSLATIONS
 )
 
