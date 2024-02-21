@@ -69,7 +69,13 @@
       "state_mix1_circulation_pump_d248": {"name": "Circulation pump mixer 1"},
       "state_mix2_circulation_pump_d291": {"name": "Circulation pump mixer 2"},
       "state_mix3_circulation_pump_d334": {"name": "Circulation pump mixer 3"},
-      "state_mix1_circulation_pump_d563": {"name": "Circulation pump mixer 1 [D563]"}
+      "state_mix1_circulation_pump_d563": {"name": "Circulation pump mixer 1 [D563]"},
+      "basicvent_status_bypass_active_d1432": {"name": "Vent Bypass Active"},
+      "basicvent_status_humidifier_active_d1433": {"name": "Vent Humidifier Active"},
+      "basicvent_status_comfort_bypass_active_d1465": {"name": "Vent Comfort Bypass Active"},
+      "basicvent_status_smart_bypass_active_d1466": {"name": "Vent Smart Bypass Active"},
+      "basicvent_status_holiday_enabled_d1503": {"name": "Vent Holiday Enabled"},
+      "basicvent_filter_change_display_d1469": {"name": "Vent Filter change required"}
     },
     "number": {
       "temperature_return_setpoint": {"name": "T setpoint"},
@@ -205,7 +211,23 @@
       "schedule_water_disinfection_start_time": {"name": "Start time"},
       "state_service": {"name": "Service data"},
       "alarm_bits": {"name":  "Malfunctions"},
-      "interruption_bits": {"name":  "Interruptions"}
+      "interruption_bits": {"name":  "Interruptions"},
+      "basicvent_filter_change_operating_hours_a4498": {"name": "Vent Air-Filter-Change operating hours"},
+      "basicvent_filter_change_remaining_operating_days_a4504": {"name": "Vent Air-Filter-Change operating hours remaining time"},
+      "basicvent_humidity_value_a4990": {"name": "Vent humidity"},
+      "basicvent_co2_value_a4992": {"name": "Vent CO2 concentration"},
+      "basicvent_voc_value_a4522": {"name": "Vent VOC"},
+      "basicvent_incomming_fan_rpm_a4551": {"name": "Vent 1 (outer) rotation"},
+      "basicvent_incomming_fan_a4986": {"name": "Vent 1 (outer) power"},
+      "basicvent_temperature_incomming_air_before_oda_a5000": {"name": "Vent Outdoor air (ODA) temperatur"},
+      "basicvent_temperature_incomming_air_after_sup_a4996": {"name": "Vent Supply air (SUP) temperatur"},
+      "basicvent_outgoing_fan_rpm_a4547": {"name": "Vent 2 (inner) rotation"},
+      "basicvent_outgoing_fan_a4984": {"name": "Vent 2 (inner) power"},
+      "basicvent_temperature_outgoing_air_before_eth_a4998": {"name": "Vent Extract air (ETH) temperature"},
+      "basicvent_temperature_outgoing_air_after_eeh_a4994": {"name": "Vent Exhaust air (EEH) temperature"},
+      "basicvent_energy_save_total_a4387": {"name": "Vent energy savings total"},
+      "basicvent_energy_save_current_a4389": {"name": "Vent energy saving now"},
+      "basicvent_energy_recovery_rate_a4391": {"name": "Vent Heat recovery rate"}
     },
     "switch": {
       "holiday_enabled": {"name": "Holiday"},

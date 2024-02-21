@@ -94,7 +94,13 @@
       "state_mix1_circulation_pump_d248": {"name": "Umwälzpumpe Mischer 1"},
       "state_mix2_circulation_pump_d291": {"name": "Umwälzpumpe Mischer 2"},
       "state_mix3_circulation_pump_d334": {"name": "Umwälzpumpe Mischer 3"},
-      "state_mix1_circulation_pump_d563": {"name": "Umwälzpumpe Mischer 1 [D563]"}
+      "state_mix1_circulation_pump_d563": {"name": "Umwälzpumpe Mischer 1 [D563]"},
+      "basicvent_status_bypass_active_d1432": {"name": "Lüfter Bypass aktiv"},
+      "basicvent_status_humidifier_active_d1433": {"name": "Lüfter Luftbefeuchter aktiv"},
+      "basicvent_status_comfort_bypass_active_d1465": {"name": "Lüfter Komfort Bypass aktiv"},
+      "basicvent_status_smart_bypass_active_d1466": {"name": "Lüfter Smart Bypass aktiv"},
+      "basicvent_status_holiday_enabled_d1503": {"name": "Lüfter Ferienmodus aktiv"},
+      "basicvent_filter_change_display_d1469": {"name": "Lüfter Filterwechsel notwendig"}
     },
     "number": {
       "temperature_return_setpoint": {"name": "T Sollwert"},
@@ -230,7 +236,23 @@
       "schedule_water_disinfection_start_time": {"name": "Startzeit"},
       "state_service": {"name": "Servicedaten"},
       "alarm_bits": {"name":  "Störungen"},
-      "interruption_bits": {"name":  "Unterbrechungen"}
+      "interruption_bits": {"name":  "Unterbrechungen"},
+      "basicvent_filter_change_operating_hours_a4498": {"name": "Luftfilter-Wechsel Betriebsstunden"},
+      "basicvent_filter_change_remaining_operating_days_a4504": {"name": "Luftfilter-Wechsel Betriebsstunden Restlaufzeit"},
+      "basicvent_humidity_value_a4990": {"name": "Lüfter Luftfeuchtigkeit"},
+      "basicvent_co2_value_a4992": {"name": "Lüfter CO2-Konzentration"},
+      "basicvent_voc_value_a4522": {"name": "Lüfter VOC Kohlenwasserstoffverbindungen"},
+      "basicvent_incomming_fan_rpm_a4551": {"name": "Lüfter 1 (Außen) Umdrehungen"},
+      "basicvent_incomming_fan_a4986": {"name": "Lüfter 1 (Außen) Leistung"},
+      "basicvent_temperature_incomming_air_before_oda_a5000": {"name": "Lüfter Frischluft (ODA) Temperatur"},
+      "basicvent_temperature_incomming_air_after_sup_a4996": {"name": "Lüfter Zuluft (SUP) Temperatur"},
+      "basicvent_outgoing_fan_rpm_a4547": {"name": "Lüfter 2 (Innen) Umdrehungen"},
+      "basicvent_outgoing_fan_a4984": {"name": "Lüfter 2 (Innen) Leistung"},
+      "basicvent_temperature_outgoing_air_before_eth_a4998": {"name": "Lüfter Abluft (ETH) Temperatur"},
+      "basicvent_temperature_outgoing_air_after_eeh_a4994": {"name": "Lüfter Fortluft (EEH) Temperatur"},
+      "basicvent_energy_save_total_a4387": {"name": "Lüfter Energieersparnis gesamt"},
+      "basicvent_energy_save_current_a4389": {"name": "Lüfter Energieersparnis aktuell"},
+      "basicvent_energy_recovery_rate_a4391": {"name": "Lüfter Wärmerückgewinnungsgrad"}
     },
     "switch": {
       "holiday_enabled": {"name": "Urlaubsfunktion"},
