@@ -12,7 +12,8 @@ from homeassistant.components.sensor import SensorEntityDescription
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.components.switch import SwitchEntityDescription
 
-from homeassistant.const import UnitOfTemperature, PERCENTAGE, UnitOfEnergy, UnitOfPower, UnitOfPressure, UnitOfTime
+from homeassistant.const import UnitOfTemperature, PERCENTAGE, UnitOfEnergy, UnitOfPower, UnitOfPressure, UnitOfTime, \
+    CONCENTRATION_PARTS_PER_MILLION, CONCENTRATION_MICROGRAMS_PER_CUBIC_METER, REVOLUTIONS_PER_MINUTE
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import SIX_STEPS_MODES
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import EcotouchTag
@@ -72,22 +73,25 @@ FIFTH_STEP = 0.5
 @dataclass
 class ExtBinarySensorEntityDescription(BinarySensorEntityDescription):
     tag: EcotouchTag | None = None
+    feature: str | None = None
 
 
 @dataclass
 class ExtNumberEntityDescription(NumberEntityDescription):
     tag: EcotouchTag | None = None
-
+    feature: str | None = None
 
 @dataclass
 class ExtSelectEntityDescription(SelectEntityDescription):
     tag: EcotouchTag | None = None
+    feature: str | None = None
     # controls: list[str] | None = None
 
 
 @dataclass
 class ExtSensorEntityDescription(SensorEntityDescription):
     tag: EcotouchTag | None = None
+    feature: str | None = None
     # selfimplemented_display_precision: int | None = None
     # controls: list[str] | None = None
 
@@ -95,6 +99,7 @@ class ExtSensorEntityDescription(SensorEntityDescription):
 @dataclass
 class ExtSwitchEntityDescription(SwitchEntityDescription):
     tag: EcotouchTag | None = None
+    feature: str | None = None
     icon_off: str | None = None
 
 
@@ -295,6 +300,61 @@ BINARY_SENSORS = [
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:solar-power-variant",
         entity_registry_enabled_default=False
+    ),
+
+    ExtBinarySensorEntityDescription(
+        key="BASICVENT_STATUS_BYPASS_ACTIVE_D1432",
+        name="basicvent_status_bypass_active_d1432",
+        tag=EcotouchTag.BASICVENT_STATUS_BYPASS_ACTIVE_D1432,
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:electric-switch",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtBinarySensorEntityDescription(
+        key="BASICVENT_STATUS_HUMIDIFIER_ACTIVE_D1433",
+        name="basicvent_status_humidifier_active_d1433",
+        tag=EcotouchTag.BASICVENT_STATUS_HUMIDIFIER_ACTIVE_D1433,
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:electric-switch",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtBinarySensorEntityDescription(
+        key="BASICVENT_STATUS_COMFORT_BYPASS_ACTIVE_D1465",
+        name="basicvent_status_comfort_bypass_active_d1465",
+        tag=EcotouchTag.BASICVENT_STATUS_COMFORT_BYPASS_ACTIVE_D1465,
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:electric-switch",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtBinarySensorEntityDescription(
+        key="BASICVENT_STATUS_SMART_BYPASS_ACTIVE_D1466",
+        name="basicvent_status_smart_bypass_active_d1466",
+        tag=EcotouchTag.BASICVENT_STATUS_SMART_BYPASS_ACTIVE_D1466,
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:electric-switch",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtBinarySensorEntityDescription(
+        key="BASICVENT_STATUS_HOLIDAY_ENABLED_D1503",
+        name="basicvent_status_holiday_enabled_d1503",
+        tag=EcotouchTag.BASICVENT_STATUS_HOLIDAY_ENABLED_D1503,
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:electric-switch",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtBinarySensorEntityDescription(
+        key="BASICVENT_FILTER_CHANGE_DISPLAY_D1469",
+        name="basicvent_filter_change_display_d1469",
+        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_DISPLAY_D1469,
+        device_class=BinarySensorDeviceClass.RUNNING,
+        icon="mdi:electric-switch",
+        entity_registry_enabled_default=False,
+        feature="VENT"
     )
 
     # "STATUS_HEATING_CIRCULATION_PUMP",
@@ -970,6 +1030,7 @@ SELECT_SENSORS = [
         icon="mdi:hvac",
         entity_registry_enabled_default=False,
         options=ENUM_VENT_OPERATION_MODE,
+        feature="VENT"
     )
 ]
 SENSOR_SENSORS = [
@@ -1543,8 +1604,170 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=None,
         icon="mdi:alert-circle",
         entity_registry_enabled_default=True
-    )
+    ),
+
+    ExtSensorEntityDescription(
+        key="BASICVENT_TEMPERATURE_OUTGOING_AIR_BEFORE_ETH_A4998",
+        name="basicvent_temperature_outgoing_air_before_eth_a4998",
+        tag=EcotouchTag.BASICVENT_TEMPERATURE_OUTGOING_AIR_BEFORE_ETH_A4998,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon="mdi:thermometer",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_TEMPERATURE_OUTGOING_AIR_AFTER_EEH_A4994",
+        name="basicvent_temperature_outgoing_air_after_eeh_a4994",
+        tag=EcotouchTag.BASICVENT_TEMPERATURE_OUTGOING_AIR_AFTER_EEH_A4994,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon="mdi:thermometer",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_TEMPERATURE_INCOMMING_AIR_BEFORE_ODA_A5000",
+        name="basicvent_temperature_incomming_air_before_oda_a5000",
+        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMMING_AIR_BEFORE_ODA_A5000,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon="mdi:thermometer",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_TEMPERATURE_INCOMMING_AIR_AFTER_SUP_A4996",
+        name="basicvent_temperature_incomming_air_after_sup_a4996",
+        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMMING_AIR_AFTER_SUP_A4996,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon="mdi:thermometer",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_FILTER_CHANGE_OPERATING_HOURS_A4498",
+        name="basicvent_filter_change_operating_hours_a4498",
+        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_OPERATING_HOURS_A4498,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:counter",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504",
+        name="basicvent_filter_change_remaining_operating_days_a4504",
+        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.DAYS,
+        icon="mdi:counter",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_HUMIDITY_VALUE_A4990",
+        name="basicvent_humidity_value_a4990",
+        tag=EcotouchTag.BASICVENT_HUMIDITY_VALUE_A4990,
+        device_class=SensorDeviceClass.HUMIDITY,
+        native_unit_of_measurement=PERCENTAGE,
+        icon="mdi:cloud-percent",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_CO2_VALUE_A4992",
+        name="basicvent_co2_value_a4992",
+        tag=EcotouchTag.BASICVENT_CO2_VALUE_A4992,
+        device_class=SensorDeviceClass.CO2,
+        native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        icon="mdi:molecule-co2",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_VOC_VALUE_A4522",
+        name="basicvent_voc_value_a4522",
+        tag=EcotouchTag.BASICVENT_VOC_VALUE_A4522,
+        device_class=SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS,
+        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        icon="mdi:counter",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_INCOMMING_FAN_RPM_A4551",
+        name="basicvent_incomming_fan_rpm_a4551",
+        tag=EcotouchTag.BASICVENT_INCOMMING_FAN_RPM_A4551,
+        device_class=None,
+        native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
+        icon="mdi:wind-power",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_INCOMMING_FAN_A4986",
+        name="basicvent_incomming_fan_a4986",
+        tag=EcotouchTag.BASICVENT_INCOMMING_FAN_A4986,
+        device_class=None,
+        native_unit_of_measurement=PERCENTAGE,
+        icon="mdi:wind-power",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_OUTGOING_FAN_RPM_A4547",
+        name="basicvent_outgoing_fan_rpm_a4547",
+        tag=EcotouchTag.BASICVENT_OUTGOING_FAN_RPM_A4547,
+        device_class=None,
+        native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
+        icon="mdi:wind-power",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_OUTGOING_FAN_A4984",
+        name="basicvent_outgoing_fan_a4984",
+        tag=EcotouchTag.BASICVENT_OUTGOING_FAN_A4984,
+        device_class=None,
+        native_unit_of_measurement=PERCENTAGE,
+        icon="mdi:wind-power",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_ENERGY_SAVE_TOTAL_A4387",
+        name="basicvent_energy_save_total_a4387",
+        tag=EcotouchTag.BASICVENT_ENERGY_SAVE_TOTAL_A4387,
+        device_class=SensorDeviceClass.ENERGY,
+        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+        icon="mdi:home-lightning-bolt",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_ENERGY_SAVE_CURRENT_A4389",
+        name="basicvent_energy_save_current_a4389",
+        tag=EcotouchTag.BASICVENT_ENERGY_SAVE_CURRENT_A4389,
+        device_class=SensorDeviceClass.ENERGY,
+        native_unit_of_measurement=UnitOfEnergy.WATT_HOUR,
+        icon="mdi:home-lightning-bolt",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
+    ExtSensorEntityDescription(
+        key="BASICVENT_ENERGY_RECOVERY_RATE_A4391",
+        name="basicvent_energy_recovery_rate_a4391",
+        tag=EcotouchTag.BASICVENT_ENERGY_RECOVERY_RATE_A4391,
+        device_class=None,
+        native_unit_of_measurement=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        feature="VENT"
+    ),
 ]
+
 SWITCH_SENSORS = [
     ExtSwitchEntityDescription(
         key="HOLIDAY_ENABLED",
