@@ -15,10 +15,19 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
 
 from .const import (
-    CONF_HOST, CONF_IP, CONF_BIOS, CONF_FW, CONF_SERIAL, CONF_SERIES, CONF_ID,
+    CONF_HOST,
+    CONF_IP,
+    CONF_BIOS,
+    CONF_FW,
+    CONF_SERIAL,
+    CONF_SERIES,
+    CONF_ID,
     CONF_POLLING_INTERVAL,
     CONF_TAGS_PER_REQUEST,
     CONF_SYSTEMTYPE,
+    CONF_USE_DISINFECTION,
+    CONF_USE_HEATING_CURVE,
+    CONF_USE_VENT,
     NAME,
     DOMAIN,
     PLATFORMS,
@@ -26,7 +35,7 @@ from .const import (
     SERVICE_SET_HOLIDAY,
     SERVICE_SET_DISINFECTION_START_TIME,
     SERVICE_GET_ENERGY_BALANCE,
-    SERVICE_GET_ENERGY_BALANCE_MONTHLY
+    SERVICE_GET_ENERGY_BALANCE_MONTHLY, FEATURE_VENT, FEATURE_HEATING_CURVE, FEATURE_DISINFECTION
 )
 
 from . import service as waterkotteservice
@@ -142,6 +151,14 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
         self.name = config_entry.title
         self._config_entry = config_entry
         self._host = config_entry.options.get(CONF_HOST, config_entry.data[CONF_HOST])
+        self.features = []
+        if CONF_USE_VENT in config_entry.data:
+            self.features.append(FEATURE_VENT)
+        if CONF_USE_HEATING_CURVE in config_entry.data:
+            self.features.append(FEATURE_HEATING_CURVE)
+        if CONF_USE_DISINFECTION in config_entry.data:
+            self.features.append(FEATURE_DISINFECTION)
+
         loc_system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE))
         loc_tags_per_request = config_entry.options.get(CONF_TAGS_PER_REQUEST,
                                                         config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
@@ -239,8 +256,13 @@ class WKHPBaseEntity(Entity):
 
     def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: EntityDescription) -> None:
         self._attr_translation_key = description.key.lower()
-
         self.coordinator = coordinator
+
+        # check, if the feature should be enabled by default (if activated during setup)
+        if not description.entity_registry_enabled_default and description.feature is not None:
+            if description.feature in self.coordinator.features:
+                description.entity_registry_enabled_default = True
+
         self.entity_description = description
         self.entity_id = f"{DOMAIN}.wkh_{self._attr_translation_key}"
 

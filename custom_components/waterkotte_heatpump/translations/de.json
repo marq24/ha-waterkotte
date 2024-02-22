@@ -15,7 +15,10 @@
           "host": "IP oder Hostname deiner Waterkotte",
           "system_type": "Watterkotte Interface-Type",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
-          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)"
+          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
+          "use_vent": "Daten einer Luftwärmepumpen-Außeneinheit anzeigen",
+          "use_heating_curve": "Feature: 'Heizkurven-Anpassungen' verwenden",
+          "use_disinfection": "Feature: 'Warmwasser Disinfections-Anpassungen' verwenden"
         }
       }
     },

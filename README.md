@@ -30,6 +30,7 @@ Please be aware, that we are developing this integration to best of our knowledg
 [[Get the sources for the sample dashboard_above](https://github.com/marq24/ha-waterkotte/blob/main/sample-view.yaml)] - Please note, that this sample dashboard makes use of the custom [multiple-entity-row](https://github.com/benct/lovelace-multiple-entity-row) frontend integration that need to be installed separately. 
 
 ## Installation
+if you have installed the previous version of the waterkotte integration from me (marq24) - please [follow the migration guide](https://github.com/marq24/ha-waterkotte/blob/main/README.md#migration). 
 
 ### HACS
 
@@ -72,6 +73,25 @@ After the integration was added you can use the 'config' button to adjust your s
 
 Please note, that most of the available sensors are __not__ enabled by default.
 
+<a href="migration"></a>
+## Migration Guide
+
+This is the new version of the previous 'ha-waterkotte' repository (which have now been renamed to [`ha-waterkotte-the-fork`](https://github.com/marq24/ha-waterkotte-the-fork)). After the refactoring process have been completed, I have decided to create an independent repository - since the refactored version does not have much in common with the origin sources.
+
+Unfortunately HACS does not 'like' renaming of repositories, so you have to perform few steps in order to upgrade your home assistant installation to the latest ha-waterkotte integration version - sorry for this inconvenience!  
+
+### How to migrate to the new integration version
+1. make a backup (just in case)
+2. go to HACS menu of your home assistant installation
+3. remove the (old) custom HACS repository 'https://github.com/marq24/ha-waterkotte'
+
+    (This step will/should remove the Waterkotte Integration entry from the list of installed HACS Integrations)
+5. add the __new__ repository 'https://github.com/marq24/ha-waterkotte' to HACS
+6. install the waterkotte integration to your local HACS
+7. restart your home assistant system
+
+YES - this procedure sounds *totally* silly - but HACS stores a custom-id for each repository - And since I have decided to rename the old repository which base on the work from pattisonmichael to 'https://github.com/marq24/ha-waterkotte-the-fork' and created an independent repository, this procedure is necessary in order to be notified about any future updates.
+
 ## Services
 
 The Integration provides currently 4 services:
@@ -106,17 +126,13 @@ The Heatpump only allows 2 sessions and there is no way to close a session. Some
 
 The Heatpump will not always respond with data. This happens usually after the system changes status, e.g. start/stop the heating. There is not much we can do about this, unfortunately. I try to cache the data in possible for a better UX.
 
-## Credits
+## Credits & Kudos
 
-This project is a fork from [@pattisonmichael](https://github.com/pattisonmichael)'
-s [Waterkotte-Integration](https://github.com/pattisonmichael/waterkotte-integration)
-
-The original project was generated from [@oncleben31](https://github.com/oncleben31)'
-s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component)
-template.
-
-The original code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'
-s [integration_blueprint](https://github.com/custom-components/integration_blueprint) template
+| who                                                    | what                                                                                                                                                                                                                           |
+|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [@pattisonmichael](https://github.com/pattisonmichael) | This project was initially forked from [Waterkotte-Integration](https://github.com/pattisonmichael/waterkotte-integration) by pattisonmichael  (but both projects drifted apart over time - so this repo is now independent). |
+| [@oncleben31](https://github.com/oncleben31)           | The forked original project was generated via the [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.                                          |
+| [@Ludeeus](https://github.com/ludeeus)                 | The forked original code template was mainly taken from the [integration_blueprint](https://github.com/custom-components/integration_blueprint) template                                                                       |
 
 ---
 
@@ -138,15 +154,3 @@ Please consider [using my personal Tibber invitation link to join Tibber today](
 
 [paypal]: https://paypal.me/marq24
 [paypalbadge]: https://img.shields.io/badge/paypal-me-blue.svg?style=for-the-badge&logo=paypal&logoColor=ccc
-
-[commits-shield]: https://img.shields.io/github/commit-activity/y/marq24/ha-waterkotte.svg?style=for-the-badge
-[commits]: https://github.com/marq24/ha-waterkotte/commits/main
-[discord]: https://discord.gg/Qa5fW2R
-[discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-[logoimg]: logo.png
-[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
-[forum]: https://community.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/marq24/ha-waterkotte.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-%40marq24-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/marq24/ha-waterkotte.svg?style=for-the-badge
-[releases]: https://github.com/marq24/ha-waterkotte/releases

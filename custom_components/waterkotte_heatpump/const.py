@@ -25,6 +25,10 @@ DOMAIN: Final = "waterkotte_heatpump"
 TITLE: Final = "Waterkotte"
 ISSUE_URL: Final = "https://github.com/marq24/ha-waterkotte/issues"
 
+FEATURE_DISINFECTION: Final = "DISINFECTION"
+FEATURE_HEATING_CURVE: Final = "HEATING_CURVE"
+FEATURE_VENT: Final = "VENT"
+
 # Device classes
 DEVICE_CLASS_ENUM: Final = "enum"
 
@@ -51,6 +55,9 @@ CONF_SERIAL: Final = "serial"
 CONF_SERIES: Final = "series"
 CONF_ID: Final = "id"
 CONF_SYSTEMTYPE: Final = "system_type"
+CONF_USE_DISINFECTION: Final = "use_disinfection"
+CONF_USE_HEATING_CURVE: Final = "use_heating_curve"
+CONF_USE_VENT: Final = "use_vent"
 
 STARTUP_MESSAGE: Final = f"""
 -------------------------------------------------------------------
@@ -145,7 +152,7 @@ BINARY_SENSORS = [
         tag=EcotouchTag.STATE_COMPRESSOR2,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:gauge",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_EXTERNAL_HEATER",
@@ -309,7 +316,7 @@ BINARY_SENSORS = [
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_HUMIDIFIER_ACTIVE_D1433",
@@ -318,7 +325,7 @@ BINARY_SENSORS = [
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_COMFORT_BYPASS_ACTIVE_D1465",
@@ -327,7 +334,7 @@ BINARY_SENSORS = [
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_SMART_BYPASS_ACTIVE_D1466",
@@ -336,7 +343,7 @@ BINARY_SENSORS = [
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_HOLIDAY_ENABLED_D1503",
@@ -345,7 +352,7 @@ BINARY_SENSORS = [
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_FILTER_CHANGE_DISPLAY_D1469",
@@ -354,7 +361,7 @@ BINARY_SENSORS = [
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     )
 
     # "STATUS_HEATING_CIRCULATION_PUMP",
@@ -535,6 +542,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A94
     ExtNumberEntityDescription(
@@ -549,6 +557,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A91
     ExtNumberEntityDescription(
@@ -563,6 +572,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A92
     ExtNumberEntityDescription(
@@ -577,6 +587,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A95
     ExtNumberEntityDescription(
@@ -647,6 +658,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A277
     ExtNumberEntityDescription(
@@ -661,6 +673,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A274
     ExtNumberEntityDescription(
@@ -675,6 +688,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A275
     ExtNumberEntityDescription(
@@ -689,6 +703,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_HEATING_CURVE
     ),
     # A278
     ExtNumberEntityDescription(
@@ -929,6 +944,7 @@ NUMBER_SENSORS = [
         native_step=TENTH_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        feature=FEATURE_DISINFECTION
     ),
     ExtNumberEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_DURATION",
@@ -942,6 +958,7 @@ NUMBER_SENSORS = [
         native_step=DEFAULT_STEP,
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTime.HOURS,
+        feature=FEATURE_DISINFECTION
     ),
     ExtNumberEntityDescription(
         key="SOURCE_PUMP_CAPTURE_TEMPERATURE_A479",
@@ -1030,7 +1047,7 @@ SELECT_SENSORS = [
         icon="mdi:hvac",
         entity_registry_enabled_default=False,
         options=ENUM_VENT_OPERATION_MODE,
-        feature="VENT"
+        feature=FEATURE_VENT
     )
 ]
 SENSOR_SENSORS = [
@@ -1530,7 +1547,7 @@ SENSOR_SENSORS = [
         device_class=SensorDeviceClass.POWER_FACTOR,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=True
     ),
     ExtSensorEntityDescription(
         key="PERCENT_SOURCE_PUMP",
@@ -1539,7 +1556,7 @@ SENSOR_SENSORS = [
         device_class=SensorDeviceClass.POWER_FACTOR,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=True
     ),
     ExtSensorEntityDescription(
         key="PERCENT_COMPRESSOR",
@@ -1548,7 +1565,7 @@ SENSOR_SENSORS = [
         device_class=SensorDeviceClass.POWER_FACTOR,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=True
     ),
     # writeable sensors from here...
     ExtSensorEntityDescription(
@@ -1576,7 +1593,8 @@ SENSOR_SENSORS = [
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:clock-digital",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSensorEntityDescription(
         key="STATE_SERVICE",
@@ -1614,7 +1632,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_TEMPERATURE_OUTGOING_AIR_AFTER_EEH_A4994",
@@ -1624,7 +1642,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_TEMPERATURE_INCOMMING_AIR_BEFORE_ODA_A5000",
@@ -1634,7 +1652,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_TEMPERATURE_INCOMMING_AIR_AFTER_SUP_A4996",
@@ -1644,7 +1662,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_FILTER_CHANGE_OPERATING_HOURS_A4498",
@@ -1654,7 +1672,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTime.HOURS,
         icon="mdi:counter",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504",
@@ -1664,7 +1682,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTime.DAYS,
         icon="mdi:counter",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_HUMIDITY_VALUE_A4990",
@@ -1674,7 +1692,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:cloud-percent",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_CO2_VALUE_A4992",
@@ -1684,7 +1702,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
         icon="mdi:molecule-co2",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_VOC_VALUE_A4522",
@@ -1694,7 +1712,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
         icon="mdi:counter",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_INCOMMING_FAN_RPM_A4551",
@@ -1704,7 +1722,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_INCOMMING_FAN_A4986",
@@ -1714,7 +1732,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_OUTGOING_FAN_RPM_A4547",
@@ -1724,7 +1742,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_OUTGOING_FAN_A4984",
@@ -1734,7 +1752,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_ENERGY_SAVE_TOTAL_A4387",
@@ -1744,7 +1762,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:home-lightning-bolt",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_ENERGY_SAVE_CURRENT_A4389",
@@ -1754,7 +1772,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfEnergy.WATT_HOUR,
         icon="mdi:home-lightning-bolt",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_ENERGY_RECOVERY_RATE_A4391",
@@ -1764,7 +1782,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=None,
         icon="mdi:gauge",
         entity_registry_enabled_default=False,
-        feature="VENT"
+        feature=FEATURE_VENT
     ),
 ]
 
@@ -1782,49 +1800,56 @@ SWITCH_SENSORS = [
         name="SCHEDULE_WATER_DISINFECTION_1MO",
         tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_1MO,
         icon="mdi:calendar-today",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_2TU",
         name="SCHEDULE_WATER_DISINFECTION_2TU",
         tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_2TU,
         icon="mdi:calendar-today",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_3WE",
         name="SCHEDULE_WATER_DISINFECTION_3WE",
         tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_3WE,
         icon="mdi:calendar-today",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_4TH",
         name="SCHEDULE_WATER_DISINFECTION_4TH",
         tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_4TH,
         icon="mdi:calendar-today",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_5FR",
         name="SCHEDULE_WATER_DISINFECTION_5FR",
         tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_5FR,
         icon="mdi:calendar-today",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_6SA",
         name="SCHEDULE_WATER_DISINFECTION_6SA",
         tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_6SA,
         icon="mdi:calendar-today",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_7SU",
         name="SCHEDULE_WATER_DISINFECTION_7SU",
         tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_7SU,
         icon="mdi:calendar-today",
-        entity_registry_enabled_default=False
+        entity_registry_enabled_default=False,
+        feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103",

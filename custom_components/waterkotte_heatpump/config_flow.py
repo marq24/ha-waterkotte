@@ -22,6 +22,9 @@ from .const import (
     CONF_SYSTEMTYPE,
     CONF_HOST,
     CONF_IP,
+    CONF_USE_DISINFECTION,
+    CONF_USE_HEATING_CURVE,
+    CONF_USE_VENT
 )
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
@@ -99,8 +102,11 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             translation_key=CONF_SYSTEMTYPE
                         )
                     ),
+                vol.Required(CONF_USE_VENT, default=False): bool,
+                vol.Required(CONF_USE_HEATING_CURVE, default=False): bool,
+                vol.Required(CONF_USE_DISINFECTION, default=False): bool,
                 vol.Required(CONF_POLLING_INTERVAL, default=60): int,
-                vol.Required(CONF_TAGS_PER_REQUEST, default=75): int,
+                vol.Required(CONF_TAGS_PER_REQUEST, default=75): int
             }),
             last_step=True,
             errors=self._errors
