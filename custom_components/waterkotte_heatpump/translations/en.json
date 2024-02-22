@@ -15,7 +15,10 @@
           "host": "Host or IP of your Waterkotte",
           "system_type": "Interface-Type",
           "polling_interval": "Polling Interval in seconds",
-          "tags_per_request": "Number of tags to fetch in a single request (max. 75)"
+          "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
+          "use_vent": "Show data for an air source heat pump outdoor unit",
+          "use_heating_curve": "Use heating curve adjustment features",
+          "use_disinfection": "Use Water disinfection adjustment features"
         }
       }
     },
