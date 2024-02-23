@@ -36,12 +36,12 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class WaterkotteClient:
-    def __init__(self, host: str, system_type: str, web_session, tags: str, tags_per_request: int,
+    def __init__(self, host: str, user: str, pwd: str, system_type: str, web_session, tags: str, tags_per_request: int,
                  lang: str = "en") -> None:
         self._host = host
         self._systemType = system_type
         if system_type == ECOTOUCH:
-            self._internal_client = EcotouchBridge(host=host, web_session=web_session,
+            self._internal_client = EcotouchBridge(host=host, web_session=web_session, user=user, pwd=pwd,
                                                    tags_per_request=tags_per_request, lang=lang)
         elif system_type == EASYCON:
             self._internal_client = EasyconBridge(host=host, web_session=web_session)
@@ -106,8 +106,11 @@ class WaterkotteClient:
 class EcotouchBridge:
     auth_cookies = None
 
-    def __init__(self, host, web_session, tags_per_request: int = 10, lang: str = "en"):
-        self.hostname = host
+    def __init__(self, host: str, web_session, user: str = "waterkotte", pwd: str = "waterkotte",
+                 tags_per_request: int = 10, lang: str = "en"):
+        self.host = host
+        self.user = user
+        self.pwd = pwd
         self.web_session = web_session
         self.tags_per_request = min(tags_per_request, 75)
         self.lang_map = None
@@ -135,12 +138,9 @@ class EcotouchBridge:
     # performs a login. Has to be called before any other method.
     async def login(self):
         """Login to Heat Pump"""
-        _LOGGER.info(f"login to waterkotte host {self.hostname}")
-
-        # this is really true - waterkotte have ONLY hardcoded user credentials!
-        args = {"username": "waterkotte", "password": "waterkotte"}
-
-        async with self.web_session.get(f"http://{self.hostname}/cgi/login", params=args) as response:
+        _LOGGER.info(f"login to waterkotte host {self.host}")
+        args = {"username": self.user, "password": self.pwd}
+        async with self.web_session.get(f"http://{self.host}/cgi/login", params=args) as response:
             response.raise_for_status()
             if response.status == 200:
                 content = await response.text()
@@ -169,7 +169,7 @@ class EcotouchBridge:
 
     async def logout(self):
         """Logout function"""
-        async with self.web_session.get(f"http://{self.hostname}/cgi/logout") as response:
+        async with self.web_session.get(f"http://{self.host}/cgi/logout") as response:
             try:
                 response.raise_for_status()
                 content = await response.text()
@@ -254,8 +254,8 @@ class EcotouchBridge:
 
         # also the readTags have a timestamp in each request...
         args["_"] = str(int(round(datetime.now().timestamp() * 1000)))
-        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.hostname}")
-        async with self.web_session.get(f"http://{self.hostname}/cgi/readTags", params=args) as response:
+        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.host}")
+        async with self.web_session.get(f"http://{self.host}/cgi/readTags", params=args) as response:
             try:
                 response.raise_for_status()
                 if response.status == 200:
@@ -373,7 +373,7 @@ class EcotouchBridge:
         results_status = {}
         # _LOGGER.info(f"requesting '{args}' [tags: {tags}, values: {value}]")
 
-        async with self.web_session.get(f"http://{self.hostname}/cgi/writeTags", params=args) as response:
+        async with self.web_session.get(f"http://{self.host}/cgi/writeTags", params=args) as response:
             try:
                 response.raise_for_status()
                 if response.status == 200:
@@ -474,7 +474,7 @@ class EasyconBridge(EcotouchBridge):
         if query == "":
             return None, None
 
-        async with self.web_session.get(f"http://{self.hostname}/config/xml.cgi?{query[1:]}") as response:
+        async with self.web_session.get(f"http://{self.host}/config/xml.cgi?{query[1:]}") as response:
             try:
                 response.raise_for_status()
                 if response.status == 200:
@@ -554,7 +554,7 @@ class EasyconBridge(EcotouchBridge):
         results = {}
         resultsStatus = {}
 
-        async with self.web_session.get(f"http://{self.hostname}/config/query.cgi?{param}") as response:
+        async with self.web_session.get(f"http://{self.host}/config/query.cgi?{param}") as response:
             try:
                 response.raise_for_status()
                 if response.status == 200:

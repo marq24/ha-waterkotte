@@ -12,8 +12,9 @@
       "user": {
         "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte",
         "data": {
-          "host": "Host or IP of your Waterkotte",
-          "system_type": "Interface-Type",
+          "host": "Host or IP",
+          "username": "Username",
+          "password": "Password",
           "polling_interval": "Polling Interval in seconds",
           "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
           "use_vent": "Show data for an air source heat pump outdoor unit",
@@ -23,7 +24,7 @@
       }
     },
     "error": {
-      "auth": "Host/IP is wrong - could not reach system",
+      "auth": "Host/IP or Username/Password is wrong - could not reach system",
       "type": "No connection to Waterkotte possible - are you sure that you have selected the correct Interface-Type?"
     },
     "abort": {
@@ -35,6 +36,8 @@
       "user": {
         "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte",
         "data": {
+          "username": "Username",
+          "password": "Password",
           "polling_interval": "Polling Interval in seconds",
           "tags_per_request": "Number of tags to fetch in a single request (max. 75)"
         }

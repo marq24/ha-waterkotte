@@ -44,16 +44,13 @@ ENUM_HEATING_MODE: Final = list(SIX_STEPS_MODES.values())
 ENUM_VENT_OPERATION_MODE: Final = list(SIX_STEPS_MODES.values())
 
 # Configuration and options
-CONF_ENABLED: Final = "enabled"
-CONF_HOST: Final = "host"
+CONF_IP: Final = "ip"
 CONF_POLLING_INTERVAL: Final = "polling_interval"
 CONF_TAGS_PER_REQUEST: Final = "tags_per_request"
-CONF_IP: Final = "ip"
 CONF_BIOS: Final = "bios"
 CONF_FW: Final = "fw"
 CONF_SERIAL: Final = "serial"
 CONF_SERIES: Final = "series"
-CONF_ID: Final = "id"
 CONF_SYSTEMTYPE: Final = "system_type"
 CONF_USE_DISINFECTION: Final = "use_disinfection"
 CONF_USE_HEATING_CURVE: Final = "use_heating_curve"

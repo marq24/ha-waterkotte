@@ -4,6 +4,7 @@ import json
 
 from datetime import timedelta
 from typing import List, Sequence
+from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import Config, SupportsResponse, Event
 from homeassistant.core import HomeAssistant
@@ -15,19 +16,17 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
 
 from .const import (
-    CONF_HOST,
     CONF_IP,
+    CONF_POLLING_INTERVAL,
+    CONF_TAGS_PER_REQUEST,
     CONF_BIOS,
     CONF_FW,
     CONF_SERIAL,
     CONF_SERIES,
-    CONF_ID,
-    CONF_POLLING_INTERVAL,
-    CONF_TAGS_PER_REQUEST,
     CONF_SYSTEMTYPE,
-    CONF_USE_DISINFECTION,
-    CONF_USE_HEATING_CURVE,
     CONF_USE_VENT,
+    CONF_USE_HEATING_CURVE,
+    CONF_USE_DISINFECTION,
     NAME,
     DOMAIN,
     PLATFORMS,
@@ -35,7 +34,10 @@ from .const import (
     SERVICE_SET_HOLIDAY,
     SERVICE_SET_DISINFECTION_START_TIME,
     SERVICE_GET_ENERGY_BALANCE,
-    SERVICE_GET_ENERGY_BALANCE_MONTHLY, FEATURE_VENT, FEATURE_HEATING_CURVE, FEATURE_DISINFECTION
+    SERVICE_GET_ENERGY_BALANCE_MONTHLY,
+    FEATURE_VENT,
+    FEATURE_HEATING_CURVE,
+    FEATURE_DISINFECTION
 )
 
 from . import service as waterkotteservice
@@ -150,7 +152,6 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, config_entry):
         self.name = config_entry.title
         self._config_entry = config_entry
-        self._host = config_entry.options.get(CONF_HOST, config_entry.data[CONF_HOST])
         self.features = []
         if CONF_USE_VENT in config_entry.data:
             self.features.append(FEATURE_VENT)
@@ -159,15 +160,18 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
         if CONF_USE_DISINFECTION in config_entry.data:
             self.features.append(FEATURE_DISINFECTION)
 
-        loc_system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE))
-        loc_tags_per_request = config_entry.options.get(CONF_TAGS_PER_REQUEST,
-                                                        config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
+        host = config_entry.options.get(CONF_HOST, config_entry.data[CONF_HOST])
+        user = config_entry.options.get(CONF_USERNAME, config_entry.data[CONF_USERNAME])
+        pwd = config_entry.options.get(CONF_PASSWORD, config_entry.data[CONF_PASSWORD])
+        system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE))
+        tags_per_request = config_entry.options.get(CONF_TAGS_PER_REQUEST,
+                                                    config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
 
         loc_tags = generate_tag_list(hass=hass, config_entry_id=config_entry.entry_id)
 
-        self.bridge = WaterkotteClient(host=self._host, system_type=loc_system_type,
+        self.bridge = WaterkotteClient(host=host, user=user, pwd=pwd, system_type=system_type,
                                        web_session=async_get_clientsession(hass), tags=loc_tags,
-                                       tags_per_request=loc_tags_per_request, lang=hass.config.language.lower())
+                                       tags_per_request=tags_per_request, lang=hass.config.language.lower())
 
         global SCAN_INTERVAL
         # update_interval can be adjusted in the options (not for WebAPI)

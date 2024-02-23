@@ -14,6 +14,8 @@
         "data": {
           "host": "IP oder Hostname deiner Waterkotte",
           "system_type": "Watterkotte Interface-Type",
+          "username": "Benutzername",
+          "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
           "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
           "use_vent": "Daten einer Luftwärmepumpen-Außeneinheit anzeigen",
@@ -23,7 +25,7 @@
       }
     },
     "error": {
-      "auth": "Unter dieser IP/Host konnte keine Waterkotte erreicht werden",
+      "auth": "Unter dieser IP/Host und dem angegebenen Benutzername/Passwort konnte keine Waterkotte erreicht werden",
       "type": "Es konnte keine Verbindung mit deiner Waterkotte hergestellt werden - bist du dir sicher, dass du den richtigen Interface-Type ausgewählt hast?"
     },
     "abort": {
@@ -35,6 +37,8 @@
       "user": {
         "description": "Wenn Du Hilfe benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte",
         "data": {
+          "username": "Benutzername",
+          "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
           "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)"
         }
