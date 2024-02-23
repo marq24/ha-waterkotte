@@ -20,6 +20,10 @@ class TooManyUsersException(StatusException):
     """A TooManyUsers Exception."""
     # pass
 
+class InvalidPasswordException(StatusException):
+    """A TooManyUsers Exception."""
+    # pass
+
 class Http404Exception(Exception):
     """A HTTP404 Exception."""
     # pass

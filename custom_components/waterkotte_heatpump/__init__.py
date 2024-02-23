@@ -43,6 +43,7 @@ from .const import (
 from . import service as waterkotteservice
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient, TooManyUsersException
+from .pywaterkotte_ha import InvalidPasswordException
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=60)
@@ -152,26 +153,25 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, config_entry):
         self.name = config_entry.title
         self._config_entry = config_entry
-        self.features = []
-        if CONF_USE_VENT in config_entry.data:
-            self.features.append(FEATURE_VENT)
-        if CONF_USE_HEATING_CURVE in config_entry.data:
-            self.features.append(FEATURE_HEATING_CURVE)
-        if CONF_USE_DISINFECTION in config_entry.data:
-            self.features.append(FEATURE_DISINFECTION)
+        self.available_features = []
+        if CONF_USE_VENT in config_entry.data and config_entry.data[CONF_USE_VENT]:
+            self.available_features.append(FEATURE_VENT)
+        if CONF_USE_HEATING_CURVE in config_entry.data and config_entry.data[CONF_USE_HEATING_CURVE]:
+            self.available_features.append(FEATURE_HEATING_CURVE)
+        if CONF_USE_DISINFECTION in config_entry.data and config_entry.data[CONF_USE_DISINFECTION]:
+            self.available_features.append(FEATURE_DISINFECTION)
+        _LOGGER.debug(f"available_features: {self.available_features}")
 
-        host = config_entry.options.get(CONF_HOST, config_entry.data[CONF_HOST])
-        user = config_entry.options.get(CONF_USERNAME, config_entry.data[CONF_USERNAME])
-        pwd = config_entry.options.get(CONF_PASSWORD, config_entry.data[CONF_PASSWORD])
-        system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE))
-        tags_per_request = config_entry.options.get(CONF_TAGS_PER_REQUEST,
-                                                    config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
+        _host = config_entry.options.get(CONF_HOST, config_entry.data.get(CONF_HOST))
+        # _user = config_entry.options.get(CONF_USERNAME, config_entry.data.get(CONF_USERNAME, "waterkotte"))
+        _pwd = config_entry.options.get(CONF_PASSWORD, config_entry.data.get(CONF_PASSWORD, "waterkotte"))
+        _system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE))
+        _tags_num = config_entry.options.get(CONF_TAGS_PER_REQUEST, config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
+        _tags = generate_tag_list(hass=hass, config_entry_id=config_entry.entry_id)
 
-        loc_tags = generate_tag_list(hass=hass, config_entry_id=config_entry.entry_id)
-
-        self.bridge = WaterkotteClient(host=host, user=user, pwd=pwd, system_type=system_type,
-                                       web_session=async_get_clientsession(hass), tags=loc_tags,
-                                       tags_per_request=tags_per_request, lang=hass.config.language.lower())
+        self.bridge = WaterkotteClient(host=_host, pwd=_pwd, system_type=_system_type,
+                                       web_session=async_get_clientsession(hass), tags=_tags,
+                                       tags_per_request=_tags_num, lang=hass.config.language.lower())
 
         global SCAN_INTERVAL
         # update_interval can be adjusted in the options (not for WebAPI)
@@ -229,10 +229,16 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
 
         except UpdateFailed as exception:
             raise UpdateFailed() from exception
+        except InvalidPasswordException as invalid_pwd:
+            _LOGGER.info(f"invalid password for waterkotte! {invalid_pwd}")
+            raise UpdateFailed() from invalid_pwd
         except TooManyUsersException as too_many_users:
             _LOGGER.info(f"TooManyUsers response from waterkotte - waiting 30sec and then retry...")
             await asyncio.sleep(30)
             raise UpdateFailed() from too_many_users
+        except Exception as other:
+            _LOGGER.error(f"unexpected: {other}")
+            raise UpdateFailed() from other
 
     async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
         """Get data from the API."""
@@ -261,13 +267,13 @@ class WKHPBaseEntity(Entity):
     def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: EntityDescription) -> None:
         self._attr_translation_key = description.key.lower()
         self.coordinator = coordinator
+        self.entity_description = description
 
         # check, if the feature should be enabled by default (if activated during setup)
-        if not description.entity_registry_enabled_default and description.feature is not None:
-            if description.feature in self.coordinator.features:
-                description.entity_registry_enabled_default = True
+        if not self.entity_description.entity_registry_enabled_default and description.feature is not None:
+            if description.feature in self.coordinator.available_features:
+                self.entity_description.entity_registry_enabled_default = True
 
-        self.entity_description = description
         self.entity_id = f"{DOMAIN}.wkh_{self._attr_translation_key}"
 
     @property

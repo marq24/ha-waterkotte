@@ -27,7 +27,7 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import (
     InvalidValueException,
     StatusException,
     TooManyUsersException,
-    Http404Exception
+    Http404Exception, InvalidPasswordException
 )
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
@@ -36,12 +36,12 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class WaterkotteClient:
-    def __init__(self, host: str, user: str, pwd: str, system_type: str, web_session, tags: str, tags_per_request: int,
+    def __init__(self, host: str, pwd: str, system_type: str, web_session, tags: str, tags_per_request: int,
                  lang: str = "en") -> None:
         self._host = host
         self._systemType = system_type
         if system_type == ECOTOUCH:
-            self._internal_client = EcotouchBridge(host=host, web_session=web_session, user=user, pwd=pwd,
+            self._internal_client = EcotouchBridge(host=host, web_session=web_session, pwd=pwd,
                                                    tags_per_request=tags_per_request, lang=lang)
         elif system_type == EASYCON:
             self._internal_client = EasyconBridge(host=host, web_session=web_session)
@@ -106,10 +106,8 @@ class WaterkotteClient:
 class EcotouchBridge:
     auth_cookies = None
 
-    def __init__(self, host: str, web_session, user: str = "waterkotte", pwd: str = "waterkotte",
-                 tags_per_request: int = 10, lang: str = "en"):
+    def __init__(self, host: str, web_session, pwd: str = "waterkotte", tags_per_request: int = 10, lang: str = "en"):
         self.host = host
-        self.user = user
         self.pwd = pwd
         self.web_session = web_session
         self.tags_per_request = min(tags_per_request, 75)
@@ -139,7 +137,10 @@ class EcotouchBridge:
     async def login(self):
         """Login to Heat Pump"""
         _LOGGER.info(f"login to waterkotte host {self.host}")
-        args = {"username": self.user, "password": self.pwd}
+
+        # it's only possible to adjust the password of the 'waterkotte' build in user
+        args = {"username": "waterkotte", "password": self.pwd}
+
         async with self.web_session.get(f"http://{self.host}/cgi/login", params=args) as response:
             response.raise_for_status()
             if response.status == 200:
@@ -153,6 +154,8 @@ class EcotouchBridge:
                 if parsed_response != "S_OK":
                     if parsed_response.startswith("E_TOO_MANY_USERS"):
                         raise TooManyUsersException("TOO_MANY_USERS")
+                    elif parsed_response.startswith("E_PASS_DONT_MATCH"):
+                        raise InvalidPasswordException("INVALID_PWD")
                     else:
                         raise StatusException(f"Error while LOGIN: status: {parsed_response}")
 
@@ -225,8 +228,7 @@ class EcotouchBridge:
                         f"Key Error while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}")
                 except Exception as other_exc:
                     _LOGGER.error(
-                        f"Exception {other_exc} while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}",
-                        other_exc
+                        f"Exception {other_exc} while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states} -> {other_exc}"
                     )
 
         return result

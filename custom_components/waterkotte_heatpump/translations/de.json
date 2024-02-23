@@ -25,7 +25,7 @@
       }
     },
     "error": {
-      "auth": "Unter dieser IP/Host und dem angegebenen Benutzername/Passwort konnte keine Waterkotte erreicht werden",
+      "auth": "Unter dieser IP/Host und dem angegebenen Passwort konnte keine Waterkotte erreicht werden",
       "type": "Es konnte keine Verbindung mit deiner Waterkotte hergestellt werden - bist du dir sicher, dass du den richtigen Interface-Type ausgewählt hast?"
     },
     "abort": {

@@ -14,7 +14,6 @@ from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from .const import (
     DOMAIN,
     TITLE,
-    CONF_IP,
     CONF_POLLING_INTERVAL,
     CONF_TAGS_PER_REQUEST,
     CONF_BIOS,
@@ -44,7 +43,6 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize."""
         self._errors = {}
-        self._ip = ""
         self._bios = ""
         self._firmware = ""
         self._id = ""
@@ -66,14 +64,13 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
             valid = await self._test_credentials(
                 host=user_input[CONF_HOST],
-                user=user_input[CONF_USERNAME],
+                # user=user_input[CONF_USERNAME],
                 pwd=user_input[CONF_PASSWORD],
                 system_type=user_input[CONF_SYSTEMTYPE],
                 tags_per_request=user_input[CONF_TAGS_PER_REQUEST],
             )
 
             if valid:
-                user_input[CONF_IP] = self._ip
                 user_input[CONF_BIOS] = self._bios
                 user_input[CONF_FW] = self._firmware
                 user_input[CONF_SERIES] = self._series
@@ -87,7 +84,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     self._errors["base"] = "auth"
         else:
             user_input = {}
-            user_input[CONF_USERNAME] = "waterkotte",
+            # user_input[CONF_USERNAME] = "waterkotte",
             user_input[CONF_PASSWORD] = "waterkotte",
             user_input[CONF_HOST] = ""
             user_input[CONF_SYSTEMTYPE] = ECOTOUCH
@@ -106,7 +103,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             translation_key=CONF_SYSTEMTYPE
                         )
                     ),
-                vol.Required(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
+                # vol.Required(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
                 vol.Required(CONF_PASSWORD, default=user_input.get(CONF_PASSWORD)): str,
                 vol.Required(CONF_USE_VENT, default=False): bool,
                 vol.Required(CONF_USE_HEATING_CURVE, default=False): bool,
@@ -118,27 +115,12 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors
         )
 
-    async def _test_credentials(self, host, user, pwd, system_type, tags_per_request):
+    async def _test_credentials(self, host, pwd, system_type, tags_per_request):
         try:
-            hasPort = host.find(":")
-            _LOGGER.debug(f"host entered: {host} has port? {hasPort}")
-            if hasPort == -1:
-                self._ip = gethostbyname(host)
-            else:
-                self._ip = gethostbyname(host[:hasPort])
-
-            _LOGGER.debug(f"ip detected: {self._ip}")
             session = async_create_clientsession(self.hass)
-            client = WaterkotteClient(
-                host=host,
-                user=user,
-                pwd=pwd,
-                system_type=system_type,
-                web_session=session,
-                tags=None,
-                tags_per_request=tags_per_request,
-                lang=self.hass.config.language.lower()
-            )
+            client = WaterkotteClient(host=host, pwd=pwd, system_type=system_type, web_session=session,
+                                      tags=None, tags_per_request=tags_per_request,
+                                      lang=self.hass.config.language.lower())
             await client.login()
             init_tags = [
                 EcotouchTag.VERSION_BIOS,
@@ -191,7 +173,7 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
-                vol.Required(CONF_USERNAME, default=self.options.get(CONF_USERNAME, "waterkotte")): str,
+                # vol.Required(CONF_USERNAME, default=self.options.get(CONF_USERNAME, "waterkotte")): str,
                 vol.Required(CONF_PASSWORD, default=self.options.get(CONF_PASSWORD, "waterkotte")): str,
                 vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 60)): int,
                 vol.Required(CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 75)): int

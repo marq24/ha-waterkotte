@@ -24,7 +24,7 @@
       }
     },
     "error": {
-      "auth": "Host/IP or Username/Password is wrong - could not reach system",
+      "auth": "Host/IP or the Password is wrong - could not reach system",
       "type": "No connection to Waterkotte possible - are you sure that you have selected the correct Interface-Type?"
     },
     "abort": {
