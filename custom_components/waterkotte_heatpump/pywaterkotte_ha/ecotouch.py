@@ -33,8 +33,8 @@ class TagData(NamedTuple):
     def _decode_value_default(self, str_vals: List[str]):
         return self.__decode_value_default(str_vals, 10.0)
 
-    def _decode_value_default_factor10(self, str_vals: List[str]):
-        return self.__decode_value_default(str_vals, 1)
+    def _decode_value_analog(self, str_vals: List[str]):
+        return self.__decode_value_default(str_vals, -1)
 
     def __decode_value_default(self, str_vals: List[str], factor: float):
         first_val = str_vals[0]
@@ -47,7 +47,10 @@ class TagData(NamedTuple):
 
         if first_tag[0] == "A":
             if len(self.tags) == 1:
-                return float(first_val) / factor
+                if factor > -1:
+                    return float(first_val) / factor
+                else:
+                    return float(first_val)
             else:
                 ivals = [int(xxl) & 0xFFFF for xxl in str_vals]
                 hex_string = f"{ivals[0]:04x}{ivals[1]:04x}"
@@ -88,8 +91,8 @@ class TagData(NamedTuple):
     def _encode_value_default(self, value, encoded_values):
         self.__encode_value_default(value, encoded_values, 10)
 
-    def _encode_value_default_factor10(self, value, encoded_values):
-        self.__encode_value_default(value, encoded_values, 1)
+    def _encode_value_analog(self, value, encoded_values):
+        self.__encode_value_default(value, encoded_values, -1)
 
     def __encode_value_default(self, value, encoded_values, factor: int):
         assert len(self.tags) == 1
@@ -104,7 +107,10 @@ class TagData(NamedTuple):
             encoded_values[ecotouch_tag] = "1" if value else "0"
         elif ecotouch_tag[0] == "A":
             assert isinstance(value, float)
-            encoded_values[ecotouch_tag] = str(int(value * factor))
+            if factor > -1:
+                encoded_values[ecotouch_tag] = str(int(value * factor))
+            else:
+                encoded_values[ecotouch_tag] = str(float(value))
 
     def _decode_datetime(self, str_vals: List[str]):
         int_vals = list(map(int, str_vals))
@@ -730,55 +736,52 @@ class EcotouchTag(TagData, Enum):
     ##################################################################################
     # A4387: uom: '', 'Energieersparnis gesamt'
     BASICVENT_ENERGY_SAVE_TOTAL_A4387 = TagData(["A4387"], writeable=False,
-                                                decode_function=TagData._decode_value_default_factor10)
+                                                decode_function=TagData._decode_value_analog)
     # A4389: uom: '', 'Energieersparnis aktuell'
     BASICVENT_ENERGY_SAVE_CURRENT_A4389 = TagData(["A4389"], writeable=False,
-                                                  decode_function=TagData._decode_value_default_factor10)
+                                                  decode_function=TagData._decode_value_analog)
     # A4391: uom: '', 'Wärmerückgewinnungsgrad'
     BASICVENT_ENERGY_RECOVERY_RATE_A4391 = TagData(["A4391"], writeable=False,
-                                                   decode_function=TagData._decode_value_default_factor10)
+                                                   decode_function=TagData._decode_value_analog)
 
     # A4498: uom: 'h', 'Luftfilter Wechsel Betriebsstunden'
     BASICVENT_FILTER_CHANGE_OPERATING_HOURS_A4498 = TagData(["A4498"], writeable=False,
-                                                            decode_function=TagData._decode_value_default_factor10)
+                                                            decode_function=TagData._decode_value_analog)
     # A4504: uom: 'Tage', 'Luftfilter Wechsel Betriebsstunden Restlaufzeit dd'
     BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504 = TagData(["A4504"], writeable=False,
-                                                                     decode_function=TagData._decode_value_default_factor10)
+                                                                     decode_function=TagData._decode_value_analog)
     # D1544: uom: '', 'Luftfilter Wechsel Betriebsstunden Reset'
     # BASICVENT_FILTER_CHANGE_OPERATING_HOURS_RESET_D1544 = TagData(["D1544"], writeable=True)
     # D1469: uom: '', 'Luftfilter Wechselanzeige'
     BASICVENT_FILTER_CHANGE_DISPLAY_D1469 = TagData(["D1469"], writeable=False,
-                                                    decode_function=TagData._decode_value_default_factor10)
+                                                    decode_function=TagData._decode_value_analog)
     # D1626: uom: '', 'Luftfilter Wechselanzeige Animation'
     # BASICVENT_FILTER_CHANGE_DISPLAY_ANIMATION_D1626 = TagData(["D1626"], writeable=False)
 
     # A4506: uom: '', 'Hu Luftfeuchtigkeit PID'
-    # BASICVENT_HUMIDITY_SETPOINT_A4506 = TagData(["A4506"], writeable=True, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_HUMIDITY_SETPOINT_A4506 = TagData(["A4506"], writeable=True, decode_function=TagData._decode_value_analog)
     # A4508: uom: '', 'Hu Luftfeuchtigkeit Sollwert'
-    # BASICVENT_HUMIDITY_DEMAND_A4508 = TagData(["A4508"], writeable=False, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_HUMIDITY_DEMAND_A4508 = TagData(["A4508"], writeable=False, decode_function=TagData._decode_value_analog)
     # A4510: uom: '', 'Hu Luftfeuchtigkeit'
-    # BASICVENT_HUMIDITY_SECOND_VALUE_A4510 = TagData(["A4510"], writeable=False, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_HUMIDITY_SECOND_VALUE_A4510 = TagData(["A4510"], writeable=False, decode_function=TagData._decode_value_analog)
     # A4990: uom: '', 'Luftfeuchtigkeit'
-    BASICVENT_HUMIDITY_VALUE_A4990 = TagData(["A4990"], writeable=False,
-                                             decode_function=TagData._decode_value_default_factor10)
+    BASICVENT_HUMIDITY_VALUE_A4990 = TagData(["A4990"], writeable=False, decode_function=TagData._decode_value_analog)
 
     # A4512: uom: '', 'CO2-Konzentration PID'
-    # BASICVENT_CO2_SETPOINT_A4512 = TagData(["A4512"], writeable=True, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_CO2_SETPOINT_A4512 = TagData(["A4512"], writeable=True, decode_function=TagData._decode_value_analog)
     # A4514: uom: '', 'CO2-Konzentration Sollwert'
-    # BASICVENT_CO2_DEMAND_A4514 = TagData(["A4514"], writeable=False, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_CO2_DEMAND_A4514 = TagData(["A4514"], writeable=False, decode_function=TagData._decode_value_analog)
     # A4516: uom: '', 'CO2-Konzentration'
-    # BASICVENT_CO2_SECOND_VALUE_A4516 = TagData(["A4516"], writeable=False, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_CO2_SECOND_VALUE_A4516 = TagData(["A4516"], writeable=False, decode_function=TagData._decode_value_analog)
     # A4992: uom: '', 'CO2'
-    BASICVENT_CO2_VALUE_A4992 = TagData(["A4992"], writeable=False,
-                                        decode_function=TagData._decode_value_default_factor10)
+    BASICVENT_CO2_VALUE_A4992 = TagData(["A4992"], writeable=False, decode_function=TagData._decode_value_analog)
 
     # A4518: uom: '', 'VOC Kohlenwasserstoffverbindungen PID'
-    # BASICVENT_VOC_SETPOINT_A4518 = TagData(["A4518"], writeable=True, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_VOC_SETPOINT_A4518 = TagData(["A4518"], writeable=True, decode_function=TagData._decode_value_analog)
     # A4520: uom: '', 'VOC Kohlenwasserstoffverbindungen Sollwert'
-    # BASICVENT_VOC_DEMAND_A4520 = TagData(["A4520"], writeable=False, decode_function=TagData._decode_value_default_factor10)
+    # BASICVENT_VOC_DEMAND_A4520 = TagData(["A4520"], writeable=False, decode_function=TagData._decode_value_analog)
     # A4522: uom: '', 'VOC Kohlenwasserstoffverbindungen'
-    BASICVENT_VOC_VALUE_A4522 = TagData(["A4522"], writeable=False,
-                                        decode_function=TagData._decode_value_default_factor10)
+    BASICVENT_VOC_VALUE_A4522 = TagData(["A4522"], writeable=False, decode_function=TagData._decode_value_analog)
 
     # I4523: uom: '', 'Luftqualitaet Messung VOC CO2 Sensor'
 
@@ -794,31 +797,28 @@ class EcotouchTag(TagData, Enum):
     # D1605: uom: '', 'Luefter 1 - Manuell Drehzahl'
     # A4551: uom: 'U/min', 'Luefter 1 Umdrehungen pro Minute'
     BASICVENT_INCOMMING_FAN_RPM_A4551 = TagData(["A4551"], writeable=False,
-                                                decode_function=TagData._decode_value_default_factor10)
+                                                decode_function=TagData._decode_value_analog)
     # A4986: uom: '%', 'Analogausgang Y1' - Rotation Incoming air drive percent
-    BASICVENT_INCOMMING_FAN_A4986 = TagData(["A4986"], writeable=False,
-                                            decode_function=TagData._decode_value_default_factor10)
+    BASICVENT_INCOMMING_FAN_A4986 = TagData(["A4986"], writeable=False, decode_function=TagData._decode_value_analog)
     # A5000: uom: '', 'T1' - Außenluft/Frischluft - Outdoor air
     BASICVENT_TEMPERATURE_INCOMMING_AIR_BEFORE_ODA_A5000 = TagData(["A5000"], writeable=False,
-                                                                   decode_function=TagData._decode_value_default_factor10)
+                                                                   decode_function=TagData._decode_value_analog)
     # A4996: uom: '', 'T3' - Zuluft - Supply air
     BASICVENT_TEMPERATURE_INCOMMING_AIR_AFTER_SUP_A4996 = TagData(["A4996"], writeable=False,
-                                                                  decode_function=TagData._decode_value_default_factor10)
+                                                                  decode_function=TagData._decode_value_analog)
 
     # A4545: uom: '', 'Luefter 2 Rueckmeldung'
     # D1603: uom: '', 'Luefter 2 - Manuell Drehzahl'
     # A4547: uom: 'U/min', 'Luefter 2 Umdrehungen pro Minute'
-    BASICVENT_OUTGOING_FAN_RPM_A4547 = TagData(["A4547"], writeable=False,
-                                               decode_function=TagData._decode_value_default_factor10)
+    BASICVENT_OUTGOING_FAN_RPM_A4547 = TagData(["A4547"], writeable=False, decode_function=TagData._decode_value_analog)
     # A4984: uom: '%', 'Analogausgang Y2' - Rotation Ongoing air drive percent
-    BASICVENT_OUTGOING_FAN_A4984 = TagData(["A4984"], writeable=False,
-                                           decode_function=TagData._decode_value_default_factor10)
+    BASICVENT_OUTGOING_FAN_A4984 = TagData(["A4984"], writeable=False, decode_function=TagData._decode_value_analog)
     # A4998: uom: '', 'T2' -> Abluft - Extract air
     BASICVENT_TEMPERATURE_OUTGOING_AIR_BEFORE_ETH_A4998 = TagData(["A4998"], writeable=False,
-                                                                  decode_function=TagData._decode_value_default_factor10)
+                                                                  decode_function=TagData._decode_value_analog)
     # A4994: uom: '', 'T4' -> Fortluft - Exhaust air
     BASICVENT_TEMPERATURE_OUTGOING_AIR_AFTER_EEH_A4994 = TagData(["A4994"], writeable=False,
-                                                                 decode_function=TagData._decode_value_default_factor10)
+                                                                 decode_function=TagData._decode_value_analog)
 
     # D1432: uom: '', 'Bypass Aktiv' -
     BASICVENT_STATUS_BYPASS_ACTIVE_D1432 = TagData(["D1432"], writeable=False)

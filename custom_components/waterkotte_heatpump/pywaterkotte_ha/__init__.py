@@ -277,7 +277,8 @@ class EcotouchBridge:
 
                     for tag in tags:
                         match = re.search(
-                            rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                            #rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                            rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>[-+]?(?:\d*\.?\d+))",
                             content,
                             re.MULTILINE,
                         )
@@ -394,7 +395,8 @@ class EcotouchBridge:
                     ###
                     for tag in tags:
                         match = re.search(
-                            rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                            #rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                            rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>[-+]?(?:\d*\.?\d+))",
                             content,
                             re.MULTILINE
                         )

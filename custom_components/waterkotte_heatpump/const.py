@@ -1380,7 +1380,7 @@ SENSOR_SENSORS = [
         name="Position Expansion Valve",
         tag=EcotouchTag.POSITION_EXPANSION_VALVE,
         device_class=None,
-        native_unit_of_measurement=None,
+        native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
         entity_registry_enabled_default=True
     ),
@@ -1389,7 +1389,7 @@ SENSOR_SENSORS = [
         name="Suction Gas Overheating",
         tag=EcotouchTag.SUCTION_GAS_OVERHEATING,
         device_class=None,
-        native_unit_of_measurement=None,
+        native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
         entity_registry_enabled_default=True
     ),
@@ -1629,6 +1629,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1639,6 +1640,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1649,6 +1651,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1659,6 +1662,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1689,6 +1693,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:cloud-percent",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1699,6 +1704,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
         icon="mdi:molecule-co2",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1709,6 +1715,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
         icon="mdi:counter",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1729,6 +1736,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1749,6 +1757,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1759,6 +1768,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:home-lightning-bolt",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1769,6 +1779,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=UnitOfPower.WATT,
         icon="mdi:home-lightning-bolt",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1779,6 +1790,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
         entity_registry_enabled_default=False,
+        suggested_display_precision=2,
         feature=FEATURE_VENT
     ),
 ]
