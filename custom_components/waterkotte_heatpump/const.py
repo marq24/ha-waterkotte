@@ -74,25 +74,25 @@ TENTH_STEP = 0.1
 FIFTH_STEP = 0.5
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtBinarySensorEntityDescription(BinarySensorEntityDescription):
     tag: EcotouchTag | None = None
     feature: str | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtNumberEntityDescription(NumberEntityDescription):
     tag: EcotouchTag | None = None
     feature: str | None = None
 
-@dataclass
+@dataclass(frozen=True)
 class ExtSelectEntityDescription(SelectEntityDescription):
     tag: EcotouchTag | None = None
     feature: str | None = None
     # controls: list[str] | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtSensorEntityDescription(SensorEntityDescription):
     tag: EcotouchTag | None = None
     feature: str | None = None
@@ -100,7 +100,7 @@ class ExtSensorEntityDescription(SensorEntityDescription):
     # controls: list[str] | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtSwitchEntityDescription(SwitchEntityDescription):
     tag: EcotouchTag | None = None
     feature: str | None = None
@@ -1644,9 +1644,9 @@ SENSOR_SENSORS = [
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
-        key="BASICVENT_TEMPERATURE_INCOMMING_AIR_BEFORE_ODA_A5000",
-        name="basicvent_temperature_incomming_air_before_oda_a5000",
-        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMMING_AIR_BEFORE_ODA_A5000,
+        key="BASICVENT_TEMPERATURE_INCOMING_AIR_BEFORE_ODA_A5000",
+        name="basicvent_temperature_incoming_air_before_oda_a5000",
+        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMING_AIR_BEFORE_ODA_A5000,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1655,9 +1655,9 @@ SENSOR_SENSORS = [
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
-        key="BASICVENT_TEMPERATURE_INCOMMING_AIR_AFTER_SUP_A4996",
-        name="basicvent_temperature_incomming_air_after_sup_a4996",
-        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMMING_AIR_AFTER_SUP_A4996,
+        key="BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996",
+        name="basicvent_temperature_incoming_air_after_sup_a4996",
+        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1666,13 +1666,15 @@ SENSOR_SENSORS = [
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
-        key="BASICVENT_FILTER_CHANGE_OPERATING_HOURS_A4498",
-        name="basicvent_filter_change_operating_hours_a4498",
-        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_OPERATING_HOURS_A4498,
+        key="BASICVENT_FILTER_CHANGE_OPERATING_DAYS_A4498",
+        name="basicvent_filter_change_operating_days_a4498",
+        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_OPERATING_DAYS_A4498,
         device_class=SensorDeviceClass.DURATION,
-        native_unit_of_measurement=UnitOfTime.HOURS,
+        native_unit_of_measurement=UnitOfTime.DAYS,
+        unit_of_measurement=UnitOfTime.DAYS,
         icon="mdi:counter",
         entity_registry_enabled_default=False,
+        suggested_display_precision=0,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1681,8 +1683,10 @@ SENSOR_SENSORS = [
         tag=EcotouchTag.BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504,
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
+        unit_of_measurement=UnitOfTime.DAYS,
         icon="mdi:counter",
         entity_registry_enabled_default=False,
+        suggested_display_precision=0,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1693,7 +1697,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:cloud-percent",
         entity_registry_enabled_default=False,
-        suggested_display_precision=2,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1719,24 +1723,25 @@ SENSOR_SENSORS = [
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
-        key="BASICVENT_INCOMMING_FAN_RPM_A4551",
-        name="basicvent_incomming_fan_rpm_a4551",
-        tag=EcotouchTag.BASICVENT_INCOMMING_FAN_RPM_A4551,
+        key="BASICVENT_INCOMING_FAN_RPM_A4551",
+        name="basicvent_incoming_fan_rpm_a4551",
+        tag=EcotouchTag.BASICVENT_INCOMING_FAN_RPM_A4551,
         device_class=None,
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
+        suggested_display_precision=0,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
-        key="BASICVENT_INCOMMING_FAN_A4986",
-        name="basicvent_incomming_fan_a4986",
-        tag=EcotouchTag.BASICVENT_INCOMMING_FAN_A4986,
+        key="BASICVENT_INCOMING_FAN_A4986",
+        name="basicvent_incoming_fan_a4986",
+        tag=EcotouchTag.BASICVENT_INCOMING_FAN_A4986,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
-        suggested_display_precision=2,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1747,6 +1752,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
+        suggested_display_precision=0,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1757,7 +1763,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
         entity_registry_enabled_default=False,
-        suggested_display_precision=2,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
     ExtSensorEntityDescription(
@@ -1790,7 +1796,7 @@ SENSOR_SENSORS = [
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
         entity_registry_enabled_default=False,
-        suggested_display_precision=2,
+        suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
 ]

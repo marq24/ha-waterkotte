@@ -11,6 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
+from homeassistant.helpers.typing import UNDEFINED
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
@@ -270,9 +271,9 @@ class WKHPBaseEntity(Entity):
         self.entity_description = description
 
         # check, if the feature should be enabled by default (if activated during setup)
-        if not self.entity_description.entity_registry_enabled_default and description.feature is not None:
+        if not description.entity_registry_enabled_default and description.feature is not None:
             if description.feature in self.coordinator.available_features:
-                self.entity_description.entity_registry_enabled_default = True
+                self._attr_entity_registry_enabled_default = True
 
         self.entity_id = f"{DOMAIN}.wkh_{self._attr_translation_key}"
 
@@ -311,3 +312,27 @@ class WKHPBaseEntity(Entity):
     def should_poll(self) -> bool:
         """Entities do not individually poll."""
         return False
+
+    def _friendly_name_internal(self) -> str | None:
+        """Return the friendly name.
+
+        If has_entity_name is False, this returns self.name
+        If has_entity_name is True, this returns device.name + self.name
+        """
+        name = self.name
+        if name is UNDEFINED:
+            name = None
+
+        if not self.has_entity_name or not (device_entry := self.device_entry):
+            return name
+
+        device_name = device_entry.name_by_user or device_entry.name
+        if name is None and self.use_device_name:
+            return device_name
+
+        # we overwrite the default impl here and just return our 'name'
+        # return f"{device_name} {name}" if device_name else name
+        if device_entry.name_by_user is not None:
+            return f"{device_entry.name_by_user} {name}" if device_name else name
+        else:
+            return f"[WKHP] {name}"

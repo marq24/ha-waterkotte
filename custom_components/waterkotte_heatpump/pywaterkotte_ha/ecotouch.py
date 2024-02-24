@@ -47,6 +47,12 @@ class TagData(NamedTuple):
 
         if first_tag[0] == "A":
             if len(self.tags) == 1:
+                # SIM VENT OperatingHour Sensors...
+                #if self.tags[0] == "A4498":
+                #    return float('180.000000')
+                #if self.tags[0] == "A4504":
+                #    return float('19')
+
                 if factor > -1:
                     return float(first_val) / factor
                 else:
@@ -743,9 +749,8 @@ class EcotouchTag(TagData, Enum):
     # A4391: uom: '', 'Wärmerückgewinnungsgrad'
     BASICVENT_ENERGY_RECOVERY_RATE_A4391 = TagData(["A4391"], writeable=False,
                                                    decode_function=TagData._decode_value_analog)
-
-    # A4498: uom: 'h', 'Luftfilter Wechsel Betriebsstunden'
-    BASICVENT_FILTER_CHANGE_OPERATING_HOURS_A4498 = TagData(["A4498"], writeable=False,
+    # A4498: uom: 'Tage', 'Luftfilter Wechsel Betriebsstunden'
+    BASICVENT_FILTER_CHANGE_OPERATING_DAYS_A4498 = TagData(["A4498"], writeable=False,
                                                             decode_function=TagData._decode_value_analog)
     # A4504: uom: 'Tage', 'Luftfilter Wechsel Betriebsstunden Restlaufzeit dd'
     BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504 = TagData(["A4504"], writeable=False,
@@ -796,15 +801,15 @@ class EcotouchTag(TagData, Enum):
     # A4549: uom: '', 'Luefter 1 Rueckmeldung'
     # D1605: uom: '', 'Luefter 1 - Manuell Drehzahl'
     # A4551: uom: 'U/min', 'Luefter 1 Umdrehungen pro Minute'
-    BASICVENT_INCOMMING_FAN_RPM_A4551 = TagData(["A4551"], writeable=False,
+    BASICVENT_INCOMING_FAN_RPM_A4551 = TagData(["A4551"], writeable=False,
                                                 decode_function=TagData._decode_value_analog)
     # A4986: uom: '%', 'Analogausgang Y1' - Rotation Incoming air drive percent
-    BASICVENT_INCOMMING_FAN_A4986 = TagData(["A4986"], writeable=False, decode_function=TagData._decode_value_analog)
+    BASICVENT_INCOMING_FAN_A4986 = TagData(["A4986"], writeable=False, decode_function=TagData._decode_value_analog)
     # A5000: uom: '', 'T1' - Außenluft/Frischluft - Outdoor air
-    BASICVENT_TEMPERATURE_INCOMMING_AIR_BEFORE_ODA_A5000 = TagData(["A5000"], writeable=False,
+    BASICVENT_TEMPERATURE_INCOMING_AIR_BEFORE_ODA_A5000 = TagData(["A5000"], writeable=False,
                                                                    decode_function=TagData._decode_value_analog)
     # A4996: uom: '', 'T3' - Zuluft - Supply air
-    BASICVENT_TEMPERATURE_INCOMMING_AIR_AFTER_SUP_A4996 = TagData(["A4996"], writeable=False,
+    BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996 = TagData(["A4996"], writeable=False,
                                                                   decode_function=TagData._decode_value_analog)
 
     # A4545: uom: '', 'Luefter 2 Rueckmeldung'
