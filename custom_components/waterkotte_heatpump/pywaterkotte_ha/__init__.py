@@ -205,7 +205,7 @@ class EcotouchBridge:
                     t_values = [e_values[a_tag] for a_tag in a_eco_tag.tags]
                     t_states = [e_status[a_tag] for a_tag in a_eco_tag.tags]
                     result[a_eco_tag] = {
-                        "value": a_eco_tag.decode_function(a_eco_tag, t_values),
+                        "value": a_eco_tag.decode_f(a_eco_tag, t_values),
                         "status": t_states[0]
                     }
 
@@ -332,7 +332,7 @@ class EcotouchBridge:
                 raise InvalidValueException("tried to write to an readonly field")
 
             # converting the HA values to the final int or bools that the waterkotte understand
-            a_eco_tag.encode_function(a_eco_tag, value, to_write)
+            a_eco_tag.encode_f(a_eco_tag, value, to_write)
 
             e_values, e_status = await self._write_tags(to_write.keys(), to_write.values())
 
@@ -347,7 +347,7 @@ class EcotouchBridge:
 
                 if all_ok:
                     str_vals = [e_values[a_tag] for a_tag in a_eco_tag.tags]
-                    val = a_eco_tag.decode_function(a_eco_tag, str_vals)
+                    val = a_eco_tag.decode_f(a_eco_tag, str_vals)
                     if str(val) != str(value):
                         _LOGGER.error(
                             f"WRITE value does not match value that was READ: '{val}' (read) != '{value}' (write)")

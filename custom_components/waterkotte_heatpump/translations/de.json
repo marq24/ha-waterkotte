@@ -17,10 +17,16 @@
           "username": "Benutzername",
           "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
-          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
-          "use_vent": "Daten einer Luftwärmepumpen-Außeneinheit anzeigen",
-          "use_heating_curve": "Feature: 'Heizkurven-Anpassungen' verwenden",
-          "use_disinfection": "Feature: 'Warmwasser Disinfections-Anpassungen' verwenden"
+          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)"
+        }
+      },
+      "features": {
+        "description": "Aktivierung zusätzlicher Sensoren und Steuerelemente:\n(Diese können auch später von Hand aktiviert werden)",
+        "data": {
+          "use_vent": "für eine 'Luftwärmepumpen-Außeneinheit'",
+          "use_heating_curve": "zur Anpassung von 'Heizkurven'",
+          "use_disinfection": "für die 'Warmwasser Disinfektion'",
+          "use_pool": "für eine 'Pooleinheit' (incl. Heizkurve)"
         }
       }
     },
@@ -271,7 +277,8 @@
       "schedule_water_disinfection_6sa": {"name": "Samstag"},
       "schedule_water_disinfection_7su": {"name": "Sonntag"},
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Heizperiode"},
-      "permanent_heating_circulation_pump_summer_d1104": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Kühlperiode"}
+      "permanent_heating_circulation_pump_summer_d1104": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Kühlperiode"},
+      "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Luftfilter-Wechsel Betriebsstunden ZURÜCKSETZEN"}
     }
   }
 }

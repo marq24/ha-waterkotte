@@ -16,10 +16,16 @@
           "username": "Username",
           "password": "Password",
           "polling_interval": "Polling Interval in seconds",
-          "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
-          "use_vent": "Show data for an air source heat pump outdoor unit",
-          "use_heating_curve": "Use heating curve adjustment features",
-          "use_disinfection": "Use Water disinfection adjustment features"
+          "tags_per_request": "Number of tags to fetch in a single request (max. 75)"
+        }
+      },
+      "features": {
+        "description": "Activation of additional Sensors und Controls:\n(These can also be activated later manually)",
+        "data": {
+          "use_vent": "for an 'air source heat pump outdoor unit'",
+          "use_heating_curve": "to adjust 'heating curves'",
+          "use_disinfection": "to adjust the 'Water disinfection'",
+          "use_pool": "for a 'pool' unit' (incl. heating curve)"
         }
       }
     },
@@ -245,7 +251,8 @@
       "schedule_water_disinfection_6sa": {"name": "Saturday"},
       "schedule_water_disinfection_7su": {"name": "Sunday"},
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Continuous operation heating pump during heating period"},
-      "permanent_heating_circulation_pump_summer_d1104": {"name": "Continuous operation heating pump during cooling period"}
+      "permanent_heating_circulation_pump_summer_d1104": {"name": "Continuous operation heating pump during cooling period"},
+      "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Vent Air-Filter-Change operating hours RESET"}
     }
   }
 }

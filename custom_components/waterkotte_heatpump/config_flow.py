@@ -21,7 +21,8 @@ from .const import (
     CONF_SYSTEMTYPE,
     CONF_USE_DISINFECTION,
     CONF_USE_HEATING_CURVE,
-    CONF_USE_VENT
+    CONF_USE_VENT,
+    CONF_USE_POOL
 )
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
@@ -41,6 +42,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize."""
         self._errors = {}
+        self._user_step_user_input = None
         self._bios = ""
         self._firmware = ""
         self._id = ""
@@ -74,7 +76,8 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 user_input[CONF_SERIES] = self._series
                 user_input[CONF_SERIAL] = self._serial
                 user_input[CONF_ID] = self._id
-                return self.async_create_entry(title=TITLE, data=user_input)
+                self._user_step_user_input = dict(user_input)
+                return await self.async_step_features()
             else:
                 if user_input[CONF_SYSTEMTYPE] == EASYCON:
                     self._errors["base"] = "type"
@@ -103,15 +106,32 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     ),
                 # vol.Required(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
                 vol.Required(CONF_PASSWORD, default=user_input.get(CONF_PASSWORD)): str,
-                vol.Required(CONF_USE_VENT, default=False): bool,
-                vol.Required(CONF_USE_HEATING_CURVE, default=False): bool,
-                vol.Required(CONF_USE_DISINFECTION, default=False): bool,
                 vol.Required(CONF_POLLING_INTERVAL, default=60): int,
                 vol.Required(CONF_TAGS_PER_REQUEST, default=75): int
             }),
             last_step=True,
             errors=self._errors
         )
+
+    async def async_step_features(self, user_input=None):
+        self._errors = {}
+        if user_input is not None:
+            for k, v in user_input.items():
+                self._user_step_user_input[k] = v
+
+            return self.async_create_entry(title=TITLE, data=self._user_step_user_input)
+        else:
+            return self.async_show_form(
+                step_id="features",
+                data_schema=vol.Schema({
+                    vol.Required(CONF_USE_VENT, default=False): bool,
+                    vol.Required(CONF_USE_HEATING_CURVE, default=False): bool,
+                    vol.Required(CONF_USE_DISINFECTION, default=False): bool,
+                    vol.Required(CONF_USE_POOL, default=False): bool,
+                }),
+                last_step=True,
+                errors=self._errors
+            )
 
     async def _test_credentials(self, host, pwd, system_type, tags_per_request):
         try:
