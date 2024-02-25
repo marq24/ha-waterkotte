@@ -1,22 +1,34 @@
-"""Constants for Waterkotte Heatpump."""
 from typing import Final
 
 from dataclasses import dataclass
 
-from homeassistant.components.binary_sensor import BinarySensorEntityDescription
-from homeassistant.components.binary_sensor import BinarySensorDeviceClass
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntityDescription
 from homeassistant.components.number import NumberEntityDescription
 from homeassistant.components.number import NumberDeviceClass, NumberMode, DEFAULT_STEP
 from homeassistant.components.select import SelectEntityDescription
-from homeassistant.components.sensor import SensorEntityDescription
-from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+from homeassistant.components.sensor import SensorEntityDescription, SensorDeviceClass, SensorStateClass
 from homeassistant.components.switch import SwitchEntityDescription
 
-from homeassistant.const import UnitOfTemperature, PERCENTAGE, UnitOfEnergy, UnitOfPower, UnitOfPressure, UnitOfTime, \
-    CONCENTRATION_PARTS_PER_MILLION, CONCENTRATION_MICROGRAMS_PER_CUBIC_METER, REVOLUTIONS_PER_MINUTE
+from homeassistant.const import (
+    UnitOfTemperature,
+    UnitOfEnergy,
+    UnitOfPower,
+    UnitOfPressure,
+    UnitOfTime,
+    PERCENTAGE,
+    CONCENTRATION_PARTS_PER_MILLION,
+    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    REVOLUTIONS_PER_MINUTE
+)
 
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import SIX_STEPS_MODES
-from custom_components.waterkotte_heatpump.pywaterkotte_ha import EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import(
+    SIX_STEPS_MODES,
+    SCHEDULE_LIST,
+    SCHEDULE_DAY_LIST,
+    SCHEDULE_SENSOR_TYPES_LIST
+)
+
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 
 # Base component constants
 NAME: Final = "Waterkotte Heatpump [+2020]"
@@ -29,6 +41,7 @@ FEATURE_DISINFECTION: Final = "DISINFECTION"
 FEATURE_HEATING_CURVE: Final = "HEATING_CURVE"
 FEATURE_VENT: Final = "VENT"
 FEATURE_POOL: Final = "POOL"
+FEATURE_CODE_GEN: Final = "generated"
 
 # Device classes
 DEVICE_CLASS_ENUM: Final = "enum"
@@ -69,6 +82,7 @@ If you have any issues with this you need to open an issue here:
 
 SERVICE_SET_HOLIDAY: Final = "set_holiday"
 SERVICE_SET_DISINFECTION_START_TIME: Final = "set_disinfection_start_time"
+SERVICE_SET_SCHEDULE_DATA: Final = "set_schedule_data"
 SERVICE_GET_ENERGY_BALANCE: Final = "get_energy_balance"
 SERVICE_GET_ENERGY_BALANCE_MONTHLY: Final = "get_energy_balance_monthly"
 
@@ -78,25 +92,26 @@ FIFTH_STEP = 0.5
 
 @dataclass(frozen=True)
 class ExtBinarySensorEntityDescription(BinarySensorEntityDescription):
-    tag: EcotouchTag | None = None
+    tag: WKHPTag | None = None
     feature: str | None = None
 
 
 @dataclass(frozen=True)
 class ExtNumberEntityDescription(NumberEntityDescription):
-    tag: EcotouchTag | None = None
+    tag: WKHPTag | None = None
     feature: str | None = None
+
 
 @dataclass(frozen=True)
 class ExtSelectEntityDescription(SelectEntityDescription):
-    tag: EcotouchTag | None = None
+    tag: WKHPTag | None = None
     feature: str | None = None
     # controls: list[str] | None = None
 
 
 @dataclass(frozen=True)
 class ExtSensorEntityDescription(SensorEntityDescription):
-    tag: EcotouchTag | None = None
+    tag: WKHPTag | None = None
     feature: str | None = None
     # selfimplemented_display_precision: int | None = None
     # controls: list[str] | None = None
@@ -104,7 +119,7 @@ class ExtSensorEntityDescription(SensorEntityDescription):
 
 @dataclass(frozen=True)
 class ExtSwitchEntityDescription(SwitchEntityDescription):
-    tag: EcotouchTag | None = None
+    tag: WKHPTag | None = None
     feature: str | None = None
     icon_off: str | None = None
 
@@ -114,14 +129,14 @@ PLATFORMS: Final = ["binary_sensor", "number", "select", "sensor", "switch"]
 BINARY_SENSORS = [
     ExtBinarySensorEntityDescription(
         key="STATE_SOURCEPUMP",
-        tag=EcotouchTag.STATE_SOURCEPUMP,
+        tag=WKHPTag.STATE_SOURCEPUMP,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:water-pump",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_HEATINGPUMP",
-        tag=EcotouchTag.STATE_HEATINGPUMP,
+        tag=WKHPTag.STATE_HEATINGPUMP,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:heat-pump",
         entity_registry_enabled_default=True
@@ -129,56 +144,56 @@ BINARY_SENSORS = [
     # EVD: -> Überhitzungsregler
     ExtBinarySensorEntityDescription(
         key="STATE_EVD",
-        tag=EcotouchTag.STATE_EVD,
+        tag=WKHPTag.STATE_EVD,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:thermometer-high",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_COMPRESSOR",
-        tag=EcotouchTag.STATE_COMPRESSOR,
+        tag=WKHPTag.STATE_COMPRESSOR,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:gauge",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_COMPRESSOR2",
-        tag=EcotouchTag.STATE_COMPRESSOR2,
+        tag=WKHPTag.STATE_COMPRESSOR2,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:gauge",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_EXTERNAL_HEATER",
-        tag=EcotouchTag.STATE_EXTERNAL_HEATER,
+        tag=WKHPTag.STATE_EXTERNAL_HEATER,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:heating-coil",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_ALARM",
-        tag=EcotouchTag.STATE_ALARM,
+        tag=WKHPTag.STATE_ALARM,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:alert",
         entity_registry_enabled_default=False
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_COOLING",
-        tag=EcotouchTag.STATE_COOLING,
+        tag=WKHPTag.STATE_COOLING,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:snowflake-thermometer",
         entity_registry_enabled_default=False
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_WATER",
-        tag=EcotouchTag.STATE_WATER,
+        tag=WKHPTag.STATE_WATER,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:water-thermometer",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_POOL",
-        tag=EcotouchTag.STATE_POOL,
+        tag=WKHPTag.STATE_POOL,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:pool",
         entity_registry_enabled_default=False,
@@ -186,14 +201,14 @@ BINARY_SENSORS = [
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_SOLAR",
-        tag=EcotouchTag.STATE_SOLAR,
+        tag=WKHPTag.STATE_SOLAR,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:solar-power-variant",
         entity_registry_enabled_default=False
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_COOLING4WAY",
-        tag=EcotouchTag.STATE_COOLING4WAY,
+        tag=WKHPTag.STATE_COOLING4WAY,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:snowflake-thermometer",
         entity_registry_enabled_default=False
@@ -201,28 +216,28 @@ BINARY_SENSORS = [
     # status sensors (Operation Mode 0=off, 1=on or 2=disabled)
     ExtBinarySensorEntityDescription(
         key="STATUS_HEATING",
-        tag=EcotouchTag.STATUS_HEATING,
+        tag=WKHPTag.STATUS_HEATING,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:radiator",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATUS_WATER",
-        tag=EcotouchTag.STATUS_WATER,
+        tag=WKHPTag.STATUS_WATER,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:water-thermometer",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATUS_COOLING",
-        tag=EcotouchTag.STATUS_COOLING,
+        tag=WKHPTag.STATUS_COOLING,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:snowflake-thermometer",
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATUS_POOL",
-        tag=EcotouchTag.STATUS_POOL,
+        tag=WKHPTag.STATUS_POOL,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:pool-thermometer",
         entity_registry_enabled_default=False,
@@ -230,14 +245,14 @@ BINARY_SENSORS = [
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_BLOCKING_TIME",
-        tag=EcotouchTag.STATE_BLOCKING_TIME,
+        tag=WKHPTag.STATE_BLOCKING_TIME,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_TEST_RUN",
-        tag=EcotouchTag.STATE_TEST_RUN,
+        tag=WKHPTag.STATE_TEST_RUN,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:heating-coil",
         entity_registry_enabled_default=True
@@ -247,40 +262,40 @@ BINARY_SENSORS = [
     # not have any effect)
     ExtBinarySensorEntityDescription(
         key="STATE_HEATING_CIRCULATION_PUMP_D425",
-        tag=EcotouchTag.STATE_HEATING_CIRCULATION_PUMP_D425,
+        tag=WKHPTag.STATE_HEATING_CIRCULATION_PUMP_D425,
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_BUFFERTANK_CIRCULATION_PUMP_D377",
-        tag=EcotouchTag.STATE_BUFFERTANK_CIRCULATION_PUMP_D377,
+        tag=WKHPTag.STATE_BUFFERTANK_CIRCULATION_PUMP_D377,
         entity_registry_enabled_default=True
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_POOL_CIRCULATION_PUMP_D549",
-        tag=EcotouchTag.STATE_POOL_CIRCULATION_PUMP_D549,
+        tag=WKHPTag.STATE_POOL_CIRCULATION_PUMP_D549,
         entity_registry_enabled_default=False,
         feature=FEATURE_POOL
     ),
     ExtBinarySensorEntityDescription(
         key="STATE_MIX1_CIRCULATION_PUMP_D248",
-        tag=EcotouchTag.STATE_MIX1_CIRCULATION_PUMP_D248,
+        tag=WKHPTag.STATE_MIX1_CIRCULATION_PUMP_D248,
         entity_registry_enabled_default=True
     ),
 
     ExtBinarySensorEntityDescription(
         key="STATE_MIX2_CIRCULATION_PUMP_D291",
-        tag=EcotouchTag.STATE_MIX2_CIRCULATION_PUMP_D291,
+        tag=WKHPTag.STATE_MIX2_CIRCULATION_PUMP_D291,
         entity_registry_enabled_default=False
     ),
 
     ExtBinarySensorEntityDescription(
         key="STATE_MIX3_CIRCULATION_PUMP_D334",
-        tag=EcotouchTag.STATE_MIX3_CIRCULATION_PUMP_D334,
+        tag=WKHPTag.STATE_MIX3_CIRCULATION_PUMP_D334,
         entity_registry_enabled_default=False
     ),
     ExtBinarySensorEntityDescription(
         key="STATUS_SOLAR",
-        tag=EcotouchTag.STATUS_SOLAR,
+        tag=WKHPTag.STATUS_SOLAR,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:solar-power-variant",
         entity_registry_enabled_default=False
@@ -288,7 +303,7 @@ BINARY_SENSORS = [
 
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_BYPASS_ACTIVE_D1432",
-        tag=EcotouchTag.BASICVENT_STATUS_BYPASS_ACTIVE_D1432,
+        tag=WKHPTag.BASICVENT_STATUS_BYPASS_ACTIVE_D1432,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
@@ -296,7 +311,7 @@ BINARY_SENSORS = [
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_HUMIDIFIER_ACTIVE_D1433",
-        tag=EcotouchTag.BASICVENT_STATUS_HUMIDIFIER_ACTIVE_D1433,
+        tag=WKHPTag.BASICVENT_STATUS_HUMIDIFIER_ACTIVE_D1433,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
@@ -304,7 +319,7 @@ BINARY_SENSORS = [
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_COMFORT_BYPASS_ACTIVE_D1465",
-        tag=EcotouchTag.BASICVENT_STATUS_COMFORT_BYPASS_ACTIVE_D1465,
+        tag=WKHPTag.BASICVENT_STATUS_COMFORT_BYPASS_ACTIVE_D1465,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
@@ -312,7 +327,7 @@ BINARY_SENSORS = [
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_SMART_BYPASS_ACTIVE_D1466",
-        tag=EcotouchTag.BASICVENT_STATUS_SMART_BYPASS_ACTIVE_D1466,
+        tag=WKHPTag.BASICVENT_STATUS_SMART_BYPASS_ACTIVE_D1466,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
@@ -320,7 +335,7 @@ BINARY_SENSORS = [
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_STATUS_HOLIDAY_ENABLED_D1503",
-        tag=EcotouchTag.BASICVENT_STATUS_HOLIDAY_ENABLED_D1503,
+        tag=WKHPTag.BASICVENT_STATUS_HOLIDAY_ENABLED_D1503,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
@@ -328,7 +343,7 @@ BINARY_SENSORS = [
     ),
     ExtBinarySensorEntityDescription(
         key="BASICVENT_FILTER_CHANGE_DISPLAY_D1469",
-        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_DISPLAY_D1469,
+        tag=WKHPTag.BASICVENT_FILTER_CHANGE_DISPLAY_D1469,
         device_class=BinarySensorDeviceClass.RUNNING,
         icon="mdi:electric-switch",
         entity_registry_enabled_default=False,
@@ -337,7 +352,7 @@ BINARY_SENSORS = [
 
     # "STATUS_HEATING_CIRCULATION_PUMP",
     #     "Status circulation pump heating",
-    #     tag=EcotouchTag.STATUS_HEATING_CIRCULATION_PUMP,
+    #     tag=WKHPTag.STATUS_HEATING_CIRCULATION_PUMP,
     #     device_class=BinarySensorDeviceClass.RUNNING,
     #     #     icon="mdi:pump",
     #     entity_registry_enabled_default=True,
@@ -345,7 +360,7 @@ BINARY_SENSORS = [
     # ],
     # "STATUS_SOLAR_CIRCULATION_PUMP",
     #     "Status circulation pump Solar",
-    #     tag=EcotouchTag.STATUS_SOLAR_CIRCULATION_PUMP,
+    #     tag=WKHPTag.STATUS_SOLAR_CIRCULATION_PUMP,
     #     device_class=BinarySensorDeviceClass.RUNNING,
     #     #     icon="mdi:pump",
     #     entity_registry_enabled_default=False,
@@ -353,7 +368,7 @@ BINARY_SENSORS = [
     # ],
     # "STATUS_BUFFER_TANK_CIRCULATION_PUMP",
     #     "Status circulation pump buffer tank",
-    #     tag=EcotouchTag.STATUS_BUFFER_TANK_CIRCULATION_PUMP,
+    #     tag=WKHPTag.STATUS_BUFFER_TANK_CIRCULATION_PUMP,
     #     device_class=BinarySensorDeviceClass.RUNNING,
     #     icon="mdi:pump",
     #     entity_registry_enabled_default=True,
@@ -361,7 +376,7 @@ BINARY_SENSORS = [
     # ],
     # "STATUS_COMPRESSOR",
     #     "Status compressor",
-    #     tag=EcotouchTag.STATUS_COMPRESSOR,
+    #     tag=WKHPTag.STATUS_COMPRESSOR,
     #     device_class=BinarySensorDeviceClass.RUNNING,
     #     icon="mdi:gauge",
     #     entity_registry_enabled_default=True,
@@ -374,7 +389,7 @@ NUMBER_SENSORS = [
     # not sure if this RETURN temperature should be set able at all?!
     ExtNumberEntityDescription(
         key="TEMPERATURE_RETURN_SETPOINT",
-        tag=EcotouchTag.TEMPERATURE_RETURN_SETPOINT,
+        tag=WKHPTag.TEMPERATURE_RETURN_SETPOINT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
@@ -388,7 +403,7 @@ NUMBER_SENSORS = [
     # A109
     ExtNumberEntityDescription(
         key="TEMPERATURE_COOLING_SETPOINT",
-        tag=EcotouchTag.TEMPERATURE_COOLING_SETPOINT,
+        tag=WKHPTag.TEMPERATURE_COOLING_SETPOINT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:snowflake-thermometer",
         entity_registry_enabled_default=False,
@@ -401,7 +416,7 @@ NUMBER_SENSORS = [
     # A108
     ExtNumberEntityDescription(
         key="TEMPERATURE_COOLING_OUTDOOR_LIMIT",
-        tag=EcotouchTag.TEMPERATURE_COOLING_OUTDOOR_LIMIT,
+        tag=WKHPTag.TEMPERATURE_COOLING_OUTDOOR_LIMIT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:snowflake-thermometer",
         entity_registry_enabled_default=False,
@@ -415,7 +430,7 @@ NUMBER_SENSORS = [
     # A32 manual heat-setpoint (when heat_mode = 1)
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_SETPOINT",
-        tag=EcotouchTag.TEMPERATURE_HEATING_SETPOINT,
+        tag=WKHPTag.TEMPERATURE_HEATING_SETPOINT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=True,
@@ -427,7 +442,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_ADJUST",
-        tag=EcotouchTag.TEMPERATURE_HEATING_ADJUST,
+        tag=WKHPTag.TEMPERATURE_HEATING_ADJUST,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=True,
@@ -439,7 +454,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_HYSTERESIS",
-        tag=EcotouchTag.TEMPERATURE_HEATING_HYSTERESIS,
+        tag=WKHPTag.TEMPERATURE_HEATING_HYSTERESIS,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=True,
@@ -451,7 +466,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX1_ADJUST",
-        tag=EcotouchTag.TEMPERATURE_MIX1_ADJUST,
+        tag=WKHPTag.TEMPERATURE_MIX1_ADJUST,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-1-circle",
         entity_registry_enabled_default=True,
@@ -463,7 +478,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX2_ADJUST",
-        tag=EcotouchTag.TEMPERATURE_MIX2_ADJUST,
+        tag=WKHPTag.TEMPERATURE_MIX2_ADJUST,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-2-circle",
         entity_registry_enabled_default=False,
@@ -475,7 +490,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX3_ADJUST",
-        tag=EcotouchTag.TEMPERATURE_MIX3_ADJUST,
+        tag=WKHPTag.TEMPERATURE_MIX3_ADJUST,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-3-circle",
         entity_registry_enabled_default=False,
@@ -489,7 +504,7 @@ NUMBER_SENSORS = [
     # A93
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_HC_LIMIT",
-        tag=EcotouchTag.TEMPERATURE_HEATING_HC_LIMIT,
+        tag=WKHPTag.TEMPERATURE_HEATING_HC_LIMIT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=False,
@@ -503,7 +518,7 @@ NUMBER_SENSORS = [
     # A94
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_HC_TARGET",
-        tag=EcotouchTag.TEMPERATURE_HEATING_HC_TARGET,
+        tag=WKHPTag.TEMPERATURE_HEATING_HC_TARGET,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=False,
@@ -517,7 +532,7 @@ NUMBER_SENSORS = [
     # A91
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_HC_OUTDOOR_NORM",
-        tag=EcotouchTag.TEMPERATURE_HEATING_HC_OUTDOOR_NORM,
+        tag=WKHPTag.TEMPERATURE_HEATING_HC_OUTDOOR_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=False,
@@ -531,7 +546,7 @@ NUMBER_SENSORS = [
     # A92
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_HC_NORM",
-        tag=EcotouchTag.TEMPERATURE_HEATING_HC_NORM,
+        tag=WKHPTag.TEMPERATURE_HEATING_HC_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=False,
@@ -545,7 +560,7 @@ NUMBER_SENSORS = [
     # A95
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_SETPOINTLIMIT_MAX",
-        tag=EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MAX,
+        tag=WKHPTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MAX,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=False,
@@ -558,7 +573,7 @@ NUMBER_SENSORS = [
     # A104
     ExtNumberEntityDescription(
         key="TEMPERATURE_HEATING_SETPOINTLIMIT_MIN",
-        tag=EcotouchTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MIN,
+        tag=WKHPTag.TEMPERATURE_HEATING_SETPOINTLIMIT_MIN,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:radiator",
         entity_registry_enabled_default=False,
@@ -571,7 +586,7 @@ NUMBER_SENSORS = [
     # A38 - Warmwasser
     ExtNumberEntityDescription(
         key="TEMPERATURE_WATER_SETPOINT",
-        tag=EcotouchTag.TEMPERATURE_WATER_SETPOINT,
+        tag=WKHPTag.TEMPERATURE_WATER_SETPOINT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:water-thermometer",
         entity_registry_enabled_default=True,
@@ -583,7 +598,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_WATER_HYSTERESIS",
-        tag=EcotouchTag.TEMPERATURE_WATER_HYSTERESIS,
+        tag=WKHPTag.TEMPERATURE_WATER_HYSTERESIS,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:water-thermometer",
         entity_registry_enabled_default=True,
@@ -597,7 +612,7 @@ NUMBER_SENSORS = [
     # A276
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX1_HC_LIMIT",
-        tag=EcotouchTag.TEMPERATURE_MIX1_HC_LIMIT,
+        tag=WKHPTag.TEMPERATURE_MIX1_HC_LIMIT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-1-circle",
         entity_registry_enabled_default=False,
@@ -611,7 +626,7 @@ NUMBER_SENSORS = [
     # A277
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX1_HC_TARGET",
-        tag=EcotouchTag.TEMPERATURE_MIX1_HC_TARGET,
+        tag=WKHPTag.TEMPERATURE_MIX1_HC_TARGET,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-1-circle",
         entity_registry_enabled_default=False,
@@ -625,7 +640,7 @@ NUMBER_SENSORS = [
     # A274
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX1_HC_OUTDOOR_NORM",
-        tag=EcotouchTag.TEMPERATURE_MIX1_HC_OUTDOOR_NORM,
+        tag=WKHPTag.TEMPERATURE_MIX1_HC_OUTDOOR_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-1-circle",
         entity_registry_enabled_default=False,
@@ -639,7 +654,7 @@ NUMBER_SENSORS = [
     # A275
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX1_HC_HEATING_NORM",
-        tag=EcotouchTag.TEMPERATURE_MIX1_HC_HEATING_NORM,
+        tag=WKHPTag.TEMPERATURE_MIX1_HC_HEATING_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-1-circle",
         entity_registry_enabled_default=False,
@@ -653,7 +668,7 @@ NUMBER_SENSORS = [
     # A278
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX1_HC_MAX",
-        tag=EcotouchTag.TEMPERATURE_MIX1_HC_MAX,
+        tag=WKHPTag.TEMPERATURE_MIX1_HC_MAX,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-1-circle",
         entity_registry_enabled_default=False,
@@ -666,7 +681,7 @@ NUMBER_SENSORS = [
     # Mischerkreis 2 Heizkennlinie
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX2_HC_LIMIT",
-        tag=EcotouchTag.TEMPERATURE_MIX2_HC_LIMIT,
+        tag=WKHPTag.TEMPERATURE_MIX2_HC_LIMIT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-2-circle",
         entity_registry_enabled_default=False,
@@ -678,7 +693,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX2_HC_TARGET",
-        tag=EcotouchTag.TEMPERATURE_MIX2_HC_TARGET,
+        tag=WKHPTag.TEMPERATURE_MIX2_HC_TARGET,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-2-circle",
         entity_registry_enabled_default=False,
@@ -690,7 +705,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX2_HC_OUTDOOR_NORM",
-        tag=EcotouchTag.TEMPERATURE_MIX2_HC_OUTDOOR_NORM,
+        tag=WKHPTag.TEMPERATURE_MIX2_HC_OUTDOOR_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-2-circle",
         entity_registry_enabled_default=False,
@@ -702,7 +717,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX2_HC_HEATING_NORM",
-        tag=EcotouchTag.TEMPERATURE_MIX2_HC_HEATING_NORM,
+        tag=WKHPTag.TEMPERATURE_MIX2_HC_HEATING_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-2-circle",
         entity_registry_enabled_default=False,
@@ -714,7 +729,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX2_HC_MAX",
-        tag=EcotouchTag.TEMPERATURE_MIX2_HC_MAX,
+        tag=WKHPTag.TEMPERATURE_MIX2_HC_MAX,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-2-circle",
         entity_registry_enabled_default=False,
@@ -727,7 +742,7 @@ NUMBER_SENSORS = [
     # Mischerkreis 3 Heizkennlinie
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX3_HC_LIMIT",
-        tag=EcotouchTag.TEMPERATURE_MIX3_HC_LIMIT,
+        tag=WKHPTag.TEMPERATURE_MIX3_HC_LIMIT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-3-circle",
         entity_registry_enabled_default=False,
@@ -739,7 +754,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX3_HC_TARGET",
-        tag=EcotouchTag.TEMPERATURE_MIX3_HC_TARGET,
+        tag=WKHPTag.TEMPERATURE_MIX3_HC_TARGET,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-3-circle",
         entity_registry_enabled_default=False,
@@ -751,7 +766,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX3_HC_OUTDOOR_NORM",
-        tag=EcotouchTag.TEMPERATURE_MIX3_HC_OUTDOOR_NORM,
+        tag=WKHPTag.TEMPERATURE_MIX3_HC_OUTDOOR_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-3-circle",
         entity_registry_enabled_default=False,
@@ -763,7 +778,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX3_HC_HEATING_NORM",
-        tag=EcotouchTag.TEMPERATURE_MIX3_HC_HEATING_NORM,
+        tag=WKHPTag.TEMPERATURE_MIX3_HC_HEATING_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-3-circle",
         entity_registry_enabled_default=False,
@@ -775,7 +790,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_MIX3_HC_MAX",
-        tag=EcotouchTag.TEMPERATURE_MIX3_HC_MAX,
+        tag=WKHPTag.TEMPERATURE_MIX3_HC_MAX,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:numeric-3-circle",
         entity_registry_enabled_default=False,
@@ -788,7 +803,7 @@ NUMBER_SENSORS = [
     # Pool-Temperature Setpoint's
     ExtNumberEntityDescription(
         key="TEMPERATURE_POOL_SETPOINT",
-        tag=EcotouchTag.TEMPERATURE_POOL_SETPOINT,
+        tag=WKHPTag.TEMPERATURE_POOL_SETPOINT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:pool-thermometer",
         entity_registry_enabled_default=False,
@@ -801,7 +816,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_POOL_HYSTERESIS",
-        tag=EcotouchTag.TEMPERATURE_POOL_HYSTERESIS,
+        tag=WKHPTag.TEMPERATURE_POOL_HYSTERESIS,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:pool-thermometer",
         entity_registry_enabled_default=False,
@@ -814,7 +829,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_POOL_HC_LIMIT",
-        tag=EcotouchTag.TEMPERATURE_POOL_HC_LIMIT,
+        tag=WKHPTag.TEMPERATURE_POOL_HC_LIMIT,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:pool",
         entity_registry_enabled_default=False,
@@ -827,7 +842,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_POOL_HC_TARGET",
-        tag=EcotouchTag.TEMPERATURE_POOL_HC_TARGET,
+        tag=WKHPTag.TEMPERATURE_POOL_HC_TARGET,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:pool",
         entity_registry_enabled_default=False,
@@ -840,7 +855,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_POOL_HC_OUTDOOR_NORM",
-        tag=EcotouchTag.TEMPERATURE_POOL_HC_OUTDOOR_NORM,
+        tag=WKHPTag.TEMPERATURE_POOL_HC_OUTDOOR_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:pool",
         entity_registry_enabled_default=False,
@@ -853,7 +868,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="TEMPERATURE_POOL_HC_NORM",
-        tag=EcotouchTag.TEMPERATURE_POOL_HC_NORM,
+        tag=WKHPTag.TEMPERATURE_POOL_HC_NORM,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:pool",
         entity_registry_enabled_default=False,
@@ -868,7 +883,7 @@ NUMBER_SENSORS = [
     # switch.py
     ExtNumberEntityDescription(
         key="TEMPERATURE_WATER_DISINFECTION",
-        tag=EcotouchTag.TEMPERATURE_WATER_DISINFECTION,
+        tag=WKHPTag.TEMPERATURE_WATER_DISINFECTION,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:shield-bug",
         entity_registry_enabled_default=False,
@@ -881,7 +896,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_DURATION",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_DURATION,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_DURATION,
         device_class=None,  # duration in h
         icon="mdi:progress-clock",
         entity_registry_enabled_default=False,
@@ -894,7 +909,7 @@ NUMBER_SENSORS = [
     ),
     ExtNumberEntityDescription(
         key="SOURCE_PUMP_CAPTURE_TEMPERATURE_A479",
-        tag=EcotouchTag.SOURCE_PUMP_CAPTURE_TEMPERATURE_A479,
+        tag=WKHPTag.SOURCE_PUMP_CAPTURE_TEMPERATURE_A479,
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:thermometer",
         entity_registry_enabled_default=False,
@@ -909,7 +924,7 @@ NUMBER_SENSORS = [
 SELECT_SENSORS = [
     ExtSelectEntityDescription(
         key="ENABLE_COOLING",
-        tag=EcotouchTag.ENABLE_COOLING,
+        tag=WKHPTag.ENABLE_COOLING,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:snowflake-thermometer",
         entity_registry_enabled_default=True,
@@ -917,7 +932,7 @@ SELECT_SENSORS = [
     ),
     ExtSelectEntityDescription(
         key="ENABLE_HEATING",
-        tag=EcotouchTag.ENABLE_HEATING,
+        tag=WKHPTag.ENABLE_HEATING,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:radiator",
         entity_registry_enabled_default=True,
@@ -925,7 +940,7 @@ SELECT_SENSORS = [
     ),
     ExtSelectEntityDescription(
         key="ENABLE_PV",
-        tag=EcotouchTag.ENABLE_PV,
+        tag=WKHPTag.ENABLE_PV,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:solar-power",
         entity_registry_enabled_default=False,
@@ -933,7 +948,7 @@ SELECT_SENSORS = [
     ),
     ExtSelectEntityDescription(
         key="ENABLE_WARMWATER",
-        tag=EcotouchTag.ENABLE_WARMWATER,
+        tag=WKHPTag.ENABLE_WARMWATER,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:water-thermometer",
         entity_registry_enabled_default=True,
@@ -941,7 +956,7 @@ SELECT_SENSORS = [
     ),
     ExtSelectEntityDescription(
         key="ENABLE_POOL",
-        tag=EcotouchTag.ENABLE_POOL,
+        tag=WKHPTag.ENABLE_POOL,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:pool-thermometer",
         entity_registry_enabled_default=False,
@@ -950,7 +965,7 @@ SELECT_SENSORS = [
     ),
     ExtSelectEntityDescription(
         key="ENABLE_EXTERNAL_HEATER",
-        tag=EcotouchTag.ENABLE_EXTERNAL_HEATER,
+        tag=WKHPTag.ENABLE_EXTERNAL_HEATER,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:heating-coil",
         entity_registry_enabled_default=True,
@@ -959,7 +974,7 @@ SELECT_SENSORS = [
     # I265
     ExtSelectEntityDescription(
         key="TEMPERATURE_HEATING_MODE",
-        tag=EcotouchTag.TEMPERATURE_HEATING_MODE,
+        tag=WKHPTag.TEMPERATURE_HEATING_MODE,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:radiator",
         entity_registry_enabled_default=True,
@@ -967,7 +982,7 @@ SELECT_SENSORS = [
     ),
     ExtSelectEntityDescription(
         key="BASICVENT_OPERATION_MODE_I4582",
-        tag=EcotouchTag.BASICVENT_OPERATION_MODE_I4582,
+        tag=WKHPTag.BASICVENT_OPERATION_MODE_I4582,
         device_class=DEVICE_CLASS_ENUM,
         icon="mdi:hvac",
         entity_registry_enabled_default=False,
@@ -980,7 +995,7 @@ SENSOR_SENSORS = [
     # temperature sensors
     ExtSensorEntityDescription(
         key="TEMPERATURE_OUTSIDE",
-        tag=EcotouchTag.TEMPERATURE_OUTSIDE,
+        tag=WKHPTag.TEMPERATURE_OUTSIDE,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:sun-snowflake-variant",
@@ -988,7 +1003,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_OUTSIDE_1H",
-        tag=EcotouchTag.TEMPERATURE_OUTSIDE_1H,
+        tag=WKHPTag.TEMPERATURE_OUTSIDE_1H,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:sun-snowflake-variant",
@@ -996,7 +1011,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_OUTSIDE_24H",
-        tag=EcotouchTag.TEMPERATURE_OUTSIDE_24H,
+        tag=WKHPTag.TEMPERATURE_OUTSIDE_24H,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:sun-snowflake-variant",
@@ -1004,7 +1019,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_SOURCE_ENTRY",
-        tag=EcotouchTag.TEMPERATURE_SOURCE_ENTRY,
+        tag=WKHPTag.TEMPERATURE_SOURCE_ENTRY,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1012,7 +1027,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_SOURCE_EXIT",
-        tag=EcotouchTag.TEMPERATURE_SOURCE_EXIT,
+        tag=WKHPTag.TEMPERATURE_SOURCE_EXIT,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1020,7 +1035,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_EVAPORATION",
-        tag=EcotouchTag.TEMPERATURE_EVAPORATION,
+        tag=WKHPTag.TEMPERATURE_EVAPORATION,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1028,7 +1043,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_SUCTION_LINE",
-        tag=EcotouchTag.TEMPERATURE_SUCTION_LINE,
+        tag=WKHPTag.TEMPERATURE_SUCTION_LINE,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1036,7 +1051,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_RETURN",
-        tag=EcotouchTag.TEMPERATURE_RETURN,
+        tag=WKHPTag.TEMPERATURE_RETURN,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1044,7 +1059,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_FLOW",
-        tag=EcotouchTag.TEMPERATURE_FLOW,
+        tag=WKHPTag.TEMPERATURE_FLOW,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1052,7 +1067,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_CONDENSATION",
-        tag=EcotouchTag.TEMPERATURE_CONDENSATION,
+        tag=WKHPTag.TEMPERATURE_CONDENSATION,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1060,7 +1075,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_BUFFERTANK",
-        tag=EcotouchTag.TEMPERATURE_BUFFERTANK,
+        tag=WKHPTag.TEMPERATURE_BUFFERTANK,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:storage-tank",
@@ -1068,7 +1083,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_ROOM",
-        tag=EcotouchTag.TEMPERATURE_ROOM,
+        tag=WKHPTag.TEMPERATURE_ROOM,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermostat-box",
@@ -1076,7 +1091,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_ROOM_1H",
-        tag=EcotouchTag.TEMPERATURE_ROOM_1H,
+        tag=WKHPTag.TEMPERATURE_ROOM_1H,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermostat-box",
@@ -1084,7 +1099,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_HEATING",
-        tag=EcotouchTag.TEMPERATURE_HEATING,
+        tag=WKHPTag.TEMPERATURE_HEATING,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:radiator",
@@ -1092,7 +1107,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_HEATING_DEMAND",
-        tag=EcotouchTag.TEMPERATURE_HEATING_DEMAND,
+        tag=WKHPTag.TEMPERATURE_HEATING_DEMAND,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:radiator",
@@ -1100,7 +1115,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_COOLING",
-        tag=EcotouchTag.TEMPERATURE_COOLING,
+        tag=WKHPTag.TEMPERATURE_COOLING,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:snowflake-thermometer",
@@ -1108,7 +1123,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_COOLING_DEMAND",
-        tag=EcotouchTag.TEMPERATURE_COOLING_DEMAND,
+        tag=WKHPTag.TEMPERATURE_COOLING_DEMAND,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:snowflake-thermometer",
@@ -1116,7 +1131,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_WATER",
-        tag=EcotouchTag.TEMPERATURE_WATER,
+        tag=WKHPTag.TEMPERATURE_WATER,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:water-thermometer",
@@ -1124,7 +1139,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_WATER_DEMAND",
-        tag=EcotouchTag.TEMPERATURE_WATER_DEMAND,
+        tag=WKHPTag.TEMPERATURE_WATER_DEMAND,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:water-thermometer",
@@ -1132,7 +1147,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX1",
-        tag=EcotouchTag.TEMPERATURE_MIX1,
+        tag=WKHPTag.TEMPERATURE_MIX1,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:numeric-1-circle",
@@ -1140,7 +1155,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX1_PERCENT",
-        tag=EcotouchTag.TEMPERATURE_MIX1_PERCENT,
+        tag=WKHPTag.TEMPERATURE_MIX1_PERCENT,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1148,7 +1163,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX1_DEMAND",
-        tag=EcotouchTag.TEMPERATURE_MIX1_DEMAND,
+        tag=WKHPTag.TEMPERATURE_MIX1_DEMAND,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:numeric-1-circle",
@@ -1156,7 +1171,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX2",
-        tag=EcotouchTag.TEMPERATURE_MIX2,
+        tag=WKHPTag.TEMPERATURE_MIX2,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:numeric-2-circle",
@@ -1164,7 +1179,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX2_PERCENT",
-        tag=EcotouchTag.TEMPERATURE_MIX2_PERCENT,
+        tag=WKHPTag.TEMPERATURE_MIX2_PERCENT,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1172,7 +1187,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX2_DEMAND",
-        tag=EcotouchTag.TEMPERATURE_MIX2_DEMAND,
+        tag=WKHPTag.TEMPERATURE_MIX2_DEMAND,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:numeric-2-circle",
@@ -1180,7 +1195,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX3",
-        tag=EcotouchTag.TEMPERATURE_MIX3,
+        tag=WKHPTag.TEMPERATURE_MIX3,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:numeric-3-circle",
@@ -1188,7 +1203,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX3_PERCENT",
-        tag=EcotouchTag.TEMPERATURE_MIX3_PERCENT,
+        tag=WKHPTag.TEMPERATURE_MIX3_PERCENT,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1196,7 +1211,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_MIX3_DEMAND",
-        tag=EcotouchTag.TEMPERATURE_MIX3_DEMAND,
+        tag=WKHPTag.TEMPERATURE_MIX3_DEMAND,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:numeric-3-circle",
@@ -1204,7 +1219,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_POOL",
-        tag=EcotouchTag.TEMPERATURE_POOL,
+        tag=WKHPTag.TEMPERATURE_POOL,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:pool-thermometer",
@@ -1213,7 +1228,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_POOL_DEMAND",
-        tag=EcotouchTag.TEMPERATURE_POOL_DEMAND,
+        tag=WKHPTag.TEMPERATURE_POOL_DEMAND,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:pool-thermometer",
@@ -1222,7 +1237,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_SOLAR",
-        tag=EcotouchTag.TEMPERATURE_SOLAR,
+        tag=WKHPTag.TEMPERATURE_SOLAR,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:solar-power-variant",
@@ -1230,7 +1245,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_SOLAR_EXIT",
-        tag=EcotouchTag.TEMPERATURE_SOLAR_EXIT,
+        tag=WKHPTag.TEMPERATURE_SOLAR_EXIT,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:solar-power-variant",
@@ -1238,7 +1253,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="TEMPERATURE_DISCHARGE",
-        tag=EcotouchTag.TEMPERATURE_DISCHARGE,
+        tag=WKHPTag.TEMPERATURE_DISCHARGE,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1247,7 +1262,7 @@ SENSOR_SENSORS = [
     # other (none temperature) values...
     ExtSensorEntityDescription(
         key="PRESSURE_EVAPORATION",
-        tag=EcotouchTag.PRESSURE_EVAPORATION,
+        tag=WKHPTag.PRESSURE_EVAPORATION,
         device_class=SensorDeviceClass.PRESSURE,
         native_unit_of_measurement=UnitOfPressure.BAR,
         icon="mdi:gauge",
@@ -1255,7 +1270,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="PRESSURE_CONDENSATION",
-        tag=EcotouchTag.PRESSURE_CONDENSATION,
+        tag=WKHPTag.PRESSURE_CONDENSATION,
         device_class=SensorDeviceClass.PRESSURE,
         native_unit_of_measurement=UnitOfPressure.BAR,
         icon="mdi:gauge",
@@ -1263,7 +1278,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="PRESSURE_WATER",
-        tag=EcotouchTag.PRESSURE_WATER,
+        tag=WKHPTag.PRESSURE_WATER,
         device_class=SensorDeviceClass.PRESSURE,
         native_unit_of_measurement=UnitOfPressure.BAR,
         icon="mdi:gauge",
@@ -1272,7 +1287,7 @@ SENSOR_SENSORS = [
     # other data...
     ExtSensorEntityDescription(
         key="POSITION_EXPANSION_VALVE",
-        tag=EcotouchTag.POSITION_EXPANSION_VALVE,
+        tag=WKHPTag.POSITION_EXPANSION_VALVE,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1280,7 +1295,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="SUCTION_GAS_OVERHEATING",
-        tag=EcotouchTag.SUCTION_GAS_OVERHEATING,
+        tag=WKHPTag.SUCTION_GAS_OVERHEATING,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1288,7 +1303,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="POWER_ELECTRIC",
-        tag=EcotouchTag.POWER_ELECTRIC,
+        tag=WKHPTag.POWER_ELECTRIC,
         device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         icon="mdi:meter-electric",
@@ -1296,7 +1311,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="POWER_HEATING",
-        tag=EcotouchTag.POWER_HEATING,
+        tag=WKHPTag.POWER_HEATING,
         device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         icon="mdi:radiator",
@@ -1304,7 +1319,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="POWER_COOLING",
-        tag=EcotouchTag.POWER_COOLING,
+        tag=WKHPTag.POWER_COOLING,
         device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.KILO_WATT,
         icon="mdi:snowflake-thermometer",
@@ -1312,7 +1327,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="COP_HEATING",
-        tag=EcotouchTag.COP_HEATING,
+        tag=WKHPTag.COP_HEATING,
         device_class=None,
         native_unit_of_measurement=None,
         icon="mdi:gauge",
@@ -1320,7 +1335,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="COP_COOLING",
-        tag=EcotouchTag.COP_COOLING,
+        tag=WKHPTag.COP_COOLING,
         device_class=None,
         native_unit_of_measurement=None,
         icon="mdi:gauge",
@@ -1328,7 +1343,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="ENERGY_CONSUMPTION_TOTAL_YEAR",
-        tag=EcotouchTag.ENERGY_CONSUMPTION_TOTAL_YEAR,
+        tag=WKHPTag.ENERGY_CONSUMPTION_TOTAL_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:lightning-bolt-outline",
@@ -1338,7 +1353,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR",
-        tag=EcotouchTag.COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR,
+        tag=WKHPTag.COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:gauge",
@@ -1348,7 +1363,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR",
-        tag=EcotouchTag.SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR,
+        tag=WKHPTag.SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:water-pump",
@@ -1358,7 +1373,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR",
-        tag=EcotouchTag.ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR,
+        tag=WKHPTag.ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:heating-coil",
@@ -1368,7 +1383,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="ENERGY_PRODUCTION_TOTAL_YEAR",
-        tag=EcotouchTag.ENERGY_PRODUCTION_TOTAL_YEAR,
+        tag=WKHPTag.ENERGY_PRODUCTION_TOTAL_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:home-thermometer-outline",
@@ -1378,7 +1393,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="HEATING_ENERGY_PRODUCTION_YEAR",
-        tag=EcotouchTag.HEATING_ENERGY_PRODUCTION_YEAR,
+        tag=WKHPTag.HEATING_ENERGY_PRODUCTION_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:radiator",
@@ -1388,7 +1403,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="HOT_WATER_ENERGY_PRODUCTION_YEAR",
-        tag=EcotouchTag.HOT_WATER_ENERGY_PRODUCTION_YEAR,
+        tag=WKHPTag.HOT_WATER_ENERGY_PRODUCTION_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:water-thermometer",
@@ -1398,7 +1413,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="POOL_ENERGY_PRODUCTION_YEAR",
-        tag=EcotouchTag.POOL_ENERGY_PRODUCTION_YEAR,
+        tag=WKHPTag.POOL_ENERGY_PRODUCTION_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:pool-thermometer",
@@ -1409,7 +1424,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="COOLING_ENERGY_YEAR",
-        tag=EcotouchTag.COOLING_ENERGY_YEAR,
+        tag=WKHPTag.COOLING_ENERGY_YEAR,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:snowflake-thermometer",
@@ -1419,7 +1434,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="PERCENT_HEAT_CIRC_PUMP",
-        tag=EcotouchTag.PERCENT_HEAT_CIRC_PUMP,
+        tag=WKHPTag.PERCENT_HEAT_CIRC_PUMP,
         device_class=SensorDeviceClass.POWER_FACTOR,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1427,7 +1442,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="PERCENT_SOURCE_PUMP",
-        tag=EcotouchTag.PERCENT_SOURCE_PUMP,
+        tag=WKHPTag.PERCENT_SOURCE_PUMP,
         device_class=SensorDeviceClass.POWER_FACTOR,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1435,7 +1450,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="PERCENT_COMPRESSOR",
-        tag=EcotouchTag.PERCENT_COMPRESSOR,
+        tag=WKHPTag.PERCENT_COMPRESSOR,
         device_class=SensorDeviceClass.POWER_FACTOR,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1444,7 +1459,7 @@ SENSOR_SENSORS = [
     # writeable sensors from here...
     ExtSensorEntityDescription(
         key="HOLIDAY_START_TIME",
-        tag=EcotouchTag.HOLIDAY_START_TIME,
+        tag=WKHPTag.HOLIDAY_START_TIME,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:calendar-arrow-right",
@@ -1452,7 +1467,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="HOLIDAY_END_TIME",
-        tag=EcotouchTag.HOLIDAY_END_TIME,
+        tag=WKHPTag.HOLIDAY_END_TIME,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:calendar-arrow-left",
@@ -1460,7 +1475,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_START_TIME",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:clock-digital",
@@ -1469,7 +1484,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="STATE_SERVICE",
-        tag=EcotouchTag.STATE_SERVICE,
+        tag=WKHPTag.STATE_SERVICE,
         device_class=None,
         native_unit_of_measurement=None,
         icon="mdi:wrench-clock",
@@ -1477,7 +1492,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="ALARM_BITS",
-        tag=EcotouchTag.ALARM_BITS,
+        tag=WKHPTag.ALARM_BITS,
         device_class=None,
         native_unit_of_measurement=None,
         icon="mdi:alarm-light",
@@ -1485,7 +1500,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="INTERRUPTION_BITS",
-        tag=EcotouchTag.INTERRUPTION_BITS,
+        tag=WKHPTag.INTERRUPTION_BITS,
         device_class=None,
         native_unit_of_measurement=None,
         icon="mdi:alert-circle",
@@ -1494,7 +1509,7 @@ SENSOR_SENSORS = [
 
     ExtSensorEntityDescription(
         key="BASICVENT_TEMPERATURE_OUTGOING_AIR_BEFORE_ETH_A4998",
-        tag=EcotouchTag.BASICVENT_TEMPERATURE_OUTGOING_AIR_BEFORE_ETH_A4998,
+        tag=WKHPTag.BASICVENT_TEMPERATURE_OUTGOING_AIR_BEFORE_ETH_A4998,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1504,7 +1519,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_TEMPERATURE_OUTGOING_AIR_AFTER_EEH_A4994",
-        tag=EcotouchTag.BASICVENT_TEMPERATURE_OUTGOING_AIR_AFTER_EEH_A4994,
+        tag=WKHPTag.BASICVENT_TEMPERATURE_OUTGOING_AIR_AFTER_EEH_A4994,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1514,7 +1529,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_TEMPERATURE_INCOMING_AIR_BEFORE_ODA_A5000",
-        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMING_AIR_BEFORE_ODA_A5000,
+        tag=WKHPTag.BASICVENT_TEMPERATURE_INCOMING_AIR_BEFORE_ODA_A5000,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1524,7 +1539,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996",
-        tag=EcotouchTag.BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996,
+        tag=WKHPTag.BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996,
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         icon="mdi:thermometer",
@@ -1534,7 +1549,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_FILTER_CHANGE_OPERATING_DAYS_A4498",
-        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_OPERATING_DAYS_A4498,
+        tag=WKHPTag.BASICVENT_FILTER_CHANGE_OPERATING_DAYS_A4498,
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
         unit_of_measurement=UnitOfTime.DAYS,
@@ -1545,7 +1560,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504",
-        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504,
+        tag=WKHPTag.BASICVENT_FILTER_CHANGE_REMAINING_OPERATING_DAYS_A4504,
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
         unit_of_measurement=UnitOfTime.DAYS,
@@ -1556,7 +1571,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_HUMIDITY_VALUE_A4990",
-        tag=EcotouchTag.BASICVENT_HUMIDITY_VALUE_A4990,
+        tag=WKHPTag.BASICVENT_HUMIDITY_VALUE_A4990,
         device_class=SensorDeviceClass.HUMIDITY,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:cloud-percent",
@@ -1566,7 +1581,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_CO2_VALUE_A4992",
-        tag=EcotouchTag.BASICVENT_CO2_VALUE_A4992,
+        tag=WKHPTag.BASICVENT_CO2_VALUE_A4992,
         device_class=SensorDeviceClass.CO2,
         native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
         icon="mdi:molecule-co2",
@@ -1576,7 +1591,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_VOC_VALUE_A4522",
-        tag=EcotouchTag.BASICVENT_VOC_VALUE_A4522,
+        tag=WKHPTag.BASICVENT_VOC_VALUE_A4522,
         device_class=SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS,
         native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
         icon="mdi:counter",
@@ -1586,7 +1601,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_INCOMING_FAN_RPM_A4551",
-        tag=EcotouchTag.BASICVENT_INCOMING_FAN_RPM_A4551,
+        tag=WKHPTag.BASICVENT_INCOMING_FAN_RPM_A4551,
         device_class=None,
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         icon="mdi:wind-power",
@@ -1596,7 +1611,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_INCOMING_FAN_A4986",
-        tag=EcotouchTag.BASICVENT_INCOMING_FAN_A4986,
+        tag=WKHPTag.BASICVENT_INCOMING_FAN_A4986,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
@@ -1606,7 +1621,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_OUTGOING_FAN_RPM_A4547",
-        tag=EcotouchTag.BASICVENT_OUTGOING_FAN_RPM_A4547,
+        tag=WKHPTag.BASICVENT_OUTGOING_FAN_RPM_A4547,
         device_class=None,
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         icon="mdi:wind-power",
@@ -1616,7 +1631,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_OUTGOING_FAN_A4984",
-        tag=EcotouchTag.BASICVENT_OUTGOING_FAN_A4984,
+        tag=WKHPTag.BASICVENT_OUTGOING_FAN_A4984,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:wind-power",
@@ -1626,7 +1641,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_ENERGY_SAVE_TOTAL_A4387",
-        tag=EcotouchTag.BASICVENT_ENERGY_SAVE_TOTAL_A4387,
+        tag=WKHPTag.BASICVENT_ENERGY_SAVE_TOTAL_A4387,
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         icon="mdi:home-lightning-bolt",
@@ -1636,7 +1651,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_ENERGY_SAVE_CURRENT_A4389",
-        tag=EcotouchTag.BASICVENT_ENERGY_SAVE_CURRENT_A4389,
+        tag=WKHPTag.BASICVENT_ENERGY_SAVE_CURRENT_A4389,
         device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.WATT,
         icon="mdi:home-lightning-bolt",
@@ -1646,7 +1661,7 @@ SENSOR_SENSORS = [
     ),
     ExtSensorEntityDescription(
         key="BASICVENT_ENERGY_RECOVERY_RATE_A4391",
-        tag=EcotouchTag.BASICVENT_ENERGY_RECOVERY_RATE_A4391,
+        tag=WKHPTag.BASICVENT_ENERGY_RECOVERY_RATE_A4391,
         device_class=None,
         native_unit_of_measurement=PERCENTAGE,
         icon="mdi:gauge",
@@ -1659,79 +1674,124 @@ SENSOR_SENSORS = [
 SWITCH_SENSORS = [
     ExtSwitchEntityDescription(
         key="HOLIDAY_ENABLED",
-        tag=EcotouchTag.HOLIDAY_ENABLED,
+        tag=WKHPTag.HOLIDAY_ENABLED,
         icon="mdi:calendar-check",
         icon_off="mdi:calendar-blank",
         entity_registry_enabled_default=True
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_1MO",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_1MO,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_1MO,
         icon="mdi:calendar-today",
         entity_registry_enabled_default=False,
         feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_2TU",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_2TU,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_2TU,
         icon="mdi:calendar-today",
         entity_registry_enabled_default=False,
         feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_3WE",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_3WE,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_3WE,
         icon="mdi:calendar-today",
         entity_registry_enabled_default=False,
         feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_4TH",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_4TH,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_4TH,
         icon="mdi:calendar-today",
         entity_registry_enabled_default=False,
         feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_5FR",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_5FR,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_5FR,
         icon="mdi:calendar-today",
         entity_registry_enabled_default=False,
         feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_6SA",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_6SA,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_6SA,
         icon="mdi:calendar-today",
         entity_registry_enabled_default=False,
         feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_7SU",
-        tag=EcotouchTag.SCHEDULE_WATER_DISINFECTION_7SU,
+        tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_7SU,
         icon="mdi:calendar-today",
         entity_registry_enabled_default=False,
         feature=FEATURE_DISINFECTION
     ),
     ExtSwitchEntityDescription(
         key="PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103",
-        tag=EcotouchTag.PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103,
+        tag=WKHPTag.PERMANENT_HEATING_CIRCULATION_PUMP_WINTER_D1103,
         icon="mdi:pump",
         icon_off="mdi:pump-off",
         entity_registry_enabled_default=True
     ),
     ExtSwitchEntityDescription(
         key="PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104",
-        tag=EcotouchTag.PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104,
+        tag=WKHPTag.PERMANENT_HEATING_CIRCULATION_PUMP_SUMMER_D1104,
         icon="mdi:pump",
         icon_off="mdi:pump-off",
         entity_registry_enabled_default=False
     ),
     ExtSwitchEntityDescription(
         key="BASICVENT_FILTER_CHANGE_OPERATING_HOURS_RESET_D1544",
-        tag=EcotouchTag.BASICVENT_FILTER_CHANGE_OPERATING_HOURS_RESET_D1544,
+        tag=WKHPTag.BASICVENT_FILTER_CHANGE_OPERATING_HOURS_RESET_D1544,
         icon="mdi:restart",
         entity_registry_enabled_default=False,
         feature=FEATURE_VENT
     )
 ]
+
+# SCHEDULING ENTITIES from here...
+for a_value in SCHEDULE_LIST:
+    for a_day in SCHEDULE_DAY_LIST:
+        for a_type in SCHEDULE_SENSOR_TYPES_LIST:
+            a_key = f"{a_value}_{a_day}{a_type}"
+            if a_type.endswith("_ENABLE"):
+                SWITCH_SENSORS.append(
+                    ExtSwitchEntityDescription(
+                        key=a_key,
+                        tag=WKHPTag[a_key],
+                        icon="mdi:calendar-today",
+                        entity_registry_enabled_default=False,
+                        feature=FEATURE_CODE_GEN
+                    )
+                )
+            elif a_type.endswith("_VALUE"):
+                NUMBER_SENSORS.append(
+                    ExtNumberEntityDescription(
+                        key=a_key,
+                        tag=WKHPTag[a_key],
+                        device_class=NumberDeviceClass.TEMPERATURE,
+                        icon="mdi:thermometer",
+                        entity_registry_enabled_default=False,
+                        native_min_value=-10,
+                        native_max_value=10,
+                        native_step=TENTH_STEP,
+                        mode=NumberMode.BOX,
+                        native_unit_of_measurement=UnitOfTemperature.KELVIN,
+                        feature=FEATURE_CODE_GEN
+                    )
+                )
+            else:
+                # time sensor...
+                SENSOR_SENSORS.append(
+                    ExtSensorEntityDescription(
+                        key=a_key,
+                        tag=WKHPTag[a_key],
+                        device_class=SensorDeviceClass.DATE,
+                        native_unit_of_measurement=None,
+                        icon="mdi:clock-digital",
+                        entity_registry_enabled_default=False,
+                        feature=FEATURE_CODE_GEN
+                    )
+                )

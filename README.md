@@ -98,13 +98,17 @@ The Integration provides currently 4 services:
 
 ### Setting dates & times
 
+- SET_SCHEDULE
+
+    To set the schedule __start__ & __end__ times for Heating, Cooling and Hot Water, including the __start__ & __end__ times for the adjustment I and adjustment II time ranges. Please note that you can set the adjustment I and adjustment II values (+/-10°K) also separately.   
+
 - SET_HOLIDAY
 
-  To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
+    To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
 
 - SET_DISINFECTION_START_TIME
 
-  To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_disinfection_start_time` and set `starthhmm` parameter (seconds will be ignored).
+    To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_disinfection_start_time` and set `starthhmm` parameter (seconds will be ignored).
 
 ### Get Energy Balance
 

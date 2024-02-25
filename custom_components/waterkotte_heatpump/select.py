@@ -28,7 +28,7 @@ class WKHPSelect(WKHPBaseEntity, SelectEntity):
     @property
     def current_option(self) -> str | None:
         try:
-            value = self.coordinator.data[self.eco_tag]["value"]
+            value = self.coordinator.data[self.wkhp_tag]["value"]
             if value is None or value == "":
                 value = 'unknown'
         except KeyError:
@@ -39,6 +39,6 @@ class WKHPSelect(WKHPBaseEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         try:
-            await self.coordinator.async_write_tag(self.eco_tag, option, self)
+            await self.coordinator.async_write_tag(self.wkhp_tag, option, self)
         except ValueError:
             return "unavailable"

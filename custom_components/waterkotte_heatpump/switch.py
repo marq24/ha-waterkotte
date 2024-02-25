@@ -31,16 +31,16 @@ class WKHPSwitch(WKHPBaseEntity, SwitchEntity):
     async def async_turn_on(self, **kwargs):
         """Turn on the switch."""
         try:
-            await self.coordinator.async_write_tag(self.eco_tag, True, self)
-            return self.coordinator.data[self.eco_tag]["value"]
+            await self.coordinator.async_write_tag(self.wkhp_tag, True, self)
+            return self.coordinator.data[self.wkhp_tag]["value"]
         except ValueError:
             return "unavailable"
 
     async def async_turn_off(self, **kwargs):
         """Turn off the switch."""
         try:
-            await self.coordinator.async_write_tag(self.eco_tag, False, self)
-            return self.coordinator.data[self.eco_tag]["value"]
+            await self.coordinator.async_write_tag(self.wkhp_tag, False, self)
+            return self.coordinator.data[self.wkhp_tag]["value"]
         except ValueError:
             return "unavailable"
 
@@ -48,8 +48,8 @@ class WKHPSwitch(WKHPBaseEntity, SwitchEntity):
     def is_on(self) -> bool | None:
         try:
             value = None
-            if self.eco_tag in self.coordinator.data:
-                value_and_state = self.coordinator.data[self.eco_tag]
+            if self.wkhp_tag in self.coordinator.data:
+                value_and_state = self.coordinator.data[self.wkhp_tag]
                 # _LOGGER.error(f"{self.entity_description.key} -> {value_and_state}")
                 if "value" in value_and_state:
                     value = value_and_state["value"]

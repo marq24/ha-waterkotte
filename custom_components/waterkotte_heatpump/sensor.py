@@ -41,7 +41,7 @@ class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
     def state(self):
         """Return the state of the sensor."""
         try:
-            value = self.coordinator.data[self.eco_tag]["value"]
+            value = self.coordinator.data[self.wkhp_tag]["value"]
             if value is None or value == "":
                 if self._is_bit_field:
                     value = "none"

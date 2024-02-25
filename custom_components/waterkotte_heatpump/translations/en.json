@@ -5,6 +5,24 @@
         "ecotouch": "EcoTouch Mode [web interface require username & password]",
         "easycon": "EasyCon Mode [older Waterkotte Models without login credentials]"
       }
+    },
+    "set_schedule_data_schedule_type": {
+      "options": {
+        "heating":  "Heating",
+        "cooling":  "Cooling",
+        "water":  "Hot Water"
+      }
+    },
+    "set_schedule_data_schedule_days": {
+      "options": {
+        "1mo":  "Mondays",
+        "2tu":  "Tuesdays",
+        "3we":  "Wednesdays",
+        "4th":  "Thursdays",
+        "5fr":  "Fridays",
+        "6sa":  "Saturdays",
+        "7su":  "Sundays"
+      }
     }
   },
   "config": {
@@ -253,6 +271,22 @@
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Continuous operation heating pump during heating period"},
       "permanent_heating_circulation_pump_summer_d1104": {"name": "Continuous operation heating pump during cooling period"},
       "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Vent Air-Filter-Change operating hours RESET"}
-    }
+    },
+    "code_gen": {
+      "schedule": {"name":  "Schedule"},
+      "heating":  {"name": "Heating"},
+      "cooling":  {"name": "Cooling"},
+      "water":  {"name": "Hot Water"},
+      "adjust":  {"name": "adjustment"},
+      "1mo": {"name": "Mondays"},
+      "2tu": {"name": "Tuesdays"},
+      "3we": {"name": "Wednesdays"},
+      "4th": {"name": "Thursdays"},
+      "5fr": {"name": "Fridays"},
+      "6sa": {"name": "Saturdays"},
+      "7su": {"name": "Sundays"},
+      "start_time":  {"name": "Begin"},
+      "end_time":  {"name": "End"}
+    }    
   }
 }

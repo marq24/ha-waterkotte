@@ -28,8 +28,8 @@ class WKHPBinarySensor(WKHPBaseEntity, BinarySensorEntity):
     def is_on(self) -> bool | None:
         try:
             value = None
-            if self.eco_tag in self.coordinator.data:
-                value_and_state = self.coordinator.data[self.eco_tag]
+            if self.wkhp_tag in self.coordinator.data:
+                value_and_state = self.coordinator.data[self.wkhp_tag]
                 if "value" in value_and_state:
                     value = value_and_state["value"]
                 else:

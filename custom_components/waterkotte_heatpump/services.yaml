@@ -1,4 +1,3 @@
-# Service ID
 set_holiday:
   # Service name as shown in UI
   name: Set Holiday
@@ -40,7 +39,6 @@ set_holiday:
       selector:
         datetime:
 
-# Service ID
 set_disinfection_start_time:
   # Service name as shown in UI
   name: Set disinfection start time
@@ -75,11 +73,127 @@ set_disinfection_start_time:
       #      - "medium"
       #      - "high"
 
+set_schedule_data:
+  # Service name as shown in UI
+  name: Set a Schedule
+  # Description of the service
+  description: Setting the Schedule for a Type
+  fields:
+    schedule_type:
+      name: "Type"
+      description: "Select the Schedule you would like to adjust"
+      required: true
+      default: "heating"
+      selector:
+        select:
+          multiple: false
+          mode: dropdown
+          translation_key: "set_schedule_data_schedule_type"
+          options: ["heating", "water", "cooling"]
+    enable:
+      name: "Activate Schedule"
+      description: " "
+      required: true
+      default: true
+      selector:
+        boolean:
+    start_time:
+      name: "Begin at"
+      description: " "
+      required: true
+      default: "00:00:00"
+      selector:
+        time:
+    end_time:
+      name: "End at"
+      description: " "
+      required: true
+      default: "00:00:00"
+      selector:
+        time:
+    adj1_enable:
+      name: "Activate adjustment I"
+      description: " "
+      required: false
+      default: false
+      selector:
+        boolean:
+    adj1_value:
+      name: "Adjustment I value"
+      description: " "
+      required: false
+      default: "0.0"
+      selector:
+        number:
+          min: -10.0
+          max: +10.0
+          step: 0.1
+          unit_of_measurement: "°K"
+          mode: box
+    adj1_start_time:
+      name: "Adjustment I begin at"
+      description: " "
+      required: false
+      default: "00:00:00"
+      selector:
+        time:
+    adj1_end_time:
+      name: "Adjustment I end at"
+      description: " "
+      required: false
+      default: "00:00:00"
+      selector:
+        time:
+    adj2_enable:
+      name: "Activate adjustment II"
+      description: " "
+      required: false
+      default: false
+      selector:
+        boolean:
+    adj2_value:
+      name: "Adjustment II value"
+      description: " "
+      required: false
+      default: "0.0"
+      selector:
+        number:
+          min: -10.0
+          max: +10.0
+          step: 0.1
+          unit_of_measurement: "°K"
+          mode: box
+    adj2_start_time:
+      name: "Adjustment II begin at"
+      description: " "
+      required: false
+      default: "00:00:00"
+      selector:
+        time:
+    adj2_end_time:
+      name: "Adjustment II end at"
+      description: " "
+      required: false
+      default: "00:00:00"
+      selector:
+        time:
+    schedule_days:
+      name: "Days"
+      description: "Select the days you want to apply the setting of the Schedule"
+      required: true
+      selector:
+        select:
+          multiple: true
+          mode: list
+          translation_key: "set_schedule_data_schedule_days"
+          options: ["1mo", "2tu", "3we", "4th", "5fr", "6sa", "7su"]
+
 get_energy_balance:
   # Service name as shown in UI
   name: Get Current Year Energy Balance
   # Description of the service
   description: Get the energy balance by different usage for the current year
+
 get_energy_balance_monthly:
   # Service name as shown in UI
   name: Get rolling 12 Month breakdown

@@ -30,7 +30,7 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import (
     Http404Exception, InvalidPasswordException
 )
 
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -87,21 +87,22 @@ class WaterkotteClient:
             res = await self._internal_client.read_values(self.tags)
             return res
 
-    async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
+    async def async_read_values(self, tags: Sequence[WKHPTag]) -> dict:
         res = await self._internal_client.read_values(tags)
         return res
 
-    async def async_read_value(self, tag: EcotouchTag) -> dict:
+    async def async_read_value(self, tag: WKHPTag) -> dict:
         res = await self._internal_client.read_value(tag)
         return res
 
-    async def async_write_value(self, tag: EcotouchTag, value):
+    async def async_write_value(self, tag: WKHPTag, value):
         res = await self._internal_client.write_value(tag, value)
         return res
 
+    async def async_write_values(self, kv_pairs: Collection[Tuple[WKHPTag, Any]]):
+        res = await self._internal_client.write_values(kv_pairs)
+        return res
 
-#
-# Class to control Waterkotte Ecotouch heatpumps.
 #
 class EcotouchBridge:
     auth_cookies = None
@@ -182,14 +183,14 @@ class EcotouchBridge:
 
             self.auth_cookies = None
 
-    async def read_value(self, tag: EcotouchTag):
+    async def read_value(self, tag: WKHPTag):
         """Read a value from Tag"""
         res = await self.read_values([tag])
         if tag in res:
             return res[tag]
         return None
 
-    async def read_values(self, tags: Sequence[EcotouchTag]):
+    async def read_values(self, tags: Sequence[WKHPTag]):
         if self.auth_cookies is None:
             await self.login()
 
@@ -200,19 +201,19 @@ class EcotouchBridge:
 
         result = {}
         if e_values is not None and len(e_values) > 0:
-            for a_eco_tag in tags:
+            for a_wphp_tag in tags:
                 try:
-                    t_values = [e_values[a_tag] for a_tag in a_eco_tag.tags]
-                    t_states = [e_status[a_tag] for a_tag in a_eco_tag.tags]
-                    result[a_eco_tag] = {
-                        "value": a_eco_tag.decode_f(a_eco_tag, t_values),
+                    t_values = [e_values[a_tag] for a_tag in a_wphp_tag.tags]
+                    t_states = [e_status[a_tag] for a_tag in a_wphp_tag.tags]
+                    result[a_wphp_tag] = {
+                        "value": a_wphp_tag.decode_f(a_wphp_tag, t_values),
                         "status": t_states[0]
                     }
 
-                    if a_eco_tag.translate and a_eco_tag.tags[0] in self.lang_map:
-                        value_map = self.lang_map[a_eco_tag.tags[0]]
+                    if a_wphp_tag.translate and a_wphp_tag.tags[0] in self.lang_map:
+                        value_map = self.lang_map[a_wphp_tag.tags[0]]
                         final_value = ""
-                        temp_values = result[a_eco_tag]["value"]
+                        temp_values = result[a_wphp_tag]["value"]
                         for idx in range(len(temp_values)):
                             if temp_values[idx]:
                                 final_value = final_value + ", " + str(value_map[idx])
@@ -221,23 +222,23 @@ class EcotouchBridge:
                         if len(final_value) > 0:
                             final_value = final_value[2:]
 
-                        result[a_eco_tag]["value"] = final_value
+                        result[a_wphp_tag]["value"] = final_value
 
                 except KeyError:
                     _LOGGER.warning(
-                        f"Key Error while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states}")
+                        f"Key Error while read_values. EcoTag: {a_wphp_tag} vals: {t_values} states: {t_states}")
                 except Exception as other_exc:
                     _LOGGER.error(
-                        f"Exception {other_exc} while read_values. EcoTag: {a_eco_tag} vals: {t_values} states: {t_states} -> {other_exc}"
+                        f"Exception {other_exc} while read_values. EcoTag: {a_wphp_tag} vals: {t_values} states: {t_states} -> {other_exc}"
                     )
 
         return result
 
     #
-    # reads a list of ecotouch tags
+    # reads a list of waterkotte heatpump tags
     #
-    # self, tags: Sequence[EcotouchTag], results={}, results_status={}
-    async def _read_tags(self, tags: Sequence[EcotouchTag], results=None, results_status=None):
+    # self, tags: Sequence[WKHPTag], results={}, results_status={}
+    async def _read_tags(self, tags: Sequence[WKHPTag], results=None, results_status=None):
         """async read tags"""
         # _LOGGER.warning(tags)
         if results is None:
@@ -318,45 +319,50 @@ class EcotouchBridge:
         """Write a value"""
         return await self.write_values([(tag, value)])
 
-    async def write_values(self, kv_pairs: Collection[Tuple[EcotouchTag, Any]]):
+    async def write_values(self, kv_pairs: Collection[Tuple[WKHPTag, Any]]):
         if self.auth_cookies is None:
             await self.login()
 
         """Write values to Tag"""
         to_write = {}
+        to_write_tags = []
         result = {}
-        # we write only one EcotouchTag at the same time (but the EcotouchTag can consist of
+
+        # we write only one WKHPTag at the same time (but the WKHPTag can consist of
         # multiple internal tag fields)
-        for a_eco_tag, value in kv_pairs:  # pylint: disable=invalid-name
-            if not a_eco_tag.writeable:
+        for a_wkhp_tag, value in kv_pairs:  # pylint: disable=invalid-name
+            if not a_wkhp_tag.writeable:
                 raise InvalidValueException("tried to write to an readonly field")
 
             # converting the HA values to the final int or bools that the waterkotte understand
-            a_eco_tag.encode_f(a_eco_tag, value, to_write)
+            a_wkhp_tag.encode_f(a_wkhp_tag, value, to_write)
+            to_write_tags.append(a_wkhp_tag.tags)
 
-            e_values, e_status = await self._write_tags(to_write.keys(), to_write.values())
+        _LOGGER.info(f"before encode_tags {to_write_tags} -> {to_write}")
 
-            if e_values is not None and len(e_values) > 0:
-                _LOGGER.info(
-                    f"after _encode_tags of EcotouchTag {a_eco_tag} > raw-values: {e_values} states: {e_status}")
+        e_values, e_status = await self._write_tags(to_write.keys(), to_write.values())
 
-                all_ok = True
-                for a_tag in e_status:
-                    if e_status[a_tag] != "S_OK":
-                        all_ok = False
+        if e_values is not None and len(e_values) > 0:
+            _LOGGER.info(
+                f"after encode_tags of WKHPTags {to_write_tags} > raw-values: {e_values} states: {e_status}")
 
-                if all_ok:
-                    str_vals = [e_values[a_tag] for a_tag in a_eco_tag.tags]
-                    val = a_eco_tag.decode_f(a_eco_tag, str_vals)
-                    if str(val) != str(value):
-                        _LOGGER.error(
-                            f"WRITE value does not match value that was READ: '{val}' (read) != '{value}' (write)")
-                    else:
-                        result[a_eco_tag] = {
-                            "value": val,
-                            # here we also take just the first status...
-                            "status": e_status[a_eco_tag.tags[0]]
-                        }
+            all_ok = True
+            for a_tag in e_status:
+                if e_status[a_tag] != "S_OK":
+                    all_ok = False
+
+            if all_ok:
+                str_vals = [e_values[a_tag] for a_tag in a_wkhp_tag.tags]
+                val = a_wkhp_tag.decode_f(a_wkhp_tag, str_vals)
+                if str(val) != str(value):
+                    _LOGGER.error(
+                        f"WRITE value does not match value that was READ: '{val}' (read) != '{value}' (write)")
+                else:
+                    result[a_wkhp_tag] = {
+                        "value": val,
+                        # here we also take just the first status...
+                        "status": e_status[a_wkhp_tag.tags[0]]
+                    }
         return result
 
     #
@@ -442,7 +448,7 @@ class EasyconBridge(EcotouchBridge):
 
     # reads a list of ecotouch tags
     #
-    async def _read_tags(self, tags: Sequence[EcotouchTag], results=None, results_status=None):
+    async def _read_tags(self, tags: Sequence[WKHPTag], results=None, results_status=None):
         """async read tags"""
         if results is None:
             results = {}

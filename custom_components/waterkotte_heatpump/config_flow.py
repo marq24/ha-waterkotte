@@ -27,7 +27,7 @@ from .const import (
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import EASYCON, ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from .pywaterkotte_ha.error import Http404Exception
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -141,18 +141,18 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                                       lang=self.hass.config.language.lower())
             await client.login()
             init_tags = [
-                EcotouchTag.VERSION_BIOS,
-                EcotouchTag.VERSION_CONTROLLER,
-                EcotouchTag.INFO_ID,
-                EcotouchTag.INFO_SERIAL,
-                EcotouchTag.INFO_SERIES,
+                WKHPTag.VERSION_BIOS,
+                WKHPTag.VERSION_CONTROLLER,
+                WKHPTag.INFO_ID,
+                WKHPTag.INFO_SERIAL,
+                WKHPTag.INFO_SERIES,
             ]
             ret = await client.async_read_values(init_tags)
-            self._bios = ret[EcotouchTag.VERSION_BIOS]["value"]
-            self._firmware = ret[EcotouchTag.VERSION_CONTROLLER]["value"]
-            self._id = str(ret[EcotouchTag.INFO_ID]["value"])
-            self._series = str(ret[EcotouchTag.INFO_SERIES]["value"])
-            self._serial = str(ret[EcotouchTag.INFO_SERIAL]["value"])
+            self._bios = ret[WKHPTag.VERSION_BIOS]["value"]
+            self._firmware = ret[WKHPTag.VERSION_CONTROLLER]["value"]
+            self._id = str(ret[WKHPTag.INFO_ID]["value"])
+            self._series = str(ret[WKHPTag.INFO_SERIES]["value"])
+            self._serial = str(ret[WKHPTag.INFO_SERIAL]["value"])
             _LOGGER.info(f"successfully validated login -> result: {ret}")
             return True
 

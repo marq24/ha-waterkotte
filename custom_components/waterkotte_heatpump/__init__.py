@@ -3,7 +3,7 @@ import logging
 import json
 
 from datetime import timedelta
-from typing import List, Sequence
+from typing import List, Collection, Sequence, Any, Tuple
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import Config, SupportsResponse, Event
@@ -11,7 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
-from homeassistant.helpers.typing import UNDEFINED
+from homeassistant.helpers.typing import UNDEFINED, UndefinedType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
@@ -33,18 +33,20 @@ from .const import (
     PLATFORMS,
     STARTUP_MESSAGE,
     SERVICE_SET_HOLIDAY,
+    SERVICE_SET_SCHEDULE_DATA,
     SERVICE_SET_DISINFECTION_START_TIME,
     SERVICE_GET_ENERGY_BALANCE,
     SERVICE_GET_ENERGY_BALANCE_MONTHLY,
     FEATURE_VENT,
     FEATURE_HEATING_CURVE,
-    FEATURE_DISINFECTION
+    FEATURE_DISINFECTION,
+    FEATURE_CODE_GEN
 )
 
-from . import service as waterkotteservice
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.ecotouch import EcotouchTag
-from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient, TooManyUsersException
-from .pywaterkotte_ha import InvalidPasswordException
+from . import service as waterkotte_service
+from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=60)
@@ -82,8 +84,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     if config_entry.state != ConfigEntryState.LOADED:
         config_entry.add_update_listener(async_reload_entry)
 
-    service = waterkotteservice.WaterkotteHeatpumpService(hass, config_entry, coordinator)
+    service = waterkotte_service.WaterkotteHeatpumpService(hass, config_entry, coordinator)
     hass.services.async_register(DOMAIN, SERVICE_SET_HOLIDAY, service.set_holiday,
+                                 supports_response=SupportsResponse.OPTIONAL)
+    hass.services.async_register(DOMAIN, SERVICE_SET_SCHEDULE_DATA, service.set_schedule_data,
                                  supports_response=SupportsResponse.OPTIONAL)
     hass.services.async_register(DOMAIN, SERVICE_SET_DISINFECTION_START_TIME, service.set_disinfection_start_time,
                                  supports_response=SupportsResponse.OPTIONAL)
@@ -129,7 +133,7 @@ async def async_reload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
 
 
 @staticmethod
-def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[EcotouchTag]:
+def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[WKHPTag]:
     _LOGGER.info(f"(re)build tag list...")
     tags = []
     if hass is not None:
@@ -142,11 +146,11 @@ def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[Ecotouc
                 if entity.disabled is False:
                     a_temp_tag = (entity.unique_id)
                     _LOGGER.info(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
-                    if a_temp_tag is not None and a_temp_tag.upper() in EcotouchTag.__members__:
-                        if EcotouchTag[a_temp_tag.upper()]:
-                            tags.append(EcotouchTag[a_temp_tag.upper()])
+                    if a_temp_tag is not None and a_temp_tag.upper() in WKHPTag.__members__:
+                        if WKHPTag[a_temp_tag.upper()]:
+                            tags.append(WKHPTag[a_temp_tag.upper()])
                     else:
-                        _LOGGER.warning(f"Tag: {a_temp_tag} not found in EcotouchTag.__members__ !")
+                        _LOGGER.warning(f"Tag: {a_temp_tag} not found in WKHPTag.__members__ !")
     return tags
 
 
@@ -241,12 +245,17 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.error(f"unexpected: {other}")
             raise UpdateFailed() from other
 
-    async def async_read_values(self, tags: Sequence[EcotouchTag]) -> dict:
+    async def async_read_values(self, tags: Sequence[WKHPTag]) -> dict:
         """Get data from the API."""
         ret = await self.bridge.async_read_values(tags)
         return ret
 
-    async def async_write_tag(self, tag: EcotouchTag, value, entity: Entity = None):
+    async def async_write_tags(self, kv_pairs: Collection[Tuple[WKHPTag, Any]]) -> dict:
+        """Get data from the API."""
+        ret = await self.bridge.async_write_values(kv_pairs)
+        return ret
+
+    async def async_write_tag(self, tag: WKHPTag, value, entity: Entity = None):
         """Update single data"""
         result = await self.bridge.async_write_value(tag, value)
         _LOGGER.debug(f"write result: {result}")
@@ -266,6 +275,10 @@ class WKHPBaseEntity(Entity):
     _attr_has_entity_name = True
 
     def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: EntityDescription) -> None:
+        if description.feature is not None and FEATURE_CODE_GEN == description.feature:
+            self.code_generated = True
+        else:
+            self.code_generated = False
         self._attr_translation_key = description.key.lower()
         self.coordinator = coordinator
         self.entity_description = description
@@ -277,8 +290,27 @@ class WKHPBaseEntity(Entity):
 
         self.entity_id = f"{DOMAIN}.wkh_{self._attr_translation_key}"
 
+    def _name_internal(self, device_class_name: str | None, platform_translations: dict[str, Any],) -> str | UndefinedType | None:
+        if self.code_generated:
+            return self._name_internal_code_generated(self._attr_translation_key, platform_translations)
+        else:
+            return super()._name_internal(device_class_name, platform_translations)
+
+    def _name_internal_code_generated(self, key, platform_translations: dict[str, Any]):
+        temp = key.lower().replace('_', ' ')
+        temp = temp.replace(' enable', '')
+        temp = temp.replace(' value', '')
+        list = ["schedule", "heating", "cooling", "water", "adjust",
+                "1mo", "2tu", "3we", "4th", "5fr", "6sa", "7su",
+                "start time", "end time"]
+        for a_key in list:
+            temp = temp.replace(a_key, platform_translations.get(
+                f"component.{self.platform.platform_name}.entity.code_gen.{a_key.replace(' ', '_')}.name"))
+
+        return temp#.title()
+
     @property
-    def eco_tag(self):
+    def wkhp_tag(self):
         """Return a unique ID to use for this entity."""
         return self.entity_description.tag
 

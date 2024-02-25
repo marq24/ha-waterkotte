@@ -30,10 +30,10 @@ class WKHPNumber(WKHPBaseEntity, NumberEntity):
     @property
     def native_value(self) -> float | None:
         try:
-            value = self.coordinator.data[self.eco_tag]["value"]
+            value = self.coordinator.data[self.wkhp_tag]["value"]
             if value is None or value == "":
                 return "unknown"
-            if str(self.eco_tag.name).upper().endswith("_ADJUST"):
+            if str(self.wkhp_tag.name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
         except KeyError:
             return "unknown"
@@ -43,10 +43,10 @@ class WKHPNumber(WKHPBaseEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float) -> None:
         try:
-            if str(self.eco_tag.name).upper().endswith("_ADJUST"):
+            if str(self.wkhp_tag.name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP.index(value)
-            if self.eco_tag[0][0][0] == 'I':
+            if self.wkhp_tag[0][0][0] == 'I':
                 value = int(value)
-            await self.coordinator.async_write_tag(self.eco_tag, value, self)
+            await self.coordinator.async_write_tag(self.wkhp_tag, value, self)
         except ValueError:
             return "unavailable"

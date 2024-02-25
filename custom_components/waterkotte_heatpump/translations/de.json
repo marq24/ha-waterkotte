@@ -5,6 +5,24 @@
         "ecotouch": "EcoTouch Modus [es werden Zugangsdaten zur Anmeldung benötigt]",
         "easycon": "EasyCon Modus [älter Waterkotte Modelle (ohne Zugangsdaten)]"
       }
+    },
+    "set_schedule_data_schedule_type": {
+      "options": {
+        "heating":  "Heizung",
+        "cooling":  "Kühlung",
+        "water":  "Warmwasser"
+      }
+    },
+    "set_schedule_data_schedule_days": {
+      "options": {
+        "1mo":  "Montags",
+        "2tu":  "Dienstags",
+        "3we":  "Mittwochs",
+        "4th":  "Donnerstags",
+        "5fr":  "Freitags",
+        "6sa":  "Samstags",
+        "7su":  "Sonntags"
+      }
     }
   },
   "config": {
@@ -74,6 +92,25 @@
     "get_energy_balance_monthly":{
       "name": "Energiebilanz der letzten 12 Monate im Detail ermitten",
       "description": "Ermittele die Energiebilanz nach unterschiedlichen Verbrauchern in einem Fenster der letzten 12 Monate"
+    },
+    "set_schedule_data": {
+      "name": "Zeitprogramm anpassen",
+      "description": "Anpassung eines Zeitprogramm (Zeitpunkte)",
+      "fields": {
+        "enable": {"name": "Zeitprogramm akivieren?"},
+        "schedule_type": {"name": "Typ", "description":  "Welches Zeitprogramm soll angepasst werden?"},
+        "start_time": {"name":  "Beginnt um"},
+        "end_time": {"name":  "Endet um"},
+        "adj1_enable": {"name": "Anpassung I akivieren?"},
+        "adj1_value": {"name":  "Anpassung I", "description":  "Anhebung oder Absenkung"},
+        "adj1_start_time": {"name":  "Anpassung I beginnt um"},
+        "adj1_end_time": {"name":  "Anpassung I endet um"},
+        "adj2_enable": {"name": "Anpassung II akivieren?"},
+        "adj2_value": {"name":  "Anpassung II", "description":  "Anhebung oder Absenkung"},
+        "adj2_start_time": {"name":  "Anpassung II beginnt um"},
+        "adj2_end_time": {"name":  "Anpassung II endet um"},
+        "schedule_days": {"name": "Tage", "description":  "An welchen Wochentagen?"}
+      }
     }
   },
   "entity": {
@@ -279,6 +316,22 @@
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Heizperiode"},
       "permanent_heating_circulation_pump_summer_d1104": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Kühlperiode"},
       "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Luftfilter-Wechsel Betriebsstunden ZURÜCKSETZEN"}
+    },
+    "code_gen": {
+      "schedule": {"name":  "Zeitprogramm"},
+      "heating":  {"name": "Heizung"},
+      "cooling":  {"name": "Kühlung"},
+      "water":  {"name": "Warmwasser"},
+      "adjust":  {"name": "Anpassung"},
+      "1mo":  {"name": "Montags"},
+      "2tu":  {"name": "Dienstags"},
+      "3we":  {"name": "Mittwochs"},
+      "4th":  {"name": "Donnerstags"},
+      "5fr":  {"name": "Freitags"},
+      "6sa":  {"name": "Samstags"},
+      "7su":  {"name": "Sonntags"},
+      "start_time":  {"name": "Begin"},
+      "end_time":  {"name": "Ende"}
     }
   }
 }
