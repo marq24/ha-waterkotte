@@ -9,6 +9,7 @@ from homeassistant.components.sensor import SensorEntity
 
 from . import WKHPDataUpdateCoordinator, WKHPBaseEntity
 from .const import DOMAIN, SENSOR_SENSORS, ExtSensorEntityDescription
+from .const_gen import SENSOR_SENSORS_GENERATED
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,6 +21,10 @@ async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry, 
     for description in SENSOR_SENSORS:
         entity = WKHPSensor(coordinator, description)
         entities.append(entity)
+    if coordinator.add_schedule_entities:
+        for description in SENSOR_SENSORS_GENERATED:
+            entity = WKHPSensor(coordinator, description)
+            entities.append(entity)
     add_entity_cb(entities)
 
 

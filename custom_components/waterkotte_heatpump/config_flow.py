@@ -19,6 +19,7 @@ from .const import (
     CONF_SERIAL,
     CONF_SERIES,
     CONF_SYSTEMTYPE,
+    CONF_ADD_SCHEDULE_ENTITIES,
     CONF_USE_DISINFECTION,
     CONF_USE_HEATING_CURVE,
     CONF_USE_VENT,
@@ -107,7 +108,8 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 # vol.Required(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
                 vol.Required(CONF_PASSWORD, default=user_input.get(CONF_PASSWORD)): str,
                 vol.Required(CONF_POLLING_INTERVAL, default=60): int,
-                vol.Required(CONF_TAGS_PER_REQUEST, default=75): int
+                vol.Required(CONF_TAGS_PER_REQUEST, default=75): int,
+                vol.Required(CONF_ADD_SCHEDULE_ENTITIES, default=False): bool,
             }),
             last_step=True,
             errors=self._errors
@@ -194,7 +196,8 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
                 # vol.Required(CONF_USERNAME, default=self.options.get(CONF_USERNAME, "waterkotte")): str,
                 vol.Required(CONF_PASSWORD, default=self.options.get(CONF_PASSWORD, "waterkotte")): str,
                 vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 60)): int,
-                vol.Required(CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 75)): int
+                vol.Required(CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 75)): int,
+                vol.Required(CONF_ADD_SCHEDULE_ENTITIES, default=self.options.get(CONF_ADD_SCHEDULE_ENTITIES, False)): bool
             }),
         )
 

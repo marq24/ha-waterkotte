@@ -35,23 +35,24 @@
   "config": {
     "step": {
       "user": {
-        "description": "Wenn Du Hilfe benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte",
+        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.\r\rWichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Heizung anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.\r\rWenn Du Dir unsicher bist, füge die optionalen Zeitplanungs-Entitäten im ersten Schritt nicht hinzu. Sie können jederzeit über eine Einstellungen der Konfiguration zu einem späteren Zeitpunkt hinzugefügt werden.",
         "data": {
           "host": "IP oder Hostname deiner Waterkotte",
           "system_type": "Watterkotte Interface-Type",
           "username": "Benutzername",
           "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
-          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)"
+          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
+          "add_schedule_entities": "Optionale Zeitsteuerung-Entitäten hinzufügen (650+)"
         }
       },
       "features": {
-        "description": "Aktivierung zusätzlicher Sensoren und Steuerelemente:\n(Diese können auch später von Hand aktiviert werden)",
+        "description": "Automatische Aktivierung zusätzlicher Sensoren und Steuerelemente:\n(Diese können auch später von Hand aktiviert werden)",
         "data": {
           "use_vent": "für eine 'Luftwärmepumpen-Außeneinheit'",
           "use_heating_curve": "zur Anpassung von 'Heizkurven'",
           "use_disinfection": "für die 'Warmwasser Disinfektion'",
-          "use_pool": "für eine 'Pooleinheit' (incl. Heizkurve)"
+          "use_pool": "für eine 'Pooleinheit' (inkl. Heizkurve)"
         }
       }
     },
@@ -66,12 +67,13 @@
   "options": {
     "step": {
       "user": {
-        "description": "Wenn Du Hilfe benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte",
+        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.\r\rWichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Heizung anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.",
         "data": {
           "username": "Benutzername",
           "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
-          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)"
+          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
+          "add_schedule_entities": "Optionale Zeitsteuerungs-Entitäten hinzufügen (650+)"
         }
       }
     }
@@ -102,7 +104,7 @@
     },
     "set_schedule_data": {
       "name": "Zeitprogramm anpassen",
-      "description": "Anpassung eines Zeitprogramm (Zeitpunkte)",
+      "description": "Anpassung eines Zeitprogramms für die Wärmepumpe (Start & Endzeitpunkte festlegen)",
       "fields": {
         "enable": {"name": "Zeitprogramm akivieren?"},
         "schedule_type": {"name": "Typ", "description":  "Welches Zeitprogramm soll angepasst werden?"},
@@ -200,7 +202,9 @@
       "temperature_pool_hc_target": {"name": "T Heizgrenze Soll"},
       "temperature_pool_hc_outdoor_norm": {"name": "T Norm-Außen"},
       "temperature_pool_hc_norm": {"name": "T Heizkreis Norm"},
-      "source_pump_capture_temperature_a479":{"name":  "Wärmequellenpumpe - ΔT Wärmequelle"}
+      "source_pump_capture_temperature_a479":{"name":  "Wärmequellenpumpe - ΔT Wärmequelle"},
+      "basicvent_incoming_fan_manual_speed_a4549": {"name": "Lüfter 1 (Außen) manuelle Drehzahl"},
+      "basicvent_outgoing_fan_manual_speed_a4545": {"name": "Lüfter 2 (Innen) manuelle Drehzahl"}
     },
     "select": {
       "temperature_heating_mode": {
@@ -322,7 +326,9 @@
       "schedule_water_disinfection_7su": {"name": "Sonntag"},
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Heizperiode"},
       "permanent_heating_circulation_pump_summer_d1104": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Kühlperiode"},
-      "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Luftfilter-Wechsel Betriebsstunden ZURÜCKSETZEN"}
+      "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Luftfilter-Wechsel Betriebsstunden ZURÜCKSETZEN"},
+      "basicvent_incoming_fan_manual_mode_d1605": {"name": "Lüfter 1 (Außen) manuelle Drehzahl-Steuerung"},
+      "basicvent_outgoing_fan_manual_mode_d1603": {"name": "Lüfter 2 (Innen) manuelle Drehzahl-Steuerung"}
     },
     "code_gen": {
       "schedule": {"name":  "Zeitprogramm"},

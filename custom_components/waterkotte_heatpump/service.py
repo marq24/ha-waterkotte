@@ -106,7 +106,12 @@ class WaterkotteHeatpumpService():
                 await self._coordinator.async_refresh()
             except ValueError as exe:
                 return {"error": str(exe)}
-            return {"success": "yes"}
+            return {
+                "success": "yes",
+                "type": final_type,
+                "count": len(kv_pairs),
+                "date": str(datetime.datetime.now().time())
+            }
         else:
             return {"error": "no type or day provided"}
 

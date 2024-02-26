@@ -73,64 +73,86 @@ After the integration was added you can use the 'config' button to adjust your s
 
 Please note, that most of the available sensors are __not__ enabled by default.
 
+## Services
+
+The Integration provides currently 5 services:
+
+### Setting dates & times
+
+#### SET_HOLIDAY
+To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
+
+#### SET_DISINFECTION_START_TIME
+To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_disinfection_start_time` and set `starthhmm` parameter (seconds will be ignored).
+
+#### SET_SCHEDULE
+
+When using the service, first select the schedule (type) you want to adjust [Heating, Cooling, Hot Water, Mixer 1-3, Pool, Buffer Tank Circulation Pump, Solar Control, Photovoltaic], select then the __start time__ and the __end time__, __enable/disable__ the schedule and select the __days__ you would apply the setting.
+
+Additionally, it's possible to specify the __Adjustment I__ and the __Adjustment II__ options. Please be a bit patient when using the Service since there are approx. 100 different tags that have to be written to the heatpump when you apply adjustments for all 7 days.
+
+Please note also, that I did not find a way (yet) to load the current values of the entities into the 'Set a Schedule' dialog. So when adjusting the values via the service you do not see the current values of the fields.
+
+### Get Energy Balance
+
+#### GET_ENERGY_BALANCE
+Retrieves the overall energy consumption data for the year
+
+#### GET_ENERGY_BALANCE_MONTHLY
+Retrieves the monthly breakdown energy consumption data for a moving 12 month window. 1 = January, 2 = February, etc...
+
 <a href="migration"></a>
+
+## Waterkotte schedule adjustment support
+
+### Introduction
+
+With this the integration it will be possible to adjust the Waterkotte Schedules for:
+- Heating
+- Cooling
+- Hot Water
+- Mixer 1, Mixer 2 & Mixer 3
+- Pool
+- Buffer Tank Circulation Pump
+- Solar Control (without adjustment I & adjustment II)
+- Photovoltaic (without adjustment I & adjustment II)
+
+The easiest way to adjust a schedule is via the 'Set Schedule' Service that can be found in your HA installation. Only via the service it's possible to adjust the start and end times.
+
+When you want to use/display schedule settings in your HA dashboards or use them in your automations you must enable the optional schedule entities [in the configuration of the integration]. __But be smart__ - only add these additional entities if you really need them. If they are added once it's quite tricky to get rid of them again. Please read further to get additional information about the amount of additional schedule entities that will be added to your HA installation.
+
+### Calculating the amount of additional entities
+
+For each of the Schedules there are per __day__:
+1. One __switch__ to turn ON/OFF the schedule
+2. Two __switches__ to turn ON/OFF adjustment I & II
+3. Two __values__ for each of the adjustments (+/- 10°K)
+4. Three __start times__ (one for the schedule, and two for the adjustments)
+5. Three __end times__ (one for the schedule, and two for the adjustments)
+
+This makes a total of 11 Sensor-Entities per day - each Schedule consist obviously of 7 days - so for each of the schedules above 77 Sensor-Entities will be available (even if added - all are disabled by default).
+
+This will result in __a total of 659__ additional (new) Sensor-Entities in order to support all Schedules - yes this is not a typo! __SIX HUNDRED FIFTY-NINE__!
+
+So please __only add the additional sensors__ if the use of the 'set schedule service' __is not sufficient for your use case.__ The service can make all the adjustments to your Waterkotte schedules, __without the need of having the additional sensor entities added__.
+
 ## Migration Guide
 
 This is the new version of the previous 'ha-waterkotte' repository (which have now been renamed to [`ha-waterkotte-the-fork`](https://github.com/marq24/ha-waterkotte-the-fork)). After the refactoring process have been completed, I have decided to create an independent repository - since the refactored version does not have much in common with the origin sources.
 
-Unfortunately HACS does not 'like' renaming of repositories, so you have to perform few steps in order to upgrade your home assistant installation to the latest ha-waterkotte integration version - sorry for this inconvenience!  
+Unfortunately HACS does not 'like' renaming of repositories, so you have to perform few steps in order to upgrade your home assistant installation to the latest ha-waterkotte integration version - sorry for this inconvenience!
 
 ### How to migrate to the new integration version
 1. make a backup (just in case)
 2. go to HACS menu of your home assistant installation
 3. remove the (old) custom HACS repository 'https://github.com/marq24/ha-waterkotte'
 
-    (This step will/should remove the Waterkotte Integration entry from the list of installed HACS Integrations)
+   (This step will/should remove the Waterkotte Integration entry from the list of installed HACS Integrations)
 5. add the __new__ repository 'https://github.com/marq24/ha-waterkotte' to HACS
 6. install the waterkotte integration to your local HACS
 7. restart your home assistant system
 
 YES - this procedure sounds *totally* silly - but HACS stores a custom-id for each repository - And since I have decided to rename the old repository which base on the work from pattisonmichael to 'https://github.com/marq24/ha-waterkotte-the-fork' and created an independent repository, this procedure is necessary in order to be notified about any future updates.
-
-## Services
-
-The Integration provides currently 4 services:
-
-### Setting dates & times
-
-- SET_SCHEDULE
-
-    To enable/disable the schedule and setting the __Start__ & __End__ times for:
-    - Heating
-    - Cooling
-    - Hot Water
-    - Mixer 1 - Mixer 3
-    - Pool
-    - Buffer Tank Circulation Pump
-    - Solar Control (no adj. I & adj. II)
-    - Photovoltaic (no adj. I & adj. II)
-  
-    This includes the possibility to set the __Start__ & __End__ times for the adjustment I & II and also the increase/decrease value for these adjustments (+/-10°K) - except for the Solar Control and Photovoltaic schedules.
-    
-    Please note that you can all required/used fields are also available as sensor entities in your home-assistant. So you can enable/disable the schedules also from the dashboard (or automations). This includes the adjustment I && II values, but be warned since for each Schedule you have separate fields for each day of the Week!   
-
-- SET_HOLIDAY
-
-    To set the times for the holiday mode use the provided service `waterkotte_heatpump.set_holiday` and set `start` and `end` parameter.
-
-- SET_DISINFECTION_START_TIME
-
-    To set the water disinfection start time (HH:MM) use the provided service `waterkotte_heatpump.set_disinfection_start_time` and set `starthhmm` parameter (seconds will be ignored).
-
-### Get Energy Balance
-
-- GET_ENERGY_BALANCE
-
-  Retrieves the overall energy consumption data for the year
-
-- GET_ENERGY_BALANCE_MONTHLY
-
-  Retrieves the monthly breakdown energy consumption data for a moving 12 month window. 1 = January, 2 = February, etc...
 
 ## Troubleshooting
 

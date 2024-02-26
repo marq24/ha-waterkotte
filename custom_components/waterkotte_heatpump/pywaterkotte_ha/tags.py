@@ -776,7 +776,9 @@ class WKHPTag(DataTag, Enum):
     # mdi:wind-power
 
     # A4549: uom: '', 'Luefter 1 Rueckmeldung'
+    BASICVENT_INCOMING_FAN_MANUAL_SPEED_A4549 = DataTag(["A4549"], writeable=True)
     # D1605: uom: '', 'Luefter 1 - Manuell Drehzahl'
+    BASICVENT_INCOMING_FAN_MANUAL_MODE_D1605 = DataTag(["D1605"], writeable=True)
     # A4551: uom: 'U/min', 'Luefter 1 Umdrehungen pro Minute'
     BASICVENT_INCOMING_FAN_RPM_A4551 = DataTag(["A4551"], decode_f=DataTag._decode_value_analog)
     # A4986: uom: '%', 'Analogausgang Y1' - Rotation Incoming air drive percent
@@ -787,7 +789,9 @@ class WKHPTag(DataTag, Enum):
     BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996 = DataTag(["A4996"], decode_f=DataTag._decode_value_analog)
 
     # A4545: uom: '', 'Luefter 2 Rueckmeldung'
+    BASICVENT_OUTGOING_FAN_MANUAL_SPEED_A4545 = DataTag(["A4545"], writeable=True)
     # D1603: uom: '', 'Luefter 2 - Manuell Drehzahl'
+    BASICVENT_OUTGOING_FAN_MANUAL_MODE_D1603 = DataTag(["D1603"], writeable=True)
     # A4547: uom: 'U/min', 'Luefter 2 Umdrehungen pro Minute'
     BASICVENT_OUTGOING_FAN_RPM_A4547 = DataTag(["A4547"], decode_f=DataTag._decode_value_analog)
     # A4984: uom: '%', 'Analogausgang Y2' - Rotation Ongoing air drive percent

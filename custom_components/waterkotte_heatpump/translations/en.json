@@ -35,13 +35,15 @@
   "config": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte",
+        "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte.\r\rImportant note: With the 'Adjust Schedules Service' you can adjust all schedules of your Waterkotte heating. Adding the optional entities is not necessary for this. These are only needed if you want to modify or display the schedule settings via your dashboard or one of your automations.\r\rIf you are unsure, do not add the optional scheduling entities in the first step. They can be added at any time via a configuration settings at a later date.",
         "data": {
           "host": "Host or IP",
+          "system_type": "Watterkotte Interface-Typ",
           "username": "Username",
           "password": "Password",
           "polling_interval": "Polling Interval in seconds",
-          "tags_per_request": "Number of tags to fetch in a single request (max. 75)"
+          "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
+          "add_schedule_entities": "Add the optional Schedule-Entities (650+)"
         }
       },
       "features": {
@@ -65,12 +67,13 @@
   "options": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte",
+        "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte.\r\rImportant note: With the 'Adjust Schedules Service' you can adjust all schedules of your Waterkotte heating. Adding the optional entities is not necessary for this. These are only needed if you want to modify or display the schedule settings via your dashboard or one of your automations.",
         "data": {
           "username": "Username",
           "password": "Password",
           "polling_interval": "Polling Interval in seconds",
-          "tags_per_request": "Number of tags to fetch in a single request (max. 75)"
+          "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
+          "add_schedule_entities": "Add the optional Schedule-Entities (650+)"
         }
       }
     }
@@ -155,7 +158,9 @@
       "temperature_pool_hc_target": {"name": "T heating limit target"},
       "temperature_pool_hc_outdoor_norm": {"name": "T norm outdoor"},
       "temperature_pool_hc_norm": {"name": "T norm heating circle"},
-      "source_pump_capture_temperature_a479":{"name":  "Heat source pump - ΔT heat source"}
+      "source_pump_capture_temperature_a479":{"name":  "Heat source pump - ΔT heat source"},
+      "basicvent_incoming_fan_manual_speed_a4549": {"name": "Vent 1 (outer) manual Speed"},
+      "basicvent_outgoing_fan_manual_speed_a4545": {"name": "Vent 2 (inner) manual Speed"}
     },
     "select": {
       "temperature_heating_mode": {
@@ -277,7 +282,9 @@
       "schedule_water_disinfection_7su": {"name": "Sunday"},
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Continuous operation heating pump during heating period"},
       "permanent_heating_circulation_pump_summer_d1104": {"name": "Continuous operation heating pump during cooling period"},
-      "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Vent Air-Filter-Change operating hours RESET"}
+      "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Vent Air-Filter-Change operating hours RESET"},
+      "basicvent_incoming_fan_manual_mode_d1605": {"name": "Vent 1 (outer) Manual-Mode"},
+      "basicvent_outgoing_fan_manual_mode_d1603": {"name": "Vent 2 (inner) Manual-Mode"}
     },
     "code_gen": {
       "schedule": {"name":  "Schedule"},

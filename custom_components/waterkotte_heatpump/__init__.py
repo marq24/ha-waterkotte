@@ -25,6 +25,7 @@ from .const import (
     CONF_SERIAL,
     CONF_SERIES,
     CONF_SYSTEMTYPE,
+    CONF_ADD_SCHEDULE_ENTITIES,
     CONF_USE_VENT,
     CONF_USE_HEATING_CURVE,
     CONF_USE_DISINFECTION,
@@ -45,6 +46,7 @@ from .const import (
 
 from . import service as waterkotte_service
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
 
@@ -158,6 +160,8 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, config_entry):
         self.name = config_entry.title
         self._config_entry = config_entry
+        self.add_schedule_entities = config_entry.options.get(CONF_ADD_SCHEDULE_ENTITIES,
+                                                              config_entry.data.get(CONF_ADD_SCHEDULE_ENTITIES, False))
         self.available_features = []
         if CONF_USE_VENT in config_entry.data and config_entry.data[CONF_USE_VENT]:
             self.available_features.append(FEATURE_VENT)
@@ -170,7 +174,7 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
         _host = config_entry.options.get(CONF_HOST, config_entry.data.get(CONF_HOST))
         # _user = config_entry.options.get(CONF_USERNAME, config_entry.data.get(CONF_USERNAME, "waterkotte"))
         _pwd = config_entry.options.get(CONF_PASSWORD, config_entry.data.get(CONF_PASSWORD, "waterkotte"))
-        _system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE))
+        _system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE, ECOTOUCH))
         _tags_num = config_entry.options.get(CONF_TAGS_PER_REQUEST, config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
         _tags = generate_tag_list(hass=hass, config_entry_id=config_entry.entry_id)
 

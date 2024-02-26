@@ -84,18 +84,6 @@ def generateEntityDesc():
     files = {"S": "gen_switch.txt", "N": "gen_number.txt", "D": "gen_sensor.txt"}
     outfiles = {}
     with open(files["S"], 'w+') as outfiles["S"], open(files["N"], 'w+') as outfiles["N"], open(files["D"], 'w+') as outfiles["D"]:
-        outfiles["S"].write('    ############################################\r')
-        outfiles["S"].write('    # GENERATED                                #\r')
-        outfiles["S"].write('    ############################################\r')
-
-        outfiles["N"].write('    ############################################\r')
-        outfiles["N"].write('    # GENERATED                                #\r')
-        outfiles["N"].write('    ############################################\r')
-
-        outfiles["D"].write('    ############################################\r')
-        outfiles["D"].write('    # GENERATED                                #\r')
-        outfiles["D"].write('    ############################################\r')
-
         for a_value in SCHEDULE_LIST:
             no_adj_values = a_value == "SCHEDULE_SOLAR" or a_value == "SCHEDULE_PV"
             for a_day in SCHEDULE_DAY_LIST:
@@ -137,21 +125,26 @@ def generateEntityDesc():
                             outfiles["D"].write('        entity_registry_enabled_default=False,\r')
                             outfiles["D"].write('        feature=FEATURE_CODE_GEN\r')
                             outfiles["D"].write('    ),\r')
-
+        outfiles["S"].write(']\r')
+        outfiles["N"].write(']\r')
+        outfiles["D"].write(']\r')
         outfiles["S"].flush()
         outfiles["N"].flush()
         outfiles["D"].flush()
 
-    #with open(files["S"], 'r') as f:
-    #    data = f.read()
-    #    print(data)
-    #with open(files["N"], 'r') as f:
-    #    data = f.read()
-    #    print(data)
-    #with open(files["D"], 'r') as f:
-    #    data = f.read()
-    #    print(data)
-
+    with open("const_gen.py", 'w+') as out:
+        out.write('BINARY_SENSORS_GENERATED: Final = []\r')
+        out.write('NUMBER_SENSORS_GENERATED: Final = [\r')
+        with open(files["N"], 'r') as f:
+            out.write(f.read())
+        out.write('SELECT_SENSORS_GENERATED: Final []\r')
+        out.write('SENSOR_SENSORS_GENERATED: Final = [\r')
+        with open(files["D"], 'r') as f:
+            out.write(f.read())
+        out.write('SWITCH_SENSORS_GENERATED: Final = [\r')
+        with open(files["S"], 'r') as f:
+            out.write(f.read())
+        out.flush()
 
 generateTags()
 generateEntityDesc()
