@@ -100,7 +100,19 @@ The Integration provides currently 4 services:
 
 - SET_SCHEDULE
 
-    To set the schedule __start__ & __end__ times for Heating, Cooling and Hot Water, including the __start__ & __end__ times for the adjustment I and adjustment II time ranges. Please note that you can set the adjustment I and adjustment II values (+/-10°K) also separately.   
+    To enable/disable the schedule and setting the __Start__ & __End__ times for:
+    - Heating
+    - Cooling
+    - Hot Water
+    - Mixer 1 - Mixer 3
+    - Pool
+    - Buffer Tank Circulation Pump
+    - Solar Control (no adj. I & adj. II)
+    - Photovoltaic (no adj. I & adj. II)
+  
+    This includes the possibility to set the __Start__ & __End__ times for the adjustment I & II and also the increase/decrease value for these adjustments (+/-10°K) - except for the Solar Control and Photovoltaic schedules.
+    
+    Please note that you can all required/used fields are also available as sensor entities in your home-assistant. So you can enable/disable the schedules also from the dashboard (or automations). This includes the adjustment I && II values, but be warned since for each Schedule you have separate fields for each day of the Week!   
 
 - SET_HOLIDAY
 

@@ -36,7 +36,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class WaterkotteClient:
-    def __init__(self, host: str, pwd: str, system_type: str, web_session, tags: str, tags_per_request: int,
+    def __init__(self, host: str, pwd: str, system_type: str, web_session, tags: list, tags_per_request: int,
                  lang: str = "en") -> None:
         self._host = host
         self._systemType = system_type
@@ -102,6 +102,7 @@ class WaterkotteClient:
     async def async_write_values(self, kv_pairs: Collection[Tuple[WKHPTag, Any]]):
         res = await self._internal_client.write_values(kv_pairs)
         return res
+
 
 #
 class EcotouchBridge:
@@ -234,21 +235,16 @@ class EcotouchBridge:
 
         return result
 
-    #
-    # reads a list of waterkotte heatpump tags
-    #
-    # self, tags: Sequence[WKHPTag], results={}, results_status={}
     async def _read_tags(self, tags: Sequence[WKHPTag], results=None, results_status=None):
-        """async read tags"""
-        # _LOGGER.warning(tags)
         if results is None:
             results = {}
         if results_status is None:
             results_status = {}
 
-        while len(tags) > self.tags_per_request:
-            results, results_status = await self._read_tags(tags[:self.tags_per_request], results, results_status)
-            tags = tags[self.tags_per_request:]
+        max_read_tags = self.tags_per_request
+        while len(tags) > max_read_tags:
+            results, results_status = await self._read_tags(tags[:max_read_tags], results, results_status)
+            tags = tags[max_read_tags:]
 
         args = {}
         args["n"] = len(tags)
@@ -262,7 +258,6 @@ class EcotouchBridge:
             try:
                 response.raise_for_status()
                 if response.status == 200:
-
                     _LOGGER.debug(f"requested: {response.url}")
                     content = await response.text()
                     if content.startswith("#E_NEED_LOGIN"):
@@ -278,7 +273,7 @@ class EcotouchBridge:
 
                     for tag in tags:
                         match = re.search(
-                            #rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                            # rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
                             rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>[-+]?(?:\d*\.?\d+))",
                             content,
                             re.MULTILINE,
@@ -325,7 +320,6 @@ class EcotouchBridge:
 
         """Write values to Tag"""
         to_write = {}
-        to_write_tags = []
         result = {}
 
         # we write only one WKHPTag at the same time (but the WKHPTag can consist of
@@ -333,18 +327,15 @@ class EcotouchBridge:
         for a_wkhp_tag, value in kv_pairs:  # pylint: disable=invalid-name
             if not a_wkhp_tag.writeable:
                 raise InvalidValueException("tried to write to an readonly field")
-
             # converting the HA values to the final int or bools that the waterkotte understand
             a_wkhp_tag.encode_f(a_wkhp_tag, value, to_write)
-            to_write_tags.append(a_wkhp_tag.tags)
 
-        _LOGGER.info(f"before encode_tags {to_write_tags} -> {to_write}")
-
-        e_values, e_status = await self._write_tags(to_write.keys(), to_write.values())
+        _LOGGER.info(f"before writing WKHPTags -> {len(to_write)} tags")
+        # '.keys()' doesn't support insertion - so we need to create a new list object!
+        e_values, e_status = await self._write_tags(tags=list(to_write.keys()), values=list(to_write.values()))
 
         if e_values is not None and len(e_values) > 0:
-            _LOGGER.info(
-                f"after encode_tags of WKHPTags {to_write_tags} > raw-values: {e_values} states: {e_status}")
+            _LOGGER.info(f"after writing WKHPTags -> raw-values: {len(e_values)} states: {len(e_status)}")
 
             all_ok = True
             for a_tag in e_status:
@@ -354,9 +345,13 @@ class EcotouchBridge:
             if all_ok:
                 str_vals = [e_values[a_tag] for a_tag in a_wkhp_tag.tags]
                 val = a_wkhp_tag.decode_f(a_wkhp_tag, str_vals)
+
+                # special 24:00:00 time handling
+                if str(value).startswith("23:59:59.9"):
+                    value = "00:00:00"
+
                 if str(val) != str(value):
-                    _LOGGER.error(
-                        f"WRITE value does not match value that was READ: '{val}' (read) != '{value}' (write)")
+                    _LOGGER.error(f"WRITE value does not match READ value: '{val}' (read) != '{value}' (write)")
                 else:
                     result[a_wkhp_tag] = {
                         "value": val,
@@ -365,33 +360,40 @@ class EcotouchBridge:
                     }
         return result
 
-    #
-    # writes <value> into the tag <tag>
-    #
-    async def _write_tags(self, tags: List[str], value: List[Any]):
-        """write tag"""
+    async def _write_tags(self, tags: list[str], values: list[Any], results=None, results_status=None):
+        if results is None:
+            results = {}
+        if results_status is None:
+            results_status = {}
+
+        max_write_tags = self.tags_per_request
+        while len(tags) > max_write_tags:
+            results, results_status = await self._write_tags(
+                tags=tags[:max_write_tags], values=values[:max_write_tags],
+                results=results, results_status=results_status
+            )
+            tags = tags[max_write_tags:]
+            values = values[max_write_tags:]
+
         args = {}
         args["n"] = len(tags)
         args["returnValue"] = "true"
         args["rnd"] = str(int(round(datetime.now().timestamp() * 1000)))
         for i, tag in enumerate(tags):
             args[f"t{i + 1}"] = tag
-            args[f"v{i + 1}"] = list(value)[i]
+            args[f"v{i + 1}"] = list(values)[i]
 
-        results = {}
-        results_status = {}
-        # _LOGGER.info(f"requesting '{args}' [tags: {tags}, values: {value}]")
-
+        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.host}")
         async with self.web_session.get(f"http://{self.host}/cgi/writeTags", params=args) as response:
             try:
                 response.raise_for_status()
                 if response.status == 200:
-
+                    _LOGGER.debug(f"requested: {response.url}")
                     content = await response.text()  # pylint: disable=invalid-name
                     if content.startswith("#E_NEED_LOGIN"):
                         try:
                             await self.login()
-                            return await self._write_tags(tags=tags, value=value)
+                            return await self._write_tags(tags=tags, values=values)
                         except StatusException as status_exec:
                             _LOGGER.warning(f"StatusException (_write_tags) while trying to login: {status_exec}")
                             return None
@@ -401,7 +403,7 @@ class EcotouchBridge:
                     ###
                     for tag in tags:
                         match = re.search(
-                            #rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
+                            # rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
                             rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>[-+]?(?:\d*\.?\d+))",
                             content,
                             re.MULTILINE

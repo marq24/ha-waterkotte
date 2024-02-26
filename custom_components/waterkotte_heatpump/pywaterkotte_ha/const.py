@@ -11,12 +11,6 @@ SIX_STEPS_MODES: Final = {
     5: "mode5"
 }
 
-SCHEDULE_LIST: Final = ["SCHEDULE_HEATING", "SCHEDULE_COOLING", "SCHEDULE_WATER"]
-SCHEDULE_DAY_LIST: Final = ["1MO", "2TU", "3WE", "4TH", "5FR", "6SA", "7SU"]
-SCHEDULE_SENSOR_TYPES_LIST: Final = ["_ENABLE", "_START_TIME", "_END_TIME",
-                                     "_ADJUST1_ENABLE", "_ADJUST1_VALUE", "_ADJUST1_START_TIME", "_ADJUST1_END_TIME",
-                                     "_ADJUST2_ENABLE", "_ADJUST2_VALUE", "_ADJUST2_START_TIME", "_ADJUST2_END_TIME"]
-
 SERIES: Final = [
     "Custom",
     "Ai1",

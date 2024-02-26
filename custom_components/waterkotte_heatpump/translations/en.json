@@ -8,10 +8,17 @@
     },
     "set_schedule_data_schedule_type": {
       "options": {
-        "heating":  "Heating",
-        "cooling":  "Cooling",
-        "water":  "Hot Water"
-      }
+        "heating": "Heating",
+        "cooling": "Cooling",
+        "water": "Hot Water",
+        "pool": "Pool",
+        "mix1": "Mixer 1",
+        "mix2": "Mixer 2",
+        "mix3": "Mixer 3",
+        "buffer_tank_circulation_pump": "Circulation pump buffer tank",
+        "solar": "Solar Control",
+        "pv": "Photovoltaic"
+    }
     },
     "set_schedule_data_schedule_days": {
       "options": {
@@ -277,6 +284,13 @@
       "heating":  {"name": "Heating"},
       "cooling":  {"name": "Cooling"},
       "water":  {"name": "Hot Water"},
+      "pool": {"name": "Pool"},
+      "mix1": {"name": "Mixer 1"},
+      "mix2": {"name": "Mixer 2"},
+      "mix3": {"name": "Mixer 3"},
+      "buffer_tank_circulation_pump": {"name": "Circulation pump buffer tank"},
+      "solar": {"name": "Solar Control"},
+      "pv": {"name": "Photovoltaic"},
       "adjust":  {"name": "adjustment"},
       "1mo": {"name": "Mondays"},
       "2tu": {"name": "Tuesdays"},
@@ -287,6 +301,6 @@
       "7su": {"name": "Sundays"},
       "start_time":  {"name": "Begin"},
       "end_time":  {"name": "End"}
-    }    
+    }
   }
 }

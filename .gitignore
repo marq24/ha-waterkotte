@@ -4,8 +4,6 @@ pythonenv*
 .coverage
 venv
 .venv
-custom_components/pywaterkotte/*
-custom_components/pywaterkott*
 core.*
-custom_components/waterkotte_heatpump/pywaterkotte
-/waterkotte-integration.iml
+*.iml
+/generator/gen_*.txt

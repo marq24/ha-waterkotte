@@ -8,9 +8,16 @@
     },
     "set_schedule_data_schedule_type": {
       "options": {
-        "heating":  "Heizung",
-        "cooling":  "Kühlung",
-        "water":  "Warmwasser"
+        "heating": "Heizung",
+        "cooling": "Kühlung",
+        "water": "Warmwasser",
+        "pool": "Pool",
+        "mix1": "Mischerkreis 1",
+        "mix2": "Mischerkreis 2",
+        "mix3": "Mischerkreis 3",
+        "buffer_tank_circulation_pump": "Speicherentladepumpe",
+        "solar": "Solarregelung",
+        "pv": "Photovoltaik"
       }
     },
     "set_schedule_data_schedule_days": {
@@ -319,19 +326,26 @@
     },
     "code_gen": {
       "schedule": {"name":  "Zeitprogramm"},
-      "heating":  {"name": "Heizung"},
-      "cooling":  {"name": "Kühlung"},
-      "water":  {"name": "Warmwasser"},
-      "adjust":  {"name": "Anpassung"},
-      "1mo":  {"name": "Montags"},
-      "2tu":  {"name": "Dienstags"},
-      "3we":  {"name": "Mittwochs"},
-      "4th":  {"name": "Donnerstags"},
-      "5fr":  {"name": "Freitags"},
-      "6sa":  {"name": "Samstags"},
-      "7su":  {"name": "Sonntags"},
-      "start_time":  {"name": "Begin"},
-      "end_time":  {"name": "Ende"}
+      "heating": {"name": "Heizung"},
+      "cooling": {"name": "Kühlung"},
+      "water": {"name": "Warmwasser"},
+      "pool": {"name": "Pool"},
+      "mix1": {"name": "Mischerkreis 1"},
+      "mix2": {"name": "Mischerkreis 2"},
+      "mix3": {"name": "Mischerkreis 3"},
+      "buffer_tank_circulation_pump": {"name": "Speicherentladepumpe"},
+      "solar": {"name": "Solarregelung"},
+      "pv": {"name": "Photovoltaik"},
+      "adjust": {"name": "Anpassung"},
+      "1mo": {"name": "Montags"},
+      "2tu": {"name": "Dienstags"},
+      "3we": {"name": "Mittwochs"},
+      "4th": {"name": "Donnerstags"},
+      "5fr": {"name": "Freitags"},
+      "6sa": {"name": "Samstags"},
+      "7su": {"name": "Sonntags"},
+      "start_time": {"name": "Begin"},
+      "end_time": {"name": "Ende"}
     }
   }
 }

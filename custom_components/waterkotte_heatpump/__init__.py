@@ -300,12 +300,16 @@ class WKHPBaseEntity(Entity):
         temp = key.lower().replace('_', ' ')
         temp = temp.replace(' enable', '')
         temp = temp.replace(' value', '')
-        list = ["schedule", "heating", "cooling", "water", "adjust",
-                "1mo", "2tu", "3we", "4th", "5fr", "6sa", "7su",
-                "start time", "end time"]
-        for a_key in list:
-            temp = temp.replace(a_key, platform_translations.get(
-                f"component.{self.platform.platform_name}.entity.code_gen.{a_key.replace(' ', '_')}.name"))
+        a_list = ["schedule", "heating", "cooling", "water", "pool", "solar", "pv",
+                  "mix1", "mix2", "mix3", "buffer tank circulation pump", "adjust",
+                  "1mo", "2tu", "3we", "4th", "5fr", "6sa", "7su",
+                  "start time", "end time"]
+        for a_key in a_list:
+            f_key = f"component.{self.platform.platform_name}.entity.code_gen.{a_key.replace(' ', '_')}.name"
+            if f_key in platform_translations:
+                temp = temp.replace(a_key, platform_translations.get(f_key))
+            else:
+                _LOGGER.warning(f"{a_key} -> {f_key} not found in platform_translations")
 
         return temp#.title()
 

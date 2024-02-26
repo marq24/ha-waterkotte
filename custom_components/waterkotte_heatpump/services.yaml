@@ -89,7 +89,8 @@ set_schedule_data:
           multiple: false
           mode: dropdown
           translation_key: "set_schedule_data_schedule_type"
-          options: ["heating", "water", "cooling"]
+          options: [ "heating", "water", "cooling", "mix1", "mix2", "mix3", "pool", "buffer_tank_circulation_pump", "solar", "pv" ]
+
     enable:
       name: "Activate Schedule"
       description: " "

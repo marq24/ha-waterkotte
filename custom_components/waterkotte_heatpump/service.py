@@ -58,15 +58,17 @@ class WaterkotteHeatpumpService():
         start_time = self._get_time("start_time", call)
         end_time = self._get_time("end_time", call)
 
-        adj1_enable = call.data.get("adj1_enable", None)
-        adj1_value = call.data.get("adj1_value", None)
-        adj1_start_time = self._get_time("adj1_start_time", call)
-        adj1_end_time = self._get_time("adj1_end_time", call)
+        no_adj_values = type == "solar" or type == "pv"
+        if not no_adj_values:
+            adj1_enable = call.data.get("adj1_enable", None)
+            adj1_value = call.data.get("adj1_value", None)
+            adj1_start_time = self._get_time("adj1_start_time", call)
+            adj1_end_time = self._get_time("adj1_end_time", call)
 
-        adj2_enable = call.data.get("adj2_enable", None)
-        adj2_value = call.data.get("adj2_value", None)
-        adj2_start_time = self._get_time("adj2_start_time", call)
-        adj2_end_time = self._get_time("adj2_end_time", call)
+            adj2_enable = call.data.get("adj2_enable", None)
+            adj2_value = call.data.get("adj2_value", None)
+            adj2_start_time = self._get_time("adj2_start_time", call)
+            adj2_end_time = self._get_time("adj2_end_time", call)
 
         if type is not None and days is not None and len(days) > 0:
             try:
@@ -80,23 +82,24 @@ class WaterkotteHeatpumpService():
                     if end_time is not None:
                         kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_END_TIME"], end_time))
 
-                    if adj1_enable is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_ENABLE"], adj1_enable))
-                    if adj1_value is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_VALUE"], float(adj1_value)))
-                    if adj1_start_time is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_START_TIME"], adj1_start_time))
-                    if adj1_end_time is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_END_TIME"], adj1_end_time))
+                    if not no_adj_values:
+                        if adj1_enable is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_ENABLE"], adj1_enable))
+                        if adj1_value is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_VALUE"], float(adj1_value)))
+                        if adj1_start_time is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_START_TIME"], adj1_start_time))
+                        if adj1_end_time is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_END_TIME"], adj1_end_time))
 
-                    if adj2_enable is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_ENABLE"], adj2_enable))
-                    if adj2_value is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST2_VALUE"], float(adj2_value)))
-                    if adj2_start_time is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST2_START_TIME"], adj1_start_time))
-                    if adj2_end_time is not None:
-                        kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST2_END_TIME"], adj1_end_time))
+                        if adj2_enable is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST1_ENABLE"], adj2_enable))
+                        if adj2_value is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST2_VALUE"], float(adj2_value)))
+                        if adj2_start_time is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST2_START_TIME"], adj1_start_time))
+                        if adj2_end_time is not None:
+                            kv_pairs.append((WKHPTag[f"{final_type}_{a_day.upper()}_ADJUST2_END_TIME"], adj1_end_time))
 
                 _LOGGER.debug(f"set_schedule_data for: '{type}' @{days} -> {kv_pairs}")
                 await self._coordinator.async_write_tags(kv_pairs)
@@ -112,8 +115,11 @@ class WaterkotteHeatpumpService():
         if a_time is not None:
             temp = str(a_time)
             if temp.startswith("24:"):
-                temp = "00" + temp[2:]
-            return datetime.time.fromisoformat(temp)
+                #temp = "00" + temp[2:]
+                #return datetime.time.fromisoformat(temp).max
+                return datetime.time.max
+            else:
+                return datetime.time.fromisoformat(temp)
         return None
 
     async def get_energy_balance(self, call: ServiceCall) -> ServiceResponse:
