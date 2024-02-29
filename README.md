@@ -23,7 +23,7 @@ All data will be fetched (or send) to your Waterkotte via the build in webserver
 
 Please be aware, that we are developing this integration to best of our knowledge and belief, but cant give a guarantee. Therefore, use this integration **at your own risk**.
 
-## What you get [2024.02.15]
+## What you can get [with Version 2024.3.0 (or higher)]
 
 [![sampleview](https://github.com/marq24/ha-waterkotte/raw/main/sample-view-s.png)](https://github.com/marq24/ha-waterkotte/raw/main/sample-view.png)
 

@@ -493,6 +493,19 @@ NUMBER_SENSORS: Final = [
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTemperature.KELVIN,
     ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_POOL_ADJUST",
+        tag=WKHPTag.TEMPERATURE_POOL_ADJUST,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        icon="mdi:pool-thermometer",
+        entity_registry_enabled_default=False,
+        native_min_value=-2,
+        native_max_value=2,
+        native_step=FIFTH_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=UnitOfTemperature.KELVIN,
+        feature=FEATURE_POOL
+    ),
     # Heizung - Heizkennlinie
     # A93
     ExtNumberEntityDescription(

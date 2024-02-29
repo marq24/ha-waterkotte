@@ -30,14 +30,15 @@ class WaterkotteHeatpumpService():
                 await self._coordinator.async_write_tag(WKHPTag.HOLIDAY_START_TIME, start)
                 await self._coordinator.async_write_tag(WKHPTag.HOLIDAY_END_TIME, end)
                 await self._coordinator.async_refresh()
-            except ValueError:
-                return "unavailable"
+            except ValueError as exc:
+                if call.return_response:
+                    return {"error": str(exc), "date": str(datetime.datetime.now().time())}
 
             if call.return_response:
-                return {"result": "ok"}
+                return {"success": "yes", "date": str(datetime.datetime.now().time())}
 
         if call.return_response:
-            return {"result": "error"}
+            return {"error": "No Start and/or End Time", "date": str(datetime.datetime.now().time())}
 
     async def set_disinfection_start_time(self, call: ServiceCall):
         start_time = self._get_time("starthhmm", call)
@@ -46,10 +47,17 @@ class WaterkotteHeatpumpService():
             try:
                 await self._coordinator.async_write_tag(WKHPTag.SCHEDULE_WATER_DISINFECTION_START_TIME, start_time)
                 await self._coordinator.async_refresh()
-            except ValueError:
-                return "unavailable"
-            return True
-        return False
+                if call.return_response:
+                    return {
+                        "success": "yes",
+                        "date": str(datetime.datetime.now().time())
+                    }
+            except ValueError as exe:
+                if call.return_response:
+                    return {"error": str(exe), "date": str(datetime.datetime.now().time())}
+        else:
+            if call.return_response:
+                return {"error": "no start_time provided", "date": str(datetime.datetime.now().time())}
 
     async def set_schedule_data(self, call: ServiceCall):
         type = call.data.get("schedule_type", None)
@@ -105,15 +113,18 @@ class WaterkotteHeatpumpService():
                 await self._coordinator.async_write_tags(kv_pairs)
                 await self._coordinator.async_refresh()
             except ValueError as exe:
-                return {"error": str(exe)}
-            return {
-                "success": "yes",
-                "type": final_type,
-                "count": len(kv_pairs),
-                "date": str(datetime.datetime.now().time())
-            }
+                if call.return_response:
+                    return {"error": str(exe), "date": str(datetime.datetime.now().time())}
+            if call.return_response:
+                return {
+                    "success": "yes",
+                    "type": final_type,
+                    "count": len(kv_pairs),
+                    "date": str(datetime.datetime.now().time())
+                }
         else:
-            return {"error": "no type or day provided"}
+            if call.return_response:
+                return {"error": "no type or day provided", "date": str(datetime.datetime.now().time())}
 
     def _get_time(self, key: str, call: ServiceCall):
         a_time = call.data.get(key, None)

@@ -171,6 +171,7 @@
       "temperature_mix1_adjust": {"name": "Temperaturanpassung"},
       "temperature_mix2_adjust": {"name": "Temperaturanpassung"},
       "temperature_mix3_adjust": {"name": "Temperaturanpassung"},
+      "temperature_pool_adjust": {"name": "Temperaturanpassung"},
       "temperature_heating_hc_limit": {"name": "T Heizgrenze"},
       "temperature_heating_hc_target": {"name": "T Heizgrenze Soll"},
       "temperature_heating_hc_outdoor_norm": {"name": "T Norm-Außen"},

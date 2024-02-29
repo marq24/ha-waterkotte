@@ -508,6 +508,7 @@ class WKHPTag(DataTag, Enum):
 
     TEMPERATURE_POOL = DataTag(["A20"], "°C")
     TEMPERATURE_POOL_DEMAND = DataTag(["A40"], "°C")
+    TEMPERATURE_POOL_ADJUST = DataTag(["I1740"], "K", writeable=True)
     TEMPERATURE_POOL_SETPOINT = DataTag(["A41"], "°C", writeable=True)
     TEMPERATURE_POOL_HYSTERESIS = DataTag(["A174"], "K", writeable=True)
     TEMPERATURE_POOL_PV_CHANGE = DataTag(["A685"], "K", writeable=True)

@@ -127,6 +127,7 @@
       "temperature_mix1_adjust": {"name": "Temperature adjustment"},
       "temperature_mix2_adjust": {"name": "Temperature adjustment"},
       "temperature_mix3_adjust": {"name": "Temperature adjustment"},
+      "temperature_pool_adjust": {"name": "Temperature adjustment"},
       "temperature_heating_hc_limit": {"name": "T heating limit"},
       "temperature_heating_hc_target": {"name": "T heating limit target"},
       "temperature_heating_hc_outdoor_norm": {"name": "T norm outdoor"},
