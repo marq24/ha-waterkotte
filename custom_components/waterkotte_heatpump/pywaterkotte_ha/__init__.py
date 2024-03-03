@@ -260,6 +260,10 @@ class EcotouchBridge:
                 if response.status == 200:
                     _LOGGER.debug(f"requested: {response.url}")
                     content = await response.text()
+
+                    # faking READING 3:HREG values... [DEBUG ONLY]
+                    # content = content.replace('\n4\t', '\n192\t52')
+
                     if content.startswith("#E_NEED_LOGIN"):
                         try:
                             await self.login()
@@ -274,27 +278,34 @@ class EcotouchBridge:
                     for tag in tags:
                         match = re.search(
                             # rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
-                            rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>[-+]?(?:\d*\.?\d+))",
+                            rf"#{tag}\t(?P<status>[A-Z_]+)\n(?P<opt>\d+)\t(?P<value>[-+]?(?:\d*\.?\d+))",
                             content,
                             re.MULTILINE,
                         )
                         if match is None:
                             match = re.search(
-                                rf"#{tag}\tE_INACTIVETAG",
+                                rf"#{tag}\t(?P<status>[A-Z_]+)\n(?P<opt>\d+)\t",
                                 content,
                                 re.MULTILINE,
                             )
-                            # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                             if match is None:
-                                _LOGGER.warning(f"Tag: '{tag}' not found in response!")
-                                results_status[tag] = "E_NOTFOUND"
+                                # ok let's check for INACTIVETAG...
+                                match = re.search(
+                                    rf"#{tag}\tE_INACTIVETAG",
+                                    content,
+                                    re.MULTILINE,
+                                )
+                                if match is None:
+                                    _LOGGER.warning(f"Tag: '{tag}' not found in response!")
+                                    results_status[tag] = "E_NOTFOUND"
+                                else:
+                                    results_status[tag] = "E_INACTIVE"
                             else:
-                                # if val_status == "E_INACTIVE":
-                                results_status[tag] = "E_INACTIVE"
+                                _LOGGER.warning(f"Tag: '{tag}' without value! -> opt-code: {match.group('opt')}")
+                                results_status[tag] = match.group("status")
 
                             results[tag] = None
                         else:
-                            # results_status[tag] = "S_OK"
                             results_status[tag] = match.group("status")
                             results[tag] = match.group("value")
 
@@ -404,30 +415,36 @@ class EcotouchBridge:
                     for tag in tags:
                         match = re.search(
                             # rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>\-?\d+)",
-                            rf"#{tag}\t(?P<status>[A-Z_]+)\n\d+\t(?P<value>[-+]?(?:\d*\.?\d+))",
+                            rf"#{tag}\t(?P<status>[A-Z_]+)\n(?P<opt>\d+)\t(?P<value>[-+]?(?:\d*\.?\d+))",
                             content,
                             re.MULTILINE
                         )
                         if match is None:
                             match = re.search(
-                                rf"#{tag}\tE_INACTIVETAG",
+                                rf"#{tag}\t(?P<status>[A-Z_]+)\n(?P<opt>\d+)\t",
                                 content,
-                                re.MULTILINE
+                                re.MULTILINE,
                             )
-                            # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                             if match is None:
-                                _LOGGER.warning(f"Tag: '{tag}' not found in response!")
-                                results_status[tag] = "E_NOTFOUND"
+                                # ok let's check for INACTIVETAG...
+                                match = re.search(
+                                    rf"#{tag}\tE_INACTIVETAG",
+                                    content,
+                                    re.MULTILINE,
+                                )
+                                if match is None:
+                                    _LOGGER.warning(f"Tag: '{tag}' not found in response!")
+                                    results_status[tag] = "E_NOTFOUND"
+                                else:
+                                    results_status[tag] = "E_INACTIVE"
                             else:
-                                # if val_status == "E_INACTIVE":
-                                results_status[tag] = "E_INACTIVE"
+                                _LOGGER.warning(f"Tag: '{tag}' without value! -> opt-code: {match.group('opt')}")
+                                results_status[tag] = match.group("status")
 
                             results[tag] = None
                         else:
-                            # results_status[tag] = "S_OK"
                             results_status[tag] = match.group("status")
                             results[tag] = match.group("value")
-
 
                 else:
                     _LOGGER.warning(f"{response}")

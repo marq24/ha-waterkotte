@@ -925,32 +925,32 @@ NUMBER_SENSORS: Final = [
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.KELVIN,
     ),
-    # ExtNumberEntityDescription(
-    #     key="BASICVENT_INCOMING_FAN_MANUAL_SPEED_A4549",
-    #     tag=WKHPTag.BASICVENT_INCOMING_FAN_MANUAL_SPEED_A4549,
-    #     device_class=None,
-    #     icon="mdi:gauge",
-    #     entity_registry_enabled_default=False,
-    #     native_min_value=0,
-    #     native_max_value=100,
-    #     native_step=DEFAULT_STEP,
-    #     mode=NumberMode.SLIDER,
-    #     native_unit_of_measurement=PERCENTAGE,
-    #     feature=FEATURE_VENT
-    # ),
-    # ExtNumberEntityDescription(
-    #     key="BASICVENT_OUTGOING_FAN_MANUAL_SPEED_A4545",
-    #     tag=WKHPTag.BASICVENT_OUTGOING_FAN_MANUAL_SPEED_A4545,
-    #     device_class=None,
-    #     icon="mdi:gauge",
-    #     entity_registry_enabled_default=False,
-    #     native_min_value=0,
-    #     native_max_value=100,
-    #     native_step=DEFAULT_STEP,
-    #     mode=NumberMode.SLIDER,
-    #     native_unit_of_measurement=PERCENTAGE,
-    #     feature=FEATURE_VENT
-    # ),
+    ExtNumberEntityDescription(
+        key="BASICVENT_INCOMING_FAN_MANUAL_SPEED_PERCENT",
+        tag=WKHPTag.BASICVENT_INCOMING_FAN_MANUAL_SPEED_PERCENT,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+        feature=FEATURE_VENT
+    ),
+    ExtNumberEntityDescription(
+        key="BASICVENT_OUTGOING_FAN_MANUAL_SPEED_PERCENT",
+        tag=WKHPTag.BASICVENT_OUTGOING_FAN_MANUAL_SPEED_PERCENT,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+        feature=FEATURE_VENT
+    ),
 ]
 SELECT_SENSORS: Final = [
     ExtSelectEntityDescription(

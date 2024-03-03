@@ -45,7 +45,7 @@ class DataTag(NamedTuple):
             return None
 
         first_tag = self.tags[0]
-        assert first_tag[0] in ["A", "I", "D"]
+        assert first_tag[0] in ["A", "I", "D", "3"]
 
         if first_tag[0] == "A":
             if len(self.tags) == 1:
@@ -88,6 +88,11 @@ class DataTag(NamedTuple):
                     return True
                 elif first_val == "0":
                     return False
+
+            elif first_tag[0:6] == "3:HREG":
+                # currently only supporting integers from HERG registers (only in use for manual vent speeds)
+                return int(first_val)
+
             else:
                 raise InvalidValueException(
                     # "%s is not a valid value for %s" % (val, ecotouch_tag)
@@ -105,7 +110,7 @@ class DataTag(NamedTuple):
     def __encode_value_default(self, value, encoded_values, factor: int):
         assert len(self.tags) == 1
         ecotouch_tag = self.tags[0]
-        assert ecotouch_tag[0] in ["A", "I", "D"]
+        assert ecotouch_tag[0] in ["A", "I", "D", "3"]
 
         if ecotouch_tag[0] == "I":
             assert isinstance(value, int)
@@ -119,6 +124,9 @@ class DataTag(NamedTuple):
                 encoded_values[ecotouch_tag] = str(int(value * factor))
             else:
                 encoded_values[ecotouch_tag] = str(float(value))
+        elif ecotouch_tag[0:6] == "3:HREG":
+            # we force INT values for 3:HREG (only in use for 'manual vent speed' anyhow)
+            encoded_values[ecotouch_tag] = str(int(value))
 
     def _decode_datetime(self, str_vals: List[str]):
         int_vals = list(map(int, str_vals))
@@ -309,9 +317,6 @@ class WKHPTag(DataTag, Enum):
     TEMPERATURE_BUFFERTANK = DataTag(["A16"], "°C")
     TEMPERATURE_ROOM = DataTag(["A17"], "°C")
     TEMPERATURE_ROOM_1H = DataTag(["A18"], "°C")
-    # TODO - CHECK... [currently no Sensors based on these tags]
-    TEMPERATURE_ROOM_TARGET = DataTag(["A100"], "°C", writeable=True)
-    ROOM_INFLUENCE = DataTag(["A101"], "%", writeable=True)
 
     TEMPERATURE_SOLAR = DataTag(["A21"], "°C")
     TEMPERATURE_SOLAR_EXIT = DataTag(["A22"], "°C")
@@ -660,7 +665,7 @@ class WKHPTag(DataTag, Enum):
     # SERVICE_COOLING = DataTag(["D252"])
     # SERVICE_WATER = DataTag(["D117"])
     # SERVICE_HEATING_D23 = DataTag(["D23"])
-    # SERVICE_HEATING_D24 = DataTag(["D24"])
+    # SERVICE_HEATING_SCHEDULE D24 = DataTag(["D24"])
     # SERVICE_WATER_D118 = DataTag(["D118"])
     # SERVICE_OPMODE = DataTag(["I136"])
     # RAW_D430 = DataTag(["D430"])  # animation
@@ -777,9 +782,10 @@ class WKHPTag(DataTag, Enum):
     # mdi:wind-power
 
     # A4549: uom: '', 'Luefter 1 Rueckmeldung'
-    BASICVENT_INCOMING_FAN_MANUAL_SPEED_A4549 = DataTag(["A4549"], writeable=True)
+    BASICVENT_INCOMING_FAN_FEEDBACK_A4549 = DataTag(["A4549"])
     # D1605: uom: '', 'Luefter 1 - Manuell Drehzahl'
     BASICVENT_INCOMING_FAN_MANUAL_MODE_D1605 = DataTag(["D1605"], writeable=True)
+    BASICVENT_INCOMING_FAN_MANUAL_SPEED_PERCENT = DataTag(["3:HREG400443"], writeable=True)
     # A4551: uom: 'U/min', 'Luefter 1 Umdrehungen pro Minute'
     BASICVENT_INCOMING_FAN_RPM_A4551 = DataTag(["A4551"], decode_f=DataTag._decode_value_analog)
     # A4986: uom: '%', 'Analogausgang Y1' - Rotation Incoming air drive percent
@@ -790,9 +796,10 @@ class WKHPTag(DataTag, Enum):
     BASICVENT_TEMPERATURE_INCOMING_AIR_AFTER_SUP_A4996 = DataTag(["A4996"], decode_f=DataTag._decode_value_analog)
 
     # A4545: uom: '', 'Luefter 2 Rueckmeldung'
-    BASICVENT_OUTGOING_FAN_MANUAL_SPEED_A4545 = DataTag(["A4545"], writeable=True)
+    BASICVENT_OUTGOING_FAN_FEEDBACK_A4545 = DataTag(["A4545"])
     # D1603: uom: '', 'Luefter 2 - Manuell Drehzahl'
     BASICVENT_OUTGOING_FAN_MANUAL_MODE_D1603 = DataTag(["D1603"], writeable=True)
+    BASICVENT_OUTGOING_FAN_MANUAL_SPEED_PERCENT = DataTag(["3:HREG400445"], writeable=True)
     # A4547: uom: 'U/min', 'Luefter 2 Umdrehungen pro Minute'
     BASICVENT_OUTGOING_FAN_RPM_A4547 = DataTag(["A4547"], decode_f=DataTag._decode_value_analog)
     # A4984: uom: '%', 'Analogausgang Y2' - Rotation Ongoing air drive percent
@@ -850,10 +857,98 @@ class WKHPTag(DataTag, Enum):
     # I2484: uom: '', 'TT_b_enabled[5,2]'
     # I2889: uom: '', 'TT_b_enabled[6,5]'
 
-     #####################################
-     # TIME SCHEDULING (Thanks @flautze) #
-     #####################################
-     # _1MO, _2TU, _3WE, _4TH, _5FR, _6SA, _7SU
+    ###############################
+    ###############################
+    #### from ioBroker impl... ####
+    ###############################
+    ###############################
+    #ignore D74     coolingIndicatorState = getServiceIndicator('D74'); -> ['Kühlbetrieb'];
+    #ignore D75     getIndicator(coolingStatus, 'D75')); -> Kühlbetrieb Zeitprogram
+    #ignore D160    poolIndicatorState = getServiceIndicator('D160'); -> ['Pool-Heizbetrieb'];
+    #ignore D196    solarIndicatorState = getServiceIndicator('D196'); -> ['Solarbetrieb'];
+    #ignore D232    extHeaterIndicatorState = getServiceIndicator('D232'); -> ['Ext. Wärmeerzeuger'];
+    #ignore D635    pvIndicatorState = getServiceIndicator('D635'); -> ['Photovoltaik'];
+
+    # HEATING ROOM INFLUENCE Settings... MAIN question tag A101 - will it be witten as A101 or as I264 ???!
+    #A98	    getReadOnlyState(heatingInfluence, 'A98', '°C')); -> ['Raumtemperatur Ø1h', 'T room 1h', 'T-pi\xe8ce 1h'];
+    TEMPERATURE_ROOM_TARGET = DataTag(["A100"], "°C", writeable=True) # from 15°C - 30°C
+    ROOM_INFLUENCE = DataTag(["A101"], "%", writeable=True) # not really writable?!
+    #<select id="I264" class="form-control" style="width: 100px; color: rgb(85, 85, 85);">
+    #    <option value="0">0%</option>
+    #    <option value="1">50%</option>
+    #    <option value="2">100%</option>
+    #    <option value="3">150%</option>
+    #    <option value="4">200%</option>
+    #</select>
+    #A102    getState(heatingInfluence, 'A102', '+/-30 K')); -> ['kleinster Wert'];
+    #A103    getState(heatingInfluence, 'A103', '+/-30 K')); -> ['grösster Wert'];
+    #ignore A99     getReadOnlyState(heatingInfluence, 'A99', 'K')); -> ['aktueller Wert'];
+
+    # THERMAL DESINFECTION MODE: NONE, (selected) DAYs, ALL
+    #ignore I508	getEnumState(waterThermalDis, 'I508', dict.noneDayAll)); -> ['Wochenprogramm', 'Schedule', 'Programme hebdomadaire'];
+
+    # HOT WATER - SOLAR-SUPPORT Values
+    # A169 -> TEMPERATURE_WATER_SETPOINT_FOR_SOLAR
+    #ignore I517	getState(waterSolarSupp, 'I517', '')); -> ['Verzögerung Kompressorstart', 'Delay for compressor during solar heating', 'Temps de retard pour Start compresseur',
+    #ignore I518	getReadOnlyState(waterSolarSupp, 'I518')); -> ['Zeit bis Kompressorstart', 'Compressor starting in...', 'Le compresseur d\xe9marre dans'];
+
+    # SOLAR SUPPORT -> pgSolar.html
+    # A205	getState(solarSettings, 'A205', 'K')); -> ['Einschalttemperaturdifferenz', 'Switch on temperature difference', "Diff\xe9rence de temp\xe9rature d'enclenchement",
+    # A206	getState(solarSettings, 'A206', 'K')); -> ['Ausschalttemperaturdifferenz', 'Switch off temperature difference',"Diff\xe9rence de temp\xe9rature d'arr\xeat",
+    # A207	getState(solarSettings, 'A207', 'K')); -> ['Maximale Kollektortemperatur', 'Maximum collector temperature','Temp\xe9rature maximale du collecteur',
+    # A209	getReadOnlyState(solarSettings, 'A209', '°C')); -> ['geforderte Temperatur Vorlauf', 'Required temperature flow', 'Consigne d\xe9part'];
+    # SOLAR SUPORT REGENERATION
+    # A686	getReadOnlyState(solarRegen, 'A686', '°C')); -> ['Sondentemperatur'];
+    # A687	getState(solarRegen, 'A687', '°C')); -> ['Max. Sonden Temperatur'];
+    # A688	getState(solarRegen, 'A688', 'K')); -> ['Schaltdifferenz max. Temperatur'];
+    # I2253	getEnumState(solarRegen, 'I2253', "OPEN" or "CLOSED")); -> ['Motorventil Warmwasser bei Sonden Regenerierung'];
+
+    # PV SUPPORT (there is much much more!
+    # A1223	getReadOnlyState(pvSettings, 'A1223', 'kW')); -> ['Photovoltaik Überschuss'];
+    # A1194	getReadOnlyState(pvSettings, 'A1194', 'kW')); -> ['15 Min.-Mittelwert der Netzeinspeisung'];
+    # A1224	getReadOnlyState(pvSettings, 'A1224', 'kW')); -> ['Einschaltgrenzwert für PV'];
+
+    PREASSURE_P1_SUCTION_GAS_I2017 = DataTag(["I2017"], "bar") # -> ['p1 Sauggas'];
+    PREASSURE_P2_EXIT_I2018 = DataTag(["I2018"], "bar") # -> ['p2 Austritt'];
+    PREASSURE_P3_INTERMEDIATE_INJECTION_I2019 = DataTag(["I2019"], "bar")# -> ['p3 Zwischeneinspritzung'];
+    TEMPERATURE_T2_SURROUNDING_I2020 = DataTag(["I2020"], "°C") # -> ['T2 Umgebung'];
+    TEMPERATURE_T3_SUCTION_GAS_I2021 = DataTag(["I2021"], "°C") # -> ['T3 Sauggas'];
+    TEMPERATURE_T4_COMPRESSOR_I2022 = DataTag(["I2022"], "°C") # -> ['T4 Verdichter'];
+    TEMPERATURE_T5_EVI_I2025 = DataTag(["I2025"], "°C") # -> ['T5 EVI'];
+    TEMPERATURE_T6_FLUID_I2024 = DataTag(["I2024"], "°C") # -> ['T6 Flüssig'];
+    TEMPERATURE_T7_OIL_SUMP_I2023 = DataTag(["I2023"], "°C") # -> ['T7 Ölsumpf'];
+    TEMPERATURE_EVAPORATOR_I2032 = DataTag(["I2032"], "°C") # -> ['T Verdampfer'];
+    TEMPERATURE_OVERHEATING_I2033 = DataTag(["I2033"], "°K") # -> ['Überhitzung'];
+    TEMPERATURE_CONDENTATION_I2034 = DataTag(["I2034"], "°C") # ['T Kondensation'];
+    TEMPERATURE_COMPRESSED_GAS_I2039 = DataTag(["I2039"], "°C") # -> ['T Druckgas'];
+    FLOW_VORTEX_SENSOR_A1022 = DataTag(["A1022"], "l/s") # -> ['Durchfluss (Vortex Sensor)'];
+    TEMPERATURE_VORTEX_SENSOR_A1023 = DataTag(["A1023"], "°C") # -> ['Temperatur (Vortex Sensor)'];
+
+    # pgService_IO
+    # D815	getIndicator(statusDI, 'D815')); -> ['SM Quellenseite'];
+    # D816	getIndicator(statusDI, 'D816')); -> ['SM Heizungsseite'];
+    # D817	getIndicator(statusDI, 'D817')); -> ['SG Ready-A/ EVU'];
+    # D818	getIndicator(statusDI, 'D818')); -> ['SG Ready-B/ Sollwert'];
+    # D821	getIndicator(statusDI, 'D821')); -> ['HD-Pressostat'];
+    # D822	getIndicator(statusDI, 'D822')); -> ['ND-Pressostat'];
+    # D823	getIndicator(statusDI, 'D823')); -> ['Motorschutz 1'];
+    # D824	getIndicator(statusDI, 'D824')); -> ['Motorschutz 2'];
+    # D1010	getIndicator(statusDI, 'D1010')); -> ['SM Phase/Drehf.'];
+
+    # A699	getReadOnlyState(measurements, 'A699', '°C')); -> UNKNOWN
+    # A700	getReadOnlyState(measurements, 'A700', '°C')); -> UNKNOWN
+    # A701	getReadOnlyState(measurements, 'A701', '°C')); -> UNKNOWN
+    # A702	getReadOnlyState(measurements, 'A702', '°C')); -> UNKNOWN
+    # D701	getIndicator(status, 'D701')); -> UNKNOWN
+
+    #####################################
+    #####################################
+    #####################################
+    # TIME SCHEDULING (Thanks @flautze) #
+    #####################################
+    #####################################
+    #####################################
+    # _1MO, _2TU, _3WE, _4TH, _5FR, _6SA, _7SU
     SCHEDULE_HEATING_1MO_ENABLE = DataTag(['D42'], writeable=True)
     SCHEDULE_HEATING_1MO_START_TIME = DataTag(
         ['I151', 'I179'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)

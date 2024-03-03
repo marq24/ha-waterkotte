@@ -204,8 +204,8 @@
       "temperature_pool_hc_outdoor_norm": {"name": "T Norm-Außen"},
       "temperature_pool_hc_norm": {"name": "T Heizkreis Norm"},
       "source_pump_capture_temperature_a479":{"name":  "Wärmequellenpumpe - ΔT Wärmequelle"},
-      "basicvent_incoming_fan_manual_speed_a4549": {"name": "Lüfter 1 (Außen) manuelle Drehzahl"},
-      "basicvent_outgoing_fan_manual_speed_a4545": {"name": "Lüfter 2 (Innen) manuelle Drehzahl"}
+      "basicvent_incoming_fan_manual_speed_percent": {"name": "Lüfter 1 (Außen) manuelle Drehzahl"},
+      "basicvent_outgoing_fan_manual_speed_percent": {"name": "Lüfter 2 (Innen) manuelle Drehzahl"}
     },
     "select": {
       "temperature_heating_mode": {

@@ -160,8 +160,8 @@
       "temperature_pool_hc_outdoor_norm": {"name": "T norm outdoor"},
       "temperature_pool_hc_norm": {"name": "T norm heating circle"},
       "source_pump_capture_temperature_a479":{"name":  "Heat source pump - ΔT heat source"},
-      "basicvent_incoming_fan_manual_speed_a4549": {"name": "Vent 1 (outer) manual Speed"},
-      "basicvent_outgoing_fan_manual_speed_a4545": {"name": "Vent 2 (inner) manual Speed"}
+      "basicvent_incoming_fan_manual_speed_percent": {"name": "Vent 1 (outer) manual Speed"},
+      "basicvent_outgoing_fan_manual_speed_percent": {"name": "Vent 2 (inner) manual Speed"}
     },
     "select": {
       "temperature_heating_mode": {
