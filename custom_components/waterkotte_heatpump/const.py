@@ -951,6 +951,55 @@ NUMBER_SENSORS: Final = [
         native_unit_of_measurement=PERCENTAGE,
         feature=FEATURE_VENT
     ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_HEATING_POWLIMIT_MIN",
+        tag=WKHPTag.TEMPERATURE_HEATING_POWLIMIT_MIN,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_HEATING_POWLIMIT_MAX",
+        tag=WKHPTag.TEMPERATURE_HEATING_POWLIMIT_MAX,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_WATER_POWLIMIT_MIN",
+        tag=WKHPTag.TEMPERATURE_WATER_POWLIMIT_MIN,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_WATER_POWLIMIT_MAX",
+        tag=WKHPTag.TEMPERATURE_WATER_POWLIMIT_MAX,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+
 ]
 SELECT_SENSORS: Final = [
     ExtSelectEntityDescription(
@@ -1486,7 +1535,14 @@ SENSOR_SENSORS: Final = [
         icon="mdi:gauge",
         entity_registry_enabled_default=True
     ),
-    # writeable sensors from here...
+    ExtSensorEntityDescription(
+        key="WATERKOTTE_BIOS_TIME",
+        tag=WKHPTag.WATERKOTTE_BIOS_TIME,
+        device_class=SensorDeviceClass.DATE,
+        native_unit_of_measurement=None,
+        icon="mdi:clock-digital",
+        entity_registry_enabled_default=True
+    ),
     ExtSensorEntityDescription(
         key="HOLIDAY_START_TIME",
         tag=WKHPTag.HOLIDAY_START_TIME,

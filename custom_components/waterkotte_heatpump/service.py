@@ -1,7 +1,8 @@
 import datetime
 import logging
+import asyncio
 from typing import Tuple
-
+from dateutil.relativedelta import relativedelta
 from homeassistant.core import ServiceCall, ServiceResponse
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
@@ -17,6 +18,15 @@ class WaterkotteHeatpumpService():
         self._hass = hass
         self._config = config
         self._coordinator = coordinator
+
+    async def sync_time(self, call: ServiceCall):
+        now = datetime.datetime.now()
+        next_full_minute = now.replace(second=0, microsecond=0) + relativedelta(minutes=1)
+        if now.second < 58:
+            await asyncio.sleep(58 - now.second)
+        # await self._coordinator.async_write_tag(WKHPTag.WATERKOTTE_TIME_SET, next_full_minute)
+        if call.return_response:
+            return {"success": "yes", "date": str(next_full_minute)}
 
     async def set_holiday(self, call: ServiceCall):
         """Handle the service call."""
