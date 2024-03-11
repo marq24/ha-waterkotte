@@ -1,3 +1,4 @@
+import datetime
 from typing import Final
 from dataclasses import dataclass
 
@@ -13,6 +14,7 @@ from homeassistant.const import (
     UnitOfPower,
     UnitOfPressure,
     UnitOfTime,
+    EntityCategory,
     PERCENTAGE,
     CONCENTRATION_PARTS_PER_MILLION,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
@@ -1538,14 +1540,17 @@ SENSOR_SENSORS: Final = [
     ExtSensorEntityDescription(
         key="WATERKOTTE_BIOS_TIME",
         tag=WKHPTag.WATERKOTTE_BIOS_TIME,
+        state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:clock-digital",
+        entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=True
     ),
     ExtSensorEntityDescription(
         key="HOLIDAY_START_TIME",
         tag=WKHPTag.HOLIDAY_START_TIME,
+        state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:calendar-arrow-right",
@@ -1554,6 +1559,7 @@ SENSOR_SENSORS: Final = [
     ExtSensorEntityDescription(
         key="HOLIDAY_END_TIME",
         tag=WKHPTag.HOLIDAY_END_TIME,
+        state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:calendar-arrow-left",
@@ -1562,6 +1568,7 @@ SENSOR_SENSORS: Final = [
     ExtSensorEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_START_TIME",
         tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
+        state_class=SensorStateClass.TOTAL_INCREASING,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:clock-digital",

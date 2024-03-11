@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -53,7 +54,9 @@ class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
                 else:
                     value = "unknown"
             else:
-                if self.entity_description.suggested_display_precision is not None:
+                if isinstance(value, datetime):
+                    return value.isoformat(sep=' ', timespec="minutes")
+                elif self.entity_description.suggested_display_precision is not None:
                     value = round(float(value), self.entity_description.suggested_display_precision)
         except KeyError:
             value = "unknown"
@@ -69,4 +72,6 @@ class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
     def entity_category(self):
         if self._is_bit_field:
             return EntityCategory.DIAGNOSTIC
+        elif self.entity_description.entity_category is not None:
+            return self.entity_description.entity_category
         return None

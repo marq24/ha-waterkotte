@@ -44,6 +44,9 @@
           "polling_interval": "Aktualisierungsintervall in Sekunden",
           "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
           "add_schedule_entities": "Optionale Zeitsteuerung-Entitäten hinzufügen (650+)"
+        },
+        "data_description": {
+          "XXX": "text will be displayed bwlow entry field..."
         }
       },
       "features": {
