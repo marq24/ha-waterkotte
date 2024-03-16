@@ -1842,16 +1842,16 @@ SWITCH_SENSORS: Final = [
         feature=FEATURE_VENT
     ),
     ExtSwitchEntityDescription(
-        key="BASICVENT_INCOMING_FAN_MANUAL_MODE_D1605",
-        tag=WKHPTag.BASICVENT_INCOMING_FAN_MANUAL_MODE_D1605,
+        key="BASICVENT_INCOMING_FAN_MANUAL_MODE",
+        tag=WKHPTag.BASICVENT_INCOMING_FAN_MANUAL_MODE,
         icon="mdi:toggle-switch",
         icon_off="mdi:toggle-switch-off",
         entity_registry_enabled_default=False,
         feature=FEATURE_VENT
     ),
     ExtSwitchEntityDescription(
-        key="BASICVENT_OUTGOING_FAN_MANUAL_MODE_D1603",
-        tag=WKHPTag.BASICVENT_OUTGOING_FAN_MANUAL_MODE_D1603,
+        key="BASICVENT_OUTGOING_FAN_MANUAL_MODE",
+        tag=WKHPTag.BASICVENT_OUTGOING_FAN_MANUAL_MODE,
         icon="mdi:toggle-switch",
         icon_off="mdi:toggle-switch-off",
         entity_registry_enabled_default=False,

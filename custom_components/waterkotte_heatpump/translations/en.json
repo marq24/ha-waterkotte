@@ -289,8 +289,8 @@
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Continuous operation heating pump during heating period"},
       "permanent_heating_circulation_pump_summer_d1104": {"name": "Continuous operation heating pump during cooling period"},
       "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Vent Air-Filter-Change operating hours RESET"},
-      "basicvent_incoming_fan_manual_mode_d1605": {"name": "Vent 1 (outer) Manual-Mode"},
-      "basicvent_outgoing_fan_manual_mode_d1603": {"name": "Vent 2 (inner) Manual-Mode"}
+      "basicvent_incoming_fan_manual_mode": {"name": "Vent 1 (outer) Manual-Mode"},
+      "basicvent_outgoing_fan_manual_mode": {"name": "Vent 2 (inner) Manual-Mode"}
     },
     "code_gen": {
       "schedule": {"name":  "Schedule"},

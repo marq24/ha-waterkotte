@@ -826,7 +826,7 @@ class WKHPTag(DataTag, Enum):
     # A4549: uom: '', 'Luefter 1 Rueckmeldung'
     BASICVENT_INCOMING_FAN_FEEDBACK_A4549 = DataTag(["A4549"])
     # D1605: uom: '', 'Luefter 1 - Manuell Drehzahl'
-    BASICVENT_INCOMING_FAN_MANUAL_MODE_D1605 = DataTag(["D1605"], writeable=True)
+    BASICVENT_INCOMING_FAN_MANUAL_MODE = DataTag(["3:HREG400447"], writeable=True)
     BASICVENT_INCOMING_FAN_MANUAL_SPEED_PERCENT = DataTag(["3:HREG400443"], writeable=True)
     # A4551: uom: 'U/min', 'Luefter 1 Umdrehungen pro Minute'
     BASICVENT_INCOMING_FAN_RPM_A4551 = DataTag(["A4551"], decode_f=DataTag._decode_value_analog)
@@ -840,7 +840,7 @@ class WKHPTag(DataTag, Enum):
     # A4545: uom: '', 'Luefter 2 Rueckmeldung'
     BASICVENT_OUTGOING_FAN_FEEDBACK_A4545 = DataTag(["A4545"])
     # D1603: uom: '', 'Luefter 2 - Manuell Drehzahl'
-    BASICVENT_OUTGOING_FAN_MANUAL_MODE_D1603 = DataTag(["D1603"], writeable=True)
+    BASICVENT_OUTGOING_FAN_MANUAL_MODE = DataTag(["3:HREG400448"], writeable=True)
     BASICVENT_OUTGOING_FAN_MANUAL_SPEED_PERCENT = DataTag(["3:HREG400445"], writeable=True)
     # A4547: uom: 'U/min', 'Luefter 2 Umdrehungen pro Minute'
     BASICVENT_OUTGOING_FAN_RPM_A4547 = DataTag(["A4547"], decode_f=DataTag._decode_value_analog)

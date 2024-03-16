@@ -336,8 +336,8 @@
       "permanent_heating_circulation_pump_winter_d1103": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Heizperiode"},
       "permanent_heating_circulation_pump_summer_d1104": {"name": "Dauerbetrieb Heizungsumwälzpumpe während Kühlperiode"},
       "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Luftfilter-Wechsel Betriebsstunden ZURÜCKSETZEN"},
-      "basicvent_incoming_fan_manual_mode_d1605": {"name": "Lüfter 1 (Außen) manuelle Drehzahl-Steuerung"},
-      "basicvent_outgoing_fan_manual_mode_d1603": {"name": "Lüfter 2 (Innen) manuelle Drehzahl-Steuerung"}
+      "basicvent_incoming_fan_manual_mode": {"name": "Lüfter 1 (Außen) manuelle Drehzahl-Steuerung"},
+      "basicvent_outgoing_fan_manual_mode": {"name": "Lüfter 2 (Innen) manuelle Drehzahl-Steuerung"}
     },
     "code_gen": {
       "schedule": {"name":  "Zeitprogramm"},
