@@ -1,12 +1,10 @@
 import logging
 import math
 import struct
-from datetime import timedelta, time
+from datetime import datetime, timedelta, time
 
 from enum import Enum
 # from aenum import Enum, extend_enum
-
-from datetime import datetime
 
 from typing import (
     NamedTuple,

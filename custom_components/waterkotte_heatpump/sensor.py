@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, time
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -56,6 +56,8 @@ class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
             else:
                 if isinstance(value, datetime):
                     return value.isoformat(sep=' ', timespec="minutes")
+                elif isinstance(value, time):
+                    return value.isoformat(timespec="minutes")
                 elif self.entity_description.suggested_display_precision is not None:
                     value = round(float(value), self.entity_description.suggested_display_precision)
         except KeyError:
