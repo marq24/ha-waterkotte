@@ -1,0 +1,10 @@
+{
+  "services": {
+    "sync_time": "mdi:clock-outline",
+    "set_holiday": "mdi:calendar",
+    "set_disinfection_start_time": "mdi:calendar",
+    "set_schedule_data": "mdi:calendar-clock",
+    "get_energy_balance": "mdi:home-lightning-bolt-outline",
+    "get_energy_balance_monthly": "mdi:home-lightning-bolt-outline"
+  }
+}
