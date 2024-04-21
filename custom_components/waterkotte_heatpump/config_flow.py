@@ -54,23 +54,54 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle a flow initialized by the user."""
         self._errors = {}
 
-        # Uncomment the next 2 lines if only a single instance of the integration is allowed:
-        # if self._async_current_entries():
-        #     return self.async_abort(reason="single_instance_allowed")
-
         if user_input is not None:
             if CONF_SYSTEMTYPE in user_input:
                 # it really sucks, that translation keys have to be lower case...
                 user_input[CONF_SYSTEMTYPE] = user_input[CONF_SYSTEMTYPE].upper()
 
+                if user_input[CONF_SYSTEMTYPE] == EASYCON:
+                    return await self.async_step_user_easycon()
+                else:
+                    return await self.async_step_user_ecotouch()
+        else:
+            user_input = {}
+            user_input[CONF_SYSTEMTYPE] = ECOTOUCH
+
+        # it really sucks, that translation keys have to be lower case... so we need to make sure that our
+        # options are all translate to lower case!
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema({
+                vol.Required(CONF_SYSTEMTYPE, default=(user_input.get(CONF_SYSTEMTYPE, ECOTOUCH)).lower()):
+                    selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=[ECOTOUCH.lower(), EASYCON.lower()],
+                            mode=selector.SelectSelectorMode.DROPDOWN,
+                            translation_key=CONF_SYSTEMTYPE
+                        )
+                    ),
+            }),
+            last_step=False,
+            errors=self._errors
+        )
+
+    async def async_step_user_easycon(self, user_input=None):
+        """Handle a flow initialized by the user."""
+        self._errors = {}
+
+        # Uncomment the next 2 lines if only a single instance of the integration is allowed:
+        # if self._async_current_entries():
+        #     return self.async_abort(reason="single_instance_allowed")
+
+        if user_input is not None:
+            user_input[CONF_SYSTEMTYPE] = EASYCON
+            user_input[CONF_ADD_SCHEDULE_ENTITIES] = False
             valid = await self._test_credentials(
                 host=user_input[CONF_HOST],
-                # user=user_input[CONF_USERNAME],
-                pwd=user_input[CONF_PASSWORD],
+                pwd=None,
                 system_type=user_input[CONF_SYSTEMTYPE],
                 tags_per_request=user_input[CONF_TAGS_PER_REQUEST],
             )
-
             if valid:
                 user_input[CONF_BIOS] = self._bios
                 user_input[CONF_FW] = self._firmware
@@ -80,38 +111,64 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 self._user_step_user_input = dict(user_input)
                 return await self.async_step_features()
             else:
-                if user_input[CONF_SYSTEMTYPE] == EASYCON:
-                    self._errors["base"] = "type"
-                else:
-                    self._errors["base"] = "auth"
+                self._errors["base"] = "type"
         else:
             user_input = {}
-            # user_input[CONF_USERNAME] = "waterkotte",
-            user_input[CONF_PASSWORD] = "waterkotte",
             user_input[CONF_HOST] = ""
-            user_input[CONF_SYSTEMTYPE] = ECOTOUCH
 
-        # it really sucks, that translation keys have to be lower case... so we need to make sure that our
-        # options are all translate to lower case!
         return self.async_show_form(
-            step_id="user",
+            step_id="user_easycon",
             data_schema=vol.Schema({
                 vol.Required(CONF_HOST, default=user_input.get(CONF_HOST)): str,
-                vol.Required(CONF_SYSTEMTYPE, default=(user_input.get(CONF_SYSTEMTYPE, ECOTOUCH)).lower()):
-                    selector.SelectSelector(
-                        selector.SelectSelectorConfig(
-                            options=[ECOTOUCH.lower(), EASYCON.lower()],
-                            mode=selector.SelectSelectorMode.DROPDOWN,
-                            translation_key=CONF_SYSTEMTYPE
-                        )
-                    ),
-                # vol.Required(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
+                vol.Required(CONF_POLLING_INTERVAL, default=500): int,
+                vol.Required(CONF_TAGS_PER_REQUEST, default=25): int,
+            }),
+            last_step=False,
+            errors=self._errors
+        )
+
+    async def async_step_user_ecotouch(self, user_input=None):
+        """Handle a flow initialized by the user."""
+        self._errors = {}
+
+        # Uncomment the next 2 lines if only a single instance of the integration is allowed:
+        # if self._async_current_entries():
+        #     return self.async_abort(reason="single_instance_allowed")
+
+        if user_input is not None:
+            user_input[CONF_SYSTEMTYPE] = ECOTOUCH
+            valid = await self._test_credentials(
+                host=user_input[CONF_HOST],
+                pwd=user_input[CONF_PASSWORD],
+                system_type=user_input[CONF_SYSTEMTYPE],
+                tags_per_request=user_input[CONF_TAGS_PER_REQUEST],
+            )
+            if valid:
+                user_input[CONF_BIOS] = self._bios
+                user_input[CONF_FW] = self._firmware
+                user_input[CONF_SERIES] = self._series
+                user_input[CONF_SERIAL] = self._serial
+                user_input[CONF_ID] = self._id
+                self._user_step_user_input = dict(user_input)
+                return await self.async_step_features()
+            else:
+                self._errors["base"] = "auth"
+        else:
+            user_input = {}
+            user_input[CONF_HOST] = ""
+            user_input[CONF_PASSWORD] = "waterkotte"
+            user_input[CONF_ADD_SCHEDULE_ENTITIES] = False
+
+        return self.async_show_form(
+            step_id="user_ecotouch",
+            data_schema=vol.Schema({
+                vol.Required(CONF_HOST, default=user_input.get(CONF_HOST)): str,
                 vol.Required(CONF_PASSWORD, default=user_input.get(CONF_PASSWORD)): str,
                 vol.Required(CONF_POLLING_INTERVAL, default=60): int,
                 vol.Required(CONF_TAGS_PER_REQUEST, default=75): int,
                 vol.Required(CONF_ADD_SCHEDULE_ENTITIES, default=False): bool,
             }),
-            last_step=True,
+            last_step=False,
             errors=self._errors
         )
 

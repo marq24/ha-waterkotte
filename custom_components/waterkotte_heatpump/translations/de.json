@@ -35,18 +35,31 @@
   "config": {
     "step": {
       "user": {
-        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.\r\rWichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Heizung anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.\r\rWenn Du Dir unsicher bist, füge die optionalen Zeitplanungs-Entitäten im ersten Schritt nicht hinzu. Sie können jederzeit über eine Einstellungen der Konfiguration zu einem späteren Zeitpunkt hinzugefügt werden.",
+        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.",
+        "data": {
+          "system_type": "Watterkotte Schnittstellentyp"
+        },
+        "data_description": {
+          "system_type": "Wenn Du zur Anmeldung an dem Waterkotte Webinterface ein Benutzernamen & Passwort angeben musst, dann wähle bitte den Schnittstellentyp: EcoTouch Modus, sonst den EasyCon Modus."
+        }
+      },
+      "user_ecotouch": {
+        "description": "Wichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Wärmepumpe anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.\r\rWenn Du Dir unsicher bist, füge die optionalen Zeitplanungs-Entitäten im ersten Schritt nicht hinzu. Sie können jederzeit über eine Einstellungen der Konfiguration zu einem späteren Zeitpunkt hinzugefügt werden.",
         "data": {
           "host": "IP oder Hostname deiner Waterkotte",
-          "system_type": "Watterkotte Interface-Type",
           "username": "Benutzername",
           "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
           "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
           "add_schedule_entities": "Optionale Zeitsteuerung-Entitäten hinzufügen (650+)"
-        },
-        "data_description": {
-          "XXX": "text will be displayed bwlow entry field..."
+        }
+      },
+      "user_easycon": {
+        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.",
+        "data": {
+          "host": "IP oder Hostname deiner Waterkotte",
+          "polling_interval": "Aktualisierungsintervall in Sekunden",
+          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)"
         }
       },
       "features": {
@@ -61,7 +74,7 @@
     },
     "error": {
       "auth": "Unter dieser IP/Host und dem angegebenen Passwort konnte keine Waterkotte erreicht werden",
-      "type": "Es konnte keine Verbindung mit deiner Waterkotte hergestellt werden - bist du dir sicher, dass du den richtigen Interface-Type ausgewählt hast?"
+      "type": "Es konnte keine Verbindung mit deiner Waterkotte hergestellt werden - bist du dir sicher, dass du zuvor den richtigen Schnittstellentyp ausgewählt hast?"
     },
     "abort": {
       "single_instance_allowed": "Only a single instance is allowed."
