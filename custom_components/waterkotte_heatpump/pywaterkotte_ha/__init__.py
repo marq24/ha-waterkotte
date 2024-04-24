@@ -206,10 +206,16 @@ class EcotouchBridge:
                 try:
                     t_values = [e_values[a_tag] for a_tag in a_wphp_tag.tags]
                     t_states = [e_status[a_tag] for a_tag in a_wphp_tag.tags]
-                    result[a_wphp_tag] = {
-                        "value": a_wphp_tag.decode_f(a_wphp_tag, t_values),
-                        "status": t_states[0]
-                    }
+                    if a_wphp_tag.decode_f == WKHPTag._decode_alarms:
+                        result[a_wphp_tag] = {
+                            "value": a_wphp_tag.decode_f(a_wphp_tag, t_values, self.lang_map),
+                            "status": t_states[0]
+                        }
+                    else:
+                        result[a_wphp_tag] = {
+                            "value": a_wphp_tag.decode_f(a_wphp_tag, t_values),
+                            "status": t_states[0]
+                        }
 
                     if a_wphp_tag.translate and a_wphp_tag.tags[0] in self.lang_map:
                         value_map = self.lang_map[a_wphp_tag.tags[0]]

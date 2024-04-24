@@ -126,6 +126,30 @@ class DataTag(NamedTuple):
             # we force INT values for 3:HREG (only in use for 'manual vent speed' anyhow)
             encoded_values[ecotouch_tag] = str(int(value))
 
+    def _decode_alarms(self, str_vals: List[str], lang_map: dict):
+        bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        error_tag_index = 0;
+        final_value = "";
+        for a_val in str_vals:
+            if self.tags[error_tag_index] in lang_map:
+
+                # the last error field [I2614] only contain 13 bits
+                if error_tag_index+1 == len(str_vals):
+                    bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+                for idx in range(len(bits)):
+                    if (int(a_val) & (1 << bits[idx])) > 0:
+                        final_value = final_value + ", " + str(lang_map[self.tags[error_tag_index]][idx])
+
+                #_LOGGER.error(f"{self.tags[error_tag_index]} {a_val} -> '{final_value}'")
+            error_tag_index = error_tag_index + 1
+
+        # we need to trim the firsts initial added ', '
+        if len(final_value) > 0:
+            return final_value[2:]
+        else:
+            return final_value
+
     def _decode_datetime(self, str_vals: List[str]):
         int_vals = list(map(int, str_vals))
         if int_vals[0] < 2000:
@@ -320,12 +344,12 @@ class WKHPTag(DataTag, Enum):
         ["I7", "I6", "I5", "I8", "I9"], decode_f=DataTag._decode_datetime
     )
     # day: I1758,    month: I1759,   year: I1760,    hour: I1761,    minute: I1762
-    #WATERKOTTE_TIME_SET = DataTag(
+    # WATERKOTTE_TIME_SET = DataTag(
     #    ["I1760", "I1759", "I1758", "I1761", "I1762"], writeable=True, decode_f=DataTag._decode_datetime,
     #    encode_f=DataTag._encode_datetime
-    #)
-    #WATERKOTTE_TIME_X1 = DataTag(["D801"], writeable=True)
-    #WATERKOTTE_TIME_X2 = DataTag(["D22"], writeable=True)
+    # )
+    # WATERKOTTE_TIME_X1 = DataTag(["D801"], writeable=True)
+    # WATERKOTTE_TIME_X2 = DataTag(["D22"], writeable=True)
 
     HOLIDAY_ENABLED = DataTag(["D420"], writeable=True)
     HOLIDAY_START_TIME = DataTag(
@@ -601,7 +625,11 @@ class WKHPTag(DataTag, Enum):
     # even if this value will not be displayed in the Waterkotte GUI - looks
     # like that this is really the same as the other two values (A51 & A52)
     # just a percentage value (from 0.0 - 100.0)
+    PERCENT_COMPRESSOR_DEMAND = DataTag(["A50"], "%")
     PERCENT_COMPRESSOR = DataTag(["A58"], "%")
+    PERCENT_COMPRESSOR2 = DataTag(["A703"], "%")
+    PERCENT_COMPRESSOR3 = DataTag(["A704"], "%")
+    PERCENT_COMPRESSOR4 = DataTag(["A705"], "%")
 
     # just found... Druckgastemperatur
     TEMPERATURE_DISCHARGE = DataTag(["A1462"], "°C")
@@ -646,22 +674,39 @@ class WKHPTag(DataTag, Enum):
 
     STATE_SOURCEPUMP = DataTag(["I51"], bit=0)
     STATE_HEATINGPUMP = DataTag(["I51"], bit=1)
+    STATE_HEATINGPUMP2 = DataTag(["I54"], bit=5)
+    STATE_HEATINGPUMP3 = DataTag(["I54"], bit=3)
+    STATE_HEATINGPUMP4 = DataTag(["I54"], bit=4)
     STATE_EVD = DataTag(["I51"], bit=2)
     STATE_COMPRESSOR = DataTag(["I51"], bit=3)
     STATE_COMPRESSOR2 = DataTag(["I51"], bit=4)
+    STATE_COMPRESSOR3 = DataTag(["I54"], bit=12)
+    STATE_COMPRESSOR4 = DataTag(["I54"], bit=13)
     STATE_EXTERNAL_HEATER = DataTag(["I51"], bit=5)
     STATE_ALARM = DataTag(["I51"], bit=6)
     STATE_COOLING = DataTag(["I51"], bit=7)
     STATE_WATER = DataTag(["I51"], bit=8)
     STATE_POOL = DataTag(["I51"], bit=9)
     STATE_SOLAR = DataTag(["I51"], bit=10)
-    STATE_COOLING4WAY = DataTag(["I51"], bit=11)
+    STATE_SOLAR2 = DataTag(["I51"], bit=11)
+    STATE_COOLING4WAY = DataTag(["I51"], bit=12)
+    STATE_COOLING4WAY2 = DataTag(["I54"], bit=6)
+    STATE_COOLING4WAY3 = DataTag(["I54"], bit=7)
+    STATE_COOLING4WAY4 = DataTag(["I54"], bit=8)
+    STATE_STORAGEPUMP =  DataTag(["I54"], bit=0)
+    STATE_EMERGENCYOFF = DataTag(["I54"], bit=1)
+    STATE_EMERGENCYOFF2 = DataTag(["I54"], bit=9)
+    STATE_EMERGENCYOFF3 = DataTag(["I54"], bit=10)
+    STATE_EMERGENCYOFF4 = DataTag(["I54"], bit=11)
+    STATE_SILENTMODE = DataTag(["I54"], bit=2)
+    STATE_MIX1_PUMP = DataTag(["I51"], bit=13)
+    STATE_MIX1_MIXER_OPEN = DataTag(["I51"], bit=14)
+    STATE_MIX1_MIXER_CLOSE = DataTag(["I51"], bit=15)
+    STATE_ENGINEVENT = DataTag(["I54"], bit=14)
 
-    # we do not have any valid information about the meaning after the bit=8...
     # https://github.com/flautze/home_assistant_waterkotte/issues/1#issuecomment-1916288553
-    # ALARM_BITS = DataTag(["I52"], bits=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], translate=True)
-    ALARM_BITS = DataTag(["I52"], bits=[0, 1, 2, 3, 4, 5, 6, 7, 8], translate=True)
-    INTERRUPTION_BITS = DataTag(["I53"], bits=[0, 1, 2, 3, 4, 5, 6], translate=True)
+    INTERRUPTION_BITS = DataTag(["I53"], bits=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], translate=True)
+    ALARM_BITS = DataTag(["I52", "I2608", "I2609", "I2610", "I2611", "I2612", "I2613", "I2614"], decode_f=DataTag._decode_alarms)
 
     # when we are logged in as ServiceOperator, then I135 return 1 -> in the FE this will be set the currentUserLevel
     # 1: Service
