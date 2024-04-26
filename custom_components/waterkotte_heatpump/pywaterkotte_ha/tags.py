@@ -127,15 +127,18 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = str(int(value))
 
     def _decode_alarms(self, str_vals: List[str], lang_map: dict):
-        bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
         error_tag_index = 0;
         final_value = "";
         for a_val in str_vals:
             if self.tags[error_tag_index] in lang_map:
-
-                # the last error field [I2614] only contain 13 bits
                 if error_tag_index+1 == len(str_vals):
+                    # the last error field [I2614] only contain 13 bits
                     bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                elif error_tag_index == 0:
+                    # the bit13 (= "-") & bit14(= "Kommunikationstrigger") of I52 are NO alarms
+                    bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15]
+                else:
+                    bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
                 for idx in range(len(bits)):
                     if (int(a_val) & (1 << bits[idx])) > 0:
