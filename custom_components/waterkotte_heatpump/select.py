@@ -3,7 +3,7 @@ import logging
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.core import HomeAssistant
 
 from . import WKHPDataUpdateCoordinator, WKHPBaseEntity
 from .const import DOMAIN, SELECT_SENSORS, ExtSelectEntityDescription
@@ -12,7 +12,7 @@ from .const_gen import SELECT_SENSORS_GENERATED
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistantType, config_entry: ConfigEntry, add_entity_cb: AddEntitiesCallback):
+async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, add_entity_cb: AddEntitiesCallback):
     _LOGGER.debug("SELECT async_setup_entry")
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
     entities = []
