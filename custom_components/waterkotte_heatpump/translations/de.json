@@ -51,7 +51,8 @@
           "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
           "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
-          "add_schedule_entities": "Optionale Zeitsteuerung-Entitäten hinzufügen (650+)"
+          "add_schedule_entities": "Optionale Zeitsteuerung-Entitäten hinzufügen (650+)",
+          "add_serial_as_id": "Möchtest Du mehrere Waterkotte-Systeme in deiner HA Instanz verwalten?"
         }
       },
       "user_easycon": {
@@ -59,7 +60,8 @@
         "data": {
           "host": "IP oder Hostname deiner Waterkotte",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
-          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)"
+          "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
+          "add_serial_as_id": "Möchtest Du mehrere Waterkotte-Systeme in deiner HA Instanz verwalten?"
         }
       },
       "features": {

@@ -26,6 +26,7 @@ from .const import (
     CONF_SERIES,
     CONF_SYSTEMTYPE,
     CONF_ADD_SCHEDULE_ENTITIES,
+    CONF_ADD_SERIAL_AS_ID,
     CONF_USE_VENT,
     CONF_USE_HEATING_CURVE,
     CONF_USE_DISINFECTION,
@@ -99,7 +100,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
                                  supports_response=SupportsResponse.ONLY)
 
     # we should check (in any CASE!) if the active tags might have...
-    asyncio.create_task(coordinator.update_client_tag_list(hass, config_entry.entry_id))
+    asyncio.create_task(coordinator.update_client_tag_list(hass, config_entry.data.get(CONF_ADD_SERIAL_AS_ID,False), config_entry.entry_id))
 
     # ok we are done...
     return True
@@ -135,7 +136,7 @@ async def async_reload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
 
 
 @staticmethod
-def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[WKHPTag]:
+def generate_tag_list(hass: HomeAssistant, trim_unique_id:bool, config_entry_id: str) -> List[WKHPTag]:
     _LOGGER.info(f"(re)build tag list...")
     tags = []
     if hass is not None:
@@ -147,6 +148,8 @@ def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[WKHPTag
                                                                     config_entry_id=config_entry_id):
                 if entity.disabled is False:
                     a_temp_tag = (entity.unique_id)
+                    if trim_unique_id:
+                        a_temp_tag = a_temp_tag[0:a_temp_tag.rfind('_')]
                     _LOGGER.info(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
                     if a_temp_tag is not None and a_temp_tag.upper() in WKHPTag.__members__:
                         if WKHPTag[a_temp_tag.upper()]:
@@ -159,6 +162,10 @@ def generate_tag_list(hass: HomeAssistant, config_entry_id: str) -> List[WKHPTag
 class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass: HomeAssistant, config_entry):
         self.name = config_entry.title
+        self.is_multi_instances = config_entry.data.get(CONF_ADD_SERIAL_AS_ID, False)
+        if self.is_multi_instances:
+            self.serial_id_addon = config_entry.data.get(CONF_SERIAL, "")
+
         self._config_entry = config_entry
         self.add_schedule_entities = config_entry.options.get(CONF_ADD_SCHEDULE_ENTITIES,
                                                               config_entry.data.get(CONF_ADD_SCHEDULE_ENTITIES, False))
@@ -176,7 +183,7 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
         _pwd = config_entry.options.get(CONF_PASSWORD, config_entry.data.get(CONF_PASSWORD, "waterkotte"))
         _system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE, ECOTOUCH))
         _tags_num = config_entry.options.get(CONF_TAGS_PER_REQUEST, config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
-        _tags = generate_tag_list(hass=hass, config_entry_id=config_entry.entry_id)
+        _tags = generate_tag_list(hass=hass, trim_unique_id=self.is_multi_instances, config_entry_id=config_entry.entry_id)
 
         self.bridge = WaterkotteClient(host=_host, pwd=_pwd, system_type=_system_type,
                                        web_session=async_get_clientsession(hass), tags=_tags,
@@ -204,12 +211,12 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
-    async def update_client_tag_list(self, hass, entry_id):
+    async def update_client_tag_list(self, hass: HomeAssistant, trim_unique_id: bool, entry_id: str):
         _LOGGER.debug(f"rechecking active tags... in 15sec")
         await asyncio.sleep(15)
 
         _LOGGER.debug(f"rechecking active tags NOW!")
-        self.bridge.tags = generate_tag_list(hass, entry_id)
+        self.bridge.tags = generate_tag_list(hass, trim_unique_id, entry_id)
 
         _LOGGER.debug(f"active tags checked... now refresh sensor data")
         await self.async_refresh()
@@ -292,9 +299,13 @@ class WKHPBaseEntity(Entity):
             if description.feature in self.coordinator.available_features:
                 self._attr_entity_registry_enabled_default = True
 
-        self.entity_id = f"{DOMAIN}.wkh_{self._attr_translation_key}"
+        if self.coordinator.is_multi_instances:
+            self.entity_id = f"{DOMAIN}.wkh_{self.coordinator.serial_id_addon}_{self._attr_translation_key}"
+        else:
+            self.entity_id = f"{DOMAIN}.wkh_{self._attr_translation_key}"
 
-    def _name_internal(self, device_class_name: str | None, platform_translations: dict[str, Any],) -> str | UndefinedType | None:
+    def _name_internal(self, device_class_name: str | None,
+                       platform_translations: dict[str, Any], ) -> str | UndefinedType | None:
         if self.code_generated:
             return self._name_internal_code_generated(self._attr_translation_key, platform_translations)
         else:
@@ -315,7 +326,7 @@ class WKHPBaseEntity(Entity):
             else:
                 _LOGGER.warning(f"{a_key} -> {f_key} not found in platform_translations")
 
-        return temp#.title()
+        return temp  # .title()
 
     @property
     def wkhp_tag(self):
@@ -337,8 +348,10 @@ class WKHPBaseEntity(Entity):
         # sensor_key = self.entity_description.key
         # device_key = self.coordinator.config_entry.data[CONF_SERIAL]
         # return f"{device_key}_{sensor}"
-
-        return self.entity_description.key
+        if self.coordinator.is_multi_instances:
+            return f"{self.entity_description.key}_{self.coordinator.serial_id_addon}"
+        else:
+            return self.entity_description.key
 
     async def async_added_to_hass(self):
         """Connect to dispatcher listening for entity data notifications."""

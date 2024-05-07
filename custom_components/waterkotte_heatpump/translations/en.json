@@ -50,7 +50,8 @@
           "password": "Password",
           "polling_interval": "Polling Interval in seconds",
           "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
-          "add_schedule_entities": "Add the optional Schedule-Entities (650+)"
+          "add_schedule_entities": "Add the optional Schedule-Entities (650+)",
+          "add_serial_as_id": "Do you want to configure multiple Waterkotte Systems in your HA installation?"
         }
       },
       "user_easycon": {
@@ -58,7 +59,8 @@
         "data": {
           "host": "Host or IP",
           "polling_interval": "Polling Interval in seconds",
-          "tags_per_request": "Number of tags to fetch in a single request (max. 75)"
+          "tags_per_request": "Number of tags to fetch in a single request (max. 75)",
+          "add_serial_as_id": "Do you want to configure multiple Waterkotte Systems in your HA installation?"
         }
       },
       "features": {

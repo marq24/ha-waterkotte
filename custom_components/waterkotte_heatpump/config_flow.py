@@ -6,6 +6,7 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers import selector
+from homeassistant.util import uuid as uuid_util
 
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 
@@ -20,6 +21,7 @@ from .const import (
     CONF_SERIES,
     CONF_SYSTEMTYPE,
     CONF_ADD_SCHEDULE_ENTITIES,
+    CONF_ADD_SERIAL_AS_ID,
     CONF_USE_DISINFECTION,
     CONF_USE_HEATING_CURVE,
     CONF_USE_VENT,
@@ -115,6 +117,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         else:
             user_input = {}
             user_input[CONF_HOST] = ""
+            user_input[CONF_ADD_SERIAL_AS_ID] = False
 
         return self.async_show_form(
             step_id="user_easycon",
@@ -122,6 +125,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_HOST, default=user_input.get(CONF_HOST)): str,
                 vol.Required(CONF_POLLING_INTERVAL, default=500): int,
                 vol.Required(CONF_TAGS_PER_REQUEST, default=25): int,
+                vol.Required(CONF_ADD_SERIAL_AS_ID, default=False): bool
             }),
             last_step=False,
             errors=self._errors
@@ -158,6 +162,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             user_input[CONF_HOST] = ""
             user_input[CONF_PASSWORD] = "waterkotte"
             user_input[CONF_ADD_SCHEDULE_ENTITIES] = False
+            user_input[CONF_ADD_SERIAL_AS_ID] = False
 
         return self.async_show_form(
             step_id="user_ecotouch",
@@ -167,6 +172,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_POLLING_INTERVAL, default=60): int,
                 vol.Required(CONF_TAGS_PER_REQUEST, default=75): int,
                 vol.Required(CONF_ADD_SCHEDULE_ENTITIES, default=False): bool,
+                vol.Required(CONF_ADD_SERIAL_AS_ID, default=False): bool,
             }),
             last_step=False,
             errors=self._errors
@@ -207,11 +213,15 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 WKHPTag.INFO_SERIES,
             ]
             ret = await client.async_read_values(init_tags)
+
             self._bios = ret[WKHPTag.VERSION_BIOS]["value"]
             self._firmware = ret[WKHPTag.VERSION_CONTROLLER]["value"]
             self._id = str(ret[WKHPTag.INFO_ID]["value"])
             self._series = str(ret[WKHPTag.INFO_SERIES]["value"])
             self._serial = str(ret[WKHPTag.INFO_SERIAL]["value"])
+            if self._serial is None or self._serial == "None":
+                self._serial = uuid_util.random_uuid_hex()
+
             _LOGGER.info(f"successfully validated login -> result: {ret}")
             return True
 
