@@ -302,7 +302,13 @@ class EcotouchBridge:
                                     re.MULTILINE,
                                 )
                                 if match is None:
-                                    _LOGGER.warning(f"Tag: '{tag}' not found in response!")
+                                    # special handling for "unknown" tags in the ALARM_BITS field...  [if one of the
+                                    # I2xxx Tags is not known, we're simply going to remove that tag from the tag list]
+                                    if tag in WKHPTag.ALARM_BITS.tags:
+                                        WKHPTag.ALARM_BITS.tags.remove(tag)
+                                        _LOGGER.info(f"Tag: '{tag}' not found in response - removing tag from WKHPTag.ALARM_BITS")
+                                    else:
+                                        _LOGGER.warning(f"Tag: '{tag}' not found in response!")
                                     results_status[tag] = "E_NOTFOUND"
                                 else:
                                     results_status[tag] = "E_INACTIVE"
@@ -546,7 +552,13 @@ class EasyconBridge(EcotouchBridge):
                             # val_status = "E_INACTIVE"  # pylint: disable=possibly-unused-variable
                             # print("Tag: %s is inactive!", tag)
                             if match is None:
-                                _LOGGER.warning(f"Tag: '{tag}' not found in response!")
+                                # special handling for "unknown" tags in the ALARM_BITS field...  [if one of the
+                                # I2xxx Tags is not known, we're simply going to remove that tag from the tag list]
+                                if tag in WKHPTag.ALARM_BITS.tags:
+                                    WKHPTag.ALARM_BITS.tags.remove(tag)
+                                    _LOGGER.info(f"Tag: '{tag}' not found in response - removing tag from WKHPTag.ALARM_BITS")
+                                else:
+                                    _LOGGER.warning(f"Tag: '{tag}' not found in response!")
                                 results_status[tag] = "E_NOTFOUND"
                             else:
                                 # if val_status == "E_INACTIVE":
