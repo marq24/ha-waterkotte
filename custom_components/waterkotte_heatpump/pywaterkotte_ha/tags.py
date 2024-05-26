@@ -2,10 +2,7 @@ import logging
 import math
 import struct
 from datetime import datetime, timedelta, time
-
 from enum import Enum
-# from aenum import Enum, extend_enum
-
 from typing import (
     NamedTuple,
     Callable,
@@ -20,10 +17,11 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import (
     # SCHEDULE_DAY_LIST,
     # SCHEDULE_SENSOR_TYPES_LIST
 )
-
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import (
     InvalidValueException,
 )
+
+# from aenum import Enum, extend_enum
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -273,32 +271,60 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = "2"
 
     def _decode_ro_series(self, str_vals: List[str]):
-        return SERIES[int(str_vals[0])] if str_vals[0] else ""
+        if str_vals[0]:
+            if isinstance(str_vals[0], int):
+                idx = int(str_vals[0])
+                if len(SERIES) > idx:
+                    return SERIES[idx]
+                else:
+                    return f"UNKNOWN_SERIES_{idx}"
+        else:
+            return "UNKNOWN_SERIES"
 
     def _decode_ro_id(self, str_vals: List[str]):
         assert len(self.tags) == 1
-        return SYSTEM_IDS[int(str_vals[0])] if str_vals[0] else ""
+        if str_vals[0]:
+            if isinstance(str_vals[0], int):
+                idx = int(str_vals[0])
+                if len(SYSTEM_IDS) > idx:
+                    return SYSTEM_IDS[idx]
+                else:
+                    return f"UNKNOWN_SYSTEM_{idx}"
+        else:
+            return "UNKNOWN_SYSTEM"
+
 
     def _decode_ro_bios(self, str_vals: List[str]):
         assert len(self.tags) == 1
         str_val = str_vals[0]
-        return f"{str_val[:-2]}.{str_val[-2:]}"
+        if len(str_val) > 2:
+            return f"{str_val[:-2]}.{str_val[-2:]}"
+        else:
+            return str_val
 
     def _decode_ro_fw(self, str_vals: List[str]):
         assert len(self.tags) == 2
         str_val1 = str_vals[0]
         str_val2 = str_vals[1]
-        # str fw2 = f"{str_val1[:-4]:0>2}.{str_val1[-4:-2]}.{str_val1[-2:]}"
-        return f"0{str_val1[0]}.{str_val1[1:3]}.{str_val1[3:]}-{str_val2}"
+        try:
+            # str fw2 = f"{str_val1[:-4]:0>2}.{str_val1[-4:-2]}.{str_val1[-2:]}"
+            return f"0{str_val1[0]}.{str_val1[1:3]}.{str_val1[3:]}-{str_val2}"
+        except Exception as ex:
+            _LOGGER.warning("could not decode FW",ex)
+            return f"FW_{str_val1}-{str_val2}"
 
     def _decode_ro_sn(self, str_vals: List[str]):
         assert len(self.tags) == 2
         sn1 = int(str_vals[0])
         sn2 = int(str_vals[1])
-        s1 = "WE" if math.floor(sn1 / 1000) > 0 else "00"  # pylint: disable=invalid-name
-        s2 = (sn1 - 1000 if math.floor(sn1 / 1000) > 0 else sn1)  # pylint: disable=invalid-name
-        s2 = "0" + str(s2) if s2 < 10 else s2  # pylint: disable=invalid-name
-        return str(s1) + str(s2) + str(sn2)
+        try:
+            s1 = "WE" if math.floor(sn1 / 1000) > 0 else "00"  # pylint: disable=invalid-name
+            s2 = (sn1 - 1000 if math.floor(sn1 / 1000) > 0 else sn1)  # pylint: disable=invalid-name
+            s2 = "0" + str(s2) if s2 < 10 else s2  # pylint: disable=invalid-name
+            return str(s1) + str(s2) + str(sn2)
+        except Exception as ex:
+            _LOGGER.warning("could not decode Serial",ex)
+            return f"Serial_{sn1}-{sn2}"
 
     def _decode_year(self, str_vals: List[str]):
         assert len(self.tags) == 1
