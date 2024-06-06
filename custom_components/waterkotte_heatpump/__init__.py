@@ -1,10 +1,9 @@
 import asyncio
 import logging
-import json
 
 from datetime import timedelta
 from typing import List, Collection, Sequence, Any, Tuple
-from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_ID, CONF_HOST, CONF_PASSWORD
 from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import Config, SupportsResponse, Event
 from homeassistant.core import HomeAssistant
@@ -16,6 +15,11 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
 
+from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
+from . import service as waterkotte_service
 from .const import (
     CONF_IP,
     CONF_POLLING_INTERVAL,
@@ -45,12 +49,6 @@ from .const import (
     FEATURE_CODE_GEN
 )
 
-from . import service as waterkotte_service
-from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
-
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=60)
 CONFIG_SCHEMA = config_val.removed(DOMAIN, raise_if_present=False)
@@ -64,13 +62,6 @@ async def async_setup(hass: HomeAssistant, config: Config):  # pylint: disable=u
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     if DOMAIN not in hass.data:
         value = "UNKOWN"
-        try:
-            basepath = __file__[:-11]
-            with open(f"{basepath}manifest.json") as f:
-                manifest = json.load(f)
-                value = manifest["version"]
-        except:
-            pass
         _LOGGER.info(STARTUP_MESSAGE)
         hass.data.setdefault(DOMAIN, {"manifest_version": value})
 
