@@ -69,6 +69,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     await coordinator.async_refresh()
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
+    else:
+        # here we can do some init stuff (like read all data)...
+        pass
 
     hass.data[DOMAIN][config_entry.entry_id] = coordinator
 
