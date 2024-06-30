@@ -1,13 +1,11 @@
-import datetime
-from typing import Final
 from dataclasses import dataclass
+from typing import Final
 
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntityDescription
 from homeassistant.components.number import NumberEntityDescription, NumberDeviceClass, NumberMode, DEFAULT_STEP
 from homeassistant.components.select import SelectEntityDescription
 from homeassistant.components.sensor import SensorEntityDescription, SensorDeviceClass, SensorStateClass
 from homeassistant.components.switch import SwitchEntityDescription
-
 from homeassistant.const import (
     UnitOfTemperature,
     UnitOfEnergy,
@@ -22,7 +20,6 @@ from homeassistant.const import (
 )
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import SIX_STEPS_MODES
-
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 
 # Base component constants
@@ -51,6 +48,9 @@ ENUM_ONOFFAUTO: Final = [STATE_ON, STATE_OFF, STATE_AUTO]
 ENUM_OFFAUTOMANUAL: Final = [STATE_OFF, STATE_AUTO, STATE_MANUAL]
 ENUM_HEATING_MODE: Final = list(SIX_STEPS_MODES.values())
 ENUM_VENT_OPERATION_MODE: Final = list(SIX_STEPS_MODES.values())
+ENUM_OPTIONS_0_1: Final = ["0", "1"]
+ENUM_OPTIONS_0_2: Final = ["0", "1", "2"]
+ENUM_OPTIONS_0_3: Final = ["0", "1", "2", "3"]
 
 # Configuration and options
 CONF_IP: Final = "ip"
@@ -917,18 +917,6 @@ NUMBER_SENSORS: Final = [
         feature=FEATURE_DISINFECTION
     ),
     ExtNumberEntityDescription(
-        key="SOURCE_PUMP_CAPTURE_TEMPERATURE_A479",
-        tag=WKHPTag.SOURCE_PUMP_CAPTURE_TEMPERATURE_A479,
-        device_class=NumberDeviceClass.TEMPERATURE,
-        icon="mdi:thermometer",
-        entity_registry_enabled_default=False,
-        native_min_value=0,
-        native_max_value=40,
-        native_step=TENTH_STEP,
-        mode=NumberMode.BOX,
-        native_unit_of_measurement=UnitOfTemperature.KELVIN,
-    ),
-    ExtNumberEntityDescription(
         key="BASICVENT_INCOMING_FAN_MANUAL_SPEED_PERCENT",
         tag=WKHPTag.BASICVENT_INCOMING_FAN_MANUAL_SPEED_PERCENT,
         device_class=None,
@@ -1003,6 +991,128 @@ NUMBER_SENSORS: Final = [
         native_unit_of_measurement=PERCENTAGE,
     ),
 
+
+
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_PRE_RUNTIME_I1278",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_PRE_RUNTIME_I1278,
+        device_class=NumberDeviceClass.DURATION,
+        icon="mdi:clock-outline",
+        entity_registry_enabled_default=False,
+        native_min_value=25,
+        native_max_value=500,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTime.SECONDS
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_POST_RUNTIME_I1279",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_POST_RUNTIME_I1279,
+        device_class=NumberDeviceClass.DURATION,
+        icon="mdi:clock-outline",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=500,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTime.SECONDS
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_ANTI_JAMMING_I1280",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_ANTI_JAMMING_I1280,
+        device_class=NumberDeviceClass.DURATION,
+        icon="mdi:clock-outline",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=500,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTime.SECONDS
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_TEMP_ON_LOWER_A1539",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_TEMP_ON_LOWER_A1539,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        icon="mdi:thermometer",
+        entity_registry_enabled_default=False,
+        native_min_value=-50,
+        native_max_value=50,
+        native_step=TENTH_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_HEATMODE_MINSPEED_A485",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_HEATMODE_MINSPEED_A485,
+        device_class=None,
+        icon="mdi:pump",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_HEATMODE_MAXSPEED_A486",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_HEATMODE_MAXSPEED_A486,
+        device_class=None,
+        icon="mdi:pump",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_HEATMODE_SOURCE_TEMPERATURE_A479",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_HEATMODE_SOURCE_TEMPERATURE_A479,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        icon="mdi:thermometer",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=40,
+        native_step=TENTH_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTemperature.KELVIN,
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_COOLINGMODE_MINSPEED_A1032",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_COOLINGMODE_MINSPEED_A1032,
+        device_class=None,
+        icon="mdi:pump",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_COOLINGMODE_MAXSPEED_A1033",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_COOLINGMODE_MAXSPEED_A1033,
+        device_class=None,
+        icon="mdi:pump",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_COOLINGMODE_SOURCE_TEMPERATURE_A1034",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_COOLINGMODE_SOURCE_TEMPERATURE_A1034,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        icon="mdi:thermometer",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=50,
+        native_step=TENTH_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+    ),
 ]
 SELECT_SENSORS: Final = [
     ExtSelectEntityDescription(
@@ -1071,7 +1181,56 @@ SELECT_SENSORS: Final = [
         entity_registry_enabled_default=False,
         options=ENUM_VENT_OPERATION_MODE,
         feature=FEATURE_VENT
-    )
+    ),
+    # Service-Sourcepump
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_I1281",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_I1281,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_2,
+    ),
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_MODE_I1764",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_MODE_I1764,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_2,
+    ),
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_HEATMODE_REGULATION_BY_I1752",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_HEATMODE_REGULATION_BY_I1752,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_1,
+    ),
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_HEATMODE_CONTROL_BEHAVIOUR_D789",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_HEATMODE_CONTROL_BEHAVIOUR_D789,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_1,
+    ),
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_HEATMODE_REGULATION_START_D996",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_HEATMODE_REGULATION_START_D996,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_1,
+    ),
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_COOLINGMODE_REGULATION_BY_I2102",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_COOLINGMODE_REGULATION_BY_I2102,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_2,
+    ),
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_COOLINGMODE_CONTROL_BEHAVIOUR_D995",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_COOLINGMODE_CONTROL_BEHAVIOUR_D995,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_1,
+    ),
+    ExtSelectEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_COOLINGMODE_REGULATION_START_D997",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_COOLINGMODE_REGULATION_START_D997,
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_1,
+    ),
 ]
 SENSOR_SENSORS: Final = [
     # temperature sensors
@@ -1857,5 +2016,16 @@ SWITCH_SENSORS: Final = [
         icon_off="mdi:toggle-switch-off",
         entity_registry_enabled_default=False,
         feature=FEATURE_VENT
+    ),
+    # Service-Sourcepump
+    ExtSwitchEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_CABLE_BREAK_MONITORING_D881",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_CABLE_BREAK_MONITORING_D881,
+        entity_registry_enabled_default=False
+    ),
+    ExtSwitchEntityDescription(
+        key="PUMPSERVICE_SOURCEPUMP_REGENERATION_D1294",
+        tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_REGENERATION_D1294,
+        entity_registry_enabled_default=False
     ),
 ]

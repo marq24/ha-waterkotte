@@ -180,9 +180,18 @@
       "temperature_pool_hc_target": {"name": "T heating limit target"},
       "temperature_pool_hc_outdoor_norm": {"name": "T norm outdoor"},
       "temperature_pool_hc_norm": {"name": "T norm heating circle"},
-      "source_pump_capture_temperature_a479":{"name":  "Heat source pump - ΔT heat source"},
       "basicvent_incoming_fan_manual_speed_percent": {"name": "Vent 1 (outer) manual Speed"},
-      "basicvent_outgoing_fan_manual_speed_percent": {"name": "Vent 2 (inner) manual Speed"}
+      "basicvent_outgoing_fan_manual_speed_percent": {"name": "Vent 2 (inner) manual Speed"},
+      "pumpservice_sourcepump_pre_runtime_i1278": {"name": "Service: Sourcepump pre runtime"},
+      "pumpservice_sourcepump_post_runtime_i1279": {"name": "Service: Sourcepump post runtime"},
+      "pumpservice_sourcepump_anti_jamming_i1280": {"name": "Service: Sourcepump anti jamming"},
+      "pumpservice_sourcepump_temp_on_lower_a1539": {"name": "Service: Sourcepump Temp. Source ON <"},
+      "pumpservice_sourcepump_heatmode_minspeed_a485": {"name": "Service: Sourcepump Heating min speeed"},
+      "pumpservice_sourcepump_heatmode_maxspeed_a486": {"name": "Service: Sourcepump Heating max speed"},
+      "pumpservice_sourcepump_heatmode_source_temperature_a479": {"name": "Service: Sourcepump Heating ΔT heat source"},
+      "pumpservice_sourcepump_coolingmode_minspeed_a1032": {"name": "Service: Sourcepump Cooling min speed"},
+      "pumpservice_sourcepump_coolingmode_maxspeed_a1033": {"name": "Service: Sourcepump Cooling max speed"},
+      "pumpservice_sourcepump_coolingmode_source_temperature_a1034": {"name": "Service: Sourcepump Cooling Source Temperature"}
     },
     "select": {
       "temperature_heating_mode": {
@@ -212,7 +221,66 @@
       "enable_pv": {"name": "Operation mode PV"},
       "enable_warmwater": {"name": "Operation mode hot water"},
       "enable_pool": {"name": "Operation mode pool"},
-      "enable_external_heater": {"name": "Operation mode external heater"}
+      "enable_external_heater": {"name": "Operation mode external heater"},
+      "pumpservice_sourcepump_i1281": {
+        "name": "Service: Sourcepump",
+        "state": {
+          "0": "Off",
+          "1": "On",
+          "2": "Auto"
+        }
+      },
+      "pumpservice_sourcepump_mode_i1764": {
+        "name": "Service: Sourcepump Mode",
+        "state": {
+          "0": "0-10V",
+          "1": "PWM T12",
+          "2": "PWM T13"
+        }
+      },
+      "pumpservice_sourcepump_heatmode_regulation_by_i1752": {
+        "name": "Service: Sourcepump Heating regulation by…",
+        "state": {
+          "0": "Spreading",
+          "1": "Temperature"
+        }
+      },
+      "pumpservice_sourcepump_heatmode_control_behaviour_d789": {
+        "name": "Service: Sourcepump Heating control behaviour",
+        "state": {
+          "0": "Standard",
+          "1": "Inverted"
+        }
+      },
+      "pumpservice_sourcepump_heatmode_regulation_start_d996": {
+        "name": "Service: Sourcepump Heating regulation start with…",
+        "state": {
+          "0": "Min. Speed",
+          "1": "Max. Speed"
+        }
+      },
+      "pumpservice_sourcepump_coolingmode_regulation_by_i2102": {
+        "name": "Service: Sourcepump Cooling regulation by…",
+        "state": {
+          "0": "Spreading",
+          "1": "Temperature",
+          "2": "Temperature Sekundär"
+        }
+      },
+      "pumpservice_sourcepump_coolingmode_control_behaviour_d995": {
+        "name": "Service: Sourcepump Cooling control behaviour",
+        "state": {
+          "0": "Standard",
+          "1": "Inverted"
+        }
+      },
+      "pumpservice_sourcepump_coolingmode_regulation_start_d997": {
+        "name": "Service: Sourcepump Cooling regulation start with…",
+        "state": {
+          "0": "Min. Speed",
+          "1": "Max. Speed"
+        }
+      }
     },
     "sensor": {
       "energy_consumption_total_year": {"name": "Electrical year performance"},
@@ -307,7 +375,9 @@
       "permanent_heating_circulation_pump_summer_d1104": {"name": "Continuous operation heating pump during cooling period"},
       "basicvent_filter_change_operating_hours_reset_d1544": {"name": "Vent Air-Filter-Change operating hours RESET"},
       "basicvent_incoming_fan_manual_mode": {"name": "Vent 1 (outer) Manual-Mode"},
-      "basicvent_outgoing_fan_manual_mode": {"name": "Vent 2 (inner) Manual-Mode"}
+      "basicvent_outgoing_fan_manual_mode": {"name": "Vent 2 (inner) Manual-Mode"},
+      "pumpservice_sourcepump_cable_break_monitoring_d881": {"name": "Service: Sourcepump cable-break Monitor"},
+      "pumpservice_sourcepump_regeneration_d1294": {"name": "Service: Sourcepump regeneration"}
     },
     "code_gen": {
       "schedule": {"name":  "Schedule"},

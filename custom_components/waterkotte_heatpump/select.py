@@ -2,8 +2,8 @@ import logging
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import WKHPDataUpdateCoordinator, WKHPBaseEntity
 from .const import DOMAIN, SELECT_SENSORS, ExtSelectEntityDescription
@@ -36,11 +36,18 @@ class WKHPSelect(WKHPBaseEntity, SelectEntity):
             value = self.coordinator.data[self.wkhp_tag]["value"]
             if value is None or value == "":
                 value = 'unknown'
+            elif isinstance(value, bool):
+                # for "switches" that we want to show as selects, we need to convert
+                # the bool True/False to 1 and 0
+                if value:
+                    value = "1"
+                else:
+                    value = "0"
         except KeyError:
             value = "unknown"
         except TypeError:
             return None
-        return value
+        return str(value)
 
     async def async_select_option(self, option: str) -> None:
         try:

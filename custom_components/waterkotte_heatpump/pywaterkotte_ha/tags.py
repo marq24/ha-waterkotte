@@ -828,7 +828,8 @@ class WKHPTag(DataTag, Enum):
 
     # assuming that I1752 will be set to "Spreizung"=0 the A479 is a DELTA Temperature
     # lngA479 = ΔT Wärmequelle - ["T Wärmequelle", "T heat source", "T captage"],
-    SOURCE_PUMP_CAPTURE_TEMPERATURE_A479 = DataTag(["A479"], writeable=True)
+    # REPLACED by PUMPSERVICE_SOURCEPUMP_HEATMODE_SOURCE_TEMPERATURE_A479
+    # SOURCE_PUMP_CAPTURE_TEMPERATURE_A479 = DataTag(["A479"], writeable=True)
 
     SGREADY_SWITCH_D795 = DataTag(["D795"], writeable=True)
     # lngD796 = ["SG1: EVU-Sperre", "SG1: Extern switch off", "SG1: Coupure externe"],
@@ -1055,6 +1056,49 @@ class WKHPTag(DataTag, Enum):
     # A701	getReadOnlyState(measurements, 'A701', '°C')); -> UNKNOWN
     # A702	getReadOnlyState(measurements, 'A702', '°C')); -> UNKNOWN
     # D701	getIndicator(status, 'D701')); -> UNKNOWN
+
+
+    # pgService_Pump
+
+    # Quellenpumpe
+    PUMPSERVICE_SOURCEPUMP_I1281 = DataTag(['I1281'], writeable=True) # Select
+    PUMPSERVICE_SOURCEPUMP_MODE_I1764 = DataTag(['I1764'], writeable=True) # Select
+    PUMPSERVICE_SOURCEPUMP_CABLE_BREAK_MONITORING_D881 = DataTag(['D881'], writeable=True) # ON/OFF Switch
+    PUMPSERVICE_SOURCEPUMP_PRE_RUNTIME_I1278 = DataTag(['I1278'], writeable=True) # Number select TIME Sec (min 25)
+    PUMPSERVICE_SOURCEPUMP_POST_RUNTIME_I1279 = DataTag(['I1279'], writeable=True) # Number select TIME Sec
+    PUMPSERVICE_SOURCEPUMP_ANTI_JAMMING_I1280 = DataTag(['I1280'], writeable=True) # Number select TIME Sec
+
+    # Erweiterte Einstellungen für die Baureihe ET 6900
+    # D1273 - Heizungsumw\xe4lzpumpe ET 6900 Q
+    # <option value="0">Single</option>
+    # <option value="1">Duo</option>
+    # D1274 - Quellenpumpe ET 6900 Q
+    # <option value="0">Single</option>
+    # <option value="1">Duo</option>
+
+    # Wärmequellenregeneration
+    # D1294 - Quellenpumpe Regeneration
+    PUMPSERVICE_SOURCEPUMP_REGENERATION_D1294 = DataTag(['D1294'], writeable=True) # Switch ON/OFF
+    # A1539 - T Quelle ein < : -50.00 - +50.00 °C
+    PUMPSERVICE_SOURCEPUMP_TEMP_ON_LOWER_A1539 = DataTag(['A1539'], writeable=True) # Number range -50/+50°C
+
+    # Heizbetrieb
+    PUMPSERVICE_SOURCEPUMP_HEATMODE_REGULATION_BY_I1752 = DataTag(['I1752'], writeable=True) # select
+    PUMPSERVICE_SOURCEPUMP_HEATMODE_CONTROL_BEHAVIOUR_D789 = DataTag(['D789'], writeable=True) # select
+    PUMPSERVICE_SOURCEPUMP_HEATMODE_REGULATION_START_D996 = DataTag(['D996'], writeable=True) # select
+    PUMPSERVICE_SOURCEPUMP_HEATMODE_MINSPEED_A485 = DataTag(['A485'], writeable=True) # Number range 0-100%
+    PUMPSERVICE_SOURCEPUMP_HEATMODE_MAXSPEED_A486 = DataTag(['A486'], writeable=True) # Number range 0-100%
+    PUMPSERVICE_SOURCEPUMP_HEATMODE_SOURCE_TEMPERATURE_A479 = DataTag(['A479'], writeable=True) # Number range 0-50 °K
+
+    # Kühlbetrieb
+    PUMPSERVICE_SOURCEPUMP_COOLINGMODE_REGULATION_BY_I2102 = DataTag(['I2102'], writeable=True) # select
+    PUMPSERVICE_SOURCEPUMP_COOLINGMODE_CONTROL_BEHAVIOUR_D995 = DataTag(['D995'], writeable=True) # select
+    PUMPSERVICE_SOURCEPUMP_COOLINGMODE_REGULATION_START_D997 = DataTag(['D997'], writeable=True) # select
+    PUMPSERVICE_SOURCEPUMP_COOLINGMODE_MINSPEED_A1032 = DataTag(['A1032'], writeable=True) # Number range 0-100%
+    PUMPSERVICE_SOURCEPUMP_COOLINGMODE_MAXSPEED_A1033 = DataTag(['A1033'], writeable=True) # Number range 0-100%
+    PUMPSERVICE_SOURCEPUMP_COOLINGMODE_SOURCE_TEMPERATURE_A1034 = DataTag(['A1034'], writeable=True) # Number range 0-50 °C
+
+    # PID-Control...
 
     #####################################
     #####################################
