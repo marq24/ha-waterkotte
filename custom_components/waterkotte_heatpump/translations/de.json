@@ -183,6 +183,7 @@
       "temperature_return_setpoint": {"name": "T Sollwert"},
       "temperature_cooling_setpoint": {"name": "Kühltemperatur"},
       "temperature_cooling_outdoor_limit": {"name": "T Außen Einsatzgrenze"},
+      "temperature_cooling_flow_limit": {"name": "Vorlauftemperaturbegrenzung"},
       "temperature_heating_setpoint": {"name": "Heiztemperatur"},
       "temperature_heating_adjust": {"name": "Temperaturanpassung"},
       "temperature_heating_hysteresis": {"name": "Schaltdifferenz Sollwert"},

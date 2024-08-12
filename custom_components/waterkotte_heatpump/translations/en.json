@@ -138,6 +138,7 @@
       "temperature_return_setpoint": {"name": "T setpoint"},
       "temperature_cooling_setpoint": {"name": "T Cooling"},
       "temperature_cooling_outdoor_limit": {"name": "T out begin"},
+      "temperature_cooling_flow_limit": {"name": "Flow temperature limitation"},
       "temperature_heating_setpoint": {"name": "Heating temperature"},
       "temperature_heating_adjust": {"name": "Temperature adjustment"},
       "temperature_heating_hysteresis": {"name": "Hysteresis setpoint"},

@@ -416,12 +416,26 @@ NUMBER_SENSORS: Final = [
         device_class=NumberDeviceClass.TEMPERATURE,
         icon="mdi:snowflake-thermometer",
         entity_registry_enabled_default=False,
-        native_min_value=0,
-        native_max_value=100,
+        native_min_value=7,
+        native_max_value=30,
         native_step=DEFAULT_STEP,
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
     ),
+    # A110
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_COOLING_FLOW_LIMIT",
+        tag=WKHPTag.TEMPERATURE_COOLING_FLOW_LIMIT,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        icon="mdi:snowflake-thermometer",
+        entity_registry_enabled_default=False,
+        native_min_value=4,
+        native_max_value=20,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+    ),
+
     # Heizung
     # A32 manual heat-setpoint (when heat_mode = 1)
     ExtNumberEntityDescription(

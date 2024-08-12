@@ -569,6 +569,7 @@ class WKHPTag(DataTag, Enum):
     TEMPERATURE_COOLING_DEMAND = DataTag(["A34"], "°C")
     TEMPERATURE_COOLING_SETPOINT = DataTag(["A109"], "°C", writeable=True)
     TEMPERATURE_COOLING_OUTDOOR_LIMIT = DataTag(["A108"], "°C", writeable=True)
+    TEMPERATURE_COOLING_FLOW_LIMIT = DataTag(["A110"], "°C", writeable=True)
     TEMPERATURE_COOLING_HYSTERESIS = DataTag(["A107"], "K", writeable=True)
     TEMPERATURE_COOLING_PV_CHANGE = DataTag(["A683"], "K", writeable=True)
 
