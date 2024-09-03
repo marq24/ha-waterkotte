@@ -35,6 +35,9 @@ class DataTag(NamedTuple):
         return self.__decode_value_default(str_vals, factor=-1.0)
 
     def __decode_value_default(self, str_vals: List[str], factor: float):
+        if str_vals is None:
+            return None
+
         first_val = str_vals[0]
         if first_val is None:
             # do not check any further if for what ever reason the first value of the str_vals is None
@@ -125,6 +128,9 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = str(int(value))
 
     def _decode_alarms(self, str_vals: List[str], lang_map: dict):
+        if str_vals is None:
+            return None
+
         error_tag_index = 0
         final_value = ""
         for a_val in str_vals:
@@ -153,6 +159,9 @@ class DataTag(NamedTuple):
             return final_value
 
     def _decode_datetime(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         int_vals = list(map(int, str_vals))
         if int_vals[0] < 2000:
             int_vals[0] = int_vals[0] + 2000
@@ -184,6 +193,9 @@ class DataTag(NamedTuple):
             encoded_values[tags] = vals[i]
 
     def _decode_time_hhmm(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         int_vals = list(map(int, str_vals))
         if int_vals[0] > 23:
             int_vals[0] = 0
@@ -203,6 +215,9 @@ class DataTag(NamedTuple):
             encoded_values[tags] = vals[i]
 
     def _decode_state(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 1
         if str_vals[0] == "0":
             return "off"
@@ -225,12 +240,15 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = "2"
 
     def _decode_six_steps_mode(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 1
-        int_val = int(str_vals[0])
-        if 0 <= int_val <= len(SIX_STEPS_MODES):
-            return SIX_STEPS_MODES[int_val]
-        else:
-            return "Error"
+        if str_vals[0] is not None:
+            int_val = int(str_vals[0])
+            if 0 <= int_val <= len(SIX_STEPS_MODES):
+                return SIX_STEPS_MODES[int_val]
+        return "Error"
 
     def _encode_six_steps_mode(self, value, encoded_values):
         assert len(self.tags) == 1
@@ -249,6 +267,9 @@ class DataTag(NamedTuple):
         return None
 
     def _decode_status(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 1
         if str_vals[0] == "0":
             return "off"
@@ -271,6 +292,9 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = "2"
 
     def _decode_ro_series(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         if str_vals[0]:
             if isinstance(str_vals[0], int):
                 idx = int(str_vals[0])
@@ -282,6 +306,9 @@ class DataTag(NamedTuple):
             return "UNKNOWN_SERIES"
 
     def _decode_ro_id(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 1
         if str_vals[0]:
             if isinstance(str_vals[0], int):
@@ -295,6 +322,9 @@ class DataTag(NamedTuple):
 
 
     def _decode_ro_bios(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 1
         str_val = str_vals[0]
         if len(str_val) > 2:
@@ -303,6 +333,9 @@ class DataTag(NamedTuple):
             return str_val
 
     def _decode_ro_fw(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 2
         str_val1 = str_vals[0]
         str_val2 = str_vals[1]
@@ -314,6 +347,9 @@ class DataTag(NamedTuple):
             return f"FW_{str_val1}-{str_val2}"
 
     def _decode_ro_sn(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 2
         sn1 = int(str_vals[0])
         sn2 = int(str_vals[1])
@@ -327,6 +363,9 @@ class DataTag(NamedTuple):
             return f"Serial_{sn1}-{sn2}"
 
     def _decode_year(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
         assert len(self.tags) == 1
         return int(str_vals[0]) + 2000
 

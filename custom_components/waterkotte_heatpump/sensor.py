@@ -1,13 +1,12 @@
 import logging
 from datetime import datetime, time
 
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
-from homeassistant.core import HomeAssistant
-from homeassistant.const import EntityCategory
-from homeassistant.components.sensor import SensorEntity
-
 from . import WKHPDataUpdateCoordinator, WKHPBaseEntity
 from .const import DOMAIN, SENSOR_SENSORS, ExtSensorEntityDescription
 from .const_gen import SENSOR_SENSORS_GENERATED
@@ -33,6 +32,11 @@ class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
     def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: ExtSensorEntityDescription):
         super().__init__(coordinator=coordinator, description=description)
 
+        # if description.device_class is not None and description.device_class.SensorDeviceClass.DATE:
+        #     if description.tag == WKHPTag.SCHEDULE_WATER_DISINFECTION_START_TIME:
+        #         self._attr_native_value = time
+        #     else:
+        #         self._attr_native_value = datetime
 
     #        self._previous_float_value: float | None = None
     #        self._is_total_increasing: bool = description is not None and isinstance(description,
@@ -45,29 +49,40 @@ class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
 
     @property
     def state(self):
+        # for SensorDeviceClass.DATE we will use out OWN 'state' render impl!!!
+        if self.entity_description.device_class == SensorDeviceClass.DATE:
+            value = self.native_value
+            if value is None:
+                value = "unknown"
+            return  value
+        else:
+            return SensorEntity.state.fget(self)
+
+    @property
+    def native_value(self):
         """Return the state of the sensor."""
         try:
             value = self.coordinator.data[self.wkhp_tag]["value"]
-            if value is None or value == "":
+            if value is None or len(str(value)) == 0:
                 if self._is_bit_field:
                     value = "none"
                 else:
-                    value = "unknown"
+                    value = None
             else:
                 if isinstance(value, datetime):
                     return value.isoformat(sep=' ', timespec="minutes")
                 elif isinstance(value, time):
                     return value.isoformat(timespec="minutes")
-                elif self.entity_description.suggested_display_precision is not None:
-                    value = round(float(value), self.entity_description.suggested_display_precision)
-        except KeyError:
-            value = "unknown"
-        except TypeError:
-            return "unknown"
-        if value is True:
-            value = "on"
-        elif value is False:
-            value = "off"
+                elif isinstance(value, bool):
+                    if value is True:
+                        value = "on"
+                    elif value is False:
+                        value = "off"
+
+        except (KeyError, TypeError):
+            value = None
+
+        # final return statement...
         return value
 
     @property

@@ -2,9 +2,7 @@ import asyncio
 import logging
 import re
 import xml.etree.ElementTree as ElemTree
-
 from datetime import datetime
-
 from typing import (
     Any,
     Sequence,
@@ -21,7 +19,6 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import (
     SIX_STEPS_MODES,
     TRANSLATIONS
 )
-
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import (
     InvalidResponseException,
     InvalidValueException,
@@ -29,7 +26,6 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import (
     TooManyUsersException,
     Http404Exception, InvalidPasswordException
 )
-
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -206,37 +202,48 @@ class EcotouchBridge:
                 try:
                     t_values = [e_values[a_tag] for a_tag in a_wphp_tag.tags]
                     t_states = [e_status[a_tag] for a_tag in a_wphp_tag.tags]
-                    if a_wphp_tag.decode_f == WKHPTag._decode_alarms:
-                        result[a_wphp_tag] = {
-                            "value": a_wphp_tag.decode_f(a_wphp_tag, t_values, self.lang_map),
-                            "status": t_states[0]
-                        }
+
+                    if t_values is None or (len(t_values) > 0 and t_values[0] is None):
+                        if t_states is not None and len(t_states)>0:
+                            result[a_wphp_tag] = {
+                                "value": None,
+                                "status": t_states[0]
+                            }
+                        else:
+                            result[a_wphp_tag] = None
                     else:
-                        result[a_wphp_tag] = {
-                            "value": a_wphp_tag.decode_f(a_wphp_tag, t_values),
-                            "status": t_states[0]
-                        }
+                        if a_wphp_tag.decode_f == WKHPTag._decode_alarms:
+                            result[a_wphp_tag] = {
+                                "value": a_wphp_tag.decode_f(a_wphp_tag, t_values, self.lang_map),
+                                "status": t_states[0]
+                            }
+                        else:
+                            result[a_wphp_tag] = {
+                                "value": a_wphp_tag.decode_f(a_wphp_tag, t_values),
+                                "status": t_states[0]
+                            }
 
-                    if a_wphp_tag.translate and a_wphp_tag.tags[0] in self.lang_map:
-                        value_map = self.lang_map[a_wphp_tag.tags[0]]
-                        final_value = ""
-                        temp_values = result[a_wphp_tag]["value"]
-                        for idx in range(len(temp_values)):
-                            if temp_values[idx]:
-                                final_value = final_value + ", " + str(value_map[idx])
+                        if a_wphp_tag.translate and a_wphp_tag.tags[0] in self.lang_map:
+                            value_map = self.lang_map[a_wphp_tag.tags[0]]
+                            final_value = ""
+                            temp_values = result[a_wphp_tag]["value"]
+                            if temp_values is not None:
+                                for idx in range(len(temp_values)):
+                                    if temp_values[idx]:
+                                        final_value = final_value + ", " + str(value_map[idx])
 
-                        # we need to trim the firsts initial added ', '
-                        if len(final_value) > 0:
-                            final_value = final_value[2:]
+                                # we need to trim the firsts initial added ', '
+                                if len(final_value) > 0:
+                                    final_value = final_value[2:]
 
-                        result[a_wphp_tag]["value"] = final_value
+                                result[a_wphp_tag]["value"] = final_value
 
                 except KeyError:
                     _LOGGER.warning(
-                        f"Key Error while read_values. EcoTag: {a_wphp_tag} vals: {t_values} states: {t_states}")
+                        f"Key Error while read_values. EcoTag: {a_wphp_tag} t_values: {t_values} t_states: {t_states}")
                 except Exception as other_exc:
                     _LOGGER.error(
-                        f"Exception {other_exc} while read_values. EcoTag: {a_wphp_tag} vals: {t_values} states: {t_states} -> {other_exc}"
+                        f"Exception of type '{other_exc}' while read_values. EcoTag: {a_wphp_tag} t_values: {t_values} t_states: {t_states} -> {other_exc}"
                     )
 
         return result

@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Final
 
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import SIX_STEPS_MODES
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntityDescription
 from homeassistant.components.number import NumberEntityDescription, NumberDeviceClass, NumberMode, DEFAULT_STEP
 from homeassistant.components.select import SelectEntityDescription
@@ -18,9 +20,6 @@ from homeassistant.const import (
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     REVOLUTIONS_PER_MINUTE
 )
-
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import SIX_STEPS_MODES
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 
 # Base component constants
 NAME: Final = "Waterkotte Heatpump [+2020]"
@@ -1714,7 +1713,7 @@ SENSOR_SENSORS: Final = [
     ExtSensorEntityDescription(
         key="WATERKOTTE_BIOS_TIME",
         tag=WKHPTag.WATERKOTTE_BIOS_TIME,
-        state_class=SensorStateClass.TOTAL_INCREASING,
+        state_class=None,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:clock-digital",
@@ -1724,7 +1723,7 @@ SENSOR_SENSORS: Final = [
     ExtSensorEntityDescription(
         key="HOLIDAY_START_TIME",
         tag=WKHPTag.HOLIDAY_START_TIME,
-        state_class=SensorStateClass.TOTAL_INCREASING,
+        state_class=None,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:calendar-arrow-right",
@@ -1733,7 +1732,7 @@ SENSOR_SENSORS: Final = [
     ExtSensorEntityDescription(
         key="HOLIDAY_END_TIME",
         tag=WKHPTag.HOLIDAY_END_TIME,
-        state_class=SensorStateClass.TOTAL_INCREASING,
+        state_class=None,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:calendar-arrow-left",
@@ -1742,7 +1741,7 @@ SENSOR_SENSORS: Final = [
     ExtSensorEntityDescription(
         key="SCHEDULE_WATER_DISINFECTION_START_TIME",
         tag=WKHPTag.SCHEDULE_WATER_DISINFECTION_START_TIME,
-        state_class=SensorStateClass.TOTAL_INCREASING,
+        state_class=None,
         device_class=SensorDeviceClass.DATE,
         native_unit_of_measurement=None,
         icon="mdi:clock-digital",
