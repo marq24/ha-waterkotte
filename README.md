@@ -31,27 +31,20 @@ Please be aware, that we are developing this integration to best of our knowledg
 
 [[Get the sources for the sample dashboard_above](https://github.com/marq24/ha-waterkotte/blob/main/sample-view.yaml)] - Please note, that this sample dashboard makes use of the custom [multiple-entity-row](https://github.com/benct/lovelace-multiple-entity-row) frontend integration that need to be installed separately. 
 
-## Installation
-if you have installed the previous version of the waterkotte integration from me (marq24) - please [follow the migration guide](https://github.com/marq24/ha-waterkotte/blob/main/README.md#migration). 
+## Setup / Installation
+if you have installed the previous version of the waterkotte integration from me (marq24) - please [follow the migration guide](https://github.com/marq24/ha-waterkotte/blob/main/README.md#migration).
 
-### HACS
+### Installation using HACS
 
-1. Add a custom integration repository to HACS: [ha-waterkotte](https://github.com/marq24/ha-waterkotte)
-1. Install the custom integration
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]"
-1. Setup the waterkotte custom integration as described below
+- Install [Home Assistant Community Store (HACS)](https://hacs.xyz/)
+- Add integration repository (search for "Waterkotte Heatpump [+2020]" in "Explore & Download Repositories")
+   - Select latest version or `main`
+- Restart Home Assistant to install all dependencies
 
-  <!--1. In HACS Store, search for [***marq24/ha-waterkotte***]-->
+### Manual installation
 
-### Manual
-
-1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
-2. If you do not have a `custom_components` directory (folder) there, you need to create it.
-3. In the `custom_components` directory (folder) create a new folder called `waterkotte_heatpump`.
-4. Download _all_ the files from the `custom_components/waterkotte_heatpump/` directory (folder) in this repository.
-5. Place the files you downloaded in the new directory (folder) you created.
-6. Restart Home Assistant
-7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Waterkotte Heatpump [+2020]"
+- Copy all files from `custom_components/waterkotte_heatpump/` to `custom_components/waterkotte_heatpump/` inside your config Home Assistant directory.
+- Restart Home Assistant to install all dependencies
 
 ## Adding or enabling the integration
 
@@ -187,7 +180,7 @@ Please consider [using my personal Tibber invitation link to join Tibber today](
 ---
 
 [hacs]: https://hacs.xyz
-[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge&logo=homeassistantcommunitystore&logoColor=ccc
+[hacsbadge]: https://img.shields.io/badge/HACS-Default-blue?style=for-the-badge&logo=homeassistantcommunitystore&logoColor=ccc
 
 [ghs]: https://github.com/sponsors/marq24
 [ghsbadge]: https://img.shields.io/github/sponsors/marq24?style=for-the-badge&logo=github&logoColor=ccc&link=https%3A%2F%2Fgithub.com%2Fsponsors%2Fmarq24&label=Sponsors
