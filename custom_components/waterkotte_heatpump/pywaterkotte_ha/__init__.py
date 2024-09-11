@@ -592,7 +592,7 @@ class EasyconBridge(EcotouchBridge):
 
         return results, results_status
 
-    async def _write_tag(self, tags: List[str], value: List[Any]):
+    async def _write_tags(self, tags: list[str], values: list[Any], results=None, results_status=None):
         """write tag"""
         # for i in range(len(tags)):
         #    args[f"t{(i + 1)}"] = tags[i]
@@ -603,7 +603,7 @@ class EasyconBridge(EcotouchBridge):
         # var|I|1255|20|var|I|1256|01|var|I|1257|31|var|I|1258|01|var|I|1259|23|
         param = ""
         for i, tag in enumerate(tags):
-            param += f"var|{tag[0].upper()}|{tag[1:]}|{list(value)[i]}|"
+            param += f"var|{tag[0].upper()}|{tag[1:]}|{list(values)[i]}|"
 
         results = {}
         resultsStatus = {}
@@ -620,7 +620,7 @@ class EasyconBridge(EcotouchBridge):
 
                     for i, tag in enumerate(tags):
                         resultsStatus[tag] = "S_OK"
-                        results[tag] = list(value)[i]
+                        results[tag] = list(values)[i]
                 else:
                     _LOGGER.warning(f"{response}")
             except Exception as exc:

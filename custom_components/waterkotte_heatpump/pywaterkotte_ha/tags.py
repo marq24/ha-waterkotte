@@ -43,6 +43,12 @@ class DataTag(NamedTuple):
             # do not check any further if for what ever reason the first value of the str_vals is None
             return None
 
+        # for what ever reason it can be the case, that the 'str_vals' will look like this:
+        # ['17714.0', '27838.0'] - so we must clean the .0
+        if first_val.endswith('.0'):
+            str_vals = list(map(lambda x:str(int(float(x))), str_vals))
+            first_val = str_vals[0]
+
         first_tag = self.tags[0]
         assert first_tag[0] in ["A", "I", "D", "3"]
 
