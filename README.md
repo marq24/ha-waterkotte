@@ -60,13 +60,24 @@ Use the following steps for a manual configuration by adding the custom integrat
 
 - Go to `Configuration -> Integrations` and add "Waterkotte" integration
 - Provide the IP address (or hostname) of your Waterkotte Heatpump web server
-- Select the Interface-Type of your Waterkotte (when you need to provide the user & password 'waterkotte' to login via your app/browser, then select `EcoTouch Mode`)
+- Select the Interface-Type of your Waterkotte (see table below)
 - Select the number of TAGs that can be fetched in a single call to your device (older devices might need to adjust this value - for my in 2022 installed Waterkotte 75 is totally fine)
 - Provide area where the heatpump is located
 
 After the integration was added you can use the 'config' button to adjust your settings and you can additionally modify the update intervall
 
 Please note, that most of the available sensors are __not__ enabled by default.
+
+#### EcoTouch or EasyCon Mode - How to decide?
+
+Please take a look at the different login options and compare with your waterkotte in order to decide, what mode you must select for the integration (sorry only german example screens here)
+
+| EcoTouch | EasyCon                                                                                    |
+| --- |--------------------------------------------------------------------------------------------|
+| web login form | browser basic-auth                                                                         |
+| <img src="https://github.com/marq24/ha-waterkotte/raw/main/login_ecotouch.png" width="350"> | <img src="https://github.com/marq24/ha-waterkotte/raw/main/login_easycon.png" width="350"> |
+
+__Don't get confused!__ The EcoTouch web login for newer Waterkotte models shows the text _EasyCon_ - but when there is a webpage where you must enter the login credentials, then you __must select the EcoTouch__ Mode for this integration!
 
 ## Services
 
