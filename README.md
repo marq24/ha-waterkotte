@@ -34,27 +34,32 @@ Please be aware, that we are developing this integration to best of our knowledg
 ## Setup / Installation
 if you have installed the previous version of the waterkotte integration from me (marq24) - please [follow the migration guide](https://github.com/marq24/ha-waterkotte/blob/main/README.md#migration).
 
-### Installation using HACS
+### Step I: Install the integration
+
+#### Option 1: via HACS
 
 - Install [Home Assistant Community Store (HACS)](https://hacs.xyz/)
 - Add integration repository (search for "Waterkotte Heatpump [+2020]" in "Explore & Download Repositories")
-   - Select latest version or `main`
-- Restart Home Assistant to install all dependencies
+- Use the 3-dots at the right of the list entry (not at the top bar!) to download/install the custom integration - the latest release version is automatically selected. Only select a different version if you have specific reasons.
+- After you presses download and the process has completed, you must __Restart Home Assistant__ to install all dependencies
+- Setup the custom integration as described below (see _Step II: Adding or enabling the integration_)
 
-### Manual installation
+#### Option 2: manual steps
 
 - Copy all files from `custom_components/waterkotte_heatpump/` to `custom_components/waterkotte_heatpump/` inside your config Home Assistant directory.
 - Restart Home Assistant to install all dependencies
 
-## Adding or enabling the integration
+### Step II: Adding or enabling the integration
 
-### My Home Assistant (2021.3+)
+__You must have installed the integration (manually or via HACS before)!__
 
-Just click the following Button to start the configuration automatically:
+#### Option 1: My Home Assistant (2021.3+)
+
+Just click the following Button to start the configuration automatically (for the rest see _Option 2: Manually steps by step_):
 
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=waterkotte)
 
-### Manual
+#### Option 2: Manually steps by step
 
 Use the following steps for a manual configuration by adding the custom integration using the web interface and follow instruction on screen:
 
@@ -63,6 +68,8 @@ Use the following steps for a manual configuration by adding the custom integrat
 - Select the Interface-Type of your Waterkotte (see table below)
 - Select the number of TAGs that can be fetched in a single call to your device (older devices might need to adjust this value - for my in 2022 installed Waterkotte 75 is totally fine)
 - Provide area where the heatpump is located
+
+#### General additional notes
 
 After the integration was added you can use the 'config' button to adjust your settings and you can additionally modify the update intervall
 
