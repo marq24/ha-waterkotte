@@ -2,8 +2,8 @@
   "selector": {
     "system_type": {
       "options": {
-        "ecotouch": "EcoTouch Mode [web interface require username & password]",
-        "easycon": "EasyCon Mode [older Waterkotte Models without login credentials]"
+        "ecotouch": "EcoTouch Mode [web-form interface require username & password]",
+        "easycon": "EasyCon Mode [older Waterkotte Models with basic-auth login]"
       }
     },
     "set_schedule_data_schedule_type": {

@@ -2,8 +2,8 @@
   "selector": {
     "system_type": {
       "options": {
-        "ecotouch": "EcoTouch Modus [es werden Zugangsdaten zur Anmeldung benötigt]",
-        "easycon": "EasyCon Modus [älter Waterkotte Modelle (ohne Zugangsdaten)]"
+        "ecotouch": "EcoTouch Modus [es werden Zugangsdaten in einem Anmeldeformular benötigt]",
+        "easycon": "EasyCon Modus [älter Waterkotte Modelle (mit Basic-Auth Zugangsdaten)]"
       }
     },
     "set_schedule_data_schedule_type": {
