@@ -47,7 +47,7 @@
         "description": "Wichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Wärmepumpe anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.\r\rWenn Du Dir unsicher bist, füge die optionalen Zeitplanungs-Entitäten im ersten Schritt nicht hinzu. Sie können jederzeit über eine Einstellungen der Konfiguration zu einem späteren Zeitpunkt hinzugefügt werden.",
         "data": {
           "host": "IP oder Hostname deiner Waterkotte",
-          "username": "Benutzername",
+          "username": "Benutzername (bei den meisten Modellen ist dieser 'waterkotte')",
           "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
           "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",
@@ -69,7 +69,7 @@
         "data": {
           "use_vent": "für eine 'Luftwärmepumpen-Außeneinheit'",
           "use_heating_curve": "zur Anpassung von 'Heizkurven'",
-          "use_disinfection": "für die 'Warmwasser Disinfektion'",
+          "use_disinfection": "für die 'Warmwasser Desinfektion'",
           "use_pool": "für eine 'Pooleinheit' (inkl. Heizkurve)"
         }
       }
@@ -87,7 +87,7 @@
       "user": {
         "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.\r\rWichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Heizung anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.",
         "data": {
-          "username": "Benutzername",
+          "username": "Benutzername (bei den meisten Modellen ist dieser 'waterkotte')",
           "password": "Passwort",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
           "tags_per_request": "Anzahl von TAGS die gleichzeitig angefordert werden (max. 75)",

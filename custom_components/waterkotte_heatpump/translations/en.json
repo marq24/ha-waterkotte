@@ -47,6 +47,7 @@
         "description": "Important note: With the 'Adjust Schedules Service' you can adjust all schedules of your Waterkotte heat pump. Adding the optional entities is not necessary for this. These are only needed if you want to modify or display the schedule settings via your dashboard or one of your automations.\r\rIf you are unsure, do not add the optional scheduling entities in the first step. They can be added at any time via a configuration settings at a later date.",
         "data": {
           "host": "Host or IP",
+          "username": "Username",
           "password": "Password",
           "polling_interval": "Polling Interval in seconds",
           "tags_per_request": "Number of tags to fetch in a single request (max. 75)",

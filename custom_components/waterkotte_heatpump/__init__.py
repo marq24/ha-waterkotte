@@ -3,7 +3,7 @@ import logging
 
 from datetime import timedelta
 from typing import List, Collection, Sequence, Any, Tuple
-from homeassistant.const import CONF_ID, CONF_HOST, CONF_PASSWORD
+from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import Config, SupportsResponse, Event
 from homeassistant.core import HomeAssistant
@@ -169,13 +169,13 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
         _LOGGER.debug(f"available_features: {self.available_features}")
 
         _host = config_entry.options.get(CONF_HOST, config_entry.data.get(CONF_HOST))
-        # _user = config_entry.options.get(CONF_USERNAME, config_entry.data.get(CONF_USERNAME, "waterkotte"))
+        _user = config_entry.options.get(CONF_USERNAME, config_entry.data.get(CONF_USERNAME, "waterkotte"))
         _pwd = config_entry.options.get(CONF_PASSWORD, config_entry.data.get(CONF_PASSWORD, "waterkotte"))
         _system_type = config_entry.options.get(CONF_SYSTEMTYPE, config_entry.data.get(CONF_SYSTEMTYPE, ECOTOUCH))
         _tags_num = config_entry.options.get(CONF_TAGS_PER_REQUEST, config_entry.data.get(CONF_TAGS_PER_REQUEST, 10))
         _tags = generate_tag_list(hass=hass, trim_unique_id=self.is_multi_instances, config_entry_id=config_entry.entry_id)
 
-        self.bridge = WaterkotteClient(host=_host, pwd=_pwd, system_type=_system_type,
+        self.bridge = WaterkotteClient(host=_host, username=_user, pwd=_pwd, system_type=_system_type,
                                        web_session=async_get_clientsession(hass), tags=_tags,
                                        tags_per_request=_tags_num, lang=hass.config.language.lower())
 

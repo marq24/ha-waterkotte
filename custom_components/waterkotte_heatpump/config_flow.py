@@ -100,6 +100,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             user_input[CONF_ADD_SCHEDULE_ENTITIES] = False
             valid = await self._test_credentials(
                 host=user_input[CONF_HOST],
+                username=None,
                 pwd=None,
                 system_type=user_input[CONF_SYSTEMTYPE],
                 tags_per_request=user_input[CONF_TAGS_PER_REQUEST],
@@ -143,6 +144,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             user_input[CONF_SYSTEMTYPE] = ECOTOUCH
             valid = await self._test_credentials(
                 host=user_input[CONF_HOST],
+                username=user_input[CONF_USERNAME],
                 pwd=user_input[CONF_PASSWORD],
                 system_type=user_input[CONF_SYSTEMTYPE],
                 tags_per_request=user_input[CONF_TAGS_PER_REQUEST],
@@ -160,6 +162,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         else:
             user_input = {}
             user_input[CONF_HOST] = ""
+            user_input[CONF_USERNAME] = "waterkotte"
             user_input[CONF_PASSWORD] = "waterkotte"
             user_input[CONF_ADD_SCHEDULE_ENTITIES] = False
             user_input[CONF_ADD_SERIAL_AS_ID] = False
@@ -168,6 +171,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user_ecotouch",
             data_schema=vol.Schema({
                 vol.Required(CONF_HOST, default=user_input.get(CONF_HOST)): str,
+                vol.Optional(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
                 vol.Required(CONF_PASSWORD, default=user_input.get(CONF_PASSWORD)): str,
                 vol.Required(CONF_POLLING_INTERVAL, default=60): int,
                 vol.Required(CONF_TAGS_PER_REQUEST, default=75): int,
@@ -198,11 +202,11 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 errors=self._errors
             )
 
-    async def _test_credentials(self, host, pwd, system_type, tags_per_request):
+    async def _test_credentials(self, host, username, pwd, system_type, tags_per_request):
         try:
             session = async_create_clientsession(self.hass)
-            client = WaterkotteClient(host=host, pwd=pwd, system_type=system_type, web_session=session,
-                                      tags=None, tags_per_request=tags_per_request,
+            client = WaterkotteClient(host=host, username=username, pwd=pwd, system_type=system_type,
+                                      web_session=session, tags=None, tags_per_request=tags_per_request,
                                       lang=self.hass.config.language.lower())
             await client.login()
             init_tags = [
@@ -260,7 +264,7 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
-                # vol.Required(CONF_USERNAME, default=self.options.get(CONF_USERNAME, "waterkotte")): str,
+                vol.Optional(CONF_USERNAME, default=self.options.get(CONF_USERNAME, "waterkotte")): str,
                 vol.Required(CONF_PASSWORD, default=self.options.get(CONF_PASSWORD, "waterkotte")): str,
                 vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 60)): int,
                 vol.Required(CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 75)): int,
