@@ -5,14 +5,12 @@ from datetime import timedelta
 from typing import List, Collection, Sequence, Any, Tuple
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.config_entries import ConfigEntry, ConfigEntryState
-from homeassistant.core import Config, SupportsResponse, Event
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, Event, SupportsResponse
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.typing import UNDEFINED, UndefinedType
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import UpdateFailed
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
@@ -54,7 +52,7 @@ SCAN_INTERVAL = timedelta(seconds=60)
 CONFIG_SCHEMA = config_val.removed(DOMAIN, raise_if_present=False)
 
 
-async def async_setup(hass: HomeAssistant, config: Config):  # pylint: disable=unused-argument
+async def async_setup(hass: HomeAssistant, config: dict):  # pylint: disable=unused-argument
     """Set up this integration using YAML is not supported."""
     return True
 
