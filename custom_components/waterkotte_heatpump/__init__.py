@@ -1,22 +1,21 @@
 import asyncio
 import logging
-
 from datetime import timedelta
 from typing import List, Collection, Sequence, Any, Tuple
-from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
-from homeassistant.config_entries import ConfigEntry, ConfigEntryState
-from homeassistant.core import HomeAssistant, Event, SupportsResponse
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.entity import Entity, EntityDescription
-from homeassistant.helpers.typing import UNDEFINED, UndefinedType
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
+from homeassistant.config_entries import ConfigEntry, ConfigEntryState
+from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.core import HomeAssistant, Event, SupportsResponse
+from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.entity import Entity, EntityDescription
+from homeassistant.helpers.typing import UNDEFINED, UndefinedType
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from . import service as waterkotte_service
 from .const import (
     CONF_IP,
@@ -190,7 +189,6 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
                 ("IP", config_entry.options.get(CONF_IP, config_entry.data.get(CONF_IP))),
             },
             "manufacturer": NAME,
-            "suggested_area": "Basement",
             "name": NAME,
             "model": config_entry.options.get(CONF_SERIES, config_entry.data.get(CONF_SERIES)),
             "sw_version": f"{fw} BIOS: {bios}",

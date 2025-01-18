@@ -268,6 +268,9 @@
       "enable_warmwater": {"name": "Betriebsmodus Warmwasser"},
       "enable_pool": {"name": "Betriebsmodus Pool"},
       "enable_external_heater": {"name": "Betriebsmodus Heizstab"},
+      "enable_mixing1": {"name": "Betriebsmodus Mischerkreis 1"},
+      "enable_mixing2": {"name": "Betriebsmodus Mischerkreis 2"},
+      "enable_mixing3": {"name": "Betriebsmodus Mischerkreis 3"},
       "pumpservice_sourcepump_i1281": {
         "name": "Service: Quellenpumpe",
         "state": {
@@ -327,7 +330,6 @@
           "1": "Max. Drehzahl"
         }
       }
-
     },
     "sensor": {
       "energy_consumption_total_year": {"name": "Elektrische Arbeit Jahresverbrauch"},

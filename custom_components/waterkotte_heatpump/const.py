@@ -1177,6 +1177,30 @@ SELECT_SENSORS: Final = [
         entity_registry_enabled_default=True,
         options=ENUM_OFFAUTOMANUAL,
     ),
+    ExtSelectEntityDescription(
+        key="ENABLE_MIXING1",
+        tag=WKHPTag.ENABLE_MIXING1,
+        device_class=DEVICE_CLASS_ENUM,
+        icon="mdi:numeric-1-circle",
+        entity_registry_enabled_default=True,
+        options=ENUM_OFFAUTOMANUAL,
+    ),
+    ExtSelectEntityDescription(
+        key="ENABLE_MIXING2",
+        tag=WKHPTag.ENABLE_MIXING2,
+        device_class=DEVICE_CLASS_ENUM,
+        icon="mdi:numeric-2-circle",
+        entity_registry_enabled_default=False,
+        options=ENUM_OFFAUTOMANUAL,
+    ),
+    ExtSelectEntityDescription(
+        key="ENABLE_MIXING3",
+        tag=WKHPTag.ENABLE_MIXING3,
+        device_class=DEVICE_CLASS_ENUM,
+        icon="mdi:numeric-3-circle",
+        entity_registry_enabled_default=False,
+        options=ENUM_OFFAUTOMANUAL,
+    ),
     # I265
     ExtSelectEntityDescription(
         key="TEMPERATURE_HEATING_MODE",

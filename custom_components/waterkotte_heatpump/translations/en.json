@@ -224,6 +224,9 @@
       "enable_warmwater": {"name": "Operation mode hot water"},
       "enable_pool": {"name": "Operation mode pool"},
       "enable_external_heater": {"name": "Operation mode external heater"},
+      "enable_mixing1": {"name": "Operation mode Mixer 1"},
+      "enable_mixing2": {"name": "Operation mode Mixer 2"},
+      "enable_mixing3": {"name": "Operation mode Mixer 3"},
       "pumpservice_sourcepump_i1281": {
         "name": "Service: Sourcepump",
         "state": {
