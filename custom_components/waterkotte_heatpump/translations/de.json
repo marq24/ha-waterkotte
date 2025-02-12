@@ -409,7 +409,12 @@
       "basicvent_temperature_outgoing_air_after_eeh_a4994": {"name": "Lüfter Fortluft (EEH) Temperatur"},
       "basicvent_energy_save_total_a4387": {"name": "Lüfter Energieersparnis gesamt"},
       "basicvent_energy_save_current_a4389": {"name": "Lüfter Energieersparnis aktuell"},
-      "basicvent_energy_recovery_rate_a4391": {"name": "Lüfter Wärmerückgewinnungsgrad"}
+      "basicvent_energy_recovery_rate_a4391": {"name": "Lüfter Wärmerückgewinnungsgrad"},
+      "operating_hours_compressor_1": {"name": "Betriebsstunden Verdichter"},
+      "operating_hours_compressor_2": {"name": "Betriebsstunden Verdichter II"},
+      "operating_hours_circulation_pump": {"name": "Betriebsstunden Umwälzpumpe"},
+      "operating_hours_source_pump": {"name": "Betriebsstunden Quellenpumpe"},
+      "operating_hours_solar": {"name": "Betriebsstunden Solar"}
     },
     "switch": {
       "holiday_enabled": {"name": "Urlaubsfunktion"},

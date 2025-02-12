@@ -2024,6 +2024,56 @@ SENSOR_SENSORS: Final = [
         suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_SOLAR",
+        tag=WKHPTag.OPERATING_HOURS_SOLAR,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_COMPRESSOR_1",
+        tag=WKHPTag.OPERATING_HOURS_COMPRESSOR_1,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=True,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_COMPRESSOR_2",
+        tag=WKHPTag.OPERATING_HOURS_COMPRESSOR_2,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=True,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_CIRCULATION_PUMP",
+        tag=WKHPTag.OPERATING_HOURS_CIRCULATION_PUMP,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=True,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_SOURCE_PUMP",
+        tag=WKHPTag.OPERATING_HOURS_SOURCE_PUMP,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=True,
+        suggested_display_precision=0,
+    )
 ]
 SWITCH_SENSORS: Final = [
     ExtSwitchEntityDescription(

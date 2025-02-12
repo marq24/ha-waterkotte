@@ -365,7 +365,12 @@
       "basicvent_temperature_outgoing_air_after_eeh_a4994": {"name": "Vent Exhaust air (EEH) temperature"},
       "basicvent_energy_save_total_a4387": {"name": "Vent energy savings total"},
       "basicvent_energy_save_current_a4389": {"name": "Vent energy saving now"},
-      "basicvent_energy_recovery_rate_a4391": {"name": "Vent Heat recovery rate"}
+      "basicvent_energy_recovery_rate_a4391": {"name": "Vent Heat recovery rate"},
+      "operating_hours_compressor_1": {"name": "Operating hours Compressor"},
+      "operating_hours_compressor_2": {"name": "Operating hours Compressor II"},
+      "operating_hours_circulation_pump": {"name": "Operating hours Circulation pump"},
+      "operating_hours_source_pump": {"name": "Operating hours Source pump"},
+      "operating_hours_solar": {"name": "Operating hours solar"}
     },
     "switch": {
       "holiday_enabled": {"name": "Holiday"},
