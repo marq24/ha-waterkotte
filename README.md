@@ -37,6 +37,7 @@ if you have installed the previous version of the waterkotte integration from me
 ### Step I: Install the integration
 
 #### Option 1: via HACS
+[![Open your Home Assistant instance and adding repository to HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=marq24&repository=ha-waterkotte&category=integration)
 
 - Install [Home Assistant Community Store (HACS)](https://hacs.xyz/)
 - Add integration repository (search for "Waterkotte Heatpump [+2020]" in "Explore & Download Repositories")

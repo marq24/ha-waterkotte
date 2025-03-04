@@ -118,6 +118,12 @@ class DataTag(NamedTuple):
         assert ecotouch_tag[0] in ["A", "I", "D", "3"]
 
         if ecotouch_tag[0] == "I":
+            # check, if we receive a str as value, if we can convert it to int, without
+            # loosing any data...
+            if isinstance(value, str):
+                value_as_int = int(value)
+                if str(value_as_int) == value:
+                    value = value_as_int
             assert isinstance(value, int)
             encoded_values[ecotouch_tag] = str(value)
         elif ecotouch_tag[0] == "D":
@@ -1032,9 +1038,9 @@ class WKHPTag(DataTag, Enum):
     # ignore D635    pvIndicatorState = getServiceIndicator('D635'); -> ['Photovoltaik'];
 
     # HEATING ROOM INFLUENCE Settings... MAIN question tag A101 - will it be witten as A101 or as I264 ???!
-    # A98	    getReadOnlyState(heatingInfluence, 'A98', '°C')); -> ['Raumtemperatur Ø1h', 'T room 1h', 'T-pi\xe8ce 1h'];
-    TEMPERATURE_ROOM_TARGET = DataTag(["A100"], "°C", writeable=True)  # from 15°C - 30°C
-    ROOM_INFLUENCE = DataTag(["A101"], "%", writeable=True)  # not really writable?!
+    TEMPERATURE_ROOM_1H_A98 = DataTag(["A98"], "°C")  # ['Raumtemperatur Ø1h', 'T room 1h', 'T-pi\xe8ce 1h'];
+    TEMPERATURE_ROOM_TARGET_A100 = DataTag(["A100"], "°C", writeable=True)  # from 15°C - 30°C
+    ROOM_INFLUENCE_A101_OR_I264 = DataTag(["I264"], "%", writeable=True)  # not really writable?!
     # <select id="I264" class="form-control" style="width: 100px; color: rgb(85, 85, 85);">
     #    <option value="0">0%</option>
     #    <option value="1">50%</option>

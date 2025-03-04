@@ -237,7 +237,8 @@
       "pumpservice_sourcepump_heatmode_source_temperature_a479": {"name": "Service: Quellenpumpe Heizbetrieb ΔT Wärmequelle"},
       "pumpservice_sourcepump_coolingmode_minspeed_a1032": {"name": "Service: Quellenpumpe Kühlbetrieb Min. Drehzahl"},
       "pumpservice_sourcepump_coolingmode_maxspeed_a1033": {"name": "Service: Quellenpumpe Kühlbetrieb Max. Drehzahl"},
-      "pumpservice_sourcepump_coolingmode_source_temperature_a1034": {"name": "Service: Quellenpumpe Kühlbetrieb Temp. Wärmequelle"}
+      "pumpservice_sourcepump_coolingmode_source_temperature_a1034": {"name": "Service: Quellenpumpe Kühlbetrieb Temp. Wärmequelle"},
+      "temperature_room_target_a100": {"name": "T Raum-Sollwert"}
     },
     "select": {
       "temperature_heating_mode": {
@@ -329,6 +330,16 @@
           "0": "Min. Drehzahl",
           "1": "Max. Drehzahl"
         }
+      },
+      "room_influence_a101_or_i264": {
+        "name": "Raumeinfluss",
+        "state": {
+          "0": "0%",
+          "1": "50%",
+          "2": "100%",
+          "3": "150%",
+          "4": "200%"
+        }
       }
     },
     "sensor": {
@@ -409,7 +420,13 @@
       "basicvent_temperature_outgoing_air_after_eeh_a4994": {"name": "Lüfter Fortluft (EEH) Temperatur"},
       "basicvent_energy_save_total_a4387": {"name": "Lüfter Energieersparnis gesamt"},
       "basicvent_energy_save_current_a4389": {"name": "Lüfter Energieersparnis aktuell"},
-      "basicvent_energy_recovery_rate_a4391": {"name": "Lüfter Wärmerückgewinnungsgrad"}
+      "basicvent_energy_recovery_rate_a4391": {"name": "Lüfter Wärmerückgewinnungsgrad"},
+      "operating_hours_compressor_1": {"name": "Betriebsstunden Verdichter"},
+      "operating_hours_compressor_2": {"name": "Betriebsstunden Verdichter II"},
+      "operating_hours_circulation_pump": {"name": "Betriebsstunden Umwälzpumpe"},
+      "operating_hours_source_pump": {"name": "Betriebsstunden Quellenpumpe"},
+      "operating_hours_solar": {"name": "Betriebsstunden Solar"},
+      "temperature_room_1h_a98": {"name": "Temperatur Raum 1h (alt)"}
     },
     "switch": {
       "holiday_enabled": {"name": "Urlaubsfunktion"},

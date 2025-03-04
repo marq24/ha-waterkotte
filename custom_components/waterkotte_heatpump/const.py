@@ -50,6 +50,8 @@ ENUM_VENT_OPERATION_MODE: Final = list(SIX_STEPS_MODES.values())
 ENUM_OPTIONS_0_1: Final = ["0", "1"]
 ENUM_OPTIONS_0_2: Final = ["0", "1", "2"]
 ENUM_OPTIONS_0_3: Final = ["0", "1", "2", "3"]
+ENUM_OPTIONS_0_4: Final = ["0", "1", "2", "3", "4"]
+
 
 # Configuration and options
 CONF_IP: Final = "ip"
@@ -1126,6 +1128,18 @@ NUMBER_SENSORS: Final = [
         mode=NumberMode.BOX,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
     ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_ROOM_TARGET_A100",
+        tag=WKHPTag.TEMPERATURE_ROOM_TARGET_A100,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        icon="mdi:home-thermometer",
+        entity_registry_enabled_default=False,
+        native_min_value=15,
+        native_max_value=30,
+        native_step=FIFTH_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+    ),
 ]
 SELECT_SENSORS: Final = [
     ExtSelectEntityDescription(
@@ -1267,6 +1281,14 @@ SELECT_SENSORS: Final = [
         tag=WKHPTag.PUMPSERVICE_SOURCEPUMP_COOLINGMODE_REGULATION_START_D997,
         entity_registry_enabled_default=False,
         options=ENUM_OPTIONS_0_1,
+    ),
+    ExtSelectEntityDescription(
+        key="ROOM_INFLUENCE_A101_OR_I264",
+        tag=WKHPTag.ROOM_INFLUENCE_A101_OR_I264,
+        device_class=DEVICE_CLASS_ENUM,
+        icon="mdi:home-thermometer",
+        entity_registry_enabled_default=False,
+        options=ENUM_OPTIONS_0_4,
     ),
 ]
 SENSOR_SENSORS: Final = [
@@ -2024,6 +2046,65 @@ SENSOR_SENSORS: Final = [
         suggested_display_precision=1,
         feature=FEATURE_VENT
     ),
+    ExtSensorEntityDescription(
+        key="TEMPERATURE_ROOM_1H_A98",
+        tag=WKHPTag.TEMPERATURE_ROOM_1H_A98,
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        icon="mdi:home-thermometer",
+        entity_registry_enabled_default=False
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_SOLAR",
+        tag=WKHPTag.OPERATING_HOURS_SOLAR,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_COMPRESSOR_1",
+        tag=WKHPTag.OPERATING_HOURS_COMPRESSOR_1,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=True,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_COMPRESSOR_2",
+        tag=WKHPTag.OPERATING_HOURS_COMPRESSOR_2,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_CIRCULATION_PUMP",
+        tag=WKHPTag.OPERATING_HOURS_CIRCULATION_PUMP,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=True,
+        suggested_display_precision=0,
+    ),
+    ExtSensorEntityDescription(
+        key="OPERATING_HOURS_SOURCE_PUMP",
+        tag=WKHPTag.OPERATING_HOURS_SOURCE_PUMP,
+        device_class=None,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        native_unit_of_measurement=UnitOfTime.HOURS,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=True,
+        suggested_display_precision=0,
+    )
 ]
 SWITCH_SENSORS: Final = [
     ExtSwitchEntityDescription(
