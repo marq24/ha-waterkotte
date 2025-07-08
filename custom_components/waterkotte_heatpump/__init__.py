@@ -7,7 +7,7 @@ from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClie
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
-from homeassistant.config_entries import ConfigEntry, ConfigEntryState
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant, Event, SupportsResponse
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -74,9 +74,6 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
 
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
-    if config_entry.state != ConfigEntryState.LOADED:
-        config_entry.add_update_listener(async_reload_entry)
-
     service = waterkotte_service.WaterkotteHeatpumpService(hass, config_entry, coordinator)
     hass.services.async_register(DOMAIN, SERVICE_SET_HOLIDAY, service.set_holiday,
                                  supports_response=SupportsResponse.OPTIONAL)
@@ -93,10 +90,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     asyncio.create_task(coordinator.update_client_tag_list(hass, config_entry.data.get(CONF_ADD_SERIAL_AS_ID,False), config_entry.entry_id))
 
     # ok we are done...
+    config_entry.async_on_unload(config_entry.add_update_listener(entry_update_listener))
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    _LOGGER.debug(f"async_unload_entry() called for entry: {config_entry.entry_id}")
     unload_ok = await hass.config_entries.async_unload_platforms(config_entry, PLATFORMS)
 
     if unload_ok:
@@ -115,11 +114,9 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
     return unload_ok
 
 
-async def async_reload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
-    """Reload config entry."""
-    if await async_unload_entry(hass, config_entry):
-        await asyncio.sleep(2)
-        await async_setup_entry(hass, config_entry)
+async def entry_update_listener(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
+    _LOGGER.debug(f"entry_update_listener() called for entry: {config_entry.entry_id}")
+    await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 @staticmethod
