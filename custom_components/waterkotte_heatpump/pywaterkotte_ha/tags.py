@@ -96,8 +96,10 @@ class DataTag(NamedTuple):
 
             elif first_tag[0:6] == "3:HREG":
                 # currently only supporting integers from HERG registers (only in use for manual vent speeds)
-                return int(first_val)
-
+                try:
+                    return int(first_val)
+                except ValueError:
+                    return int(float(first_val))
             else:
                 raise InvalidValueException(
                     # "%s is not a valid value for %s" % (val, ecotouch_tag)
