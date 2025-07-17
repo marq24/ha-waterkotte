@@ -1233,6 +1233,15 @@ SELECT_SENSORS: Final = [
         options=ENUM_VENT_OPERATION_MODE,
         feature=FEATURE_VENT
     ),
+    ExtSelectEntityDescription(
+        key="BASICVENT_OPERATION_MODE_ALT",
+        tag=WKHPTag.BASICVENT_OPERATION_MODE_ALT,
+        device_class=DEVICE_CLASS_ENUM,
+        icon="mdi:hvac",
+        entity_registry_enabled_default=False,
+        options=ENUM_VENT_OPERATION_MODE,
+        feature=FEATURE_VENT
+    ),
     # Service-Sourcepump
     ExtSelectEntityDescription(
         key="PUMPSERVICE_SOURCEPUMP_I1281",

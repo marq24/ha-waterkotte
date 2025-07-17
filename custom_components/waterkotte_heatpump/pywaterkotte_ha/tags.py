@@ -947,6 +947,10 @@ class WKHPTag(DataTag, Enum):
     BASICVENT_OPERATION_MODE_I4582 = DataTag(
         ["I4582"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode)
 
+    # https://github.com/marq24/ha-waterkotte/issues/49 (I4582 might not be in use - could be that "3:HREG400418" does it)
+    BASICVENT_OPERATION_MODE_ALT = DataTag(
+        ["3:HREG400418"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode)
+
     # mdi:air-filter
     # mdi:hvac
     # mdi:wind-power

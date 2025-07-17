@@ -253,7 +253,18 @@
         }
       },
       "basicvent_operation_mode_i4582": {
-        "name": "Lüfter Betriebsmodus",
+        "name": "Lüfter Betriebsmodus (I4582)",
+        "state": {
+          "mode0": "Tag",
+          "mode1": "Nacht",
+          "mode2": "Zeitprogramm",
+          "mode3": "Party",
+          "mode4": "Urlaub",
+          "mode5": "Bypass"
+        }
+      },
+      "basicvent_operation_mode_alt": {
+        "name": "Lüfter Betriebsmodus (alternative)",
         "state": {
           "mode0": "Tag",
           "mode1": "Nacht",

@@ -209,7 +209,18 @@
         }
       },
       "basicvent_operation_mode_i4582": {
-        "name": "Vent Operation mode",
+        "name": "Vent Operation mode (I4582)",
+        "state": {
+          "mode0": "Day",
+          "mode1": "Night",
+          "mode2": "Scheduled",
+          "mode3": "Party",
+          "mode4": "Holiday",
+          "mode5": "Bypass"
+        }
+      },
+      "basicvent_operation_mode_alt": {
+        "name": "Vent Operation mode (alternative)",
         "state": {
           "mode0": "Day",
           "mode1": "Night",
