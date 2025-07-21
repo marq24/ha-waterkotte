@@ -267,7 +267,9 @@ class DataTag(NamedTuple):
     def _encode_six_steps_mode(self, value, encoded_values):
         assert len(self.tags) == 1
         ecotouch_tag = self.tags[0]
-        assert ecotouch_tag[0] in ["I"]
+        # there is an alternative tag for the six steps mode with '3:HREG' notation
+        # see https://github.com/marq24/ha-waterkotte/issues/49
+        assert ecotouch_tag[0] in ["I", "3"]
         index = self._get_key_from_value(SIX_STEPS_MODES, value)
         if index is not None:
             encoded_values[ecotouch_tag] = str(index)
