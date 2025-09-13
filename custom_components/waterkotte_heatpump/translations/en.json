@@ -182,6 +182,10 @@
       "temperature_pool_hc_target": {"name": "T heating limit target"},
       "temperature_pool_hc_outdoor_norm": {"name": "T norm outdoor"},
       "temperature_pool_hc_norm": {"name": "T norm heating circle"},
+      "temperature_pool_max_runtime": {"name":  "Max. pool heating runtime"},
+      "temperature_pool_setpointlimit": {"name": "Limit for pool setpoint"},
+      "temperature_pool_powlimit_min": {"name": "Min. pool output"},
+      "temperature_pool_powlimit_max": {"name": "Max. pool output"},
       "basicvent_incoming_fan_manual_speed_percent": {"name": "Vent 1 (outer) manual Speed"},
       "basicvent_outgoing_fan_manual_speed_percent": {"name": "Vent 2 (inner) manual Speed"},
       "pumpservice_sourcepump_pre_runtime_i1278": {"name": "Service: Sourcepump pre runtime"},
@@ -206,6 +210,15 @@
           "mode3": "Setpoint EXT",
           "mode4": "Setpoint 0-10V",
           "mode5": "Based on Mixing circle"
+        }
+      },
+      "temperature_pool_mode": {
+        "name": "Pool Control",
+        "state": {
+          "mode0": "Weather-compensated",
+          "mode1": "Setpoint",
+          "mode2": "Setpoint BMS",
+          "mode3": "Setpoint EXT"
         }
       },
       "basicvent_operation_mode_i4582": {

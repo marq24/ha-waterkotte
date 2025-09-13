@@ -2,6 +2,12 @@ from typing import Final
 
 ECOTOUCH: Final = "ECOTOUCH"
 EASYCON: Final = "EASYCON"
+FOUR_STEPS_MODES: Final = {
+    0: "mode0",
+    1: "mode1",
+    2: "mode2",
+    3: "mode3",
+}
 SIX_STEPS_MODES: Final = {
     0: "mode0",
     1: "mode1",

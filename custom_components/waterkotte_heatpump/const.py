@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Final
 
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import SIX_STEPS_MODES
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntityDescription
 from homeassistant.components.number import NumberEntityDescription, NumberDeviceClass, NumberMode, DEFAULT_STEP
 from homeassistant.components.select import SelectEntityDescription
@@ -20,6 +18,9 @@ from homeassistant.const import (
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
     REVOLUTIONS_PER_MINUTE
 )
+
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import FOUR_STEPS_MODES, SIX_STEPS_MODES
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 
 # Base component constants
 NAME: Final = "Waterkotte Heatpump [+2020]"
@@ -45,6 +46,7 @@ STATE_OFF: Final = "off"
 # # #### Enum Options ####
 ENUM_ONOFFAUTO: Final = [STATE_ON, STATE_OFF, STATE_AUTO]
 ENUM_OFFAUTOMANUAL: Final = [STATE_OFF, STATE_AUTO, STATE_MANUAL]
+ENUM_POOL_MODE: Final = list(FOUR_STEPS_MODES.values())
 ENUM_HEATING_MODE: Final = list(SIX_STEPS_MODES.values())
 ENUM_VENT_OPERATION_MODE: Final = list(SIX_STEPS_MODES.values())
 ENUM_OPTIONS_0_1: Final = ["0", "1"]
@@ -1005,7 +1007,54 @@ NUMBER_SENSORS: Final = [
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=PERCENTAGE,
     ),
-
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_POOL_POWLIMIT_MIN",
+        tag=WKHPTag.TEMPERATURE_POOL_POWLIMIT_MIN,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_POOL_POWLIMIT_MAX",
+        tag=WKHPTag.TEMPERATURE_POOL_POWLIMIT_MAX,
+        device_class=None,
+        icon="mdi:gauge",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=100,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+    ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_POOL_SETPOINTLIMIT",
+        tag=WKHPTag.TEMPERATURE_POOL_SETPOINTLIMIT,
+        device_class=NumberDeviceClass.TEMPERATURE,
+        icon="mdi:pool-thermometer",
+        entity_registry_enabled_default=False,
+        native_min_value=0,
+        native_max_value=99,
+        native_step=TENTH_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+    ),
+    ExtNumberEntityDescription(
+        key="TEMPERATURE_POOL_MAX_RUNTIME",
+        tag=WKHPTag.TEMPERATURE_POOL_MAX_RUNTIME,
+        device_class=NumberDeviceClass.DURATION,
+        icon="mdi:clock-outline",
+        entity_registry_enabled_default=False,
+        native_min_value=5,
+        native_max_value=180,
+        native_step=DEFAULT_STEP,
+        mode=NumberMode.BOX,
+        native_unit_of_measurement=UnitOfTime.MINUTES
+    ),
 
 
     ExtNumberEntityDescription(
@@ -1298,6 +1347,14 @@ SELECT_SENSORS: Final = [
         icon="mdi:home-thermometer",
         entity_registry_enabled_default=False,
         options=ENUM_OPTIONS_0_4,
+    ),
+    ExtSelectEntityDescription(
+        key="TEMPERATURE_POOL_MODE",
+        tag=WKHPTag.TEMPERATURE_POOL_MODE,
+        device_class=DEVICE_CLASS_ENUM,
+        icon="mdi:pool",
+        entity_registry_enabled_default=False,
+        options=ENUM_POOL_MODE,
     ),
 ]
 SENSOR_SENSORS: Final = [

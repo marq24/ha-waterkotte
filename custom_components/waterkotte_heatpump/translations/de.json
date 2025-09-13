@@ -226,6 +226,10 @@
       "temperature_pool_hc_target": {"name": "T Heizgrenze Soll"},
       "temperature_pool_hc_outdoor_norm": {"name": "T Norm-Außen"},
       "temperature_pool_hc_norm": {"name": "T Heizkreis Norm"},
+      "temperature_pool_max_runtime": {"name":  "Maximale Laufzeit Pool-Heizbetrieb"},
+      "temperature_pool_setpointlimit": {"name": "Grenze für Pool Sollwert"},
+      "temperature_pool_powlimit_min": {"name": "Min. Pool-Ausgang"},
+      "temperature_pool_powlimit_max": {"name": "Max. Pool-Ausgang"},
       "basicvent_incoming_fan_manual_speed_percent": {"name": "Lüfter 1 (Außen) manuelle Drehzahl"},
       "basicvent_outgoing_fan_manual_speed_percent": {"name": "Lüfter 2 (Innen) manuelle Drehzahl"},
       "pumpservice_sourcepump_pre_runtime_i1278": {"name": "Service: Quellenpumpe Vorlaufzeit"},
@@ -250,6 +254,15 @@
           "mode3": "Sollwertvorgabe EXT",
           "mode4": "Sollwertvorgabe 0-10V",
           "mode5": "Mischerkreis Vorgabe"
+        }
+      },
+      "temperature_pool_mode": {
+        "name": "Poolregelung",
+        "state": {
+          "mode0": "Witterungsgeführt",
+          "mode1": "Sollwertvorgabe",
+          "mode2": "Sollwertvorgabe BMS",
+          "mode3": "Sollwertvorgabe EXT"
         }
       },
       "basicvent_operation_mode_i4582": {

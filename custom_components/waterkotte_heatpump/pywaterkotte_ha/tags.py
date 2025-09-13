@@ -13,6 +13,7 @@ from typing import (
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import (
     SERIES,
     SYSTEM_IDS,
+    FOUR_STEPS_MODES,
     SIX_STEPS_MODES,
     # SCHEDULE_DAY_LIST,
     # SCHEDULE_SENSOR_TYPES_LIST
@@ -252,6 +253,27 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = "1"
         elif value == "manual":
             encoded_values[ecotouch_tag] = "2"
+
+    def _decode_four_steps_mode(self, str_vals: List[str]):
+        if str_vals is None:
+            return None
+
+        assert len(self.tags) == 1
+        if str_vals[0] is not None:
+            int_val = int(str_vals[0])
+            if 0 <= int_val <= len(FOUR_STEPS_MODES):
+                return FOUR_STEPS_MODES[int_val]
+        return "Error"
+
+    def _encode_four_steps_mode(self, value, encoded_values):
+        assert len(self.tags) == 1
+        ecotouch_tag = self.tags[0]
+        # there is an alternative tag for the four/six steps mode with '3:HREG' notation
+        # see https://github.com/marq24/ha-waterkotte/issues/49
+        assert ecotouch_tag[0] in ["I", "3"]
+        index = self._get_key_from_value(FOUR_STEPS_MODES, value)
+        if index is not None:
+            encoded_values[ecotouch_tag] = str(index)
 
     def _decode_six_steps_mode(self, str_vals: List[str]):
         if str_vals is None:
@@ -610,9 +632,7 @@ class WKHPTag(DataTag, Enum):
 
     # TEMPERATURE_HEATING_BUFFERTANK_ROOM_SETPOINT = DataTag(["A413"], "°C", writeable=True)
 
-    TEMPERATURE_HEATING_MODE = DataTag(
-        ["I265"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode
-    )
+    TEMPERATURE_HEATING_MODE = DataTag(["I265"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode)
     # this A32 value is not visible in the GUI - and IMHO (marq24) there should
     # be no way to set the heating temperature directly - use the values of the
     # 'TEMPERATURE_HEATING_HC' instead (HC = HeatCurve)
@@ -669,6 +689,12 @@ class WKHPTag(DataTag, Enum):
     TEMPERATURE_POOL_HC_OUTDOOR_NORM = DataTag(["A747"], "°C", writeable=True)
     TEMPERATURE_POOL_HC_NORM = DataTag(["A748"], "°C", writeable=True)
     TEMPERATURE_POOL_HC_RESULT = DataTag(["A752"], "°C")
+
+    TEMPERATURE_POOL_MODE = DataTag(["I527"], writeable=True, decode_f=DataTag._decode_four_steps_mode, encode_f=DataTag._encode_four_steps_mode)
+    TEMPERATURE_POOL_MAX_RUNTIME = DataTag(["I640"], "min", writeable=True) # 5min - 180min
+    TEMPERATURE_POOL_SETPOINTLIMIT = DataTag(["A751"], "°C", writeable=True)
+    TEMPERATURE_POOL_POWLIMIT_MAX = DataTag(["A203"], "%", writeable=True)
+    TEMPERATURE_POOL_POWLIMIT_MIN = DataTag(["A204"], "%", writeable=True)
 
     TEMPERATURE_MIX1 = DataTag(["A44"], "°C")  # TEMPERATURE_MIXING1_CURRENT
     TEMPERATURE_MIX1_DEMAND = DataTag(["A45"], "°C")  # TEMPERATURE_MIXING1_SET
