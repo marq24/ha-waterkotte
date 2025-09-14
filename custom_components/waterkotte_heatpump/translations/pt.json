@@ -1,0 +1,176 @@
+{
+  "selector": {
+    "system_type": {
+      "options": {
+        "ecotouch": "Modo EcoTouch [interface web requer nome de utilizador e palavra-passe]",
+        "easycon": "Modo EasyCon [Modelos Waterkotte mais antigos sem credenciais de login]"
+      }
+    },
+    "set_schedule_data_schedule_type": {
+      "options": {
+        "heating": "Aquecimento",
+        "cooling": "Arrefecimento",
+        "water": "Água Quente",
+        "pool": "Piscina",
+        "mix1": "Misturador 1",
+        "mix2": "Misturador 2",
+        "mix3": "Misturador 3",
+        "buffer_tank_circulation_pump": "Bomba de circulação do depósito de inércia",
+        "solar": "Controlo Solar",
+        "pv": "Fotovoltaico"
+      }
+    },
+    "set_schedule_data_schedule_days": {
+      "options": {
+        "1mo":  "Segundas-feiras",
+        "2tu":  "Terças-feiras",
+        "3we":  "Quartas-feiras",
+        "4th":  "Quintas-feiras",
+        "5fr":  "Sextas-feiras",
+        "6sa":  "Sábados",
+        "7su":  "Domingos"
+      }
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "description": "Se precisar de ajuda com a configuração, consulte aqui: https://github.com/marq24/ha-waterkotte.",
+        "data": {
+          "system_type": "Tipo de Interface Waterkotte"
+        },
+        "data_description": {
+          "system_type": "Se precisar de fornecer um nome de utilizador e uma palavra-passe para iniciar sessão na interface web Waterkotte, selecione o tipo de interface: Modo EcoTouch, caso contrário, o Modo EasyCon."
+        }
+      },
+      "user_ecotouch": {
+        "description": "Nota importante: Com o serviço 'Ajustar Horários', pode ajustar todos os horários da sua bomba de calor Waterkotte. Não é necessário adicionar as entidades opcionais para isso. Elas são apenas necessárias se quiser modificar ou exibir as configurações de horários através do seu painel ou de uma das suas automações.\r\rSe não tiver certeza, não adicione as entidades opcionais de agendamento no primeiro passo. Elas podem ser adicionadas a qualquer momento através de configurações de configuração mais tarde.",
+        "data": {
+          "host": "Host ou IP",
+          "password": "Palavra-passe",
+          "polling_interval": "Intervalo de sondagem em segundos",
+          "tags_per_request": "Número de tags a buscar numa única solicitação (máx. 75)",
+          "add_schedule_entities": "Adicionar as Entidades de Horários Opcionais (650+)",
+          "add_serial_as_id": "Deseja configurar vários Sistemas Waterkotte na sua instalação HA?"
+        }
+      },
+      "user_easycon": {
+        "description": "Se precisar de ajuda com a configuração, consulte aqui: https://github.com/marq24/ha-waterkotte.",
+        "data": {
+          "host": "Host ou IP",
+          "polling_interval": "Intervalo de sondagem em segundos",
+          "tags_per_request": "Número de tags a buscar numa única solicitação (máx. 75)",
+          "add_serial_as_id": "Deseja configurar vários Sistemas Waterkotte na sua instalação HA?"
+        }
+      },
+      "features": {
+        "description": "Ativação de Sensores e Controles Adicionais:\n(Estes também podem ser ativados manualmente mais tarde)",
+        "data": {
+          "use_vent": "para uma 'unidade exterior de bomba de calor de ar'",
+          "use_heating_curve": "para ajustar as 'curvas de aquecimento'",
+          "use_disinfection": "para ajustar a 'Desinfeção de Água'",
+          "use_pool": "para uma unidade de 'piscina' (incl. curva de aquecimento)"
+        }
+      }
+    },
+    "error": {
+      "auth": "Host/IP ou a Palavra-passe está incorreta - não foi possível alcançar o sistema",
+      "type": "Não é possível conectar-se ao Waterkotte - tem a certeza de que selecionou o Tipo de Interface correto anteriormente?"
+    },
+    "abort": {
+      "single_instance_allowed": "Apenas uma única instância é permitida."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "description": "Se precisar de ajuda com a configuração, consulte aqui: https://github.com/marq24/ha-waterkotte.\r\rNota importante: Com o serviço 'Ajustar Horários', pode ajustar todos os horários do seu aquecimento Waterkotte. Não é necessário adicionar as entidades opcionais para isso. Elas são apenas necessárias se quiser modificar ou exibir as configurações de horários através do seu painel ou de uma das suas automações.",
+        "data": {
+          "username": "Nome de utilizador",
+          "password": "Palavra-passe",
+          "polling_interval": "Intervalo de sondagem em segundos",
+          "tags_per_request": "Número de tags a buscar numa única solicitação (máx. 75)",
+          "add_schedule_entities": "Adicionar as Entidades de Horários Opcionais (650+)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "state_sourcepump": {"name": "Bomba de fonte"},
+      "state_heatingpump": {"name": "Bomba de calor"},
+      "state_evd": {"name": "EVD"},
+      "state_compressor": {"name": "Compressor"},
+      "state_compressor2": {"name": "Compressor II"},
+      "state_external_heater": {"name": "Aquecedor elétrico"},
+      "state_alarm": {"name": "Notificações"},
+      "state_cooling": {"name": "Arrefecimento"},
+      "state_water": {"name": "Água quente"},
+      "state_pool": {"name": "Piscina"},
+      "state_solar": {"name": "Solar"},
+      "state_cooling4way": {"name": "Válvula de 4 vias"},
+      "status_heating": {"name": "Modo de aquecimento"},
+      "status_water": {"name": "Modo de água quente"},
+      "status_cooling": {"name": "Modo de arrefecimento"},
+      "status_pool": {"name":  "Modo de piscina"},
+      "status_solar": {"name":  "Modo solar"},
+      "status_heating_circulation_pump": {"name":  "Bomba de circulação modo aquecimento"},
+      "status_solar_circulation_pump": {"name":  "Bomba de circulação modo solar"},
+      "status_buffer_tank_circulation_pump": {"name":  "Bomba de circulação modo depósito de inércia"},
+      "status_compressor": {"name":  "Modo compressor"},
+      "state_blocking_time": {"name": "Tempo de bloqueio"},
+      "state_test_run": {"name": "Teste de funcionamento"},
+      "state_heating_circulation_pump_d425": {"name": "Bomba de circulação de aquecimento"},
+      "state_buffertank_circulation_pump_d377": {"name": "Bomba de circulação do depósito de inércia"},
+      "state_pool_circulation_pump_d549": {"name": "Bomba de circulação da piscina"},
+      "state_mix1_circulation_pump_d248": {"name": "Bomba de circulação do misturador 1"},
+      "state_mix2_circulation_pump_d291": {"name": "Bomba de circulação do misturador 2"},
+      "state_mix3_circulation_pump_d334": {"name": "Bomba de circulação do misturador 3"},
+      "state_mix1_circulation_pump_d563": {"name": "Bomba de circulação do misturador 1 [D563]"},
+      "basicvent_status_bypass_active_d1432": {"name": "Bypass de ventilação ativo"},
+      "basicvent_status_humidifier_active_d1433": {"name": "Humidificador de ventilação ativo"},
+      "basicvent_status_comfort_bypass_active_d1465": {"name": "Bypass de conforto de ventilação ativo"},
+      "basicvent_status_smart_bypass_active_d1466": {"name": "Bypass inteligente de ventilação ativo"},
+      "basicvent_status_holiday_enabled_d1503": {"name": "Modo de férias de ventilação ativado"},
+      "basicvent_filter_change_display_d1469": {"name": "Necessário mudar o filtro de ventilação"}
+    },
+    "number": {
+      "temperature_return_setpoint": {"name": "Temperatura de referência"},
+      "temperature_cooling_setpoint": {"name": "Temperatura de arrefecimento"},
+      "temperature_cooling_outdoor_limit": {"name": "Temperatura limite exterior"},
+      "temperature_cooling_flow_limit": {"name": "Limite de temperatura de fluxo"},
+      "temperature_heating_setpoint": {"name": "Temperatura de aquecimento"},
+      "temperature_heating_adjust": {"name": "Ajuste de temperatura"},
+      "temperature_heating_hysteresis": {"name": "Histerese de temperatura"},
+      "temperature_water_heating_setpoint": {"name": "Temperatura de água quente"},
+      "temperature_buffer_tank_setpoint": {"name": "Temperatura de depósito de inércia"},
+      "temperature_buffer_tank_hysteresis": {"name": "Histerese de temperatura do depósito de inércia"},
+      "temperature_heating_curve": {"name": "Curva de aquecimento"},
+      "temperature_heating_curve_setpoint": {"name": "Temperatura de aquecimento definida"},
+      "temperature_heating_curve_adjust": {"name": "Ajuste da curva de aquecimento"},
+      "temperature_heating_curve_hysteresis": {"name": "Histerese da curva de aquecimento"},
+      "temperature_ventilation_outlet_air": {"name": "Temperatura de ventilação do ar de saída"},
+      "temperature_ventilation_inlet_air": {"name": "Temperatura de ventilação do ar de entrada"},
+      "temperature_ventilation_heat_exchanger_outlet_air": {"name": "Temperatura de saída do permutador de calor da ventilação"}
+    },
+    "sensor": {
+      "temperature_return_setpoint": {"name": "Temperatura de referência"},
+      "temperature_cooling_setpoint": {"name": "Temperatura de arrefecimento"},
+      "temperature_cooling_outdoor_limit": {"name": "Temperatura limite exterior"},
+      "temperature_cooling_flow_limit": {"name": "Limite de temperatura de fluxo"},
+      "temperature_heating_setpoint": {"name": "Temperatura de aquecimento"},
+      "temperature_heating_adjust": {"name": "Ajuste de temperatura"},
+      "temperature_heating_hysteresis": {"name": "Histerese de temperatura"},
+      "temperature_water_heating_setpoint": {"name": "Temperatura de água quente"},
+      "temperature_buffer_tank_setpoint": {"name": "Temperatura de depósito de inércia"},
+      "temperature_buffer_tank_hysteresis": {"name": "Histerese de temperatura do depósito de inércia"},
+      "temperature_heating_curve": {"name": "Curva de aquecimento"},
+      "temperature_heating_curve_setpoint": {"name": "Temperatura de aquecimento definida"},
+      "temperature_heating_curve_adjust": {"name": "Ajuste da curva de aquecimento"},
+      "temperature_heating_curve_hysteresis": {"name": "Histerese da curva de aquecimento"},
+      "temperature_ventilation_outlet_air": {"name": "Temperatura de ventilação do ar de saída"},
+      "temperature_ventilation_inlet_air": {"name": "Temperatura de ventilação do ar de entrada"},
+      "temperature_ventilation_heat_exchanger_outlet_air": {"name": "Temperatura de saída do permutador de calor da ventilação"}
+    }
+  }
+}
