@@ -3,10 +3,6 @@ import logging
 from datetime import timedelta
 from typing import List, Collection, Sequence, Any, Tuple
 
-from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant, Event, SupportsResponse
@@ -16,6 +12,11 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.typing import UNDEFINED, UndefinedType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+
+from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from . import service as waterkotte_service
 from .const import (
     CONF_IP,
@@ -134,7 +135,7 @@ def generate_tag_list(hass: HomeAssistant, trim_unique_id:bool, config_entry_id:
                     a_temp_tag = (entity.unique_id)
                     if trim_unique_id:
                         a_temp_tag = a_temp_tag[0:a_temp_tag.rfind('_')]
-                    _LOGGER.info(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
+                    #_LOGGER.debug(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
                     if a_temp_tag is not None and a_temp_tag.upper() in WKHPTag.__members__:
                         if WKHPTag[a_temp_tag.upper()]:
                             tags.append(WKHPTag[a_temp_tag.upper()])

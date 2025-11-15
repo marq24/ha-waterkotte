@@ -90,26 +90,26 @@ TENTH_STEP = 0.1
 FIFTH_STEP = 0.5
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtBinarySensorEntityDescription(BinarySensorEntityDescription):
     tag: WKHPTag | None = None
     feature: str | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtNumberEntityDescription(NumberEntityDescription):
     tag: WKHPTag | None = None
     feature: str | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtSelectEntityDescription(SelectEntityDescription):
     tag: WKHPTag | None = None
     feature: str | None = None
     # controls: list[str] | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtSensorEntityDescription(SensorEntityDescription):
     tag: WKHPTag | None = None
     feature: str | None = None
@@ -117,7 +117,7 @@ class ExtSensorEntityDescription(SensorEntityDescription):
     # controls: list[str] | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtSwitchEntityDescription(SwitchEntityDescription):
     tag: WKHPTag | None = None
     feature: str | None = None
