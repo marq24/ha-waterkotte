@@ -58,7 +58,7 @@ __You must have installed the integration (manually or via HACS before)!__
 
 Just click the following Button to start the configuration automatically (for the rest see _Option 2: Manually steps by step_):
 
-[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=waterkotte)
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=waterkotte_heatpump)
 
 #### Option 2: Manually steps by step
 
