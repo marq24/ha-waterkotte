@@ -35,16 +35,19 @@ class DataTag(NamedTuple):
     def _decode_value_analog(self, str_vals: List[str]):
         return self.__decode_value_default(str_vals, factor=-1.0)
 
-    def __decode_value_default(self, str_vals: List[str], factor: float):
+    # def _decode_value_analog_op_hours(self, str_vals: List[str]):
+    #     return self.__decode_value_default(str_vals, factor=-1.0, hex_decode_single_value=True)
+
+    def __decode_value_default(self, str_vals: List[str], factor: float, hex_decode_single_value:bool=False):
         if str_vals is None:
             return None
 
         first_val = str_vals[0]
         if first_val is None:
-            # do not check any further if for what ever reason the first value of the str_vals is None
+            # do not check any further if for whatever reason the first value of the str_vals is None
             return None
 
-        # for what ever reason it can be the case, that the 'str_vals' will look like this:
+        # for whatever reason it can be the case, that the 'str_vals' will look like this:
         # ['17714.0', '27838.0'] - so we must clean the .0
         if first_val.endswith('.0'):
             str_vals = list(map(lambda x:str(int(float(x))), str_vals))
@@ -60,15 +63,25 @@ class DataTag(NamedTuple):
                 #    return float('180.000000')
                 # if self.tags[0] == "A4504":
                 #    return float('19')
-
-                if factor > -1.0:
-                    return float(first_val) / factor
+                if hex_decode_single_value:
+                    i_val = int(str_vals[0]) & 0xFFFF
+                    hex_string = f"{i_val:04x}0000"
+                    return struct.unpack("!f", bytes.fromhex(hex_string))[0]
                 else:
-                    return float(first_val)
+                    if factor > -1.0:
+                        return float(first_val) / factor
+                    else:
+                        return float(first_val)
+            # elif len(self.tags) == 2:
+            #     high_word = (int(str_vals[0]) << 16) & 0xFFFFFFFF
+            #     low_word = (int(str_vals[1])) & 0xFFFF
+            #     i32 = (high_word | low_word) & 0xFFFFFFFF
+            #     hex_string = f"{i32:08x}"
             else:
-                i_vals = [int(xxl) & 0xFFFF for xxl in str_vals]
-                hex_string = f"{i_vals[0]:04x}{i_vals[1]:04x}"
-                return struct.unpack("!f", bytes.fromhex(hex_string))[0]
+                int_vals = [int(xxl) & 0xFFFF for xxl in str_vals]
+                hex_string = "".join(f"{hex_val:04x}" for hex_val in int_vals)
+
+            return round(float(struct.unpack("!f", bytes.fromhex(hex_string))[0]), 3)
 
         else:
             assert len(self.tags) == 1
@@ -358,7 +371,6 @@ class DataTag(NamedTuple):
         else:
             return "UNKNOWN_SYSTEM"
 
-
     def _decode_ro_bios(self, str_vals: List[str]):
         if str_vals is None:
             return None
@@ -422,6 +434,70 @@ class WKHPTag(DataTag, Enum):
         return hash(self.name)
 
     #################################################
+    # waterkotte operational hours [/easycon/pgOpH.html]
+    # please note, that the original webUI have a bug and DOES NOT SHOW the
+    # correct values!
+
+    # SHOW TOTAL/GESAMT Values for operation hours...
+    OPERATING_HOURS_V2_SHOW_TOTALS_SWITCH_D634 = DataTag(["D634"], writeable=True)
+
+    # Verdichter 1
+    OPERATING_HOURS_V2_COMPRESSOR_1_A516 = DataTag(["A516", "A517"])
+    # Verdichter 2 / Außeneinheit
+    OPERATING_HOURS_V2_COMPRESSOR_2_A518 = DataTag(["A518", "A519"])
+    # Vollbetriebsstunden
+    OPERATING_HOURS_V2_FULL_OPERATING_HOURS_A520 = DataTag(["A520", "A521"])
+    # Heizungspumpe
+    OPERATING_HOURS_V2_HEATINGPUMP_A522 = DataTag(["A522", "A523"])
+    # Wärmequellenpumpe
+    OPERATING_HOURS_V2_SOURCE_PUMP_A524 = DataTag(["A524", "A525"])
+    # Solarkreispumpe
+    OPERATING_HOURS_V2_SOLAR_CIRCULATION_PUMP_A526 = DataTag(["A526", "A527"])
+    # Externer Wärmeerzeuger
+    OPERATING_HOURS_V2_EXTERNALHEATER_A528 = DataTag(["A528", "A529"])
+    # Heizbetrieb
+    OPERATING_HOURS_V2_HEATING_A530 = DataTag(["A530", "A531"])
+    # Kühlbetrieb
+    OPERATING_HOURS_V2_COOLING_A532 = DataTag(["A532", "A533"])
+    # Warmwasserbetrieb
+    OPERATING_HOURS_V2_HOT_WATER_A534 = DataTag(["A534", "A535"])
+    # Pool-Heizbetrieb
+    OPERATING_HOURS_V2_POOL_HEATING_A536 = DataTag(["A536", "A537"])
+    # Solarbetrieb
+    OPERATING_HOURS_V2_SOLAR_A538 = DataTag(["A538", "A539"])
+    # Funktionsheizbetrieb
+    OPERATING_HOURS_V2_FUNCTIONAL_HEATING_A540 = DataTag(["A540", "A541"])
+    # Abtauvorgang
+    OPERATING_HOURS_V2_DEFROSTER_A542 = DataTag(["A542", "A543"])
+    # Bivalent parallel
+    OPERATING_HOURS_V2_BIVALENT_PARALLEL_A544 = DataTag(["A544", "A545"])
+    # Bivalent alternativ
+    OPERATING_HOURS_V2_BIVALENT_ALTERNATIVE_A546 = DataTag(["A546", "A547"])
+
+    # PV-Ertrag
+    OPERATING_HOURS_V2_PV_YIELD_ALT_A576 = DataTag(["A576", "A577"])
+    # PV-Ertrag
+    OPERATING_HOURS_V2_PV_YIELD_A963 = DataTag(["A963", "A964"])
+
+    # Außeneinheit 3
+    OPERATING_HOURS_V2_COMPRESSOR_3_A706 = DataTag(["A706", "A707"])
+    # Außeneinheit 4
+    OPERATING_HOURS_V2_COMPRESSOR_4_A708 = DataTag(["A708", "A709"])
+
+    # Abtauvorgang 2
+    OPERATING_HOURS_V2_DEFROSTER_2_A710 = DataTag(["A710", "A711"])
+    # Abtauvorgang 3
+    OPERATING_HOURS_V2_DEFROSTER_3_A712 = DataTag(["A712", "A713"])
+    # Abtauvorgang 4
+    OPERATING_HOURS_V2_DEFROSTER_4_A714 = DataTag(["A714", "A715"])
+    # Heizungspumpe 2
+    OPERATING_HOURS_V2_HEATINGPUMP_2_A716 = DataTag(["A716", "A717"])
+    # Heizungspumpe 3
+    OPERATING_HOURS_V2_HEATINGPUMP_3_A718 = DataTag(["A718", "A719"])
+    # Heizungspumpe 4
+    OPERATING_HOURS_V2_HEATINGPUMP_4_A720 = DataTag(["A720", "A721"])
+
+    #################################################
     # waterkotte DATE/time stuff
 
     # #use set date...
@@ -447,9 +523,7 @@ class WKHPTag(DataTag, Enum):
     # 192	1
 
     # day: I5,       month: I6,      year: I7,       hour: I8,       minute: I9
-    WATERKOTTE_BIOS_TIME = DataTag(
-        ["I7", "I6", "I5", "I8", "I9"], decode_f=DataTag._decode_datetime
-    )
+    WATERKOTTE_BIOS_TIME = DataTag(["I7", "I6", "I5", "I8", "I9"], decode_f=DataTag._decode_datetime)
     # day: I1758,    month: I1759,   year: I1760,    hour: I1761,    minute: I1762
     # WATERKOTTE_TIME_SET = DataTag(
     #    ["I1760", "I1759", "I1758", "I1761", "I1762"], writeable=True, decode_f=DataTag._decode_datetime,
@@ -459,12 +533,10 @@ class WKHPTag(DataTag, Enum):
     # WATERKOTTE_TIME_X2 = DataTag(["D22"], writeable=True)
 
     HOLIDAY_ENABLED = DataTag(["D420"], writeable=True)
-    HOLIDAY_START_TIME = DataTag(
-        ["I1254", "I1253", "I1252", "I1250", "I1251"], writeable=True, decode_f=DataTag._decode_datetime,
+    HOLIDAY_START_TIME = DataTag(["I1254", "I1253", "I1252", "I1250", "I1251"], writeable=True, decode_f=DataTag._decode_datetime,
         encode_f=DataTag._encode_datetime
     )
-    HOLIDAY_END_TIME = DataTag(
-        ["I1259", "I1258", "I1257", "I1255", "I1256"], writeable=True, decode_f=DataTag._decode_datetime,
+    HOLIDAY_END_TIME = DataTag(["I1259", "I1258", "I1257", "I1255", "I1256"], writeable=True, decode_f=DataTag._decode_datetime,
         encode_f=DataTag._encode_datetime
     )
     TEMPERATURE_OUTSIDE = DataTag(["A1"], "°C")
@@ -654,8 +726,7 @@ class WKHPTag(DataTag, Enum):
     TEMPERATURE_WATER_HYSTERESIS = DataTag(["A139"], "K", writeable=True)
     TEMPERATURE_WATER_PV_CHANGE = DataTag(["A684"], "K", writeable=True)
     TEMPERATURE_WATER_DISINFECTION = DataTag(["A168"], "°C", writeable=True)
-    SCHEDULE_WATER_DISINFECTION_START_TIME = DataTag(
-        ["I505", "I506"], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_DISINFECTION_START_TIME = DataTag(["I505", "I506"], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     # SCHEDULE_WATER_DISINFECTION_START_HOUR = DataTag(["I505"], "", writeable=True)
     # SCHEDULE_WATER_DISINFECTION_START_MINUTE = DataTag(["I506"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_DURATION = DataTag(["I507"], "h", writeable=True)
@@ -763,11 +834,51 @@ class WKHPTag(DataTag, Enum):
     DATE_YEAR = DataTag(["I7"])
     TIME_HOUR = DataTag(["I8"])
     TIME_MINUTE = DataTag(["I9"])
+
+    # AI-Phantasie
+    # I10–I19: Betriebsstunden & Betriebsdaten
+    # I10	Betriebsstunden Verdichter (Kompressor)
+    # I11	Verdichterstarts
+    # I12	Betriebsstunden Heizbetrieb
+    # I13	Betriebsstunden Warmwasser
+    # I14	Betriebsstunden Kühlbetrieb (falls aktiviert)
+    # I15	Betriebsstunden Heizkreispumpe (HKP)
+    # I16	Betriebsstunden Solepumpe (Primärkreis) / Ventilator (je nach Modell)
+    # I17	Betriebsstunden Elektroheizstab Stufe 1
+    # I18	Betriebsstunden Elektroheizstab Stufe 2 oder Bivalenzanforderung (je nach Softwarestand)
+    # I19	Betriebsstunden externer Wärmeerzeuger (falls Bivalenz aktiv) / Außeneinheit (bei Luft‑WP)
+
+    # AI-Phantasie
+    # I20–I29: Verdichter & interne Leistungsdaten
+    # I20	Verdichterstatus (0 = aus, 1 = ein) oder Leistungsstufe
+    # I21	Hochdrucksensor (bar)
+    # I22	Niederdrucksensor (bar)
+    # I23	Verdichterstrom (A)
+    # I24	Verdichterleistung (kW)
+    # I25	COP‑Momentanwert (falls aktiviert)
+    # I26	Verdichterfrequenz (bei Inverter‑Modellen)
+    # I27	interne Regelgröße (z. B. Sollwertabweichung)
+    # I28	interne Diagnosevariable
+    # I29	interne Diagnosevariable
+
     OPERATING_HOURS_COMPRESSOR_1 = DataTag(["I10"])
     OPERATING_HOURS_COMPRESSOR_2 = DataTag(["I14"])
     OPERATING_HOURS_CIRCULATION_PUMP = DataTag(["I18"])
     OPERATING_HOURS_SOURCE_PUMP = DataTag(["I20"])
     OPERATING_HOURS_SOLAR = DataTag(["I22"])
+
+    # AI-Phantasie
+    # I30–I39: Pumpen, Ventile, Durchfluss, Betriebszustände
+    # I30	Status Heizkreispumpe (0/1 oder % bei PWM)
+    # I31	Status Solepumpe (0/1 oder % bei PWM)
+    # I32	3‑Wege‑Ventil Heizen/Warmwasser (0 = Heizen, 1 = WW)
+    # I33	Umschaltventil Kühlung (falls vorhanden)
+    # I34	Durchfluss Sole (l/min) – nur bei Sensor
+    # I35	Durchfluss Heizung (l/min) – nur bei Sensor
+    # I36	Status Brauchwasserladepumpe (falls extern)
+    # I37	Status Zirkulationspumpe (falls angeschlossen)
+    # I38	Status externer Wärmeerzeuger / Bivalenz (0/1)
+    # I39	Status Kühlfunktion (0/1)
     ENABLE_HEATING = DataTag(["I30"], writeable=True, decode_f=DataTag._decode_state, encode_f=DataTag._encode_state)
     ENABLE_COOLING = DataTag(["I31"], writeable=True, decode_f=DataTag._decode_state, encode_f=DataTag._encode_state)
     ENABLE_WARMWATER = DataTag(["I32"], writeable=True, decode_f=DataTag._decode_state, encode_f=DataTag._encode_state)
@@ -972,12 +1083,10 @@ class WKHPTag(DataTag, Enum):
     # I4523: uom: '', 'Luftqualitaet Messung VOC CO2 Sensor'
 
     # I4582: uom: '', opts: { type:'select', options: ['Tag','Nacht','Zeitprogramm','Party','Urlaub','Bypass'] }, 'i_Mode'
-    BASICVENT_OPERATION_MODE_I4582 = DataTag(
-        ["I4582"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode)
+    BASICVENT_OPERATION_MODE_I4582 = DataTag(["I4582"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode)
 
     # https://github.com/marq24/ha-waterkotte/issues/49 (I4582 might not be in use - could be that "3:HREG400418" does it)
-    BASICVENT_OPERATION_MODE_ALT = DataTag(
-        ["3:HREG400418"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode)
+    BASICVENT_OPERATION_MODE_ALT = DataTag(["3:HREG400418"], writeable=True, decode_f=DataTag._decode_six_steps_mode, encode_f=DataTag._encode_six_steps_mode)
 
     # mdi:air-filter
     # mdi:hvac
@@ -1195,1027 +1304,663 @@ class WKHPTag(DataTag, Enum):
     #####################################
     # _1MO, _2TU, _3WE, _4TH, _5FR, _6SA, _7SU
     SCHEDULE_HEATING_1MO_ENABLE = DataTag(['D42'], writeable=True)
-    SCHEDULE_HEATING_1MO_START_TIME = DataTag(
-        ['I151', 'I179'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_1MO_END_TIME = DataTag(
-        ['I207', 'I235'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_1MO_START_TIME = DataTag(['I151', 'I179'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_1MO_END_TIME = DataTag(['I207', 'I235'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_1MO_ADJUST1_ENABLE = DataTag(['D43'], writeable=True)
     SCHEDULE_HEATING_1MO_ADJUST1_VALUE = DataTag(['A63'], writeable=True)
-    SCHEDULE_HEATING_1MO_ADJUST1_START_TIME = DataTag(
-        ['I152', 'I180'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_1MO_ADJUST1_END_TIME = DataTag(
-        ['I208', 'I236'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_1MO_ADJUST1_START_TIME = DataTag(['I152', 'I180'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_1MO_ADJUST1_END_TIME = DataTag(['I208', 'I236'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_1MO_ADJUST2_ENABLE = DataTag(['D44'], writeable=True)
     SCHEDULE_HEATING_1MO_ADJUST2_VALUE = DataTag(['A64'], writeable=True)
-    SCHEDULE_HEATING_1MO_ADJUST2_START_TIME = DataTag(
-        ['I153', 'I181'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_1MO_ADJUST2_END_TIME = DataTag(
-        ['I209', 'I237'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_1MO_ADJUST2_START_TIME = DataTag(['I153', 'I181'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_1MO_ADJUST2_END_TIME = DataTag(['I209', 'I237'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_2TU_ENABLE = DataTag(['D46'], writeable=True)
-    SCHEDULE_HEATING_2TU_START_TIME = DataTag(
-        ['I155', 'I183'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_2TU_END_TIME = DataTag(
-        ['I211', 'I239'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_2TU_START_TIME = DataTag(['I155', 'I183'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_2TU_END_TIME = DataTag(['I211', 'I239'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_2TU_ADJUST1_ENABLE = DataTag(['D47'], writeable=True)
     SCHEDULE_HEATING_2TU_ADJUST1_VALUE = DataTag(['A67'], writeable=True)
-    SCHEDULE_HEATING_2TU_ADJUST1_START_TIME = DataTag(
-        ['I156', 'I184'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_2TU_ADJUST1_END_TIME = DataTag(
-        ['I212', 'I240'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_2TU_ADJUST1_START_TIME = DataTag(['I156', 'I184'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_2TU_ADJUST1_END_TIME = DataTag(['I212', 'I240'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_2TU_ADJUST2_ENABLE = DataTag(['D48'], writeable=True)
     SCHEDULE_HEATING_2TU_ADJUST2_VALUE = DataTag(['A68'], writeable=True)
-    SCHEDULE_HEATING_2TU_ADJUST2_START_TIME = DataTag(
-        ['I157', 'I185'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_2TU_ADJUST2_END_TIME = DataTag(
-        ['I213', 'I241'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_2TU_ADJUST2_START_TIME = DataTag(['I157', 'I185'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_2TU_ADJUST2_END_TIME = DataTag(['I213', 'I241'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_3WE_ENABLE = DataTag(['D50'], writeable=True)
-    SCHEDULE_HEATING_3WE_START_TIME = DataTag(
-        ['I159', 'I187'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_3WE_END_TIME = DataTag(
-        ['I215', 'I243'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_3WE_START_TIME = DataTag(['I159', 'I187'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_3WE_END_TIME = DataTag(['I215', 'I243'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_3WE_ADJUST1_ENABLE = DataTag(['D51'], writeable=True)
     SCHEDULE_HEATING_3WE_ADJUST1_VALUE = DataTag(['A71'], writeable=True)
-    SCHEDULE_HEATING_3WE_ADJUST1_START_TIME = DataTag(
-        ['I160', 'I188'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_3WE_ADJUST1_END_TIME = DataTag(
-        ['I216', 'I244'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_3WE_ADJUST1_START_TIME = DataTag(['I160', 'I188'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_3WE_ADJUST1_END_TIME = DataTag(['I216', 'I244'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_3WE_ADJUST2_ENABLE = DataTag(['D52'], writeable=True)
     SCHEDULE_HEATING_3WE_ADJUST2_VALUE = DataTag(['A72'], writeable=True)
-    SCHEDULE_HEATING_3WE_ADJUST2_START_TIME = DataTag(
-        ['I161', 'I189'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_3WE_ADJUST2_END_TIME = DataTag(
-        ['I217', 'I245'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_3WE_ADJUST2_START_TIME = DataTag(['I161', 'I189'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_3WE_ADJUST2_END_TIME = DataTag(['I217', 'I245'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_4TH_ENABLE = DataTag(['D54'], writeable=True)
-    SCHEDULE_HEATING_4TH_START_TIME = DataTag(
-        ['I163', 'I191'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_4TH_END_TIME = DataTag(
-        ['I219', 'I247'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_4TH_START_TIME = DataTag(['I163', 'I191'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_4TH_END_TIME = DataTag(['I219', 'I247'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_4TH_ADJUST1_ENABLE = DataTag(['D55'], writeable=True)
     SCHEDULE_HEATING_4TH_ADJUST1_VALUE = DataTag(['A75'], writeable=True)
-    SCHEDULE_HEATING_4TH_ADJUST1_START_TIME = DataTag(
-        ['I164', 'I192'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_4TH_ADJUST1_END_TIME = DataTag(
-        ['I220', 'I248'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_4TH_ADJUST1_START_TIME = DataTag(['I164', 'I192'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_4TH_ADJUST1_END_TIME = DataTag(['I220', 'I248'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_4TH_ADJUST2_ENABLE = DataTag(['D56'], writeable=True)
     SCHEDULE_HEATING_4TH_ADJUST2_VALUE = DataTag(['A76'], writeable=True)
-    SCHEDULE_HEATING_4TH_ADJUST2_START_TIME = DataTag(
-        ['I165', 'I193'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_4TH_ADJUST2_END_TIME = DataTag(
-        ['I221', 'I249'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_4TH_ADJUST2_START_TIME = DataTag(['I165', 'I193'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_4TH_ADJUST2_END_TIME = DataTag(['I221', 'I249'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_5FR_ENABLE = DataTag(['D58'], writeable=True)
-    SCHEDULE_HEATING_5FR_START_TIME = DataTag(
-        ['I167', 'I195'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_5FR_END_TIME = DataTag(
-        ['I223', 'I251'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_5FR_START_TIME = DataTag(['I167', 'I195'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_5FR_END_TIME = DataTag(['I223', 'I251'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_5FR_ADJUST1_ENABLE = DataTag(['D59'], writeable=True)
     SCHEDULE_HEATING_5FR_ADJUST1_VALUE = DataTag(['A79'], writeable=True)
-    SCHEDULE_HEATING_5FR_ADJUST1_START_TIME = DataTag(
-        ['I168', 'I196'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_5FR_ADJUST1_END_TIME = DataTag(
-        ['I224', 'I252'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_5FR_ADJUST1_START_TIME = DataTag(['I168', 'I196'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_5FR_ADJUST1_END_TIME = DataTag(['I224', 'I252'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_5FR_ADJUST2_ENABLE = DataTag(['D60'], writeable=True)
     SCHEDULE_HEATING_5FR_ADJUST2_VALUE = DataTag(['A80'], writeable=True)
-    SCHEDULE_HEATING_5FR_ADJUST2_START_TIME = DataTag(
-        ['I169', 'I197'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_5FR_ADJUST2_END_TIME = DataTag(
-        ['I225', 'I253'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_5FR_ADJUST2_START_TIME = DataTag(['I169', 'I197'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_5FR_ADJUST2_END_TIME = DataTag(['I225', 'I253'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_6SA_ENABLE = DataTag(['D62'], writeable=True)
-    SCHEDULE_HEATING_6SA_START_TIME = DataTag(
-        ['I171', 'I199'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_6SA_END_TIME = DataTag(
-        ['I227', 'I255'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_6SA_START_TIME = DataTag(['I171', 'I199'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_6SA_END_TIME = DataTag(['I227', 'I255'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_6SA_ADJUST1_ENABLE = DataTag(['D63'], writeable=True)
     SCHEDULE_HEATING_6SA_ADJUST1_VALUE = DataTag(['A83'], writeable=True)
-    SCHEDULE_HEATING_6SA_ADJUST1_START_TIME = DataTag(
-        ['I172', 'I200'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_6SA_ADJUST1_END_TIME = DataTag(
-        ['I228', 'I256'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_6SA_ADJUST1_START_TIME = DataTag(['I172', 'I200'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_6SA_ADJUST1_END_TIME = DataTag(['I228', 'I256'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_6SA_ADJUST2_ENABLE = DataTag(['D64'], writeable=True)
     SCHEDULE_HEATING_6SA_ADJUST2_VALUE = DataTag(['A84'], writeable=True)
-    SCHEDULE_HEATING_6SA_ADJUST2_START_TIME = DataTag(
-        ['I173', 'I201'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_6SA_ADJUST2_END_TIME = DataTag(
-        ['I229', 'I257'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_6SA_ADJUST2_START_TIME = DataTag(['I173', 'I201'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_6SA_ADJUST2_END_TIME = DataTag(['I229', 'I257'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_7SU_ENABLE = DataTag(['D66'], writeable=True)
-    SCHEDULE_HEATING_7SU_START_TIME = DataTag(
-        ['I175', 'I203'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_7SU_END_TIME = DataTag(
-        ['I231', 'I259'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_7SU_START_TIME = DataTag(['I175', 'I203'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_7SU_END_TIME = DataTag(['I231', 'I259'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_7SU_ADJUST1_ENABLE = DataTag(['D67'], writeable=True)
     SCHEDULE_HEATING_7SU_ADJUST1_VALUE = DataTag(['A87'], writeable=True)
-    SCHEDULE_HEATING_7SU_ADJUST1_START_TIME = DataTag(
-        ['I176', 'I204'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_7SU_ADJUST1_END_TIME = DataTag(
-        ['I232', 'I260'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_7SU_ADJUST1_START_TIME = DataTag(['I176', 'I204'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_7SU_ADJUST1_END_TIME = DataTag(['I232', 'I260'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_HEATING_7SU_ADJUST2_ENABLE = DataTag(['D68'], writeable=True)
     SCHEDULE_HEATING_7SU_ADJUST2_VALUE = DataTag(['A88'], writeable=True)
-    SCHEDULE_HEATING_7SU_ADJUST2_START_TIME = DataTag(
-        ['I177', 'I205'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_HEATING_7SU_ADJUST2_END_TIME = DataTag(
-        ['I233', 'I261'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_7SU_ADJUST2_START_TIME = DataTag(['I177', 'I205'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_HEATING_7SU_ADJUST2_END_TIME = DataTag(['I233', 'I261'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_1MO_ENABLE = DataTag(['D86'], writeable=True)
-    SCHEDULE_COOLING_1MO_START_TIME = DataTag(
-        ['I276', 'I304'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_1MO_END_TIME = DataTag(
-        ['I332', 'I360'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_1MO_START_TIME = DataTag(['I276', 'I304'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_1MO_END_TIME = DataTag(['I332', 'I360'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_1MO_ADJUST1_ENABLE = DataTag(['D87'], writeable=True)
     SCHEDULE_COOLING_1MO_ADJUST1_VALUE = DataTag(['A112'], writeable=True)
-    SCHEDULE_COOLING_1MO_ADJUST1_START_TIME = DataTag(
-        ['I277', 'I305'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_1MO_ADJUST1_END_TIME = DataTag(
-        ['I333', 'I361'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_1MO_ADJUST1_START_TIME = DataTag(['I277', 'I305'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_1MO_ADJUST1_END_TIME = DataTag(['I333', 'I361'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_1MO_ADJUST2_ENABLE = DataTag(['D88'], writeable=True)
     SCHEDULE_COOLING_1MO_ADJUST2_VALUE = DataTag(['A113'], writeable=True)
-    SCHEDULE_COOLING_1MO_ADJUST2_START_TIME = DataTag(
-        ['I278', 'I306'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_1MO_ADJUST2_END_TIME = DataTag(
-        ['I334', 'I362'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_1MO_ADJUST2_START_TIME = DataTag(['I278', 'I306'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_1MO_ADJUST2_END_TIME = DataTag(['I334', 'I362'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_2TU_ENABLE = DataTag(['D90'], writeable=True)
-    SCHEDULE_COOLING_2TU_START_TIME = DataTag(
-        ['I280', 'I308'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_2TU_END_TIME = DataTag(
-        ['I336', 'I364'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_2TU_START_TIME = DataTag(['I280', 'I308'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_2TU_END_TIME = DataTag(['I336', 'I364'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_2TU_ADJUST1_ENABLE = DataTag(['D91'], writeable=True)
     SCHEDULE_COOLING_2TU_ADJUST1_VALUE = DataTag(['A116'], writeable=True)
-    SCHEDULE_COOLING_2TU_ADJUST1_START_TIME = DataTag(
-        ['I281', 'I309'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_2TU_ADJUST1_END_TIME = DataTag(
-        ['I337', 'I365'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_2TU_ADJUST1_START_TIME = DataTag(['I281', 'I309'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_2TU_ADJUST1_END_TIME = DataTag(['I337', 'I365'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_2TU_ADJUST2_ENABLE = DataTag(['D92'], writeable=True)
     SCHEDULE_COOLING_2TU_ADJUST2_VALUE = DataTag(['A117'], writeable=True)
-    SCHEDULE_COOLING_2TU_ADJUST2_START_TIME = DataTag(
-        ['I282', 'I310'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_2TU_ADJUST2_END_TIME = DataTag(
-        ['I338', 'I366'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_2TU_ADJUST2_START_TIME = DataTag(['I282', 'I310'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_2TU_ADJUST2_END_TIME = DataTag(['I338', 'I366'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_3WE_ENABLE = DataTag(['D94'], writeable=True)
-    SCHEDULE_COOLING_3WE_START_TIME = DataTag(
-        ['I284', 'I312'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_3WE_END_TIME = DataTag(
-        ['I340', 'I368'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_3WE_START_TIME = DataTag(['I284', 'I312'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_3WE_END_TIME = DataTag(['I340', 'I368'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_3WE_ADJUST1_ENABLE = DataTag(['D95'], writeable=True)
     SCHEDULE_COOLING_3WE_ADJUST1_VALUE = DataTag(['A120'], writeable=True)
-    SCHEDULE_COOLING_3WE_ADJUST1_START_TIME = DataTag(
-        ['I285', 'I313'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_3WE_ADJUST1_END_TIME = DataTag(
-        ['I341', 'I369'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_3WE_ADJUST1_START_TIME = DataTag(['I285', 'I313'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_3WE_ADJUST1_END_TIME = DataTag(['I341', 'I369'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_3WE_ADJUST2_ENABLE = DataTag(['D96'], writeable=True)
     SCHEDULE_COOLING_3WE_ADJUST2_VALUE = DataTag(['A121'], writeable=True)
-    SCHEDULE_COOLING_3WE_ADJUST2_START_TIME = DataTag(
-        ['I286', 'I314'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_3WE_ADJUST2_END_TIME = DataTag(
-        ['I342', 'I370'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_3WE_ADJUST2_START_TIME = DataTag(['I286', 'I314'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_3WE_ADJUST2_END_TIME = DataTag(['I342', 'I370'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_4TH_ENABLE = DataTag(['D98'], writeable=True)
-    SCHEDULE_COOLING_4TH_START_TIME = DataTag(
-        ['I288', 'I316'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_4TH_END_TIME = DataTag(
-        ['I344', 'I372'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_4TH_START_TIME = DataTag(['I288', 'I316'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_4TH_END_TIME = DataTag(['I344', 'I372'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_4TH_ADJUST1_ENABLE = DataTag(['D99'], writeable=True)
     SCHEDULE_COOLING_4TH_ADJUST1_VALUE = DataTag(['A124'], writeable=True)
-    SCHEDULE_COOLING_4TH_ADJUST1_START_TIME = DataTag(
-        ['I289', 'I317'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_4TH_ADJUST1_END_TIME = DataTag(
-        ['I345', 'I373'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_4TH_ADJUST1_START_TIME = DataTag(['I289', 'I317'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_4TH_ADJUST1_END_TIME = DataTag(['I345', 'I373'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_4TH_ADJUST2_ENABLE = DataTag(['D100'], writeable=True)
     SCHEDULE_COOLING_4TH_ADJUST2_VALUE = DataTag(['A125'], writeable=True)
-    SCHEDULE_COOLING_4TH_ADJUST2_START_TIME = DataTag(
-        ['I290', 'I318'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_4TH_ADJUST2_END_TIME = DataTag(
-        ['I346', 'I374'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_4TH_ADJUST2_START_TIME = DataTag(['I290', 'I318'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_4TH_ADJUST2_END_TIME = DataTag(['I346', 'I374'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_5FR_ENABLE = DataTag(['D102'], writeable=True)
-    SCHEDULE_COOLING_5FR_START_TIME = DataTag(
-        ['I292', 'I320'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_5FR_END_TIME = DataTag(
-        ['I348', 'I376'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_5FR_START_TIME = DataTag(['I292', 'I320'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_5FR_END_TIME = DataTag(['I348', 'I376'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_5FR_ADJUST1_ENABLE = DataTag(['D103'], writeable=True)
     SCHEDULE_COOLING_5FR_ADJUST1_VALUE = DataTag(['A128'], writeable=True)
-    SCHEDULE_COOLING_5FR_ADJUST1_START_TIME = DataTag(
-        ['I293', 'I321'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_5FR_ADJUST1_END_TIME = DataTag(
-        ['I349', 'I377'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_5FR_ADJUST1_START_TIME = DataTag(['I293', 'I321'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_5FR_ADJUST1_END_TIME = DataTag(['I349', 'I377'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_5FR_ADJUST2_ENABLE = DataTag(['D104'], writeable=True)
     SCHEDULE_COOLING_5FR_ADJUST2_VALUE = DataTag(['A129'], writeable=True)
-    SCHEDULE_COOLING_5FR_ADJUST2_START_TIME = DataTag(
-        ['I294', 'I322'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_5FR_ADJUST2_END_TIME = DataTag(
-        ['I350', 'I378'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_5FR_ADJUST2_START_TIME = DataTag(['I294', 'I322'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_5FR_ADJUST2_END_TIME = DataTag(['I350', 'I378'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_6SA_ENABLE = DataTag(['D106'], writeable=True)
-    SCHEDULE_COOLING_6SA_START_TIME = DataTag(
-        ['I296', 'I324'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_6SA_END_TIME = DataTag(
-        ['I352', 'I380'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_6SA_START_TIME = DataTag(['I296', 'I324'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_6SA_END_TIME = DataTag(['I352', 'I380'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_6SA_ADJUST1_ENABLE = DataTag(['D107'], writeable=True)
     SCHEDULE_COOLING_6SA_ADJUST1_VALUE = DataTag(['A132'], writeable=True)
-    SCHEDULE_COOLING_6SA_ADJUST1_START_TIME = DataTag(
-        ['I297', 'I325'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_6SA_ADJUST1_END_TIME = DataTag(
-        ['I353', 'I381'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_6SA_ADJUST1_START_TIME = DataTag(['I297', 'I325'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_6SA_ADJUST1_END_TIME = DataTag(['I353', 'I381'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_6SA_ADJUST2_ENABLE = DataTag(['D108'], writeable=True)
     SCHEDULE_COOLING_6SA_ADJUST2_VALUE = DataTag(['A133'], writeable=True)
-    SCHEDULE_COOLING_6SA_ADJUST2_START_TIME = DataTag(
-        ['I298', 'I326'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_6SA_ADJUST2_END_TIME = DataTag(
-        ['I354', 'I382'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_6SA_ADJUST2_START_TIME = DataTag(['I298', 'I326'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_6SA_ADJUST2_END_TIME = DataTag(['I354', 'I382'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_7SU_ENABLE = DataTag(['D110'], writeable=True)
-    SCHEDULE_COOLING_7SU_START_TIME = DataTag(
-        ['I300', 'I328'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_7SU_END_TIME = DataTag(
-        ['I356', 'I384'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_7SU_START_TIME = DataTag(['I300', 'I328'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_7SU_END_TIME = DataTag(['I356', 'I384'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_7SU_ADJUST1_ENABLE = DataTag(['D111'], writeable=True)
     SCHEDULE_COOLING_7SU_ADJUST1_VALUE = DataTag(['A136'], writeable=True)
-    SCHEDULE_COOLING_7SU_ADJUST1_START_TIME = DataTag(
-        ['I301', 'I329'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_7SU_ADJUST1_END_TIME = DataTag(
-        ['I357', 'I385'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_7SU_ADJUST1_START_TIME = DataTag(['I301', 'I329'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_7SU_ADJUST1_END_TIME = DataTag(['I357', 'I385'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_COOLING_7SU_ADJUST2_ENABLE = DataTag(['D112'], writeable=True)
     SCHEDULE_COOLING_7SU_ADJUST2_VALUE = DataTag(['A137'], writeable=True)
-    SCHEDULE_COOLING_7SU_ADJUST2_START_TIME = DataTag(
-        ['I302', 'I330'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_COOLING_7SU_ADJUST2_END_TIME = DataTag(
-        ['I358', 'I386'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_7SU_ADJUST2_START_TIME = DataTag(['I302', 'I330'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_COOLING_7SU_ADJUST2_END_TIME = DataTag(['I358', 'I386'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_1MO_ENABLE = DataTag(['D125'], writeable=True)
-    SCHEDULE_WATER_1MO_START_TIME = DataTag(
-        ['I393', 'I421'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_1MO_END_TIME = DataTag(
-        ['I449', 'I447'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_1MO_START_TIME = DataTag(['I393', 'I421'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_1MO_END_TIME = DataTag(['I449', 'I447'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_1MO_ADJUST1_ENABLE = DataTag(['D126'], writeable=True)
     SCHEDULE_WATER_1MO_ADJUST1_VALUE = DataTag(['A141'], writeable=True)
-    SCHEDULE_WATER_1MO_ADJUST1_START_TIME = DataTag(
-        ['I394', 'I422'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_1MO_ADJUST1_END_TIME = DataTag(
-        ['I450', 'I448'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_1MO_ADJUST1_START_TIME = DataTag(['I394', 'I422'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_1MO_ADJUST1_END_TIME = DataTag(['I450', 'I448'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_1MO_ADJUST2_ENABLE = DataTag(['D127'], writeable=True)
     SCHEDULE_WATER_1MO_ADJUST2_VALUE = DataTag(['A142'], writeable=True)
-    SCHEDULE_WATER_1MO_ADJUST2_START_TIME = DataTag(
-        ['I395', 'I423'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_1MO_ADJUST2_END_TIME = DataTag(
-        ['I451', 'I449'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_1MO_ADJUST2_START_TIME = DataTag(['I395', 'I423'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_1MO_ADJUST2_END_TIME = DataTag(['I451', 'I449'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_2TU_ENABLE = DataTag(['D129'], writeable=True)
-    SCHEDULE_WATER_2TU_START_TIME = DataTag(
-        ['I397', 'I425'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_2TU_END_TIME = DataTag(
-        ['I453', 'I451'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_2TU_START_TIME = DataTag(['I397', 'I425'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_2TU_END_TIME = DataTag(['I453', 'I451'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_2TU_ADJUST1_ENABLE = DataTag(['D130'], writeable=True)
     SCHEDULE_WATER_2TU_ADJUST1_VALUE = DataTag(['A145'], writeable=True)
-    SCHEDULE_WATER_2TU_ADJUST1_START_TIME = DataTag(
-        ['I398', 'I426'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_2TU_ADJUST1_END_TIME = DataTag(
-        ['I454', 'I452'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_2TU_ADJUST1_START_TIME = DataTag(['I398', 'I426'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_2TU_ADJUST1_END_TIME = DataTag(['I454', 'I452'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_2TU_ADJUST2_ENABLE = DataTag(['D131'], writeable=True)
     SCHEDULE_WATER_2TU_ADJUST2_VALUE = DataTag(['A146'], writeable=True)
-    SCHEDULE_WATER_2TU_ADJUST2_START_TIME = DataTag(
-        ['I399', 'I427'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_2TU_ADJUST2_END_TIME = DataTag(
-        ['I455', 'I453'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_2TU_ADJUST2_START_TIME = DataTag(['I399', 'I427'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_2TU_ADJUST2_END_TIME = DataTag(['I455', 'I453'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_3WE_ENABLE = DataTag(['D133'], writeable=True)
-    SCHEDULE_WATER_3WE_START_TIME = DataTag(
-        ['I401', 'I429'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_3WE_END_TIME = DataTag(
-        ['I457', 'I455'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_3WE_START_TIME = DataTag(['I401', 'I429'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_3WE_END_TIME = DataTag(['I457', 'I455'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_3WE_ADJUST1_ENABLE = DataTag(['D134'], writeable=True)
     SCHEDULE_WATER_3WE_ADJUST1_VALUE = DataTag(['A149'], writeable=True)
-    SCHEDULE_WATER_3WE_ADJUST1_START_TIME = DataTag(
-        ['I402', 'I430'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_3WE_ADJUST1_END_TIME = DataTag(
-        ['I458', 'I456'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_3WE_ADJUST1_START_TIME = DataTag(['I402', 'I430'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_3WE_ADJUST1_END_TIME = DataTag(['I458', 'I456'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_3WE_ADJUST2_ENABLE = DataTag(['D135'], writeable=True)
     SCHEDULE_WATER_3WE_ADJUST2_VALUE = DataTag(['A150'], writeable=True)
-    SCHEDULE_WATER_3WE_ADJUST2_START_TIME = DataTag(
-        ['I403', 'I431'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_3WE_ADJUST2_END_TIME = DataTag(
-        ['I459', 'I457'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_3WE_ADJUST2_START_TIME = DataTag(['I403', 'I431'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_3WE_ADJUST2_END_TIME = DataTag(['I459', 'I457'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_4TH_ENABLE = DataTag(['D137'], writeable=True)
-    SCHEDULE_WATER_4TH_START_TIME = DataTag(
-        ['I405', 'I433'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_4TH_END_TIME = DataTag(
-        ['I461', 'I459'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_4TH_START_TIME = DataTag(['I405', 'I433'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_4TH_END_TIME = DataTag(['I461', 'I459'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_4TH_ADJUST1_ENABLE = DataTag(['D138'], writeable=True)
     SCHEDULE_WATER_4TH_ADJUST1_VALUE = DataTag(['A153'], writeable=True)
-    SCHEDULE_WATER_4TH_ADJUST1_START_TIME = DataTag(
-        ['I406', 'I434'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_4TH_ADJUST1_END_TIME = DataTag(
-        ['I462', 'I460'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_4TH_ADJUST1_START_TIME = DataTag(['I406', 'I434'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_4TH_ADJUST1_END_TIME = DataTag(['I462', 'I460'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_4TH_ADJUST2_ENABLE = DataTag(['D139'], writeable=True)
     SCHEDULE_WATER_4TH_ADJUST2_VALUE = DataTag(['A154'], writeable=True)
-    SCHEDULE_WATER_4TH_ADJUST2_START_TIME = DataTag(
-        ['I407', 'I435'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_4TH_ADJUST2_END_TIME = DataTag(
-        ['I463', 'I461'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_4TH_ADJUST2_START_TIME = DataTag(['I407', 'I435'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_4TH_ADJUST2_END_TIME = DataTag(['I463', 'I461'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_5FR_ENABLE = DataTag(['D141'], writeable=True)
-    SCHEDULE_WATER_5FR_START_TIME = DataTag(
-        ['I409', 'I437'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_5FR_END_TIME = DataTag(
-        ['I465', 'I463'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_5FR_START_TIME = DataTag(['I409', 'I437'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_5FR_END_TIME = DataTag(['I465', 'I463'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_5FR_ADJUST1_ENABLE = DataTag(['D142'], writeable=True)
     SCHEDULE_WATER_5FR_ADJUST1_VALUE = DataTag(['A157'], writeable=True)
-    SCHEDULE_WATER_5FR_ADJUST1_START_TIME = DataTag(
-        ['I410', 'I438'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_5FR_ADJUST1_END_TIME = DataTag(
-        ['I466', 'I464'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_5FR_ADJUST1_START_TIME = DataTag(['I410', 'I438'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_5FR_ADJUST1_END_TIME = DataTag(['I466', 'I464'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_5FR_ADJUST2_ENABLE = DataTag(['D143'], writeable=True)
     SCHEDULE_WATER_5FR_ADJUST2_VALUE = DataTag(['A158'], writeable=True)
-    SCHEDULE_WATER_5FR_ADJUST2_START_TIME = DataTag(
-        ['I411', 'I439'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_5FR_ADJUST2_END_TIME = DataTag(
-        ['I467', 'I465'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_5FR_ADJUST2_START_TIME = DataTag(['I411', 'I439'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_5FR_ADJUST2_END_TIME = DataTag(['I467', 'I465'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_6SA_ENABLE = DataTag(['D145'], writeable=True)
-    SCHEDULE_WATER_6SA_START_TIME = DataTag(
-        ['I413', 'I441'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_6SA_END_TIME = DataTag(
-        ['I469', 'I467'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_6SA_START_TIME = DataTag(['I413', 'I441'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_6SA_END_TIME = DataTag(['I469', 'I467'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_6SA_ADJUST1_ENABLE = DataTag(['D146'], writeable=True)
     SCHEDULE_WATER_6SA_ADJUST1_VALUE = DataTag(['A161'], writeable=True)
-    SCHEDULE_WATER_6SA_ADJUST1_START_TIME = DataTag(
-        ['I414', 'I442'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_6SA_ADJUST1_END_TIME = DataTag(
-        ['I470', 'I468'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_6SA_ADJUST1_START_TIME = DataTag(['I414', 'I442'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_6SA_ADJUST1_END_TIME = DataTag(['I470', 'I468'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_6SA_ADJUST2_ENABLE = DataTag(['D147'], writeable=True)
     SCHEDULE_WATER_6SA_ADJUST2_VALUE = DataTag(['A162'], writeable=True)
-    SCHEDULE_WATER_6SA_ADJUST2_START_TIME = DataTag(
-        ['I415', 'I443'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_6SA_ADJUST2_END_TIME = DataTag(
-        ['I471', 'I469'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_6SA_ADJUST2_START_TIME = DataTag(['I415', 'I443'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_6SA_ADJUST2_END_TIME = DataTag(['I471', 'I469'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_7SU_ENABLE = DataTag(['D149'], writeable=True)
-    SCHEDULE_WATER_7SU_START_TIME = DataTag(
-        ['I417', 'I445'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_7SU_END_TIME = DataTag(
-        ['I473', 'I471'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_7SU_START_TIME = DataTag(['I417', 'I445'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_7SU_END_TIME = DataTag(['I473', 'I471'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_7SU_ADJUST1_ENABLE = DataTag(['D150'], writeable=True)
     SCHEDULE_WATER_7SU_ADJUST1_VALUE = DataTag(['A165'], writeable=True)
-    SCHEDULE_WATER_7SU_ADJUST1_START_TIME = DataTag(
-        ['I418', 'I446'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_7SU_ADJUST1_END_TIME = DataTag(
-        ['I474', 'I472'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_7SU_ADJUST1_START_TIME = DataTag(['I418', 'I446'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_7SU_ADJUST1_END_TIME = DataTag(['I474', 'I472'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_WATER_7SU_ADJUST2_ENABLE = DataTag(['D151'], writeable=True)
     SCHEDULE_WATER_7SU_ADJUST2_VALUE = DataTag(['A166'], writeable=True)
-    SCHEDULE_WATER_7SU_ADJUST2_START_TIME = DataTag(
-        ['I419', 'I447'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_WATER_7SU_ADJUST2_END_TIME = DataTag(
-        ['I475', 'I473'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_7SU_ADJUST2_START_TIME = DataTag(['I419', 'I447'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_WATER_7SU_ADJUST2_END_TIME = DataTag(['I475', 'I473'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_1MO_ENABLE = DataTag(['D168'], writeable=True)
-    SCHEDULE_POOL_1MO_START_TIME = DataTag(
-        ['I528', 'I556'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_1MO_END_TIME = DataTag(
-        ['I584', 'I612'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_1MO_START_TIME = DataTag(['I528', 'I556'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_1MO_END_TIME = DataTag(['I584', 'I612'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_1MO_ADJUST1_ENABLE = DataTag(['D169'], writeable=True)
     SCHEDULE_POOL_1MO_ADJUST1_VALUE = DataTag(['A176'], writeable=True)
-    SCHEDULE_POOL_1MO_ADJUST1_START_TIME = DataTag(
-        ['I529', 'I557'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_1MO_ADJUST1_END_TIME = DataTag(
-        ['I585', 'I613'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_1MO_ADJUST1_START_TIME = DataTag(['I529', 'I557'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_1MO_ADJUST1_END_TIME = DataTag(['I585', 'I613'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_1MO_ADJUST2_ENABLE = DataTag(['D170'], writeable=True)
     SCHEDULE_POOL_1MO_ADJUST2_VALUE = DataTag(['A177'], writeable=True)
-    SCHEDULE_POOL_1MO_ADJUST2_START_TIME = DataTag(
-        ['I530', 'I558'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_1MO_ADJUST2_END_TIME = DataTag(
-        ['I586', 'I614'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_1MO_ADJUST2_START_TIME = DataTag(['I530', 'I558'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_1MO_ADJUST2_END_TIME = DataTag(['I586', 'I614'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_2TU_ENABLE = DataTag(['D172'], writeable=True)
-    SCHEDULE_POOL_2TU_START_TIME = DataTag(
-        ['I532', 'I560'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_2TU_END_TIME = DataTag(
-        ['I588', 'I616'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_2TU_START_TIME = DataTag(['I532', 'I560'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_2TU_END_TIME = DataTag(['I588', 'I616'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_2TU_ADJUST1_ENABLE = DataTag(['D173'], writeable=True)
     SCHEDULE_POOL_2TU_ADJUST1_VALUE = DataTag(['A180'], writeable=True)
-    SCHEDULE_POOL_2TU_ADJUST1_START_TIME = DataTag(
-        ['I533', 'I561'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_2TU_ADJUST1_END_TIME = DataTag(
-        ['I589', 'I617'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_2TU_ADJUST1_START_TIME = DataTag(['I533', 'I561'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_2TU_ADJUST1_END_TIME = DataTag(['I589', 'I617'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_2TU_ADJUST2_ENABLE = DataTag(['D174'], writeable=True)
     SCHEDULE_POOL_2TU_ADJUST2_VALUE = DataTag(['A181'], writeable=True)
-    SCHEDULE_POOL_2TU_ADJUST2_START_TIME = DataTag(
-        ['I534', 'I562'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_2TU_ADJUST2_END_TIME = DataTag(
-        ['I590', 'I618'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_2TU_ADJUST2_START_TIME = DataTag(['I534', 'I562'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_2TU_ADJUST2_END_TIME = DataTag(['I590', 'I618'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_3WE_ENABLE = DataTag(['D176'], writeable=True)
-    SCHEDULE_POOL_3WE_START_TIME = DataTag(
-        ['I536', 'I564'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_3WE_END_TIME = DataTag(
-        ['I592', 'I620'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_3WE_START_TIME = DataTag(['I536', 'I564'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_3WE_END_TIME = DataTag(['I592', 'I620'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_3WE_ADJUST1_ENABLE = DataTag(['D177'], writeable=True)
     SCHEDULE_POOL_3WE_ADJUST1_VALUE = DataTag(['A184'], writeable=True)
-    SCHEDULE_POOL_3WE_ADJUST1_START_TIME = DataTag(
-        ['I537', 'I565'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_3WE_ADJUST1_END_TIME = DataTag(
-        ['I593', 'I621'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_3WE_ADJUST1_START_TIME = DataTag(['I537', 'I565'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_3WE_ADJUST1_END_TIME = DataTag(['I593', 'I621'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_3WE_ADJUST2_ENABLE = DataTag(['D178'], writeable=True)
     SCHEDULE_POOL_3WE_ADJUST2_VALUE = DataTag(['A185'], writeable=True)
-    SCHEDULE_POOL_3WE_ADJUST2_START_TIME = DataTag(
-        ['I538', 'I566'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_3WE_ADJUST2_END_TIME = DataTag(
-        ['I594', 'I622'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_3WE_ADJUST2_START_TIME = DataTag(['I538', 'I566'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_3WE_ADJUST2_END_TIME = DataTag(['I594', 'I622'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_4TH_ENABLE = DataTag(['D180'], writeable=True)
-    SCHEDULE_POOL_4TH_START_TIME = DataTag(
-        ['I540', 'I568'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_4TH_END_TIME = DataTag(
-        ['I596', 'I624'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_4TH_START_TIME = DataTag(['I540', 'I568'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_4TH_END_TIME = DataTag(['I596', 'I624'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_4TH_ADJUST1_ENABLE = DataTag(['D181'], writeable=True)
     SCHEDULE_POOL_4TH_ADJUST1_VALUE = DataTag(['A188'], writeable=True)
-    SCHEDULE_POOL_4TH_ADJUST1_START_TIME = DataTag(
-        ['I541', 'I569'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_4TH_ADJUST1_END_TIME = DataTag(
-        ['I597', 'I625'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_4TH_ADJUST1_START_TIME = DataTag(['I541', 'I569'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_4TH_ADJUST1_END_TIME = DataTag(['I597', 'I625'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_4TH_ADJUST2_ENABLE = DataTag(['D182'], writeable=True)
     SCHEDULE_POOL_4TH_ADJUST2_VALUE = DataTag(['A189'], writeable=True)
-    SCHEDULE_POOL_4TH_ADJUST2_START_TIME = DataTag(
-        ['I542', 'I570'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_4TH_ADJUST2_END_TIME = DataTag(
-        ['I598', 'I626'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_4TH_ADJUST2_START_TIME = DataTag(['I542', 'I570'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_4TH_ADJUST2_END_TIME = DataTag(['I598', 'I626'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_5FR_ENABLE = DataTag(['D184'], writeable=True)
-    SCHEDULE_POOL_5FR_START_TIME = DataTag(
-        ['I544', 'I572'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_5FR_END_TIME = DataTag(
-        ['I600', 'I628'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_5FR_START_TIME = DataTag(['I544', 'I572'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_5FR_END_TIME = DataTag(['I600', 'I628'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_5FR_ADJUST1_ENABLE = DataTag(['D185'], writeable=True)
     SCHEDULE_POOL_5FR_ADJUST1_VALUE = DataTag(['A192'], writeable=True)
-    SCHEDULE_POOL_5FR_ADJUST1_START_TIME = DataTag(
-        ['I545', 'I573'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_5FR_ADJUST1_END_TIME = DataTag(
-        ['I601', 'I629'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_5FR_ADJUST1_START_TIME = DataTag(['I545', 'I573'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_5FR_ADJUST1_END_TIME = DataTag(['I601', 'I629'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_5FR_ADJUST2_ENABLE = DataTag(['D186'], writeable=True)
     SCHEDULE_POOL_5FR_ADJUST2_VALUE = DataTag(['A193'], writeable=True)
-    SCHEDULE_POOL_5FR_ADJUST2_START_TIME = DataTag(
-        ['I546', 'I574'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_5FR_ADJUST2_END_TIME = DataTag(
-        ['I602', 'I630'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_5FR_ADJUST2_START_TIME = DataTag(['I546', 'I574'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_5FR_ADJUST2_END_TIME = DataTag(['I602', 'I630'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_6SA_ENABLE = DataTag(['D188'], writeable=True)
-    SCHEDULE_POOL_6SA_START_TIME = DataTag(
-        ['I548', 'I576'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_6SA_END_TIME = DataTag(
-        ['I604', 'I632'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_6SA_START_TIME = DataTag(['I548', 'I576'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_6SA_END_TIME = DataTag(['I604', 'I632'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_6SA_ADJUST1_ENABLE = DataTag(['D189'], writeable=True)
     SCHEDULE_POOL_6SA_ADJUST1_VALUE = DataTag(['A196'], writeable=True)
-    SCHEDULE_POOL_6SA_ADJUST1_START_TIME = DataTag(
-        ['I549', 'I577'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_6SA_ADJUST1_END_TIME = DataTag(
-        ['I605', 'I633'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_6SA_ADJUST1_START_TIME = DataTag(['I549', 'I577'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_6SA_ADJUST1_END_TIME = DataTag(['I605', 'I633'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_6SA_ADJUST2_ENABLE = DataTag(['D190'], writeable=True)
     SCHEDULE_POOL_6SA_ADJUST2_VALUE = DataTag(['A197'], writeable=True)
-    SCHEDULE_POOL_6SA_ADJUST2_START_TIME = DataTag(
-        ['I550', 'I578'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_6SA_ADJUST2_END_TIME = DataTag(
-        ['I606', 'I634'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_6SA_ADJUST2_START_TIME = DataTag(['I550', 'I578'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_6SA_ADJUST2_END_TIME = DataTag(['I606', 'I634'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_7SU_ENABLE = DataTag(['D192'], writeable=True)
-    SCHEDULE_POOL_7SU_START_TIME = DataTag(
-        ['I552', 'I580'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_7SU_END_TIME = DataTag(
-        ['I608', 'I636'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_7SU_START_TIME = DataTag(['I552', 'I580'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_7SU_END_TIME = DataTag(['I608', 'I636'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_7SU_ADJUST1_ENABLE = DataTag(['D193'], writeable=True)
     SCHEDULE_POOL_7SU_ADJUST1_VALUE = DataTag(['A200'], writeable=True)
-    SCHEDULE_POOL_7SU_ADJUST1_START_TIME = DataTag(
-        ['I553', 'I581'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_7SU_ADJUST1_END_TIME = DataTag(
-        ['I609', 'I637'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_7SU_ADJUST1_START_TIME = DataTag(['I553', 'I581'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_7SU_ADJUST1_END_TIME = DataTag(['I609', 'I637'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_POOL_7SU_ADJUST2_ENABLE = DataTag(['D194'], writeable=True)
     SCHEDULE_POOL_7SU_ADJUST2_VALUE = DataTag(['A201'], writeable=True)
-    SCHEDULE_POOL_7SU_ADJUST2_START_TIME = DataTag(
-        ['I554', 'I582'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_POOL_7SU_ADJUST2_END_TIME = DataTag(
-        ['I610', 'I638'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_7SU_ADJUST2_START_TIME = DataTag(['I554', 'I582'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_POOL_7SU_ADJUST2_END_TIME = DataTag(['I610', 'I638'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_1MO_ENABLE = DataTag(['D259'], writeable=True)
-    SCHEDULE_MIX1_1MO_START_TIME = DataTag(
-        ['I777', 'I805'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_1MO_END_TIME = DataTag(
-        ['I833', 'I861'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_1MO_START_TIME = DataTag(['I777', 'I805'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_1MO_END_TIME = DataTag(['I833', 'I861'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_1MO_ADJUST1_ENABLE = DataTag(['D260'], writeable=True)
     SCHEDULE_MIX1_1MO_ADJUST1_VALUE = DataTag(['A247'], writeable=True)
-    SCHEDULE_MIX1_1MO_ADJUST1_START_TIME = DataTag(
-        ['I778', 'I806'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_1MO_ADJUST1_END_TIME = DataTag(
-        ['I834', 'I862'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_1MO_ADJUST1_START_TIME = DataTag(['I778', 'I806'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_1MO_ADJUST1_END_TIME = DataTag(['I834', 'I862'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_1MO_ADJUST2_ENABLE = DataTag(['D261'], writeable=True)
     SCHEDULE_MIX1_1MO_ADJUST2_VALUE = DataTag(['A248'], writeable=True)
-    SCHEDULE_MIX1_1MO_ADJUST2_START_TIME = DataTag(
-        ['I779', 'I807'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_1MO_ADJUST2_END_TIME = DataTag(
-        ['I835', 'I863'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_1MO_ADJUST2_START_TIME = DataTag(['I779', 'I807'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_1MO_ADJUST2_END_TIME = DataTag(['I835', 'I863'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_2TU_ENABLE = DataTag(['D263'], writeable=True)
-    SCHEDULE_MIX1_2TU_START_TIME = DataTag(
-        ['I781', 'I809'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_2TU_END_TIME = DataTag(
-        ['I837', 'I865'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_2TU_START_TIME = DataTag(['I781', 'I809'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_2TU_END_TIME = DataTag(['I837', 'I865'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_2TU_ADJUST1_ENABLE = DataTag(['D264'], writeable=True)
     SCHEDULE_MIX1_2TU_ADJUST1_VALUE = DataTag(['A251'], writeable=True)
-    SCHEDULE_MIX1_2TU_ADJUST1_START_TIME = DataTag(
-        ['I782', 'I810'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_2TU_ADJUST1_END_TIME = DataTag(
-        ['I838', 'I866'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_2TU_ADJUST1_START_TIME = DataTag(['I782', 'I810'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_2TU_ADJUST1_END_TIME = DataTag(['I838', 'I866'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_2TU_ADJUST2_ENABLE = DataTag(['D265'], writeable=True)
     SCHEDULE_MIX1_2TU_ADJUST2_VALUE = DataTag(['A252'], writeable=True)
-    SCHEDULE_MIX1_2TU_ADJUST2_START_TIME = DataTag(
-        ['I783', 'I811'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_2TU_ADJUST2_END_TIME = DataTag(
-        ['I839', 'I867'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_2TU_ADJUST2_START_TIME = DataTag(['I783', 'I811'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_2TU_ADJUST2_END_TIME = DataTag(['I839', 'I867'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_3WE_ENABLE = DataTag(['D267'], writeable=True)
-    SCHEDULE_MIX1_3WE_START_TIME = DataTag(
-        ['I785', 'I813'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_3WE_END_TIME = DataTag(
-        ['I841', 'I869'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_3WE_START_TIME = DataTag(['I785', 'I813'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_3WE_END_TIME = DataTag(['I841', 'I869'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_3WE_ADJUST1_ENABLE = DataTag(['D268'], writeable=True)
     SCHEDULE_MIX1_3WE_ADJUST1_VALUE = DataTag(['A255'], writeable=True)
-    SCHEDULE_MIX1_3WE_ADJUST1_START_TIME = DataTag(
-        ['I786', 'I814'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_3WE_ADJUST1_END_TIME = DataTag(
-        ['I842', 'I870'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_3WE_ADJUST1_START_TIME = DataTag(['I786', 'I814'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_3WE_ADJUST1_END_TIME = DataTag(['I842', 'I870'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_3WE_ADJUST2_ENABLE = DataTag(['D269'], writeable=True)
     SCHEDULE_MIX1_3WE_ADJUST2_VALUE = DataTag(['A256'], writeable=True)
-    SCHEDULE_MIX1_3WE_ADJUST2_START_TIME = DataTag(
-        ['I787', 'I815'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_3WE_ADJUST2_END_TIME = DataTag(
-        ['I843', 'I871'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_3WE_ADJUST2_START_TIME = DataTag(['I787', 'I815'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_3WE_ADJUST2_END_TIME = DataTag(['I843', 'I871'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_4TH_ENABLE = DataTag(['D271'], writeable=True)
-    SCHEDULE_MIX1_4TH_START_TIME = DataTag(
-        ['I789', 'I817'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_4TH_END_TIME = DataTag(
-        ['I845', 'I873'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_4TH_START_TIME = DataTag(['I789', 'I817'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_4TH_END_TIME = DataTag(['I845', 'I873'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_4TH_ADJUST1_ENABLE = DataTag(['D272'], writeable=True)
     SCHEDULE_MIX1_4TH_ADJUST1_VALUE = DataTag(['A259'], writeable=True)
-    SCHEDULE_MIX1_4TH_ADJUST1_START_TIME = DataTag(
-        ['I790', 'I818'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_4TH_ADJUST1_END_TIME = DataTag(
-        ['I846', 'I874'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_4TH_ADJUST1_START_TIME = DataTag(['I790', 'I818'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_4TH_ADJUST1_END_TIME = DataTag(['I846', 'I874'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_4TH_ADJUST2_ENABLE = DataTag(['D273'], writeable=True)
     SCHEDULE_MIX1_4TH_ADJUST2_VALUE = DataTag(['A260'], writeable=True)
-    SCHEDULE_MIX1_4TH_ADJUST2_START_TIME = DataTag(
-        ['I791', 'I819'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_4TH_ADJUST2_END_TIME = DataTag(
-        ['I847', 'I875'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_4TH_ADJUST2_START_TIME = DataTag(['I791', 'I819'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_4TH_ADJUST2_END_TIME = DataTag(['I847', 'I875'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_5FR_ENABLE = DataTag(['D275'], writeable=True)
-    SCHEDULE_MIX1_5FR_START_TIME = DataTag(
-        ['I793', 'I821'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_5FR_END_TIME = DataTag(
-        ['I849', 'I877'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_5FR_START_TIME = DataTag(['I793', 'I821'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_5FR_END_TIME = DataTag(['I849', 'I877'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_5FR_ADJUST1_ENABLE = DataTag(['D276'], writeable=True)
     SCHEDULE_MIX1_5FR_ADJUST1_VALUE = DataTag(['A263'], writeable=True)
-    SCHEDULE_MIX1_5FR_ADJUST1_START_TIME = DataTag(
-        ['I794', 'I822'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_5FR_ADJUST1_END_TIME = DataTag(
-        ['I850', 'I878'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_5FR_ADJUST1_START_TIME = DataTag(['I794', 'I822'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_5FR_ADJUST1_END_TIME = DataTag(['I850', 'I878'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_5FR_ADJUST2_ENABLE = DataTag(['D277'], writeable=True)
     SCHEDULE_MIX1_5FR_ADJUST2_VALUE = DataTag(['A264'], writeable=True)
-    SCHEDULE_MIX1_5FR_ADJUST2_START_TIME = DataTag(
-        ['I795', 'I823'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_5FR_ADJUST2_END_TIME = DataTag(
-        ['I851', 'I879'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_5FR_ADJUST2_START_TIME = DataTag(['I795', 'I823'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_5FR_ADJUST2_END_TIME = DataTag(['I851', 'I879'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_6SA_ENABLE = DataTag(['D279'], writeable=True)
-    SCHEDULE_MIX1_6SA_START_TIME = DataTag(
-        ['I797', 'I825'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_6SA_END_TIME = DataTag(
-        ['I853', 'I881'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_6SA_START_TIME = DataTag(['I797', 'I825'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_6SA_END_TIME = DataTag(['I853', 'I881'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_6SA_ADJUST1_ENABLE = DataTag(['D280'], writeable=True)
     SCHEDULE_MIX1_6SA_ADJUST1_VALUE = DataTag(['A267'], writeable=True)
-    SCHEDULE_MIX1_6SA_ADJUST1_START_TIME = DataTag(
-        ['I798', 'I826'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_6SA_ADJUST1_END_TIME = DataTag(
-        ['I854', 'I882'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_6SA_ADJUST1_START_TIME = DataTag(['I798', 'I826'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_6SA_ADJUST1_END_TIME = DataTag(['I854', 'I882'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_6SA_ADJUST2_ENABLE = DataTag(['D281'], writeable=True)
     SCHEDULE_MIX1_6SA_ADJUST2_VALUE = DataTag(['A268'], writeable=True)
-    SCHEDULE_MIX1_6SA_ADJUST2_START_TIME = DataTag(
-        ['I799', 'I827'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_6SA_ADJUST2_END_TIME = DataTag(
-        ['I855', 'I883'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_6SA_ADJUST2_START_TIME = DataTag(['I799', 'I827'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_6SA_ADJUST2_END_TIME = DataTag(['I855', 'I883'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_7SU_ENABLE = DataTag(['D283'], writeable=True)
-    SCHEDULE_MIX1_7SU_START_TIME = DataTag(
-        ['I801', 'I829'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_7SU_END_TIME = DataTag(
-        ['I857', 'I885'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_7SU_START_TIME = DataTag(['I801', 'I829'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_7SU_END_TIME = DataTag(['I857', 'I885'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_7SU_ADJUST1_ENABLE = DataTag(['D284'], writeable=True)
     SCHEDULE_MIX1_7SU_ADJUST1_VALUE = DataTag(['A271'], writeable=True)
-    SCHEDULE_MIX1_7SU_ADJUST1_START_TIME = DataTag(
-        ['I802', 'I830'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_7SU_ADJUST1_END_TIME = DataTag(
-        ['I858', 'I886'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_7SU_ADJUST1_START_TIME = DataTag(['I802', 'I830'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_7SU_ADJUST1_END_TIME = DataTag(['I858', 'I886'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX1_7SU_ADJUST2_ENABLE = DataTag(['D285'], writeable=True)
     SCHEDULE_MIX1_7SU_ADJUST2_VALUE = DataTag(['A272'], writeable=True)
-    SCHEDULE_MIX1_7SU_ADJUST2_START_TIME = DataTag(
-        ['I803', 'I831'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX1_7SU_ADJUST2_END_TIME = DataTag(
-        ['I859', 'I887'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_7SU_ADJUST2_START_TIME = DataTag(['I803', 'I831'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX1_7SU_ADJUST2_END_TIME = DataTag(['I859', 'I887'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_1MO_ENABLE = DataTag(['D302'], writeable=True)
-    SCHEDULE_MIX2_1MO_START_TIME = DataTag(
-        ['I897', 'I925'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_1MO_END_TIME = DataTag(
-        ['I953', 'I981'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_1MO_START_TIME = DataTag(['I897', 'I925'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_1MO_END_TIME = DataTag(['I953', 'I981'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_1MO_ADJUST1_ENABLE = DataTag(['D303'], writeable=True)
     SCHEDULE_MIX2_1MO_ADJUST1_VALUE = DataTag(['A293'], writeable=True)
-    SCHEDULE_MIX2_1MO_ADJUST1_START_TIME = DataTag(
-        ['I898', 'I926'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_1MO_ADJUST1_END_TIME = DataTag(
-        ['I954', 'I982'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_1MO_ADJUST1_START_TIME = DataTag(['I898', 'I926'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_1MO_ADJUST1_END_TIME = DataTag(['I954', 'I982'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_1MO_ADJUST2_ENABLE = DataTag(['D304'], writeable=True)
     SCHEDULE_MIX2_1MO_ADJUST2_VALUE = DataTag(['A294'], writeable=True)
-    SCHEDULE_MIX2_1MO_ADJUST2_START_TIME = DataTag(
-        ['I899', 'I927'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_1MO_ADJUST2_END_TIME = DataTag(
-        ['I955', 'I983'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_1MO_ADJUST2_START_TIME = DataTag(['I899', 'I927'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_1MO_ADJUST2_END_TIME = DataTag(['I955', 'I983'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_2TU_ENABLE = DataTag(['D306'], writeable=True)
-    SCHEDULE_MIX2_2TU_START_TIME = DataTag(
-        ['I901', 'I929'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_2TU_END_TIME = DataTag(
-        ['I957', 'I985'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_2TU_START_TIME = DataTag(['I901', 'I929'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_2TU_END_TIME = DataTag(['I957', 'I985'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_2TU_ADJUST1_ENABLE = DataTag(['D307'], writeable=True)
     SCHEDULE_MIX2_2TU_ADJUST1_VALUE = DataTag(['A297'], writeable=True)
-    SCHEDULE_MIX2_2TU_ADJUST1_START_TIME = DataTag(
-        ['I902', 'I930'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_2TU_ADJUST1_END_TIME = DataTag(
-        ['I958', 'I986'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_2TU_ADJUST1_START_TIME = DataTag(['I902', 'I930'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_2TU_ADJUST1_END_TIME = DataTag(['I958', 'I986'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_2TU_ADJUST2_ENABLE = DataTag(['D308'], writeable=True)
     SCHEDULE_MIX2_2TU_ADJUST2_VALUE = DataTag(['A298'], writeable=True)
-    SCHEDULE_MIX2_2TU_ADJUST2_START_TIME = DataTag(
-        ['I903', 'I931'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_2TU_ADJUST2_END_TIME = DataTag(
-        ['I959', 'I987'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_2TU_ADJUST2_START_TIME = DataTag(['I903', 'I931'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_2TU_ADJUST2_END_TIME = DataTag(['I959', 'I987'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_3WE_ENABLE = DataTag(['D310'], writeable=True)
-    SCHEDULE_MIX2_3WE_START_TIME = DataTag(
-        ['I905', 'I933'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_3WE_END_TIME = DataTag(
-        ['I961', 'I989'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_3WE_START_TIME = DataTag(['I905', 'I933'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_3WE_END_TIME = DataTag(['I961', 'I989'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_3WE_ADJUST1_ENABLE = DataTag(['D311'], writeable=True)
     SCHEDULE_MIX2_3WE_ADJUST1_VALUE = DataTag(['A301'], writeable=True)
-    SCHEDULE_MIX2_3WE_ADJUST1_START_TIME = DataTag(
-        ['I906', 'I934'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_3WE_ADJUST1_END_TIME = DataTag(
-        ['I962', 'I990'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_3WE_ADJUST1_START_TIME = DataTag(['I906', 'I934'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_3WE_ADJUST1_END_TIME = DataTag(['I962', 'I990'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_3WE_ADJUST2_ENABLE = DataTag(['D312'], writeable=True)
     SCHEDULE_MIX2_3WE_ADJUST2_VALUE = DataTag(['A302'], writeable=True)
-    SCHEDULE_MIX2_3WE_ADJUST2_START_TIME = DataTag(
-        ['I907', 'I935'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_3WE_ADJUST2_END_TIME = DataTag(
-        ['I963', 'I991'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_3WE_ADJUST2_START_TIME = DataTag(['I907', 'I935'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_3WE_ADJUST2_END_TIME = DataTag(['I963', 'I991'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_4TH_ENABLE = DataTag(['D314'], writeable=True)
-    SCHEDULE_MIX2_4TH_START_TIME = DataTag(
-        ['I909', 'I937'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_4TH_END_TIME = DataTag(
-        ['I965', 'I993'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_4TH_START_TIME = DataTag(['I909', 'I937'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_4TH_END_TIME = DataTag(['I965', 'I993'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_4TH_ADJUST1_ENABLE = DataTag(['D315'], writeable=True)
     SCHEDULE_MIX2_4TH_ADJUST1_VALUE = DataTag(['A305'], writeable=True)
-    SCHEDULE_MIX2_4TH_ADJUST1_START_TIME = DataTag(
-        ['I910', 'I938'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_4TH_ADJUST1_END_TIME = DataTag(
-        ['I966', 'I994'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_4TH_ADJUST1_START_TIME = DataTag(['I910', 'I938'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_4TH_ADJUST1_END_TIME = DataTag(['I966', 'I994'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_4TH_ADJUST2_ENABLE = DataTag(['D316'], writeable=True)
     SCHEDULE_MIX2_4TH_ADJUST2_VALUE = DataTag(['A306'], writeable=True)
-    SCHEDULE_MIX2_4TH_ADJUST2_START_TIME = DataTag(
-        ['I911', 'I939'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_4TH_ADJUST2_END_TIME = DataTag(
-        ['I967', 'I995'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_4TH_ADJUST2_START_TIME = DataTag(['I911', 'I939'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_4TH_ADJUST2_END_TIME = DataTag(['I967', 'I995'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_5FR_ENABLE = DataTag(['D318'], writeable=True)
-    SCHEDULE_MIX2_5FR_START_TIME = DataTag(
-        ['I913', 'I941'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_5FR_END_TIME = DataTag(
-        ['I969', 'I997'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_5FR_START_TIME = DataTag(['I913', 'I941'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_5FR_END_TIME = DataTag(['I969', 'I997'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_5FR_ADJUST1_ENABLE = DataTag(['D319'], writeable=True)
     SCHEDULE_MIX2_5FR_ADJUST1_VALUE = DataTag(['A309'], writeable=True)
-    SCHEDULE_MIX2_5FR_ADJUST1_START_TIME = DataTag(
-        ['I914', 'I942'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_5FR_ADJUST1_END_TIME = DataTag(
-        ['I970', 'I998'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_5FR_ADJUST1_START_TIME = DataTag(['I914', 'I942'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_5FR_ADJUST1_END_TIME = DataTag(['I970', 'I998'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_5FR_ADJUST2_ENABLE = DataTag(['D320'], writeable=True)
     SCHEDULE_MIX2_5FR_ADJUST2_VALUE = DataTag(['A310'], writeable=True)
-    SCHEDULE_MIX2_5FR_ADJUST2_START_TIME = DataTag(
-        ['I915', 'I943'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_5FR_ADJUST2_END_TIME = DataTag(
-        ['I971', 'I999'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_5FR_ADJUST2_START_TIME = DataTag(['I915', 'I943'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_5FR_ADJUST2_END_TIME = DataTag(['I971', 'I999'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_6SA_ENABLE = DataTag(['D322'], writeable=True)
-    SCHEDULE_MIX2_6SA_START_TIME = DataTag(
-        ['I917', 'I945'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_6SA_END_TIME = DataTag(
-        ['I973', 'I1001'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_6SA_START_TIME = DataTag(['I917', 'I945'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_6SA_END_TIME = DataTag(['I973', 'I1001'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_6SA_ADJUST1_ENABLE = DataTag(['D323'], writeable=True)
     SCHEDULE_MIX2_6SA_ADJUST1_VALUE = DataTag(['A313'], writeable=True)
-    SCHEDULE_MIX2_6SA_ADJUST1_START_TIME = DataTag(
-        ['I918', 'I946'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_6SA_ADJUST1_END_TIME = DataTag(
-        ['I974', 'I1002'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_6SA_ADJUST1_START_TIME = DataTag(['I918', 'I946'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_6SA_ADJUST1_END_TIME = DataTag(['I974', 'I1002'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_6SA_ADJUST2_ENABLE = DataTag(['D324'], writeable=True)
     SCHEDULE_MIX2_6SA_ADJUST2_VALUE = DataTag(['A314'], writeable=True)
-    SCHEDULE_MIX2_6SA_ADJUST2_START_TIME = DataTag(
-        ['I919', 'I947'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_6SA_ADJUST2_END_TIME = DataTag(
-        ['I975', 'I1003'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_6SA_ADJUST2_START_TIME = DataTag(['I919', 'I947'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_6SA_ADJUST2_END_TIME = DataTag(['I975', 'I1003'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_7SU_ENABLE = DataTag(['D326'], writeable=True)
-    SCHEDULE_MIX2_7SU_START_TIME = DataTag(
-        ['I921', 'I949'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_7SU_END_TIME = DataTag(
-        ['I977', 'I1005'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_7SU_START_TIME = DataTag(['I921', 'I949'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_7SU_END_TIME = DataTag(['I977', 'I1005'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_7SU_ADJUST1_ENABLE = DataTag(['D327'], writeable=True)
     SCHEDULE_MIX2_7SU_ADJUST1_VALUE = DataTag(['A317'], writeable=True)
-    SCHEDULE_MIX2_7SU_ADJUST1_START_TIME = DataTag(
-        ['I922', 'I950'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_7SU_ADJUST1_END_TIME = DataTag(
-        ['I978', 'I1006'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_7SU_ADJUST1_START_TIME = DataTag(['I922', 'I950'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_7SU_ADJUST1_END_TIME = DataTag(['I978', 'I1006'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX2_7SU_ADJUST2_ENABLE = DataTag(['D328'], writeable=True)
     SCHEDULE_MIX2_7SU_ADJUST2_VALUE = DataTag(['A318'], writeable=True)
-    SCHEDULE_MIX2_7SU_ADJUST2_START_TIME = DataTag(
-        ['I923', 'I951'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX2_7SU_ADJUST2_END_TIME = DataTag(
-        ['I979', 'I1007'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_7SU_ADJUST2_START_TIME = DataTag(['I923', 'I951'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX2_7SU_ADJUST2_END_TIME = DataTag(['I979', 'I1007'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_1MO_ENABLE = DataTag(['D345'], writeable=True)
-    SCHEDULE_MIX3_1MO_START_TIME = DataTag(
-        ['I1018', 'I1046'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_1MO_END_TIME = DataTag(
-        ['I1074', 'I1102'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_1MO_START_TIME = DataTag(['I1018', 'I1046'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_1MO_END_TIME = DataTag(['I1074', 'I1102'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_1MO_ADJUST1_ENABLE = DataTag(['D346'], writeable=True)
     SCHEDULE_MIX3_1MO_ADJUST1_VALUE = DataTag(['A339'], writeable=True)
-    SCHEDULE_MIX3_1MO_ADJUST1_START_TIME = DataTag(
-        ['I1019', 'I1047'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_1MO_ADJUST1_END_TIME = DataTag(
-        ['I1075', 'I1103'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_1MO_ADJUST1_START_TIME = DataTag(['I1019', 'I1047'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_1MO_ADJUST1_END_TIME = DataTag(['I1075', 'I1103'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_1MO_ADJUST2_ENABLE = DataTag(['D347'], writeable=True)
     SCHEDULE_MIX3_1MO_ADJUST2_VALUE = DataTag(['A340'], writeable=True)
-    SCHEDULE_MIX3_1MO_ADJUST2_START_TIME = DataTag(
-        ['I1020', 'I1048'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_1MO_ADJUST2_END_TIME = DataTag(
-        ['I1076', 'I1104'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_1MO_ADJUST2_START_TIME = DataTag(['I1020', 'I1048'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_1MO_ADJUST2_END_TIME = DataTag(['I1076', 'I1104'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_2TU_ENABLE = DataTag(['D349'], writeable=True)
-    SCHEDULE_MIX3_2TU_START_TIME = DataTag(
-        ['I1022', 'I1050'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_2TU_END_TIME = DataTag(
-        ['I1078', 'I1106'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_2TU_START_TIME = DataTag(['I1022', 'I1050'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_2TU_END_TIME = DataTag(['I1078', 'I1106'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_2TU_ADJUST1_ENABLE = DataTag(['D350'], writeable=True)
     SCHEDULE_MIX3_2TU_ADJUST1_VALUE = DataTag(['A343'], writeable=True)
-    SCHEDULE_MIX3_2TU_ADJUST1_START_TIME = DataTag(
-        ['I1023', 'I1051'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_2TU_ADJUST1_END_TIME = DataTag(
-        ['I1079', 'I1107'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_2TU_ADJUST1_START_TIME = DataTag(['I1023', 'I1051'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_2TU_ADJUST1_END_TIME = DataTag(['I1079', 'I1107'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_2TU_ADJUST2_ENABLE = DataTag(['D351'], writeable=True)
     SCHEDULE_MIX3_2TU_ADJUST2_VALUE = DataTag(['A344'], writeable=True)
-    SCHEDULE_MIX3_2TU_ADJUST2_START_TIME = DataTag(
-        ['I1024', 'I1052'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_2TU_ADJUST2_END_TIME = DataTag(
-        ['I1080', 'I1108'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_2TU_ADJUST2_START_TIME = DataTag(['I1024', 'I1052'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_2TU_ADJUST2_END_TIME = DataTag(['I1080', 'I1108'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_3WE_ENABLE = DataTag(['D353'], writeable=True)
-    SCHEDULE_MIX3_3WE_START_TIME = DataTag(
-        ['I1026', 'I1054'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_3WE_END_TIME = DataTag(
-        ['I1082', 'I1110'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_3WE_START_TIME = DataTag(['I1026', 'I1054'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_3WE_END_TIME = DataTag(['I1082', 'I1110'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_3WE_ADJUST1_ENABLE = DataTag(['D354'], writeable=True)
     SCHEDULE_MIX3_3WE_ADJUST1_VALUE = DataTag(['A347'], writeable=True)
-    SCHEDULE_MIX3_3WE_ADJUST1_START_TIME = DataTag(
-        ['I1027', 'I1055'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_3WE_ADJUST1_END_TIME = DataTag(
-        ['I1083', 'I1111'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_3WE_ADJUST1_START_TIME = DataTag(['I1027', 'I1055'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_3WE_ADJUST1_END_TIME = DataTag(['I1083', 'I1111'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_3WE_ADJUST2_ENABLE = DataTag(['D355'], writeable=True)
     SCHEDULE_MIX3_3WE_ADJUST2_VALUE = DataTag(['A348'], writeable=True)
-    SCHEDULE_MIX3_3WE_ADJUST2_START_TIME = DataTag(
-        ['I1028', 'I1056'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_3WE_ADJUST2_END_TIME = DataTag(
-        ['I1084', 'I1112'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_3WE_ADJUST2_START_TIME = DataTag(['I1028', 'I1056'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_3WE_ADJUST2_END_TIME = DataTag(['I1084', 'I1112'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_4TH_ENABLE = DataTag(['D357'], writeable=True)
-    SCHEDULE_MIX3_4TH_START_TIME = DataTag(
-        ['I1030', 'I1058'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_4TH_END_TIME = DataTag(
-        ['I1086', 'I1114'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_4TH_START_TIME = DataTag(['I1030', 'I1058'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_4TH_END_TIME = DataTag(['I1086', 'I1114'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_4TH_ADJUST1_ENABLE = DataTag(['D358'], writeable=True)
     SCHEDULE_MIX3_4TH_ADJUST1_VALUE = DataTag(['A351'], writeable=True)
-    SCHEDULE_MIX3_4TH_ADJUST1_START_TIME = DataTag(
-        ['I1031', 'I1059'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_4TH_ADJUST1_END_TIME = DataTag(
-        ['I1087', 'I1115'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_4TH_ADJUST1_START_TIME = DataTag(['I1031', 'I1059'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_4TH_ADJUST1_END_TIME = DataTag(['I1087', 'I1115'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_4TH_ADJUST2_ENABLE = DataTag(['D359'], writeable=True)
     SCHEDULE_MIX3_4TH_ADJUST2_VALUE = DataTag(['A352'], writeable=True)
-    SCHEDULE_MIX3_4TH_ADJUST2_START_TIME = DataTag(
-        ['I1032', 'I1060'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_4TH_ADJUST2_END_TIME = DataTag(
-        ['I1088', 'I1116'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_4TH_ADJUST2_START_TIME = DataTag(['I1032', 'I1060'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_4TH_ADJUST2_END_TIME = DataTag(['I1088', 'I1116'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_5FR_ENABLE = DataTag(['D361'], writeable=True)
-    SCHEDULE_MIX3_5FR_START_TIME = DataTag(
-        ['I1034', 'I1062'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_5FR_END_TIME = DataTag(
-        ['I1090', 'I1118'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_5FR_START_TIME = DataTag(['I1034', 'I1062'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_5FR_END_TIME = DataTag(['I1090', 'I1118'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_5FR_ADJUST1_ENABLE = DataTag(['D362'], writeable=True)
     SCHEDULE_MIX3_5FR_ADJUST1_VALUE = DataTag(['A355'], writeable=True)
-    SCHEDULE_MIX3_5FR_ADJUST1_START_TIME = DataTag(
-        ['I1035', 'I1063'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_5FR_ADJUST1_END_TIME = DataTag(
-        ['I1091', 'I1119'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_5FR_ADJUST1_START_TIME = DataTag(['I1035', 'I1063'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_5FR_ADJUST1_END_TIME = DataTag(['I1091', 'I1119'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_5FR_ADJUST2_ENABLE = DataTag(['D363'], writeable=True)
     SCHEDULE_MIX3_5FR_ADJUST2_VALUE = DataTag(['A356'], writeable=True)
-    SCHEDULE_MIX3_5FR_ADJUST2_START_TIME = DataTag(
-        ['I1036', 'I1064'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_5FR_ADJUST2_END_TIME = DataTag(
-        ['I1092', 'I1120'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_5FR_ADJUST2_START_TIME = DataTag(['I1036', 'I1064'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_5FR_ADJUST2_END_TIME = DataTag(['I1092', 'I1120'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_6SA_ENABLE = DataTag(['D365'], writeable=True)
-    SCHEDULE_MIX3_6SA_START_TIME = DataTag(
-        ['I1038', 'I1066'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_6SA_END_TIME = DataTag(
-        ['I1094', 'I1122'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_6SA_START_TIME = DataTag(['I1038', 'I1066'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_6SA_END_TIME = DataTag(['I1094', 'I1122'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_6SA_ADJUST1_ENABLE = DataTag(['D366'], writeable=True)
     SCHEDULE_MIX3_6SA_ADJUST1_VALUE = DataTag(['A359'], writeable=True)
-    SCHEDULE_MIX3_6SA_ADJUST1_START_TIME = DataTag(
-        ['I1039', 'I1067'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_6SA_ADJUST1_END_TIME = DataTag(
-        ['I1095', 'I1123'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_6SA_ADJUST1_START_TIME = DataTag(['I1039', 'I1067'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_6SA_ADJUST1_END_TIME = DataTag(['I1095', 'I1123'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_6SA_ADJUST2_ENABLE = DataTag(['D367'], writeable=True)
     SCHEDULE_MIX3_6SA_ADJUST2_VALUE = DataTag(['A360'], writeable=True)
-    SCHEDULE_MIX3_6SA_ADJUST2_START_TIME = DataTag(
-        ['I1040', 'I1068'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_6SA_ADJUST2_END_TIME = DataTag(
-        ['I1096', 'I1124'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_6SA_ADJUST2_START_TIME = DataTag(['I1040', 'I1068'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_6SA_ADJUST2_END_TIME = DataTag(['I1096', 'I1124'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_7SU_ENABLE = DataTag(['D369'], writeable=True)
-    SCHEDULE_MIX3_7SU_START_TIME = DataTag(
-        ['I1042', 'I1070'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_7SU_END_TIME = DataTag(
-        ['I1098', 'I1126'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_7SU_START_TIME = DataTag(['I1042', 'I1070'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_7SU_END_TIME = DataTag(['I1098', 'I1126'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_7SU_ADJUST1_ENABLE = DataTag(['D370'], writeable=True)
     SCHEDULE_MIX3_7SU_ADJUST1_VALUE = DataTag(['A363'], writeable=True)
-    SCHEDULE_MIX3_7SU_ADJUST1_START_TIME = DataTag(
-        ['I1043', 'I1071'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_7SU_ADJUST1_END_TIME = DataTag(
-        ['I1099', 'I1127'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_7SU_ADJUST1_START_TIME = DataTag(['I1043', 'I1071'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_7SU_ADJUST1_END_TIME = DataTag(['I1099', 'I1127'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_MIX3_7SU_ADJUST2_ENABLE = DataTag(['D371'], writeable=True)
     SCHEDULE_MIX3_7SU_ADJUST2_VALUE = DataTag(['A364'], writeable=True)
-    SCHEDULE_MIX3_7SU_ADJUST2_START_TIME = DataTag(
-        ['I1044', 'I1072'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_MIX3_7SU_ADJUST2_END_TIME = DataTag(
-        ['I1100', 'I1128'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_7SU_ADJUST2_START_TIME = DataTag(['I1044', 'I1072'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_MIX3_7SU_ADJUST2_END_TIME = DataTag(['I1100', 'I1128'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ENABLE = DataTag(['D388'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_START_TIME = DataTag(
-        ['I1139', 'I1167'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_END_TIME = DataTag(
-        ['I1195', 'I1223'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_START_TIME = DataTag(['I1139', 'I1167'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_END_TIME = DataTag(['I1195', 'I1223'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST1_ENABLE = DataTag(['D389'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST1_VALUE = DataTag(['A385'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST1_START_TIME = DataTag(
-        ['I1140', 'I1168'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST1_END_TIME = DataTag(
-        ['I1196', 'I1224'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST1_START_TIME = DataTag(['I1140', 'I1168'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST1_END_TIME = DataTag(['I1196', 'I1224'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST2_ENABLE = DataTag(['D390'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST2_VALUE = DataTag(['A386'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST2_START_TIME = DataTag(
-        ['I1141', 'I1169'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST2_END_TIME = DataTag(
-        ['I1197', 'I1225'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST2_START_TIME = DataTag(['I1141', 'I1169'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_1MO_ADJUST2_END_TIME = DataTag(['I1197', 'I1225'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ENABLE = DataTag(['D392'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_START_TIME = DataTag(
-        ['I1143', 'I1171'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_END_TIME = DataTag(
-        ['I1199', 'I1227'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_START_TIME = DataTag(['I1143', 'I1171'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_END_TIME = DataTag(['I1199', 'I1227'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST1_ENABLE = DataTag(['D393'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST1_VALUE = DataTag(['A389'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST1_START_TIME = DataTag(
-        ['I1144', 'I1172'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST1_END_TIME = DataTag(
-        ['I1200', 'I1228'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST1_START_TIME = DataTag(['I1144', 'I1172'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST1_END_TIME = DataTag(['I1200', 'I1228'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST2_ENABLE = DataTag(['D394'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST2_VALUE = DataTag(['A390'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST2_START_TIME = DataTag(
-        ['I1145', 'I1173'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST2_END_TIME = DataTag(
-        ['I1201', 'I1229'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST2_START_TIME = DataTag(['I1145', 'I1173'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_2TU_ADJUST2_END_TIME = DataTag(['I1201', 'I1229'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ENABLE = DataTag(['D396'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_START_TIME = DataTag(
-        ['I1147', 'I1175'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_END_TIME = DataTag(
-        ['I1203', 'I1231'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_START_TIME = DataTag(['I1147', 'I1175'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_END_TIME = DataTag(['I1203', 'I1231'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST1_ENABLE = DataTag(['D397'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST1_VALUE = DataTag(['A393'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST1_START_TIME = DataTag(
-        ['I1148', 'I1176'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST1_END_TIME = DataTag(
-        ['I1204', 'I1232'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST1_START_TIME = DataTag(['I1148', 'I1176'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST1_END_TIME = DataTag(['I1204', 'I1232'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST2_ENABLE = DataTag(['D398'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST2_VALUE = DataTag(['A394'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST2_START_TIME = DataTag(
-        ['I1149', 'I1177'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST2_END_TIME = DataTag(
-        ['I1205', 'I1233'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST2_START_TIME = DataTag(['I1149', 'I1177'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_3WE_ADJUST2_END_TIME = DataTag(['I1205', 'I1233'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ENABLE = DataTag(['D400'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_START_TIME = DataTag(
-        ['I1151', 'I1179'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_END_TIME = DataTag(
-        ['I1207', 'I1235'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_START_TIME = DataTag(['I1151', 'I1179'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_END_TIME = DataTag(['I1207', 'I1235'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST1_ENABLE = DataTag(['D401'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST1_VALUE = DataTag(['A397'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST1_START_TIME = DataTag(
-        ['I1152', 'I1180'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST1_END_TIME = DataTag(
-        ['I1208', 'I1236'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST1_START_TIME = DataTag(['I1152', 'I1180'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST1_END_TIME = DataTag(['I1208', 'I1236'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST2_ENABLE = DataTag(['D402'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST2_VALUE = DataTag(['A398'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST2_START_TIME = DataTag(
-        ['I1153', 'I1181'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST2_END_TIME = DataTag(
-        ['I1209', 'I1237'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST2_START_TIME = DataTag(['I1153', 'I1181'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_4TH_ADJUST2_END_TIME = DataTag(['I1209', 'I1237'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ENABLE = DataTag(['D404'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_START_TIME = DataTag(
-        ['I1155', 'I1183'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_END_TIME = DataTag(
-        ['I1211', 'I1239'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_START_TIME = DataTag(['I1155', 'I1183'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_END_TIME = DataTag(['I1211', 'I1239'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST1_ENABLE = DataTag(['D405'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST1_VALUE = DataTag(['A401'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST1_START_TIME = DataTag(
-        ['I1156', 'I1184'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST1_END_TIME = DataTag(
-        ['I1212', 'I1240'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST1_START_TIME = DataTag(['I1156', 'I1184'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST1_END_TIME = DataTag(['I1212', 'I1240'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST2_ENABLE = DataTag(['D406'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST2_VALUE = DataTag(['A402'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST2_START_TIME = DataTag(
-        ['I1157', 'I1185'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST2_END_TIME = DataTag(
-        ['I1213', 'I1241'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST2_START_TIME = DataTag(['I1157', 'I1185'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_5FR_ADJUST2_END_TIME = DataTag(['I1213', 'I1241'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ENABLE = DataTag(['D408'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_START_TIME = DataTag(
-        ['I1159', 'I1187'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_END_TIME = DataTag(
-        ['I1215', 'I1243'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_START_TIME = DataTag(['I1159', 'I1187'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_END_TIME = DataTag(['I1215', 'I1243'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST1_ENABLE = DataTag(['D409'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST1_VALUE = DataTag(['A405'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST1_START_TIME = DataTag(
-        ['I1160', 'I1188'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST1_END_TIME = DataTag(
-        ['I1216', 'I1244'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST1_START_TIME = DataTag(['I1160', 'I1188'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST1_END_TIME = DataTag(['I1216', 'I1244'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST2_ENABLE = DataTag(['D410'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST2_VALUE = DataTag(['A406'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST2_START_TIME = DataTag(
-        ['I1161', 'I1189'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST2_END_TIME = DataTag(
-        ['I1217', 'I1245'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST2_START_TIME = DataTag(['I1161', 'I1189'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_6SA_ADJUST2_END_TIME = DataTag(['I1217', 'I1245'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ENABLE = DataTag(['D412'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_START_TIME = DataTag(
-        ['I1163', 'I1191'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_END_TIME = DataTag(
-        ['I1219', 'I1247'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_START_TIME = DataTag(['I1163', 'I1191'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_END_TIME = DataTag(['I1219', 'I1247'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST1_ENABLE = DataTag(['D413'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST1_VALUE = DataTag(['A409'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST1_START_TIME = DataTag(
-        ['I1164', 'I1192'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST1_END_TIME = DataTag(
-        ['I1220', 'I1248'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST1_START_TIME = DataTag(['I1164', 'I1192'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST1_END_TIME = DataTag(['I1220', 'I1248'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST2_ENABLE = DataTag(['D414'], writeable=True)
     SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST2_VALUE = DataTag(['A410'], writeable=True)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST2_START_TIME = DataTag(
-        ['I1165', 'I1193'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST2_END_TIME = DataTag(
-        ['I1221', 'I1249'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST2_START_TIME = DataTag(['I1165', 'I1193'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_BUFFER_TANK_CIRCULATION_PUMP_7SU_ADJUST2_END_TIME = DataTag(['I1221', 'I1249'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_SOLAR_1MO_ENABLE = DataTag(['D204'], writeable=True)
-    SCHEDULE_SOLAR_1MO_START_TIME = DataTag(
-        ['I648', 'I676'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_SOLAR_1MO_END_TIME = DataTag(
-        ['I704', 'I732'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_1MO_START_TIME = DataTag(['I648', 'I676'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_1MO_END_TIME = DataTag(['I704', 'I732'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_SOLAR_2TU_ENABLE = DataTag(['D208'], writeable=True)
-    SCHEDULE_SOLAR_2TU_START_TIME = DataTag(
-        ['I652', 'I680'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_SOLAR_2TU_END_TIME = DataTag(
-        ['I708', 'I736'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_2TU_START_TIME = DataTag(['I652', 'I680'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_2TU_END_TIME = DataTag(['I708', 'I736'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_SOLAR_3WE_ENABLE = DataTag(['D212'], writeable=True)
-    SCHEDULE_SOLAR_3WE_START_TIME = DataTag(
-        ['I656', 'I684'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_SOLAR_3WE_END_TIME = DataTag(
-        ['I712', 'I740'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_3WE_START_TIME = DataTag(['I656', 'I684'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_3WE_END_TIME = DataTag(['I712', 'I740'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_SOLAR_4TH_ENABLE = DataTag(['D216'], writeable=True)
-    SCHEDULE_SOLAR_4TH_START_TIME = DataTag(
-        ['I660', 'I688'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_SOLAR_4TH_END_TIME = DataTag(
-        ['I716', 'I744'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_4TH_START_TIME = DataTag(['I660', 'I688'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_4TH_END_TIME = DataTag(['I716', 'I744'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_SOLAR_5FR_ENABLE = DataTag(['D220'], writeable=True)
-    SCHEDULE_SOLAR_5FR_START_TIME = DataTag(
-        ['I664', 'I692'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_SOLAR_5FR_END_TIME = DataTag(
-        ['I720', 'I748'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_5FR_START_TIME = DataTag(['I664', 'I692'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_5FR_END_TIME = DataTag(['I720', 'I748'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_SOLAR_6SA_ENABLE = DataTag(['D224'], writeable=True)
-    SCHEDULE_SOLAR_6SA_START_TIME = DataTag(
-        ['I668', 'I696'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_SOLAR_6SA_END_TIME = DataTag(
-        ['I724', 'I752'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_6SA_START_TIME = DataTag(['I668', 'I696'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_6SA_END_TIME = DataTag(['I724', 'I752'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_SOLAR_7SU_ENABLE = DataTag(['D228'], writeable=True)
-    SCHEDULE_SOLAR_7SU_START_TIME = DataTag(
-        ['I672', 'I700'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_SOLAR_7SU_END_TIME = DataTag(
-        ['I728', 'I756'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_7SU_START_TIME = DataTag(['I672', 'I700'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_SOLAR_7SU_END_TIME = DataTag(['I728', 'I756'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_PV_1MO_ENABLE = DataTag(['D642'], writeable=True)
-    SCHEDULE_PV_1MO_START_TIME = DataTag(
-        ['I1483', 'I1511'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_PV_1MO_END_TIME = DataTag(
-        ['I1539', 'I1567'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_1MO_START_TIME = DataTag(['I1483', 'I1511'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_1MO_END_TIME = DataTag(['I1539', 'I1567'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_PV_2TU_ENABLE = DataTag(['D646'], writeable=True)
-    SCHEDULE_PV_2TU_START_TIME = DataTag(
-        ['I1487', 'I1515'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_PV_2TU_END_TIME = DataTag(
-        ['I1543', 'I1571'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_2TU_START_TIME = DataTag(['I1487', 'I1515'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_2TU_END_TIME = DataTag(['I1543', 'I1571'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_PV_3WE_ENABLE = DataTag(['D650'], writeable=True)
-    SCHEDULE_PV_3WE_START_TIME = DataTag(
-        ['I1491', 'I1519'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_PV_3WE_END_TIME = DataTag(
-        ['I1547', 'I1575'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_3WE_START_TIME = DataTag(['I1491', 'I1519'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_3WE_END_TIME = DataTag(['I1547', 'I1575'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_PV_4TH_ENABLE = DataTag(['D654'], writeable=True)
-    SCHEDULE_PV_4TH_START_TIME = DataTag(
-        ['I1495', 'I1523'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_PV_4TH_END_TIME = DataTag(
-        ['I1551', 'I1579'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_4TH_START_TIME = DataTag(['I1495', 'I1523'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_4TH_END_TIME = DataTag(['I1551', 'I1579'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_PV_5FR_ENABLE = DataTag(['D658'], writeable=True)
-    SCHEDULE_PV_5FR_START_TIME = DataTag(
-        ['I1499', 'I1527'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_PV_5FR_END_TIME = DataTag(
-        ['I1555', 'I1583'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_5FR_START_TIME = DataTag(['I1499', 'I1527'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_5FR_END_TIME = DataTag(['I1555', 'I1583'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_PV_6SA_ENABLE = DataTag(['D662'], writeable=True)
-    SCHEDULE_PV_6SA_START_TIME = DataTag(
-        ['I1503', 'I1531'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_PV_6SA_END_TIME = DataTag(
-        ['I1559', 'I1587'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_6SA_START_TIME = DataTag(['I1503', 'I1531'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_6SA_END_TIME = DataTag(['I1559', 'I1587'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
     SCHEDULE_PV_7SU_ENABLE = DataTag(['D666'], writeable=True)
-    SCHEDULE_PV_7SU_START_TIME = DataTag(
-        ['I1507', 'I1535'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
-    SCHEDULE_PV_7SU_END_TIME = DataTag(
-        ['I1563', 'I1591'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_7SU_START_TIME = DataTag(['I1507', 'I1535'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
+    SCHEDULE_PV_7SU_END_TIME = DataTag(['I1563', 'I1591'], writeable=True, decode_f=DataTag._decode_time_hhmm, encode_f=DataTag._encode_time_hhmm)
 
 # values = [
 #     ["SCHEDULE_HEATING", 42, 63, 151, 179, 207, 235],

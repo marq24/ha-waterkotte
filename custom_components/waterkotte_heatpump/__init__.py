@@ -71,8 +71,19 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         # here we can do some init stuff (like read all data)...
         pass
 
-    hass.data[DOMAIN][config_entry.entry_id] = coordinator
+    # we check if the operation hours will be returned as TOTAL's (and if this is
+    # not the case, we enable it!
+    try:
+        res = await coordinator.bridge.async_read_value(WKHPTag.OPERATING_HOURS_V2_SHOW_TOTALS_SWITCH_D634)
+        if res.get('status', None) == "S_OK":
+            if not res.get('value', True):
+                _LOGGER.info(f"async_setup_entry(): enable 'total OPERATING_HOURS' counters via OPERATING_HOURS_V2_SHOW_TOTALS_SWITCH_D634")
+                await coordinator.bridge.async_write_value(WKHPTag.OPERATING_HOURS_V2_SHOW_TOTALS_SWITCH_D634, True)
+    except BaseException as e:
+        _LOGGER.warning(f"async_setup_entry(): could not enable OPERATING_HOURS_V2_SHOW_TOTALS_SWITCH_D634: {(type(e).__name__)} {e}")
 
+    # ok now init the platforms...
+    hass.data[DOMAIN][config_entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
     service = waterkotte_service.WaterkotteHeatpumpService(hass, config_entry, coordinator)
