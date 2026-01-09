@@ -187,19 +187,23 @@ class DataTag(NamedTuple):
             return final_value
 
     def _decode_datetime(self, str_vals: List[str]):
-        if str_vals is None:
+        try:
+            if str_vals is None or not all(v is not None for v in str_vals):
+                return None
+
+            int_vals = list(map(int, str_vals))
+            if int_vals[0] < 2000:
+                int_vals[0] = int_vals[0] + 2000
+            next_day = False
+            if int_vals[3] == 24:
+                int_vals[3] = 0
+                next_day = True
+
+            dt_val = datetime(*int_vals)
+            return dt_val + timedelta(days=1) if next_day else dt_val
+        except BaseException as ex:
+            _LOGGER.info(f"_decode_datetime(): values: '{str_vals}' caused {type(ex)}.__name__ {ex}")
             return None
-
-        int_vals = list(map(int, str_vals))
-        if int_vals[0] < 2000:
-            int_vals[0] = int_vals[0] + 2000
-        next_day = False
-        if int_vals[3] == 24:
-            int_vals[3] = 0
-            next_day = True
-
-        dt_val = datetime(*int_vals)
-        return dt_val + timedelta(days=1) if next_day else dt_val
 
     def _encode_datetime(self, value, encoded_values):
         assert isinstance(value, datetime)
@@ -221,7 +225,7 @@ class DataTag(NamedTuple):
             encoded_values[tags] = vals[i]
 
     def _decode_time_hhmm(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None or not all(v is not None for v in str_vals):
             return None
 
         int_vals = list(map(int, str_vals))
@@ -243,7 +247,7 @@ class DataTag(NamedTuple):
             encoded_values[tags] = vals[i]
 
     def _decode_state(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None and str_vals[0] is not None:
             return None
 
         assert len(self.tags) == 1
@@ -268,7 +272,7 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = "2"
 
     def _decode_four_steps_mode(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None and str_vals[0] is not None:
             return None
 
         assert len(self.tags) == 1
@@ -289,7 +293,7 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = str(index)
 
     def _decode_six_steps_mode(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None is None and str_vals[0] is not None:
             return None
 
         assert len(self.tags) == 1
@@ -318,7 +322,7 @@ class DataTag(NamedTuple):
         return None
 
     def _decode_status(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None and str_vals[0] is not None:
             return None
 
         assert len(self.tags) == 1
@@ -343,7 +347,7 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = "2"
 
     def _decode_ro_series(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None and str_vals[0] is not None:
             return None
 
         if str_vals[0]:
@@ -357,7 +361,7 @@ class DataTag(NamedTuple):
             return "UNKNOWN_SERIES"
 
     def _decode_ro_id(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None and str_vals[0] is not None:
             return None
 
         assert len(self.tags) == 1
@@ -372,7 +376,7 @@ class DataTag(NamedTuple):
             return "UNKNOWN_SYSTEM"
 
     def _decode_ro_bios(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None and str_vals[0] is not None:
             return None
 
         assert len(self.tags) == 1
@@ -413,7 +417,7 @@ class DataTag(NamedTuple):
             return f"Serial_{sn1}-{sn2}"
 
     def _decode_year(self, str_vals: List[str]):
-        if str_vals is None:
+        if str_vals is None and str_vals[0] is not None:
             return None
 
         assert len(self.tags) == 1
@@ -496,6 +500,9 @@ class WKHPTag(DataTag, Enum):
     OPERATING_HOURS_V2_HEATINGPUMP_3_A718 = DataTag(["A718", "A719"])
     # Heizungspumpe 4
     OPERATING_HOURS_V2_HEATINGPUMP_4_A720 = DataTag(["A720", "A721"])
+
+    # D628 - Externer Wärmeerzeuger für Notbetrieb verwenden
+
 
     #################################################
     # waterkotte DATE/time stuff
@@ -737,6 +744,9 @@ class WKHPTag(DataTag, Enum):
     SCHEDULE_WATER_DISINFECTION_5FR = DataTag(["D157"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_6SA = DataTag(["D158"], "", writeable=True)
     SCHEDULE_WATER_DISINFECTION_7SU = DataTag(["D159"], "", writeable=True)
+
+    # DISINFECTION protocol (no clue how to enable this)
+    # <div id="infoThDis"><h4 id="h4Documentation">Dokumentation</h4><table class="table table-condensed"><thead><tr><th id="txtDate">Datum</th><th id="txtTime">Zeit</th><th id="txtTemp">Temperatur</th></tr></thead><tbody><tr id="trD1005"><td id="I2181">01.10.23</td><td id="I2184">14:08</td><td id="A1090">55.9&nbsp;°C</td></tr><tr id="trD1006"><td id="I2188">02.03.23</td><td id="I2191">12:28</td><td id="A1091">60.8&nbsp;°C</td></tr></tbody></table></div>
 
     TEMPERATURE_WATER_SETPOINT_FOR_SOLAR = DataTag(["A169"], "°C", writeable=True)
     # Changeover temperature to extern heating when exceeding T hot water
