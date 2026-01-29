@@ -35,7 +35,7 @@
   "config": {
     "step": {
       "user": {
-        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.",
+        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: {repo}.",
         "data": {
           "system_type": "Watterkotte Schnittstellentyp"
         },
@@ -56,7 +56,7 @@
         }
       },
       "user_easycon": {
-        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.",
+        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: {repo}.",
         "data": {
           "host": "IP oder Hostname deiner Waterkotte",
           "polling_interval": "Aktualisierungsintervall in Sekunden",
@@ -85,7 +85,7 @@
   "options": {
     "step": {
       "user": {
-        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: https://github.com/marq24/ha-waterkotte.\r\rWichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Heizung anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.",
+        "description": "Wenn Du Hilfe bei der Einichtung benötigst, findest du sie hier: {repo}.\r\rWichtiger Hinweis: Mit dem 'Zeitprogramm anpassen Service' kannst Du alle Zeitpläne Deiner Waterkotte Heizung anpassen. Das Hinzufügen der optionalen Entitäten ist hierfür nicht notwendig. Diese werden nur dann benötigt, wenn Du die Zeitsteuerung über Dein Dashborad oder eine Deiner Automatisierungen modifizieren oder anzeigen möchtest.",
         "data": {
           "username": "Benutzername (bei den meisten Modellen ist dieser 'waterkotte')",
           "password": "Passwort",

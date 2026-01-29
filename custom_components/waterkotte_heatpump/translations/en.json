@@ -35,7 +35,7 @@
   "config": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte.",
+        "description": "If you need help with the configuration have a look here: {repo}.",
         "data": {
           "system_type": "Watterkotte Interface-Typ"
         },
@@ -56,7 +56,7 @@
         }
       },
       "user_easycon": {
-        "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte.",
+        "description": "If you need help with the configuration have a look here: {repo}.",
         "data": {
           "host": "Host or IP",
           "polling_interval": "Polling Interval in seconds",
@@ -85,7 +85,7 @@
   "options": {
     "step": {
       "user": {
-        "description": "If you need help with the configuration have a look here: https://github.com/marq24/ha-waterkotte.\r\rImportant note: With the 'Adjust Schedules Service' you can adjust all schedules of your Waterkotte heating. Adding the optional entities is not necessary for this. These are only needed if you want to modify or display the schedule settings via your dashboard or one of your automations.",
+        "description": "If you need help with the configuration have a look here: {repo}.\r\rImportant note: With the 'Adjust Schedules Service' you can adjust all schedules of your Waterkotte heating. Adding the optional entities is not necessary for this. These are only needed if you want to modify or display the schedule settings via your dashboard or one of your automations.",
         "data": {
           "username": "Username",
           "password": "Password",

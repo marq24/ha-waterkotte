@@ -1,15 +1,17 @@
 """Adds config flow for Waterkotte Heatpump."""
 import logging
+
 import voluptuous as vol
 
+from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import EASYCON, ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant import config_entries
-from homeassistant.core import callback
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from homeassistant.helpers import selector
-from homeassistant.util import uuid as uuid_util
-
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
-
+from homeassistant.core import callback
+from homeassistant.helpers import selector
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.util import uuid as uuid_util
 from .const import (
     DOMAIN,
     TITLE,
@@ -27,10 +29,6 @@ from .const import (
     CONF_USE_VENT,
     CONF_USE_POOL
 )
-
-from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import EASYCON, ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from .pywaterkotte_ha.error import Http404Exception
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -83,6 +81,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                         )
                     ),
             }),
+            description_placeholders={"repo": "https://github.com/marq24/ha-waterkotte"},
             last_step=False,
             errors=self._errors
         )
@@ -128,6 +127,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_TAGS_PER_REQUEST, default=25): int,
                 vol.Required(CONF_ADD_SERIAL_AS_ID, default=False): bool
             }),
+            description_placeholders={"repo": "https://github.com/marq24/ha-waterkotte"},
             last_step=False,
             errors=self._errors
         )
@@ -269,6 +269,7 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required(CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 75)): int,
                 vol.Required(CONF_ADD_SCHEDULE_ENTITIES, default=self.options.get(CONF_ADD_SCHEDULE_ENTITIES, False)): bool
             }),
+            description_placeholders={"repo": "https://github.com/marq24/ha-waterkotte"},
         )
 
     async def _update_options(self):
