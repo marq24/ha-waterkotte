@@ -3,7 +3,7 @@ from datetime import datetime, time
 
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory
+from homeassistant.const import EntityCategory, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -30,7 +30,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, add_
 
 class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
     def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: ExtSensorEntityDescription):
-        super().__init__(coordinator=coordinator, description=description)
+        super().__init__(entity_type=Platform.SENSOR, coordinator=coordinator, description=description)
 
         # if description.device_class is not None and description.device_class.SensorDeviceClass.DATE:
         #     if description.tag == WKHPTag.SCHEDULE_WATER_DISINFECTION_START_TIME:

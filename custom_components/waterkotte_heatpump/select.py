@@ -2,9 +2,9 @@ import logging
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
 from . import WKHPDataUpdateCoordinator, WKHPBaseEntity
 from .const import DOMAIN, SELECT_SENSORS, ExtSelectEntityDescription
 from .const_gen import SELECT_SENSORS_GENERATED
@@ -28,7 +28,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, add_
 
 class WKHPSelect(WKHPBaseEntity, SelectEntity):
     def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: ExtSelectEntityDescription):
-        super().__init__(coordinator=coordinator, description=description)
+        super().__init__(entity_type=Platform.SELECT, coordinator=coordinator, description=description)
 
     @property
     def current_option(self) -> str | None:

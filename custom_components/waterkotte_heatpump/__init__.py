@@ -3,6 +3,10 @@ import logging
 from datetime import timedelta
 from typing import List, Collection, Sequence, Any, Tuple
 
+from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant, Event, SupportsResponse
@@ -12,11 +16,6 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.typing import UNDEFINED, UndefinedType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-
-from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from . import service as waterkotte_service
 from .const import (
     CONF_IP,
@@ -280,7 +279,7 @@ class WKHPBaseEntity(Entity):
     _attr_should_poll = False
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: EntityDescription) -> None:
+    def __init__(self, entity_type:str, coordinator: WKHPDataUpdateCoordinator, description: EntityDescription) -> None:
         if description.feature is not None and FEATURE_CODE_GEN == description.feature:
             self.code_generated = True
         else:
@@ -295,9 +294,9 @@ class WKHPBaseEntity(Entity):
                 self._attr_entity_registry_enabled_default = True
 
         if self.coordinator.is_multi_instances:
-            self.entity_id = f"{DOMAIN}.wkh_{self.coordinator.serial_id_addon}_{self._attr_translation_key}"
+            self.entity_id = f"{entity_type}.wkh_{self.coordinator.serial_id_addon}_{self._attr_translation_key}"
         else:
-            self.entity_id = f"{DOMAIN}.wkh_{self._attr_translation_key}"
+            self.entity_id = f"{entity_type}.wkh_{self._attr_translation_key}"
 
     def _name_internal(self, device_class_name: str | None,
                        platform_translations: dict[str, Any], ) -> str | UndefinedType | None:

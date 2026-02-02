@@ -1,12 +1,11 @@
 import logging
 from typing import Literal
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import STATE_ON, STATE_OFF
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import STATE_ON, STATE_OFF, Platform
 from homeassistant.core import HomeAssistant
-
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from . import WKHPDataUpdateCoordinator, WKHPBaseEntity
 from .const import DOMAIN, SWITCH_SENSORS, ExtSwitchEntityDescription
 from .const_gen import SWITCH_SENSORS_GENERATED
@@ -30,7 +29,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, add_
 
 class WKHPSwitch(WKHPBaseEntity, SwitchEntity):
     def __init__(self, coordinator: WKHPDataUpdateCoordinator, description: ExtSwitchEntityDescription):
-        super().__init__(coordinator=coordinator, description=description)
+        super().__init__(entity_type=Platform.SWITCH, coordinator=coordinator, description=description)
         self._attr_icon_off = self.entity_description.icon_off
 
     async def async_turn_on(self, **kwargs):

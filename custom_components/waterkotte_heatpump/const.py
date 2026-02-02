@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Final
 
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import FOUR_STEPS_MODES, SIX_STEPS_MODES
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntityDescription
 from homeassistant.components.number import NumberEntityDescription, NumberDeviceClass, NumberMode, DEFAULT_STEP
 from homeassistant.components.select import SelectEntityDescription
@@ -16,11 +18,9 @@ from homeassistant.const import (
     PERCENTAGE,
     CONCENTRATION_PARTS_PER_MILLION,
     CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
-    REVOLUTIONS_PER_MINUTE
+    REVOLUTIONS_PER_MINUTE,
+    Platform
 )
-
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import FOUR_STEPS_MODES, SIX_STEPS_MODES
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 
 # Base component constants
 NAME: Final = "Waterkotte Heatpump [+2020]"
@@ -124,7 +124,7 @@ class ExtSwitchEntityDescription(SwitchEntityDescription):
     icon_off: str | None = None
 
 
-PLATFORMS: Final = ["binary_sensor", "number", "select", "sensor", "switch"]
+PLATFORMS: Final = [Platform.BINARY_SENSOR, Platform.NUMBER, Platform.SELECT, Platform.SENSOR, Platform.SWITCH]
 
 BINARY_SENSORS: Final = [
     ExtBinarySensorEntityDescription(
