@@ -294,9 +294,9 @@ class WKHPBaseEntity(Entity):
                 self._attr_entity_registry_enabled_default = True
 
         if self.coordinator.is_multi_instances:
-            self.entity_id = f"{entity_type}.wkh_{self.coordinator.serial_id_addon}_{self._attr_translation_key}"
+            self.entity_id = f"{entity_type}.wkh_{self.coordinator.serial_id_addon}_{self._attr_translation_key}".lower()
         else:
-            self.entity_id = f"{entity_type}.wkh_{self._attr_translation_key}"
+            self.entity_id = f"{entity_type}.wkh_{self._attr_translation_key}".lower()
 
     def _name_internal(self, device_class_name: str | None,
                        platform_translations: dict[str, Any], ) -> str | UndefinedType | None:
