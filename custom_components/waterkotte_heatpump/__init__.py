@@ -343,9 +343,9 @@ class WKHPBaseEntity(Entity):
         # device_key = self.coordinator.config_entry.data[CONF_SERIAL]
         # return f"{device_key}_{sensor}"
         if self.coordinator.is_multi_instances:
-            return f"{self.entity_description.key}_{self.coordinator.serial_id_addon}"
+            return f"{self.entity_description.key}_{self.coordinator.serial_id_addon}".lower()
         else:
-            return self.entity_description.key
+            return self.entity_description.key.lower()
 
     async def async_added_to_hass(self):
         """Connect to dispatcher listening for entity data notifications."""
