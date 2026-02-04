@@ -27,7 +27,8 @@ from .const import (
     CONF_USE_DISINFECTION,
     CONF_USE_HEATING_CURVE,
     CONF_USE_VENT,
-    CONF_USE_POOL
+    CONF_USE_POOL,
+    CONFIG_VERSION, CONFIG_MINOR_VERSION
 )
 from .pywaterkotte_ha.error import Http404Exception
 
@@ -37,7 +38,8 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for waterkotte_heatpump."""
 
-    VERSION = 1
+    VERSION = CONFIG_VERSION
+    MINOR_VERSION = CONFIG_MINOR_VERSION
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     def __init__(self):

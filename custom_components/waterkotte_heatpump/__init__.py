@@ -43,12 +43,48 @@ from .const import (
     FEATURE_VENT,
     FEATURE_HEATING_CURVE,
     FEATURE_DISINFECTION,
-    FEATURE_CODE_GEN
+    FEATURE_CODE_GEN,
+    CONFIG_VERSION, CONFIG_MINOR_VERSION
 )
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=60)
 CONFIG_SCHEMA = config_val.removed(DOMAIN, raise_if_present=False)
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    if config_entry.version == 1:
+        if config_entry.minor_version < 2:
+            # update from 1.x to 1.2 [ensure that all unique_id's are lower case!]
+            _LOGGER.info(f"async_migrate_entry(): Migration: from v{config_entry.version}.{config_entry.minor_version} to v{CONFIG_VERSION}.{CONFIG_MINOR_VERSION}")
+            registry = entity_reg.async_get(hass)
+
+            # 1'st run - ensure that all 'unique_id' are lower case...
+            entities = entity_reg.async_entries_for_config_entry(registry, config_entry.entry_id)
+            for entity in entities:
+                if entity.unique_id != entity.unique_id.lower():
+                    new_unique_id = entity.unique_id.lower()
+                    _LOGGER.info(f"Entity ID: {entity.entity_id}, Unique ID: {entity.unique_id} updated!")
+                    for already_existing_entity in entities:
+                        if already_existing_entity.unique_id == new_unique_id:
+                            _LOGGER.info(f"Entity ID: {entity.entity_id}, Unique ID: {new_unique_id} already exists! - Will PURGE previous {already_existing_entity.entity_id}")
+                            registry.async_remove(already_existing_entity.entity_id)
+
+                    registry.async_update_entity(entity.entity_id, new_unique_id=new_unique_id)
+
+            # 2'nd run - add the DOMAIN...
+            entities = entity_reg.async_entries_for_config_entry(registry, config_entry.entry_id)
+            prefix = f"{DOMAIN.lower()}.".lower()
+            for entity in entities:
+                if not entity.unique_id.startswith(prefix):
+                    new_unique_id = f"{DOMAIN}.{entity.unique_id}".lower()
+                    _LOGGER.debug(f"Entity ID: {entity.entity_id}, Unique ID: {entity.unique_id} will be updated!")
+                    registry.async_update_entity(entity.entity_id, new_unique_id=new_unique_id)
+
+            hass.config_entries.async_update_entry(config_entry, version=CONFIG_VERSION, minor_version=CONFIG_MINOR_VERSION)
+            _LOGGER.info(f"async_migrate_entry(): Migration to configuration version {config_entry.version}.{config_entry.minor_version} successful")
+
+    return True
 
 
 async def async_setup(hass: HomeAssistant, config: dict):  # pylint: disable=unused-argument
@@ -139,12 +175,19 @@ def generate_tag_list(hass: HomeAssistant, trim_unique_id:bool, config_entry_id:
         if a_entity_reg is not None:
             # we query from the HA entity registry all entities that are created by this
             # 'config_entry' -> we use here just default api calls [no more hacks!]
-            for entity in entity_reg.async_entries_for_config_entry(registry=a_entity_reg,
-                                                                    config_entry_id=config_entry_id):
+            prefix = f"{DOMAIN.lower()}.".lower()
+            prefix_len = len(prefix)
+            for entity in entity_reg.async_entries_for_config_entry(registry=a_entity_reg, config_entry_id=config_entry_id):
                 if entity.disabled is False:
                     a_temp_tag = (entity.unique_id)
+
+                    # we must remove the DOMAIN prefix!!!
+                    if a_temp_tag.startswith(prefix):
+                        a_temp_tag = a_temp_tag[prefix_len:]
+
                     if trim_unique_id:
                         a_temp_tag = a_temp_tag[0:a_temp_tag.rfind('_')]
+
                     #_LOGGER.debug(f"found active entity: {entity.entity_id} using Tag: {a_temp_tag.upper()}")
                     if a_temp_tag is not None and a_temp_tag.upper() in WKHPTag.__members__:
                         if WKHPTag[a_temp_tag.upper()]:
@@ -343,9 +386,9 @@ class WKHPBaseEntity(Entity):
         # device_key = self.coordinator.config_entry.data[CONF_SERIAL]
         # return f"{device_key}_{sensor}"
         if self.coordinator.is_multi_instances:
-            return f"{self.entity_description.key}_{self.coordinator.serial_id_addon}".lower()
+            return f"{DOMAIN}.{self.entity_description.key}_{self.coordinator.serial_id_addon}".lower()
         else:
-            return self.entity_description.key.lower()
+            return f"{DOMAIN}.{self.entity_description.key}".lower()
 
     async def async_added_to_hass(self):
         """Connect to dispatcher listening for entity data notifications."""
