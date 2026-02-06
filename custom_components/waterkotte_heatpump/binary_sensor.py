@@ -79,8 +79,11 @@ class WKHPBinarySensor(WKHPBaseEntity, BinarySensorEntity):
                          "STATE_BUFFERTANK_CIRCULATION_PUMP_D377" | \
                          "STATE_POOL_CIRCULATION_PUMP_D549" | \
                          "STATE_MIX1_CIRCULATION_PUMP_D248" | \
+                         "STATE_MIX1_CIRCULATION_PUMP_D563" | \
                          "STATE_MIX2_CIRCULATION_PUMP_D291" | \
+                         "STATE_MIX2_CIRCULATION_PUMP_D564" | \
                          "STATE_MIX3_CIRCULATION_PUMP_D334" | \
+                         "STATE_MIX3_CIRCULATION_PUMP_D565" | \
                          "STATUS_HEATING_CIRCULATION_PUMP" | \
                          "STATUS_SOLAR_CIRCULATION_PUMP" | \
                          "STATUS_BUFFER_TANK_CIRCULATION_PUMP":
@@ -93,8 +96,11 @@ class WKHPBinarySensor(WKHPBaseEntity, BinarySensorEntity):
                          "STATE_BUFFERTANK_CIRCULATION_PUMP_D377" | \
                          "STATE_POOL_CIRCULATION_PUMP_D549" | \
                          "STATE_MIX1_CIRCULATION_PUMP_D248" | \
+                         "STATE_MIX1_CIRCULATION_PUMP_D563" | \
                          "STATE_MIX2_CIRCULATION_PUMP_D291" | \
+                         "STATE_MIX2_CIRCULATION_PUMP_D564" | \
                          "STATE_MIX3_CIRCULATION_PUMP_D334" | \
+                         "STATE_MIX3_CIRCULATION_PUMP_D565" | \
                          "STATUS_HEATING_CIRCULATION_PUMP" | \
                          "STATUS_SOLAR_CIRCULATION_PUMP" | \
                          "STATUS_BUFFER_TANK_CIRCULATION_PUMP":

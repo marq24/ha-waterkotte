@@ -284,16 +284,31 @@ BINARY_SENSORS: Final = [
         tag=WKHPTag.STATE_MIX1_CIRCULATION_PUMP_D248,
         entity_registry_enabled_default=True
     ),
+    ExtBinarySensorEntityDescription(
+        key="STATE_MIX1_CIRCULATION_PUMP_D563",
+        tag=WKHPTag.STATE_MIX1_CIRCULATION_PUMP_D563,
+        entity_registry_enabled_default=False
+    ),
 
     ExtBinarySensorEntityDescription(
         key="STATE_MIX2_CIRCULATION_PUMP_D291",
         tag=WKHPTag.STATE_MIX2_CIRCULATION_PUMP_D291,
         entity_registry_enabled_default=False
     ),
+    ExtBinarySensorEntityDescription(
+        key="STATE_MIX2_CIRCULATION_PUMP_D564",
+        tag=WKHPTag.STATE_MIX2_CIRCULATION_PUMP_D564,
+        entity_registry_enabled_default=False
+    ),
 
     ExtBinarySensorEntityDescription(
         key="STATE_MIX3_CIRCULATION_PUMP_D334",
         tag=WKHPTag.STATE_MIX3_CIRCULATION_PUMP_D334,
+        entity_registry_enabled_default=False
+    ),
+    ExtBinarySensorEntityDescription(
+        key="STATE_MIX3_CIRCULATION_PUMP_D565",
+        tag=WKHPTag.STATE_MIX3_CIRCULATION_PUMP_D565,
         entity_registry_enabled_default=False
     ),
     ExtBinarySensorEntityDescription(
