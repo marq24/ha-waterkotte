@@ -3,10 +3,6 @@ import logging
 from datetime import timedelta
 from typing import List, Collection, Sequence, Any, Tuple
 
-from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
-from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant, Event, SupportsResponse
@@ -16,6 +12,11 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.typing import UNDEFINED, UndefinedType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+
+from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.error import TooManyUsersException, InvalidPasswordException
+from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from . import service as waterkotte_service
 from .const import (
     CONF_IP,
@@ -46,6 +47,7 @@ from .const import (
     FEATURE_CODE_GEN,
     CONFIG_VERSION, CONFIG_MINOR_VERSION
 )
+from .entity import CustomFriendlyNameEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=60)
@@ -318,7 +320,7 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
             entity.async_schedule_update_ha_state(force_refresh=True)
 
 
-class WKHPBaseEntity(Entity):
+class WKHPBaseEntity(CustomFriendlyNameEntity):
     _attr_should_poll = False
     _attr_has_entity_name = True
 
