@@ -321,10 +321,10 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
 
 
 class WKHPBaseEntity(CustomFriendlyNameEntity):
-    _attr_should_poll = False
     _attr_has_entity_name = True
 
     def __init__(self, entity_type:str, coordinator: WKHPDataUpdateCoordinator, description: EntityDescription) -> None:
+        super().__init__(coordinator, description)
         if description.feature is not None and FEATURE_CODE_GEN == description.feature:
             self.code_generated = True
         else:
@@ -395,15 +395,7 @@ class WKHPBaseEntity(CustomFriendlyNameEntity):
     async def async_added_to_hass(self):
         """Connect to dispatcher listening for entity data notifications."""
         self.async_on_remove(self.coordinator.async_add_listener(self.async_write_ha_state))
-
-    async def async_update(self):
-        """Update entity."""
-        await self.coordinator.async_request_refresh()
-
-    @property
-    def should_poll(self) -> bool:
-        """Entities do not individually poll."""
-        return False
+        await super().async_added_to_hass()
 
     def _friendly_name_internal(self) -> str | None:
         """Return the friendly name.
