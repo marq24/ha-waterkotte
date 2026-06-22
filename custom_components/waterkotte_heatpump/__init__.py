@@ -243,9 +243,9 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
             },
             "manufacturer": NAME,
             "name": NAME,
-            "model": config_entry.options.get(CONF_SERIES, config_entry.data.get(CONF_SERIES)),
+            "model": f"{config_entry.options.get(CONF_SERIES, config_entry.data.get(CONF_SERIES))}",
             "sw_version": f"{fw} BIOS: {bios}",
-            "hw_version": config_entry.options.get(CONF_ID, config_entry.data.get(CONF_ID))
+            "hw_version": f"{config_entry.options.get(CONF_ID, config_entry.data.get(CONF_ID))}"
         }
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
