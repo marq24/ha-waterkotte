@@ -16,8 +16,8 @@ from homeassistant.const import (
     UnitOfTime,
     EntityCategory,
     PERCENTAGE,
-    CONCENTRATION_PARTS_PER_MILLION,
-    CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+    UnitOfRatio,
+    UnitOfDensity,
     REVOLUTIONS_PER_MINUTE,
     Platform
 )
@@ -2034,7 +2034,7 @@ SENSOR_SENSORS: Final = [
         tag=WKHPTag.BASICVENT_CO2_VALUE_A4992,
         device_class=SensorDeviceClass.CO2,
         state_class=SensorStateClass.MEASUREMENT,
-        native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        native_unit_of_measurement=UnitOfRatio.PARTS_PER_MILLION,
         icon="mdi:molecule-co2",
         entity_registry_enabled_default=False,
         suggested_display_precision=2,
@@ -2045,7 +2045,7 @@ SENSOR_SENSORS: Final = [
         tag=WKHPTag.BASICVENT_VOC_VALUE_A4522,
         device_class=SensorDeviceClass.VOLATILE_ORGANIC_COMPOUNDS,
         state_class=SensorStateClass.MEASUREMENT,
-        native_unit_of_measurement=CONCENTRATION_MICROGRAMS_PER_CUBIC_METER,
+        native_unit_of_measurement=UnitOfDensity.MICROGRAMS_PER_CUBIC_METER,
         icon="mdi:counter",
         entity_registry_enabled_default=False,
         suggested_display_precision=2,
