@@ -324,7 +324,7 @@ class WKHPBaseEntity(CustomFriendlyNameEntity):
     _attr_has_entity_name = True
 
     def __init__(self, entity_type:str, coordinator: WKHPDataUpdateCoordinator, description: EntityDescription) -> None:
-        super().__init__(coordinator, description)
+        super().__init__(coordinator)
         if description.feature is not None and FEATURE_CODE_GEN == description.feature:
             self.code_generated = True
         else:
