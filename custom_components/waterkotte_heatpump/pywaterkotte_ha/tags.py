@@ -156,35 +156,30 @@ class DataTag(NamedTuple):
             encoded_values[ecotouch_tag] = str(int(value))
 
     def _decode_alarms(self, str_vals: List[str], lang_map: dict):
+        # copied from https://github.com/Hoffmann77/ha-waterkotte/blob/main/custom_components/waterkotte_heatpump/pywaterkotte_ha/tags.py
         if str_vals is None:
             return None
 
-        error_tag_index = 0
-        final_value = ""
-        for a_val in str_vals:
-            if a_val is not None and isinstance(a_val, int):
-                if self.tags[error_tag_index] in lang_map:
-                    if error_tag_index+1 == len(str_vals):
-                        # the last error field [I2614] only contain 13 bits
-                        bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-                    elif error_tag_index == 0:
-                        # the bit13 (= "-") & bit14(= "Kommunikationstrigger") of I52 are NO alarms
-                        bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15]
-                    else:
-                        bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        alarms = []
+        for error_tag_index, a_val in enumerate(str_vals):
+            # the values of the heat pump are strings (e.g. '8' or '8.0')
+            if a_val is None or str(a_val).strip() == "" or self.tags[error_tag_index] not in lang_map:
+                continue
+            if error_tag_index + 1 == len(str_vals):
+                # the last error field [I2614] only contain 13 bits
+                bits = range(13)
+            elif error_tag_index == 0:
+                # the bit13 (= "-") & bit14(= "Kommunikationstrigger") of I52 are NO alarms
+                bits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15]
+            else:
+                bits = range(16)
 
-                    for idx in range(len(bits)):
-                        if (int(a_val) & (1 << bits[idx])) > 0:
-                            final_value = final_value + ", " + str(lang_map[self.tags[error_tag_index]][idx])
+            int_val = int(float(a_val))
+            labels = lang_map[self.tags[error_tag_index]]
+            # the labels are mapped by the bit number
+            alarms.extend(str(labels[bit]) for bit in bits if int_val & (1 << bit))
 
-                    #_LOGGER.error(f"{self.tags[error_tag_index]} {a_val} -> '{final_value}'")
-                error_tag_index = error_tag_index + 1
-
-        # we need to trim the firsts initial added ', '
-        if len(final_value) > 0:
-            return final_value[2:]
-        else:
-            return final_value
+        return ", ".join(alarms)
 
     def _decode_datetime(self, str_vals: List[str]):
         try:
@@ -416,6 +411,17 @@ class DataTag(NamedTuple):
             _LOGGER.warning("could not decode Serial",ex)
             return f"Serial_{sn1}-{sn2}"
 
+    def _decode_float_words(self, str_vals: List[str]):
+        """A 32-bit float, that is split into 2 (signed) 16-bit integer tags: the low word and the high word (in
+        this order - like in the web interface)"""
+        if not str_vals or len(str_vals) != 2 or None in str_vals:
+            return None
+        try:
+            low, high = (int(float(val)) & 0xFFFF for val in str_vals)
+        except ValueError:
+            return None
+        return round(float(struct.unpack("!f", bytes.fromhex(f"{high:04x}{low:04x}"))[0]), 1)
+
     def _decode_year(self, str_vals: List[str]):
         if str_vals is None and str_vals[0] is not None:
             return None
@@ -578,6 +584,8 @@ class WKHPTag(DataTag, Enum):
     # ENERGY-YEAR-BALANCE
     COP_HEATPUMP_YEAR = DataTag(["A460"], "")  # HEATPUMP_COP
     COP_HEATPUMP_ACTUAL_YEAR_INFO = DataTag(["I1261"], decode_f=DataTag._decode_year)  # HEATPUMP_COP_YEAR
+    # the total of all years ('Gesamt') is selected in the web interface (instead of the year I1261)
+    COP_HEATPUMP_TOTAL_SELECTED = DataTag(["D428"])
     COP_TOTAL_SYSTEM_YEAR = DataTag(["A461"], "")
     COP_HEATING_YEAR = DataTag(["A695"])
     COP_HOT_WATER_YEAR = DataTag(["A697"])
@@ -598,84 +606,113 @@ class WKHPTag(DataTag, Enum):
     COP_TOTAL_SYSTEM_LAST12M = DataTag(["A435"])
     COOLING_ENERGY_LAST12M = DataTag(["A436"], "kWh")
 
-    ENG_CONSUMPTION_COMPRESSOR01 = DataTag(["A782"])
-    ENG_CONSUMPTION_COMPRESSOR02 = DataTag(["A783"])
-    ENG_CONSUMPTION_COMPRESSOR03 = DataTag(["A784"])
-    ENG_CONSUMPTION_COMPRESSOR04 = DataTag(["A785"])
-    ENG_CONSUMPTION_COMPRESSOR05 = DataTag(["A786"])
-    ENG_CONSUMPTION_COMPRESSOR06 = DataTag(["A787"])
-    ENG_CONSUMPTION_COMPRESSOR07 = DataTag(["A788"])
-    ENG_CONSUMPTION_COMPRESSOR08 = DataTag(["A789"])
-    ENG_CONSUMPTION_COMPRESSOR09 = DataTag(["A790"])
-    ENG_CONSUMPTION_COMPRESSOR10 = DataTag(["A791"])
-    ENG_CONSUMPTION_COMPRESSOR11 = DataTag(["A792"])
-    ENG_CONSUMPTION_COMPRESSOR12 = DataTag(["A793"])
+    # the energy of the last 12 months (one value per calendar month: January ... December) - 32-bit floats in pairs
+    # of I-tags (like in the web interface: pgCOP.html). The 16-bit A-tags of older firmware versions (A782
+    # compressor, A794 source pump, A806 external heater, A818 total consumption, A830 heating, A842 hot water, A854
+    # pool) are limited to 3276.7 kWh
+    ENG_CONSUMPTION_COMPRESSOR01 = DataTag(["I2623", "I2624"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR02 = DataTag(["I2625", "I2626"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR03 = DataTag(["I2627", "I2628"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR04 = DataTag(["I2629", "I2630"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR05 = DataTag(["I2631", "I2632"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR06 = DataTag(["I2633", "I2634"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR07 = DataTag(["I2635", "I2636"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR08 = DataTag(["I2637", "I2638"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR09 = DataTag(["I2639", "I2640"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR10 = DataTag(["I2641", "I2642"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR11 = DataTag(["I2643", "I2644"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_COMPRESSOR12 = DataTag(["I2645", "I2646"], decode_f=DataTag._decode_float_words)
 
-    ENG_CONSUMPTION_SOURCEPUMP01 = DataTag(["A794"])
-    ENG_CONSUMPTION_SOURCEPUMP02 = DataTag(["A795"])
-    ENG_CONSUMPTION_SOURCEPUMP03 = DataTag(["A796"])
-    ENG_CONSUMPTION_SOURCEPUMP04 = DataTag(["A797"])
-    ENG_CONSUMPTION_SOURCEPUMP05 = DataTag(["A798"])
-    ENG_CONSUMPTION_SOURCEPUMP06 = DataTag(["A799"])
-    ENG_CONSUMPTION_SOURCEPUMP07 = DataTag(["A800"])
-    ENG_CONSUMPTION_SOURCEPUMP08 = DataTag(["A802"])
-    ENG_CONSUMPTION_SOURCEPUMP09 = DataTag(["A804"])
-    ENG_CONSUMPTION_SOURCEPUMP10 = DataTag(["A805"])
-    ENG_CONSUMPTION_SOURCEPUMP11 = DataTag(["A806"])
-    ENG_CONSUMPTION_SOURCEPUMP12 = DataTag(["A807"])
+    ENG_CONSUMPTION_SOURCEPUMP01 = DataTag(["I2647", "I2648"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP02 = DataTag(["I2649", "I2650"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP03 = DataTag(["I2651", "I2652"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP04 = DataTag(["I2653", "I2654"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP05 = DataTag(["I2655", "I2656"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP06 = DataTag(["I2657", "I2658"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP07 = DataTag(["I2659", "I2660"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP08 = DataTag(["I2661", "I2662"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP09 = DataTag(["I2663", "I2664"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP10 = DataTag(["I2665", "I2666"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP11 = DataTag(["I2667", "I2668"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_SOURCEPUMP12 = DataTag(["I2669", "I2670"], decode_f=DataTag._decode_float_words)
 
-    # Docs say it should start at 806 for external heater but there is an overlapp to source pump
-    ENG_CONSUMPTION_EXTERNALHEATER01 = DataTag(["A808"])
-    ENG_CONSUMPTION_EXTERNALHEATER02 = DataTag(["A809"])
-    ENG_CONSUMPTION_EXTERNALHEATER03 = DataTag(["A810"])
-    ENG_CONSUMPTION_EXTERNALHEATER04 = DataTag(["A811"])
-    ENG_CONSUMPTION_EXTERNALHEATER05 = DataTag(["A812"])
-    ENG_CONSUMPTION_EXTERNALHEATER06 = DataTag(["A813"])
-    ENG_CONSUMPTION_EXTERNALHEATER07 = DataTag(["A814"])
-    ENG_CONSUMPTION_EXTERNALHEATER08 = DataTag(["A815"])
-    ENG_CONSUMPTION_EXTERNALHEATER09 = DataTag(["A816"])
-    ENG_CONSUMPTION_EXTERNALHEATER10 = DataTag(["A817"])
-    ENG_CONSUMPTION_EXTERNALHEATER11 = DataTag(["A818"])
-    ENG_CONSUMPTION_EXTERNALHEATER12 = DataTag(["A819"])
+    ENG_CONSUMPTION_EXTERNALHEATER01 = DataTag(["I2671", "I2672"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER02 = DataTag(["I2673", "I2674"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER03 = DataTag(["I2675", "I2676"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER04 = DataTag(["I2677", "I2678"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER05 = DataTag(["I2679", "I2680"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER06 = DataTag(["I2681", "I2682"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER07 = DataTag(["I2683", "I2684"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER08 = DataTag(["I2685", "I2686"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER09 = DataTag(["I2687", "I2688"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER10 = DataTag(["I2689", "I2690"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER11 = DataTag(["I2691", "I2692"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_EXTERNALHEATER12 = DataTag(["I2693", "I2694"], decode_f=DataTag._decode_float_words)
 
-    ENG_PRODUCTION_HEATING01 = DataTag(["A830"])
-    ENG_PRODUCTION_HEATING02 = DataTag(["A831"])
-    ENG_PRODUCTION_HEATING03 = DataTag(["A832"])
-    ENG_PRODUCTION_HEATING04 = DataTag(["A833"])
-    ENG_PRODUCTION_HEATING05 = DataTag(["A834"])
-    ENG_PRODUCTION_HEATING06 = DataTag(["A835"])
-    ENG_PRODUCTION_HEATING07 = DataTag(["A836"])
-    ENG_PRODUCTION_HEATING08 = DataTag(["A837"])
-    ENG_PRODUCTION_HEATING09 = DataTag(["A838"])
-    ENG_PRODUCTION_HEATING10 = DataTag(["A839"])
-    ENG_PRODUCTION_HEATING11 = DataTag(["A840"])
-    ENG_PRODUCTION_HEATING12 = DataTag(["A841"])
+    ENG_PRODUCTION_HEATING01 = DataTag(["I2719", "I2720"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING02 = DataTag(["I2721", "I2722"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING03 = DataTag(["I2723", "I2724"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING04 = DataTag(["I2725", "I2726"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING05 = DataTag(["I2727", "I2728"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING06 = DataTag(["I2729", "I2730"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING07 = DataTag(["I2731", "I2732"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING08 = DataTag(["I2733", "I2734"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING09 = DataTag(["I2735", "I2736"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING10 = DataTag(["I2737", "I2738"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING11 = DataTag(["I2739", "I2740"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_HEATING12 = DataTag(["I2741", "I2742"], decode_f=DataTag._decode_float_words)
 
-    ENG_PRODUCTION_WARMWATER01 = DataTag(["A842"])
-    ENG_PRODUCTION_WARMWATER02 = DataTag(["A843"])
-    ENG_PRODUCTION_WARMWATER03 = DataTag(["A844"])
-    ENG_PRODUCTION_WARMWATER04 = DataTag(["A845"])
-    ENG_PRODUCTION_WARMWATER05 = DataTag(["A846"])
-    ENG_PRODUCTION_WARMWATER06 = DataTag(["A847"])
-    ENG_PRODUCTION_WARMWATER07 = DataTag(["A848"])
-    ENG_PRODUCTION_WARMWATER08 = DataTag(["A849"])
-    ENG_PRODUCTION_WARMWATER09 = DataTag(["A850"])
-    ENG_PRODUCTION_WARMWATER10 = DataTag(["A851"])
-    ENG_PRODUCTION_WARMWATER11 = DataTag(["A852"])
-    ENG_PRODUCTION_WARMWATER12 = DataTag(["A853"])
+    ENG_PRODUCTION_WARMWATER01 = DataTag(["I2743", "I2744"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER02 = DataTag(["I2745", "I2746"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER03 = DataTag(["I2747", "I2748"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER04 = DataTag(["I2749", "I2750"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER05 = DataTag(["I2751", "I2752"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER06 = DataTag(["I2753", "I2754"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER07 = DataTag(["I2755", "I2756"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER08 = DataTag(["I2757", "I2758"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER09 = DataTag(["I2759", "I2760"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER10 = DataTag(["I2761", "I2762"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER11 = DataTag(["I2763", "I2764"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_WARMWATER12 = DataTag(["I2765", "I2766"], decode_f=DataTag._decode_float_words)
 
-    ENG_PRODUCTION_POOL01 = DataTag(["A854"])
-    ENG_PRODUCTION_POOL02 = DataTag(["A855"])
-    ENG_PRODUCTION_POOL03 = DataTag(["A856"])
-    ENG_PRODUCTION_POOL04 = DataTag(["A857"])
-    ENG_PRODUCTION_POOL05 = DataTag(["A858"])
-    ENG_PRODUCTION_POOL06 = DataTag(["A859"])
-    ENG_PRODUCTION_POOL07 = DataTag(["A860"])
-    ENG_PRODUCTION_POOL08 = DataTag(["A861"])
-    ENG_PRODUCTION_POOL09 = DataTag(["A862"])
-    ENG_PRODUCTION_POOL10 = DataTag(["A863"])
-    ENG_PRODUCTION_POOL11 = DataTag(["A864"])
-    ENG_PRODUCTION_POOL12 = DataTag(["A865"])
+    ENG_PRODUCTION_POOL01 = DataTag(["I2767", "I2768"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL02 = DataTag(["I2769", "I2770"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL03 = DataTag(["I2771", "I2772"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL04 = DataTag(["I2773", "I2774"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL05 = DataTag(["I2775", "I2776"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL06 = DataTag(["I2777", "I2778"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL07 = DataTag(["I2779", "I2780"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL08 = DataTag(["I2781", "I2782"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL09 = DataTag(["I2783", "I2784"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL10 = DataTag(["I2785", "I2786"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL11 = DataTag(["I2787", "I2788"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_POOL12 = DataTag(["I2789", "I2790"], decode_f=DataTag._decode_float_words)
+
+    ENG_CONSUMPTION_TOTAL01 = DataTag(["I2695", "I2696"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL02 = DataTag(["I2697", "I2698"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL03 = DataTag(["I2699", "I2700"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL04 = DataTag(["I2701", "I2702"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL05 = DataTag(["I2703", "I2704"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL06 = DataTag(["I2705", "I2706"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL07 = DataTag(["I2707", "I2708"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL08 = DataTag(["I2709", "I2710"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL09 = DataTag(["I2711", "I2712"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL10 = DataTag(["I2713", "I2714"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL11 = DataTag(["I2715", "I2716"], decode_f=DataTag._decode_float_words)
+    ENG_CONSUMPTION_TOTAL12 = DataTag(["I2717", "I2718"], decode_f=DataTag._decode_float_words)
+
+    ENG_PRODUCTION_TOTAL01 = DataTag(["I2815", "I2816"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL02 = DataTag(["I2817", "I2818"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL03 = DataTag(["I2819", "I2820"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL04 = DataTag(["I2821", "I2822"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL05 = DataTag(["I2823", "I2824"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL06 = DataTag(["I2825", "I2826"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL07 = DataTag(["I2827", "I2828"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL08 = DataTag(["I2829", "I2830"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL09 = DataTag(["I2831", "I2832"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL10 = DataTag(["I2833", "I2834"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL11 = DataTag(["I2835", "I2836"], decode_f=DataTag._decode_float_words)
+    ENG_PRODUCTION_TOTAL12 = DataTag(["I2837", "I2838"], decode_f=DataTag._decode_float_words)
 
     ENG_HEATPUMP_COP_MONTH01 = DataTag(["A924"])
     ENG_HEATPUMP_COP_MONTH02 = DataTag(["A925"])
@@ -684,11 +721,11 @@ class WKHPTag(DataTag, Enum):
     ENG_HEATPUMP_COP_MONTH05 = DataTag(["A928"])
     ENG_HEATPUMP_COP_MONTH06 = DataTag(["A929"])
     ENG_HEATPUMP_COP_MONTH07 = DataTag(["A930"])
-    ENG_HEATPUMP_COP_MONTH08 = DataTag(["A930"])
-    ENG_HEATPUMP_COP_MONTH09 = DataTag(["A931"])
-    ENG_HEATPUMP_COP_MONTH10 = DataTag(["A932"])
-    ENG_HEATPUMP_COP_MONTH11 = DataTag(["A933"])
-    ENG_HEATPUMP_COP_MONTH12 = DataTag(["A934"])
+    ENG_HEATPUMP_COP_MONTH08 = DataTag(["A931"])
+    ENG_HEATPUMP_COP_MONTH09 = DataTag(["A932"])
+    ENG_HEATPUMP_COP_MONTH10 = DataTag(["A933"])
+    ENG_HEATPUMP_COP_MONTH11 = DataTag(["A934"])
+    ENG_HEATPUMP_COP_MONTH12 = DataTag(["A935"])
 
     # Temperature stuff
     TEMPERATURE_HEATING = DataTag(["A30"], "°C")

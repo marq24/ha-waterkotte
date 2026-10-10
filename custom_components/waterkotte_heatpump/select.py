@@ -35,7 +35,7 @@ class WKHPSelect(WKHPBaseEntity, SelectEntity):
         try:
             value = self.coordinator.data[self.wkhp_tag]["value"]
             if value is None or value == "":
-                value = 'unknown'
+                return None
             elif isinstance(value, bool):
                 # for "switches" that we want to show as selects, we need to convert
                 # the bool True/False to 1 and 0
@@ -44,7 +44,7 @@ class WKHPSelect(WKHPBaseEntity, SelectEntity):
                 else:
                     value = "0"
         except KeyError:
-            value = "unknown"
+            return None
         except TypeError:
             return None
         return str(value)

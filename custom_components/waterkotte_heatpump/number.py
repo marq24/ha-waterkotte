@@ -37,11 +37,11 @@ class WKHPNumber(WKHPBaseEntity, NumberEntity):
         try:
             value = self.coordinator.data[self.wkhp_tag]["value"]
             if value is None or value == "":
-                return "unknown"
+                return None
             if str(self.wkhp_tag.name).upper().endswith("_ADJUST"):
                 value = TEMP_ADJUST_LOOKUP[value]
         except KeyError:
-            return "unknown"
+            return None
         except TypeError:
             return None
         return float(value)

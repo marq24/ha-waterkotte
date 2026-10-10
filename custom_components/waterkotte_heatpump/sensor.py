@@ -52,8 +52,6 @@ class WKHPSensor(WKHPBaseEntity, SensorEntity, RestoreEntity):
         # for SensorDeviceClass.DATE we will use out OWN 'state' render impl!!!
         if self.entity_description.device_class == SensorDeviceClass.DATE:
             value = self.native_value
-            if value is None:
-                value = "unknown"
             return  value
         else:
             return SensorEntity.state.fget(self)

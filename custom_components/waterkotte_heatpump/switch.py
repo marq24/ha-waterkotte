@@ -58,12 +58,10 @@ class WKHPSwitch(WKHPBaseEntity, SwitchEntity):
                 if "value" in value_and_state:
                     value = value_and_state["value"]
                 else:
-                    _LOGGER.debug(
-                        f"is_on: for {self.entity_description.key} could not read value from data: {value_and_state}")
+                    _LOGGER.debug(f"is_on: for {self.entity_description.key} could not read value from data: {value_and_state}")
             else:
                 if len(self.coordinator.data) > 0:
-                    _LOGGER.debug(
-                        f"is_on: for {self.entity_description.key} not found in data: {len(self.coordinator.data)}")
+                    _LOGGER.debug(f"is_on: for {self.entity_description.key} not found in data: {len(self.coordinator.data)}")
             if value is None or value == "":
                 value = None
         except KeyError:

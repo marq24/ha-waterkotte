@@ -167,8 +167,7 @@ class WaterkotteHeatpumpService():
             "cop": res.get(WKHPTag.COP_HEATPUMP_YEAR, {"value": "unknown"})["value"],
             "compressor": res.get(WKHPTag.COMPRESSOR_ELECTRIC_CONSUMPTION_YEAR, {"value": "unknown"})["value"],
             "sourcepump": res.get(WKHPTag.SOURCEPUMP_ELECTRIC_CONSUMPTION_YEAR, {"value": "unknown"})["value"],
-            "externalheater": res.get(WKHPTag.ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR, {"value": "unknown"})[
-                "value"],
+            "externalheater": res.get(WKHPTag.ELECTRICAL_HEATER_ELECTRIC_CONSUMPTION_YEAR, {"value": "unknown"})["value"],
             "heating": res.get(WKHPTag.HEATING_ENERGY_PRODUCTION_YEAR, {"value": "unknown"})["value"],
             "warmwater": res.get(WKHPTag.HOT_WATER_ENERGY_PRODUCTION_YEAR, {"value": "unknown"})["value"],
             "pool": res.get(WKHPTag.POOL_ENERGY_PRODUCTION_YEAR, {"value": "unknown"})["value"]}
@@ -339,8 +338,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH01, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR01, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP01, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER01, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER01, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING01, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER01, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL01, {"value": "unknown"})["value"]
@@ -349,8 +347,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH02, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR02, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP02, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER02, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER02, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING02, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER02, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL02, {"value": "unknown"})["value"]
@@ -359,8 +356,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH03, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR03, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP03, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER03, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER03, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING03, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER03, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL03, {"value": "unknown"})["value"]
@@ -369,8 +365,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH04, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR04, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP04, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER04, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER04, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING04, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER04, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL04, {"value": "unknown"})["value"]
@@ -379,8 +374,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH05, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR05, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP05, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER05, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER05, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING05, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER05, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL05, {"value": "unknown"})["value"]
@@ -389,8 +383,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH06, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR06, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP06, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER06, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER06, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING06, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER06, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL06, {"value": "unknown"})["value"]
@@ -399,8 +392,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH07, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR07, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP07, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER07, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER07, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING07, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER07, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL07, {"value": "unknown"})["value"]
@@ -409,8 +401,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH08, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR08, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP08, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER08, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER08, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING08, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER08, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL08, {"value": "unknown"})["value"]
@@ -419,8 +410,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH09, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR09, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP09, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER09, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER09, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING09, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER09, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL09, {"value": "unknown"})["value"]
@@ -429,8 +419,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH10, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR10, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP10, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER10, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER10, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING10, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER10, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL10, {"value": "unknown"})["value"]
@@ -439,8 +428,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH11, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR11, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP11, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER11, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER11, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING11, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER11, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL11, {"value": "unknown"})["value"]
@@ -449,8 +437,7 @@ class WaterkotteHeatpumpService():
                 "cop": resHeatpumpCopMonth.get(WKHPTag.ENG_HEATPUMP_COP_MONTH12, {"value": "unknown"})["value"],
                 "compressor": resCompressor.get(WKHPTag.ENG_CONSUMPTION_COMPRESSOR12, {"value": "unknown"})["value"],
                 "sourcepump": resSourcePump.get(WKHPTag.ENG_CONSUMPTION_SOURCEPUMP12, {"value": "unknown"})["value"],
-                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER12, {"value": "unknown"})[
-                    "value"],
+                "externalheater": resExternalHeater.get(WKHPTag.ENG_CONSUMPTION_EXTERNALHEATER12, {"value": "unknown"})["value"],
                 "heating": resHeater.get(WKHPTag.ENG_PRODUCTION_HEATING12, {"value": "unknown"})["value"],
                 "warmwater": resWarmWater.get(WKHPTag.ENG_PRODUCTION_WARMWATER12, {"value": "unknown"})["value"],
                 "pool": resPool.get(WKHPTag.ENG_PRODUCTION_POOL12, {"value": "unknown"})["value"]

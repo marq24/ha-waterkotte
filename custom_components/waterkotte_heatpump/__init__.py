@@ -444,11 +444,6 @@ class WKHPBaseEntity(CustomFriendlyNameEntity):
         else:
             return f"{DOMAIN}.{self.entity_description.key}".lower()
 
-    async def async_added_to_hass(self):
-        """Connect to dispatcher listening for entity data notifications."""
-        self.async_on_remove(self.coordinator.async_add_listener(self.async_write_ha_state))
-        await super().async_added_to_hass()
-
     def _friendly_name_internal(self) -> str | None:
         """Return the friendly name.
 
