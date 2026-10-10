@@ -1,6 +1,9 @@
 import asyncio
 import logging
+import aiohttp
+import os
 from datetime import timedelta
+from pathlib import Path
 from typing import List, Collection, Sequence, Any, Tuple
 
 from homeassistant.config_entries import ConfigEntry
@@ -8,8 +11,9 @@ from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.core import HomeAssistant, Event, SupportsResponse
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import config_validation as config_val, entity_registry as entity_reg
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
+from homeassistant.helpers.storage import STORAGE_DIR
 from homeassistant.helpers.typing import UNDEFINED, UndefinedType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -100,7 +104,31 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry):
         _LOGGER.info(STARTUP_MESSAGE)
         hass.data.setdefault(DOMAIN, {"manifest_version": value})
 
-    coordinator = WKHPDataUpdateCoordinator(hass, config_entry)
+    # loading a possible existing cookie file (from the .storage so we don't have the need
+    # to login to the waterkotte backend with every startup
+    cookie_path = str(Path(hass.config.config_dir).joinpath(STORAGE_DIR, f"cookies_waterkotte_heatpump_{config_entry.entry_id}.txt"))
+
+    # ensure that our storage directory exists...
+    def prepare_dir():
+        os.makedirs(os.path.dirname(cookie_path), exist_ok=True)
+    await hass.async_add_executor_job(prepare_dir)
+
+    the_persistent_cookie_jar = aiohttp.CookieJar(unsafe=True)
+    if os.path.exists(cookie_path):
+        if config_entry.data.get(CONF_PASSWORD) or config_entry.optons.get(CONF_PASSWORD):
+            try:
+                await hass.async_add_executor_job(the_persistent_cookie_jar.load, cookie_path)
+                _LOGGER.debug(f"async_setup_entry(): Loaded cookies from file: '{cookie_path}'")
+            except Exception as err:
+                _LOGGER.info(f"async_setup_entry(): Could not load cookies from {cookie_path}: {type(err).__name__} - {err}")
+        else:
+            # when there is no password BUT the cookie file still exist... we should delete it!
+            def delete_cookie_file():
+                os.remove(cookie_path)
+            await hass.async_add_executor_job(delete_cookie_file)
+
+    http_session = async_create_clientsession(hass, verify_ssl=False, cookie_jar=the_persistent_cookie_jar)
+    coordinator = WKHPDataUpdateCoordinator(hass, config_entry, http_session, cookie_path)
     await coordinator.async_refresh()
     if not coordinator.last_update_success:
         raise ConfigEntryNotReady
@@ -200,7 +228,12 @@ def generate_tag_list(hass: HomeAssistant, trim_unique_id:bool, config_entry_id:
 
 
 class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass: HomeAssistant, config_entry):
+    def __init__(self, hass: HomeAssistant, config_entry, http_session, cookie_path:None):
+        # we need this to be able to store our session cookie...
+        # just for internal usage...
+        self._http_session = http_session
+        self._cookie_path_on_fs = cookie_path
+
         self.name = config_entry.title
         self.is_multi_instances = config_entry.data.get(CONF_ADD_SERIAL_AS_ID, False)
         if self.is_multi_instances:
@@ -233,8 +266,9 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
                 _pwd = None
 
         self.bridge = WaterkotteClient(host=_host, username=_user, pwd=_pwd, system_type=_system_type,
-                                       web_session=async_get_clientsession(hass), tags=_tags,
-                                       tags_per_request=_tags_num, lang=hass.config.language.lower())
+                                       web_session=http_session, tags=_tags,
+                                       tags_per_request=_tags_num, lang=hass.config.language.lower(),
+                                       coordinator=self)
 
         global SCAN_INTERVAL
         # update_interval can be adjusted in the options (not for WebAPI)
@@ -257,28 +291,39 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
 
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
+    async def save_cookies(self):
+        """Save cookies to file."""
+        if self._cookie_path_on_fs is None:
+            _LOGGER.info(f"save_cookies(): Failed to save cookies to fs - no 'self._cookie_path_on_fs' is set")
+            return
+        try:
+            await self.hass.async_add_executor_job(self._http_session.cookie_jar.save, self._cookie_path_on_fs)
+            _LOGGER.debug(f"save_cookies(): Saved cookies to file: '{self._cookie_path_on_fs}'")
+        except Exception as err:
+            _LOGGER.info(f"save_cookies(): Failed to save cookies to {self.cookie_path}: {type(err).__name__} - {err}")
+
     async def update_client_tag_list(self, hass: HomeAssistant, trim_unique_id: bool, entry_id: str):
-        _LOGGER.debug(f"rechecking active tags... in 15sec")
+        _LOGGER.debug(f"update_client_tag_list(): rechecking active tags... in 15sec")
         await asyncio.sleep(15)
 
-        _LOGGER.debug(f"rechecking active tags NOW!")
+        _LOGGER.debug(f"update_client_tag_list(): rechecking active tags NOW!")
         self.bridge.tags = generate_tag_list(hass, trim_unique_id, entry_id)
 
-        _LOGGER.debug(f"active tags checked... now refresh sensor data")
+        _LOGGER.debug(f"update_client_tag_list(): active tags checked... now refresh sensor data")
         await self.async_refresh()
 
     # Callable[[Event], Any]
     def __call__(self, evt: Event) -> bool:
-        _LOGGER.debug(f"Event arrived: {evt}")
+        _LOGGER.debug(f"__call__(): Event arrived: {evt}")
         return True
 
     async def _async_update_data(self):
         """Update data via library."""
         try:
             await self.bridge.login()
-            _LOGGER.info(f"number of entities to query: {len(self.bridge.tags)} (1 entity can consist of n-tags)")
+            _LOGGER.debug(f"_async_update_data(): number of entities to query: {len(self.bridge.tags)} (1 entity can consist of n-tags)")
             result = await self.bridge.async_get_data()
-            _LOGGER.info(f"number of entity values read: {len(result)}")
+            _LOGGER.debug(f"_async_update_data(): number of entity values read: {len(result)}")
 
             if self.data is None:
                 self.data = {}
@@ -292,14 +337,14 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
         except UpdateFailed as exception:
             raise UpdateFailed() from exception
         except InvalidPasswordException as invalid_pwd:
-            _LOGGER.info(f"invalid password for waterkotte! {invalid_pwd}")
+            _LOGGER.info(f"_async_update_data(): invalid password for waterkotte! {invalid_pwd}")
             raise UpdateFailed() from invalid_pwd
         except TooManyUsersException as too_many_users:
-            _LOGGER.info(f"TooManyUsers response from waterkotte - waiting 30sec and then retry...")
+            _LOGGER.info(f"_async_update_data(): TooManyUsers response from waterkotte - waiting 30sec and then retry...")
             await asyncio.sleep(30)
             raise UpdateFailed() from too_many_users
         except Exception as other:
-            _LOGGER.error(f"unexpected: {other}")
+            _LOGGER.error(f"_async_update_data(): unexpected: {other}")
             raise UpdateFailed() from other
 
     async def async_read_values(self, tags: Sequence[WKHPTag]) -> dict:

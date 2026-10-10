@@ -4,6 +4,7 @@ import aiohttp
 import re
 import xml.etree.ElementTree as ElemTree
 from datetime import datetime
+from yarl import URL
 from typing import (
     Any,
     Sequence,
@@ -34,15 +35,16 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 class WaterkotteClient:
     def __init__(self, host: str, username: str, pwd: str, system_type: str, web_session,
-                 tags: list, tags_per_request: int, lang: str = "en") -> None:
+                 tags: list, tags_per_request: int, lang: str = "en", coordinator = None) -> None:
+
         self._host = host
         self._systemType = system_type
+
         if system_type == ECOTOUCH:
-            self._internal_client = EcotouchBridge(host=host, web_session=web_session, username=username,
-                                                   pwd=pwd, tags_per_request=tags_per_request, lang=lang)
+            self._internal_client = EcotouchBridge(host=host, web_session=web_session, coordinator=coordinator,
+                                                   username=username, pwd=pwd, tags_per_request=tags_per_request, lang=lang)
         elif system_type == EASYCON:
-            self._internal_client = EasyconBridge(host=host, web_session=web_session, username=username,
-                                                  pwd=pwd, lang=lang)
+            self._internal_client = EasyconBridge(host=host, web_session=web_session, username=username, pwd=pwd, lang=lang)
         else:
             _LOGGER.error("Error unknown System type!")
 
@@ -56,7 +58,7 @@ class WaterkotteClient:
     @tags.setter
     def tags(self, tags):
         if tags is not None:
-            _LOGGER.info(f"number of tags to query set to: {len(tags)}")
+            _LOGGER.info(f"tags(): number of tags to query set to: {len(tags)}")
         self.__tags = tags
 
     async def login(self) -> None:
@@ -106,11 +108,12 @@ class WaterkotteClient:
 class EcotouchBridge:
     auth_cookies = None
 
-    def __init__(self, host: str, web_session, username: str ="waterkotte", pwd: str = "waterkotte", tags_per_request: int = 10, lang: str = "en"):
+    def __init__(self, host: str, web_session, coordinator, username: str ="waterkotte", pwd: str = "waterkotte", tags_per_request: int = 10, lang: str = "en"):
         self.host = host
         self.username = username
         self.pwd = pwd
         self.web_session = web_session
+        self.coordinator = coordinator
         self.tags_per_request = min(tags_per_request, 75)
         self.lang_map = None
         if lang in TRANSLATIONS:
@@ -134,10 +137,41 @@ class EcotouchBridge:
             raise InvalidResponseException("Invalid reply. Status could not be parsed")
         return match.group(1)
 
+    async def already_auth(self):
+        _LOGGER.info(f"already_auth(): check session is already auth with waterkotte@{self.host}")
+        async with self.web_session.get(f"http://{self.host}/cgi/readTags?n=3&t1=D1&t2=D2&t3=D3&_={int(round(datetime.now().timestamp() * 1000))}") as response:
+            try:
+                if response.status in [200, 500]:
+                    _LOGGER.debug(f"already_auth(): requested: {response.url}")
+                    content = await response.text()
+                    if content.startswith("#E_NEED_LOGIN"):
+                        _LOGGER.info("already_auth(): NEED_LOGIN")
+                        return False
+
+                    if content.startswith("#E_TOO_MANY_USERS"):
+                        _LOGGER.info("already_auth(): TOO_MANY_USERS")
+                        return False
+
+                    if re.search(r"#D1\s+S_OK.*?#D2\s+S_OK.*?#D3\s+S_OK", content, re.DOTALL):
+                        _LOGGER.info("already_auth(): session is already authorized")
+                        return True
+                else:
+                    _LOGGER.info(f"already_auth(): unexpected response: {response}")
+
+            except Exception as exc:
+                _LOGGER.info(f"already_auth(): EXCEPTION: {type(exc).__name__} - {exc}")
+
+        return False
+
     # performs a login. Has to be called before any other method.
     async def login(self):
         """Login to Heat Pump"""
-        _LOGGER.info(f"login to waterkotte host {self.host}")
+        _LOGGER.info(f"login(): login to waterkotte host {self.host}")
+
+        if await self.already_auth():
+            self.auth_cookies = "SESSION_ALREADY_AUTH_BY_STORED_COOKIE"
+            _LOGGER.debug(f"login(): login already authorized - no need to relogin")
+            return
 
         # it's only possible to adjust the password of the 'waterkotte' build in user
         args = {"username": self.username, "password": self.pwd}
@@ -149,7 +183,7 @@ class EcotouchBridge:
 
                 tc = content.replace('\n', '<nl>')
                 tc = tc.replace('\r', '<cr>')
-                _LOGGER.info(f"LOGIN status:{response.status} response: {tc}")
+                _LOGGER.info(f"login(): LOGIN status:{response.status} response: {tc}")
 
                 parsed_response = self.get_status_response(content)
                 if parsed_response != "S_OK":
@@ -163,13 +197,14 @@ class EcotouchBridge:
                 # since this is a get, we have to do our own cookie handling...
                 if response.cookies is not None:
                     self.auth_cookies = response.cookies
-                    _LOGGER.debug(f"{self.auth_cookies}")
+                    _LOGGER.debug(f"login(): {self.auth_cookies}")
                     if hasattr(self.web_session, "_cookie_jar"):
                         jar = getattr(self.web_session, "_cookie_jar")
-                        jar.update_cookies(response.cookies)
-
+                        jar.update_cookies(response.cookies, URL(f"http://{self.host}/"))
+                        if self.coordinator is not None:
+                            await self.coordinator.save_cookies()
             else:
-                _LOGGER.warning(f"{response}")
+                _LOGGER.warning(f"login(): {response}")
 
     async def logout(self):
         """Logout function"""
@@ -177,9 +212,15 @@ class EcotouchBridge:
             try:
                 response.raise_for_status()
                 content = await response.text()
-                _LOGGER.info(f"LOGOUT status:{response.status} content: {content}")
+                _LOGGER.info(f"logout(): status:{response.status} content: {content}")
             except Exception as exc:
-                _LOGGER.warning(f"{exc}")
+                _LOGGER.warning(f"logout(): {type(exc).__name__} - {exc}")
+
+            if hasattr(self.web_session, "_cookie_jar"):
+                jar = getattr(self.web_session, "_cookie_jar")
+                jar.clear_domain(URL(f"http://{self.host}/").host)
+                if self.coordinator is not None:
+                    await self.coordinator.save_cookies()
 
             self.auth_cookies = None
 
@@ -242,12 +283,9 @@ class EcotouchBridge:
                                 result[a_wphp_tag]["value"] = final_value
 
                 except KeyError:
-                    _LOGGER.warning(
-                        f"Key Error while read_values. EcoTag: {a_wphp_tag} t_values: {t_values} t_states: {t_states}")
+                    _LOGGER.warning(f"read_values(): Key Error while read_values. EcoTag: {a_wphp_tag} t_values: {t_values} t_states: {t_states}")
                 except Exception as other_exc:
-                    _LOGGER.error(
-                        f"Exception of type '{other_exc}' while read_values. EcoTag: {a_wphp_tag} t_values: {t_values} t_states: {t_states} -> {other_exc}"
-                    )
+                    _LOGGER.error(f"read_values(): Exception of type '{other_exc}' while read_values. EcoTag: {a_wphp_tag} t_values: {t_values} t_states: {t_states} -> {other_exc}")
 
         return result
 
@@ -269,12 +307,12 @@ class EcotouchBridge:
 
         # also the readTags have a timestamp in each request...
         args["_"] = str(int(round(datetime.now().timestamp() * 1000)))
-        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.host}")
+        _LOGGER.debug(f"_read_tags(): going to request {args['n']} tags in a single call from waterkotte@{self.host}")
         async with self.web_session.get(f"http://{self.host}/cgi/readTags", params=args) as response:
             try:
                 response.raise_for_status()
                 if response.status == 200:
-                    _LOGGER.debug(f"requested: {response.url}")
+                    _LOGGER.debug(f"_read_tags(): requested: {response.url}")
                     content = await response.text()
 
                     # faking READING 3:HREG values... [DEBUG ONLY]
@@ -285,7 +323,7 @@ class EcotouchBridge:
                             await self.login()
                             return await self._read_tags(tags=tags, results=results, results_status=results_status)
                         except StatusException as status_exec:
-                            _LOGGER.warning(f"StatusException (_read_tags) while trying to login: {status_exec}")
+                            _LOGGER.warning(f"_read_tags(): StatusException (_read_tags) while trying to login: {status_exec}")
                             return None, None
 
                     if content.startswith("#E_TOO_MANY_USERS"):
@@ -316,14 +354,14 @@ class EcotouchBridge:
                                     # I2xxx Tags is not known, we're simply going to remove that tag from the tag list]
                                     if tag in WKHPTag.ALARM_BITS.tags:
                                         WKHPTag.ALARM_BITS.tags.remove(tag)
-                                        _LOGGER.info(f"Tag: '{tag}' not found in response - removing tag from WKHPTag.ALARM_BITS")
+                                        _LOGGER.debug(f"_read_tags(): Tag: '{tag}' not found in response - removing tag from WKHPTag.ALARM_BITS")
                                     else:
-                                        _LOGGER.warning(f"Tag: '{tag}' not found in response!")
+                                        _LOGGER.info(f"_read_tags(): Tag: '{tag}' not found in response!")
                                     results_status[tag] = "E_NOTFOUND"
                                 else:
                                     results_status[tag] = "E_INACTIVE"
                             else:
-                                _LOGGER.warning(f"Tag: '{tag}' without value! -> opt-code: {match.group('opt')}")
+                                _LOGGER.warning(f"_read_tags(): Tag: '{tag}' without value! -> opt-code: {match.group('opt')}")
                                 results_status[tag] = match.group("status")
 
                             results[tag] = None
@@ -332,14 +370,14 @@ class EcotouchBridge:
                             results[tag] = match.group("value")
 
                 else:
-                    _LOGGER.warning(f"{response}")
+                    _LOGGER.warning(f"_read_tags(): {response}")
             except Exception as exc:
                 if response is not None and response.status == 500:
                     self.auth_cookies = None
                     await self.login()
                     return await self._read_tags(tags)
                 else:
-                    _LOGGER.warning(f"{exc}")
+                    _LOGGER.warning(f"_read_tags(): {type(exc).__name__} - {exc}")
 
         return results, results_status
 
@@ -363,12 +401,12 @@ class EcotouchBridge:
             # converting the HA values to the final int or bools that the waterkotte understand
             a_wkhp_tag.encode_f(a_wkhp_tag, value, to_write)
 
-        _LOGGER.info(f"before writing WKHPTags -> {len(to_write)} tags")
+        _LOGGER.info(f"write_values(): before writing WKHPTags -> {len(to_write)} tags")
         # '.keys()' doesn't support insertion - so we need to create a new list object!
         e_values, e_status = await self._write_tags(tags=list(to_write.keys()), values=list(to_write.values()))
 
         if e_values is not None and len(e_values) > 0:
-            _LOGGER.info(f"after writing WKHPTags -> raw-values: {len(e_values)} states: {len(e_status)}")
+            _LOGGER.info(f"write_values(): after writing WKHPTags -> raw-values: {len(e_values)} states: {len(e_status)}")
 
             all_ok = True
             for a_tag in e_status:
@@ -384,7 +422,7 @@ class EcotouchBridge:
                     value = "00:00:00"
 
                 if str(val) != str(value):
-                    _LOGGER.error(f"WRITE value does not match READ value: '{val}' (read) != '{value}' (write)")
+                    _LOGGER.error(f"write_values(): WRITE value does not match READ value: '{val}' (read) != '{value}' (write)")
                 else:
                     result[a_wkhp_tag] = {
                         "value": val,
@@ -416,19 +454,19 @@ class EcotouchBridge:
             args[f"t{i + 1}"] = tag
             args[f"v{i + 1}"] = list(values)[i]
 
-        _LOGGER.info(f"going to request {args['n']} tags in a single call from waterkotte@{self.host}")
+        _LOGGER.info(f"_write_tags(): going to request {args['n']} tags in a single call from waterkotte@{self.host}")
         async with self.web_session.get(f"http://{self.host}/cgi/writeTags", params=args) as response:
             try:
                 response.raise_for_status()
                 if response.status == 200:
-                    _LOGGER.debug(f"requested: {response.url}")
+                    _LOGGER.debug(f"_write_tags(): requested: {response.url}")
                     content = await response.text()  # pylint: disable=invalid-name
                     if content.startswith("#E_NEED_LOGIN"):
                         try:
                             await self.login()
                             return await self._write_tags(tags=tags, values=values)
                         except StatusException as status_exec:
-                            _LOGGER.warning(f"StatusException (_write_tags) while trying to login: {status_exec}")
+                            _LOGGER.warning(f"_write_tags(): StatusException (_write_tags) while trying to login: {status_exec}")
                             return None
                     if content.startswith("#E_TOO_MANY_USERS"):
                         return None
@@ -455,12 +493,12 @@ class EcotouchBridge:
                                     re.MULTILINE,
                                 )
                                 if match is None:
-                                    _LOGGER.warning(f"Tag: '{tag}' not found in response!")
+                                    _LOGGER.warning(f"_write_tags(): Tag: '{tag}' not found in response!")
                                     results_status[tag] = "E_NOTFOUND"
                                 else:
                                     results_status[tag] = "E_INACTIVE"
                             else:
-                                _LOGGER.warning(f"Tag: '{tag}' without value! -> opt-code: {match.group('opt')}")
+                                _LOGGER.warning(f"_write_tags(): Tag: '{tag}' without value! -> opt-code: {match.group('opt')}")
                                 results_status[tag] = match.group("status")
 
                             results[tag] = None
@@ -469,9 +507,9 @@ class EcotouchBridge:
                             results[tag] = match.group("value")
 
                 else:
-                    _LOGGER.warning(f"{response}")
+                    _LOGGER.warning(f"_write_tags(): {response}")
             except Exception as exc:
-                _LOGGER.warning(f"{exc}")
+                _LOGGER.warning(f"_write_tags(): {type(exc).__name__} - {exc}")
 
         return results, results_status
 
@@ -545,7 +583,7 @@ class EasyconBridge(EcotouchBridge):
 
                         # return None, None
                     except Exception as exc:
-                        _LOGGER.debug(f"Response was: {content} caused {exc}")
+                        _LOGGER.debug(f"_read_tags(): Response was: {content} caused {exc}")
                         raise Exception(f"Error in easycon.py parsing. Received: {content}")
 
                     for tag in tags:
@@ -570,9 +608,9 @@ class EasyconBridge(EcotouchBridge):
                                 # I2xxx Tags is not known, we're simply going to remove that tag from the tag list]
                                 if tag in WKHPTag.ALARM_BITS.tags:
                                     WKHPTag.ALARM_BITS.tags.remove(tag)
-                                    _LOGGER.info(f"Tag: '{tag}' not found in response - removing tag from WKHPTag.ALARM_BITS")
+                                    _LOGGER.debug(f"_read_tags(): Tag: '{tag}' not found in response - removing tag from WKHPTag.ALARM_BITS")
                                 else:
-                                    _LOGGER.warning(f"Tag: '{tag}' not found in response!")
+                                    _LOGGER.info(f"_read_tags(): Tag: '{tag}' not found in response!")
                                 results_status[tag] = "E_NOTFOUND"
                             else:
                                 # if val_status == "E_INACTIVE":
@@ -586,16 +624,16 @@ class EasyconBridge(EcotouchBridge):
                             else:
                                 results[tag] = match.text
                 if response.status == 404:
-                    _LOGGER.debug(f"http 404 caused by requesting {response.url} - full: {response}")
+                    _LOGGER.debug(f"_read_tags(): http 404 caused by requesting {response.url} - full: {response}")
                     raise Http404Exception(f"HTTP 404 {response.url}")
                 else:
-                    _LOGGER.warning(f"{response}")
+                    _LOGGER.warning(f"_read_tags(): {response}")
             except Exception as exc:
                 if response is not None and response.status == 404:
-                    _LOGGER.debug(f"http 404 caused by requesting {response.url} - full: {response}")
+                    _LOGGER.debug(f"_read_tags(): http 404 caused by requesting {response.url} - full: {response}")
                     raise Http404Exception(f"HTTP 404 {response.url}")
                 else:
-                    _LOGGER.warning(f"{exc}")
+                    _LOGGER.warning(f"_read_tags(): {type(exc).__name__} - {exc}")
 
         return results, results_status
 
@@ -633,8 +671,8 @@ class EasyconBridge(EcotouchBridge):
                         resultsStatus[tag] = "S_OK"
                         results[tag] = list(values)[i]
                 else:
-                    _LOGGER.warning(f"{response}")
+                    _LOGGER.warning(f"_write_tags(): {response}")
             except Exception as exc:
-                _LOGGER.warning(f"{exc}")
+                _LOGGER.warning(f"_write_tags(): {type(exc).__name__} - {exc}")
 
             return results, resultsStatus

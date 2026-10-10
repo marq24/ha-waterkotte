@@ -1,6 +1,7 @@
 """Adds config flow for Waterkotte Heatpump."""
 import logging
 
+import aiohttp
 import voluptuous as vol
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
@@ -210,7 +211,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _test_credentials(self, host, username, pwd, system_type, tags_per_request):
         try:
-            session = async_create_clientsession(self.hass)
+            session = async_create_clientsession(self.hass, verify_ssl=False, cookie_jar=aiohttp.CookieJar(unsafe=True))
 
             # remove login credentials if not specified...
             if username is not None and len(str(username)) == 0:
