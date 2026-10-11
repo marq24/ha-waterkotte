@@ -44,7 +44,8 @@ class WaterkotteClient:
             self._internal_client = EcotouchBridge(host=host, web_session=web_session, coordinator=coordinator,
                                                    username=username, pwd=pwd, tags_per_request=tags_per_request, lang=lang)
         elif system_type == EASYCON:
-            self._internal_client = EasyconBridge(host=host, web_session=web_session, username=username, pwd=pwd, lang=lang)
+            self._internal_client = EasyconBridge(host=host, web_session=web_session, coordinator=coordinator,
+                                                  username=username, pwd=pwd, lang=lang)
         else:
             _LOGGER.error("Error unknown System type!")
 
@@ -108,7 +109,7 @@ class WaterkotteClient:
 class EcotouchBridge:
     auth_cookies = None
 
-    def __init__(self, host: str, web_session, coordinator, username: str ="waterkotte", pwd: str = "waterkotte", tags_per_request: int = 10, lang: str = "en"):
+    def __init__(self, host: str, web_session, coordinator = None, username: str ="waterkotte", pwd: str = "waterkotte", tags_per_request: int = 10, lang: str = "en"):
         self.host = host
         self.username = username
         self.pwd = pwd
