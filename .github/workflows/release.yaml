@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build zip archive
         run: |
@@ -22,6 +22,6 @@ jobs:
           zip -r "${{ github.workspace }}/waterkotte_heatpump.zip" . -x "*__pycache__*" -x "*.pyc"
 
       - name: Upload zip to GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ${{ github.workspace }}/waterkotte_heatpump.zip
