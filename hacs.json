@@ -1,5 +1,8 @@
 {
   "name": "Waterkotte Heatpump [+2020]",
+  "zip_release": true,
+  "filename": "waterkotte_heatpump.zip",
+  "content_in_root": false,
   "homeassistant": "2026.7.0",
   "hacs": "1.18.0",
   "render_readme": true

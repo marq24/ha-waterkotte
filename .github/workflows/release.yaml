@@ -1,0 +1,27 @@
+name: Zip Release
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  release_zip_file:
+    name: Build & Upload HACS zip release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build zip archive
+        run: |
+          cd "${{ github.workspace }}/custom_components/waterkotte_heatpump"
+          zip -r "${{ github.workspace }}/waterkotte_heatpump.zip" . -x "*__pycache__*" -x "*.pyc"
+
+      - name: Upload zip to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ github.workspace }}/waterkotte_heatpump.zip
