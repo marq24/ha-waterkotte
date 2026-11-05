@@ -38,10 +38,8 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for waterkotte_heatpump."""
-
     VERSION = CONFIG_VERSION
     MINOR_VERSION = CONFIG_MINOR_VERSION
-    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     def __init__(self):
         """Initialize."""
