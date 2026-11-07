@@ -2,15 +2,16 @@
 import logging
 
 import aiohttp
-import voluptuous as vol
+import probatio
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import EASYCON, ECOTOUCH
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.tags import WKHPTag
 from homeassistant import config_entries
-from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_ID, CONF_HOST, CONF_USERNAME, CONF_PASSWORD, UnitOfTime
 from homeassistant.core import callback
 from homeassistant.helpers import selector
+from homeassistant.config_entries import ConfigFlowResult, OptionsFlow
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.util import uuid as uuid_util
 from .const import (
@@ -51,7 +52,7 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._series = ""
         self._serial = ""
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None) -> ConfigFlowResult:
         """Handle a flow initialized by the user."""
         self._errors = {}
 
@@ -72,22 +73,23 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         # options are all translate to lower case!
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({
-                vol.Required(CONF_SYSTEMTYPE, default=(user_input.get(CONF_SYSTEMTYPE, ECOTOUCH)).lower()):
-                    selector.SelectSelector(
-                        selector.SelectSelectorConfig(
+            data_schema=self.add_suggested_values_to_schema(
+                probatio.Schema({
+                    probatio.Required(CONF_SYSTEMTYPE):
+                        selector.SelectSelector(selector.SelectSelectorConfig(
                             options=[ECOTOUCH.lower(), EASYCON.lower()],
                             mode=selector.SelectSelectorMode.DROPDOWN,
-                            translation_key=CONF_SYSTEMTYPE
-                        )
+                            translation_key=CONF_SYSTEMTYPE)
                     ),
-            }),
+                }),
+                {CONF_SYSTEMTYPE: user_input.get(CONF_SYSTEMTYPE, ECOTOUCH).lower()},
+            ),
             description_placeholders={"repo": "https://github.com/marq24/ha-waterkotte"},
             last_step=False,
             errors=self._errors
         )
 
-    async def async_step_user_easycon(self, user_input=None):
+    async def async_step_user_easycon(self, user_input=None) -> ConfigFlowResult:
         """Handle a flow initialized by the user."""
         self._errors = {}
 
@@ -124,20 +126,41 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user_easycon",
-            data_schema=vol.Schema({
-                vol.Required(CONF_HOST, default=user_input.get(CONF_HOST)): str,
-                vol.Optional(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
-                vol.Optional(CONF_PASSWORD, default=user_input.get(CONF_PASSWORD)): str,
-                vol.Required(CONF_POLLING_INTERVAL, default=500): int,
-                vol.Required(CONF_TAGS_PER_REQUEST, default=25): int,
-                vol.Required(CONF_ADD_SERIAL_AS_ID, default=False): bool
-            }),
+            data_schema=self.add_suggested_values_to_schema(
+                probatio.Schema({
+                    probatio.Required(CONF_HOST):
+                        selector.TextSelector(),
+                    probatio.Optional(CONF_USERNAME):
+                        selector.TextSelector(),
+                    probatio.Optional(CONF_PASSWORD):
+                        selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD)),
+                    probatio.Required(CONF_POLLING_INTERVAL):
+                        selector.NumberSelector(selector.NumberSelectorConfig(
+                            step=1,
+                            mode=selector.NumberSelectorMode.BOX)),
+                    probatio.Required(CONF_TAGS_PER_REQUEST):
+                        selector.NumberSelector(selector.NumberSelectorConfig(
+                            step=1,
+                            max=75,
+                            mode=selector.NumberSelectorMode.BOX)),
+                    probatio.Required(CONF_ADD_SERIAL_AS_ID):
+                        selector.BooleanSelector(),
+                }),
+                {
+                    CONF_HOST: user_input.get(CONF_HOST, ""),
+                    CONF_USERNAME: user_input.get(CONF_USERNAME, ""),
+                    CONF_PASSWORD: user_input.get(CONF_PASSWORD, ""),
+                    CONF_POLLING_INTERVAL: 500,
+                    CONF_TAGS_PER_REQUEST: 25,
+                    CONF_ADD_SERIAL_AS_ID: False,
+                },
+            ),
             description_placeholders={"repo": "https://github.com/marq24/ha-waterkotte"},
             last_step=False,
             errors=self._errors
         )
 
-    async def async_step_user_ecotouch(self, user_input=None):
+    async def async_step_user_ecotouch(self, user_input=None) -> ConfigFlowResult:
         """Handle a flow initialized by the user."""
         self._errors = {}
 
@@ -174,15 +197,40 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user_ecotouch",
-            data_schema=vol.Schema({
-                vol.Required(CONF_HOST, default=user_input.get(CONF_HOST)): str,
-                vol.Optional(CONF_USERNAME, default=user_input.get(CONF_USERNAME)): str,
-                vol.Required(CONF_PASSWORD, default=user_input.get(CONF_PASSWORD)): str,
-                vol.Required(CONF_POLLING_INTERVAL, default=60): int,
-                vol.Required(CONF_TAGS_PER_REQUEST, default=75): int,
-                vol.Required(CONF_ADD_SCHEDULE_ENTITIES, default=False): bool,
-                vol.Required(CONF_ADD_SERIAL_AS_ID, default=False): bool,
-            }),
+            data_schema=self.add_suggested_values_to_schema(
+                probatio.Schema({
+                    probatio.Required(CONF_HOST):
+                        selector.TextSelector(),
+                    probatio.Optional(CONF_USERNAME):
+                        selector.TextSelector(),
+                    probatio.Required(CONF_PASSWORD):
+                        selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD)),
+                    probatio.Required(CONF_POLLING_INTERVAL):
+                        selector.NumberSelector(selector.NumberSelectorConfig(
+                            step=1,
+                            min=1,
+                            unit_of_measurement=UnitOfTime.SECONDS,
+                            mode=selector.NumberSelectorMode.BOX)),
+                    probatio.Required(CONF_TAGS_PER_REQUEST):
+                        selector.NumberSelector(selector.NumberSelectorConfig(
+                            max=75,
+                            step=1,
+                            mode=selector.NumberSelectorMode.BOX)),
+                    probatio.Required(CONF_ADD_SCHEDULE_ENTITIES):
+                        selector.BooleanSelector(),
+                    probatio.Required(CONF_ADD_SERIAL_AS_ID):
+                        selector.BooleanSelector(),
+                }),
+                {
+                    CONF_HOST: user_input.get(CONF_HOST, ""),
+                    CONF_USERNAME: user_input.get(CONF_USERNAME, "waterkotte"),
+                    CONF_PASSWORD: user_input.get(CONF_PASSWORD, "waterkotte"),
+                    CONF_POLLING_INTERVAL: 60,
+                    CONF_TAGS_PER_REQUEST: 75,
+                    CONF_ADD_SCHEDULE_ENTITIES: False,
+                    CONF_ADD_SERIAL_AS_ID: False,
+                },
+            ),
             last_step=False,
             errors=self._errors
         )
@@ -197,12 +245,20 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         else:
             return self.async_show_form(
                 step_id="features",
-                data_schema=vol.Schema({
-                    vol.Required(CONF_USE_VENT, default=False): bool,
-                    vol.Required(CONF_USE_HEATING_CURVE, default=False): bool,
-                    vol.Required(CONF_USE_DISINFECTION, default=False): bool,
-                    vol.Required(CONF_USE_POOL, default=False): bool,
-                }),
+                data_schema=self.add_suggested_values_to_schema(
+                    probatio.Schema({
+                        probatio.Required(CONF_USE_VENT): selector.BooleanSelector(),
+                        probatio.Required(CONF_USE_HEATING_CURVE): selector.BooleanSelector(),
+                        probatio.Required(CONF_USE_DISINFECTION): selector.BooleanSelector(),
+                        probatio.Required(CONF_USE_POOL): selector.BooleanSelector(),
+                    }),
+                    {
+                        CONF_USE_VENT: False,
+                        CONF_USE_HEATING_CURVE: False,
+                        CONF_USE_DISINFECTION: False,
+                        CONF_USE_POOL: False,
+                    },
+                ),
                 last_step=True,
                 errors=self._errors
             )
@@ -254,25 +310,25 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return WaterkotteHeatpumpOptionsFlowHandler(config_entry)
 
 
-class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
+class WaterkotteHeatpumpOptionsFlowHandler(OptionsFlow):
     def __init__(self, config_entry):
         """Initialize HACS options flow."""
         if len(dict(config_entry.options)) == 0:
-            self.options = dict(config_entry.data)
+            self._options = dict(config_entry.data)
         else:
-            self.options = dict(config_entry.options)
+            self._options = dict(config_entry.options)
 
     async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
         """Manage the options."""
         return await self.async_step_user()
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None) -> ConfigFlowResult:
         """Handle a flow initialized by the user."""
         if user_input is not None:
-            self.options.update(user_input)
+            self._options.update(user_input)
             return await self._update_options()
 
-        _system_type = self.options.get(CONF_SYSTEMTYPE, self.data.get(CONF_SYSTEMTYPE, ECOTOUCH))
+        _system_type = self._options.get(CONF_SYSTEMTYPE, ECOTOUCH)
         if _system_type == EASYCON:
             def_user = ""
             def_pass = ""
@@ -282,15 +338,36 @@ class WaterkotteHeatpumpOptionsFlowHandler(config_entries.OptionsFlow):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({
-                vol.Optional(CONF_USERNAME, default=self.options.get(CONF_USERNAME, def_user)): str,
-                vol.Optional(CONF_PASSWORD, default=self.options.get(CONF_PASSWORD, def_pass)): str,
-                vol.Required(CONF_POLLING_INTERVAL, default=self.options.get(CONF_POLLING_INTERVAL, 60)): int,
-                vol.Required(CONF_TAGS_PER_REQUEST, default=self.options.get(CONF_TAGS_PER_REQUEST, 75)): int,
-                vol.Required(CONF_ADD_SCHEDULE_ENTITIES, default=self.options.get(CONF_ADD_SCHEDULE_ENTITIES, False)): bool
-            }),
+            data_schema=self.add_suggested_values_to_schema(
+                probatio.Schema({
+                    probatio.Optional(CONF_USERNAME):
+                        selector.TextSelector(),
+                    probatio.Optional(CONF_PASSWORD):
+                        selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD)),
+                    probatio.Required(CONF_POLLING_INTERVAL):
+                        selector.NumberSelector(selector.NumberSelectorConfig(
+                            step=1,
+                            min=1,
+                            unit_of_measurement=UnitOfTime.SECONDS,
+                            mode=selector.NumberSelectorMode.BOX)),
+                    probatio.Required(CONF_TAGS_PER_REQUEST):
+                        selector.NumberSelector(selector.NumberSelectorConfig(
+                            max=75,
+                            step=1,
+                            mode=selector.NumberSelectorMode.BOX)),
+                    probatio.Required(CONF_ADD_SCHEDULE_ENTITIES):
+                        selector.BooleanSelector(),
+                }),
+                {
+                    CONF_USERNAME: self._options.get(CONF_USERNAME, def_user),
+                    CONF_PASSWORD: self._options.get(CONF_PASSWORD, def_pass),
+                    CONF_POLLING_INTERVAL: self._options.get(CONF_POLLING_INTERVAL, 60),
+                    CONF_TAGS_PER_REQUEST: self._options.get(CONF_TAGS_PER_REQUEST, 75),
+                    CONF_ADD_SCHEDULE_ENTITIES: self._options.get(CONF_ADD_SCHEDULE_ENTITIES, False),
+                },
+            ),
             description_placeholders={"repo": "https://github.com/marq24/ha-waterkotte"},
         )
 
     async def _update_options(self):
-        return self.async_create_entry(title=TITLE, data=self.options)
+        return self.async_create_entry(title=TITLE, data=self._options)
