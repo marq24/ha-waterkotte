@@ -55,7 +55,6 @@ from .entity import CustomFriendlyNameEntity
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 SCAN_INTERVAL = timedelta(seconds=60)
-CONFIG_SCHEMA = config_val.removed(DOMAIN, raise_if_present=False)
 
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
