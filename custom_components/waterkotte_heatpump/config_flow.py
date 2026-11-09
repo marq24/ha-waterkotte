@@ -137,10 +137,13 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     probatio.Required(CONF_POLLING_INTERVAL):
                         selector.NumberSelector(selector.NumberSelectorConfig(
                             step=1,
+                            min=1,
+                            unit_of_measurement=UnitOfTime.SECONDS,
                             mode=selector.NumberSelectorMode.BOX)),
                     probatio.Required(CONF_TAGS_PER_REQUEST):
                         selector.NumberSelector(selector.NumberSelectorConfig(
                             step=1,
+                            min=1,
                             max=75,
                             mode=selector.NumberSelectorMode.BOX)),
                     probatio.Required(CONF_ADD_SERIAL_AS_ID):
@@ -213,8 +216,9 @@ class WaterkotteHeatpumpFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                             mode=selector.NumberSelectorMode.BOX)),
                     probatio.Required(CONF_TAGS_PER_REQUEST):
                         selector.NumberSelector(selector.NumberSelectorConfig(
-                            max=75,
                             step=1,
+                            min=1,
+                            max=75,
                             mode=selector.NumberSelectorMode.BOX)),
                     probatio.Required(CONF_ADD_SCHEDULE_ENTITIES):
                         selector.BooleanSelector(),
@@ -352,8 +356,9 @@ class WaterkotteHeatpumpOptionsFlowHandler(OptionsFlow):
                             mode=selector.NumberSelectorMode.BOX)),
                     probatio.Required(CONF_TAGS_PER_REQUEST):
                         selector.NumberSelector(selector.NumberSelectorConfig(
-                            max=75,
                             step=1,
+                            min=1,
+                            max=75,
                             mode=selector.NumberSelectorMode.BOX)),
                     probatio.Required(CONF_ADD_SCHEDULE_ENTITIES):
                         selector.BooleanSelector(),

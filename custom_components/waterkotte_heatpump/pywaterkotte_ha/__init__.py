@@ -1,5 +1,7 @@
 import asyncio
 import logging
+from numbers import Number
+
 import aiohttp
 import re
 import xml.etree.ElementTree as ElemTree
@@ -115,6 +117,18 @@ class EcotouchBridge:
         self.pwd = pwd
         self.web_session = web_session
         self.coordinator = coordinator
+
+        # we must ensure that the tags_per_request is a valid number and at least 1, otherwise
+        # we will get an error from the waterkotte ecotouch
+        try:
+            if tags_per_request is None or not isinstance(tags_per_request, Number) or int(tags_per_request) < 1:
+                _LOGGER.info(f"EcotouchBridge(): invalid tags_per_request: '{tags_per_request}' -> using default 10 instead.")
+                tags_per_request = 10
+            tags_per_request = int(tags_per_request)
+        except Exception as exc:
+            _LOGGER.info(f"EcotouchBridge(): invalid tags_per_request: '{tags_per_request}' -> using default 10 instead. Exception: {type(exc).__name__} - {exc}")
+            tags_per_request = 10
+
         self.tags_per_request = min(tags_per_request, 75)
         self.lang_map = None
         if lang in TRANSLATIONS:

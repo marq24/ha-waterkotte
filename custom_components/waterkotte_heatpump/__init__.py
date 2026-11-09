@@ -344,7 +344,7 @@ class WKHPDataUpdateCoordinator(DataUpdateCoordinator):
             await asyncio.sleep(30)
             raise UpdateFailed() from too_many_users
         except Exception as other:
-            _LOGGER.error(f"_async_update_data(): unexpected: {other}")
+            _LOGGER.error(f"_async_update_data(): unexpected: {other}", stack_info=True)
             raise UpdateFailed() from other
 
     async def async_read_values(self, tags: Sequence[WKHPTag]) -> dict:
