@@ -159,12 +159,18 @@ class DataTag(NamedTuple):
         # copied from https://github.com/Hoffmann77/ha-waterkotte/blob/main/custom_components/waterkotte_heatpump/pywaterkotte_ha/tags.py
         if str_vals is None:
             return None
-
         alarms = []
         for error_tag_index, a_val in enumerate(str_vals):
             # the values of the heat pump are strings (e.g. '8' or '8.0')
-            if a_val is None or str(a_val).strip() == "" or self.tags[error_tag_index] not in lang_map:
+            if a_val is None or str(a_val).strip().upper() in ["", "E"] or self.tags[error_tag_index] not in lang_map:
                 continue
+
+            # and we must ensure that we can parse the value to an integer...
+            try:
+                int_val = int(float(a_val))
+            except ValueError:
+                continue
+
             if error_tag_index + 1 == len(str_vals):
                 # the last error field [I2614] only contain 13 bits
                 bits = range(13)
@@ -174,7 +180,6 @@ class DataTag(NamedTuple):
             else:
                 bits = range(16)
 
-            int_val = int(float(a_val))
             labels = lang_map[self.tags[error_tag_index]]
             # the labels are mapped by the bit number
             alarms.extend(str(labels[bit]) for bit in bits if int_val & (1 << bit))
