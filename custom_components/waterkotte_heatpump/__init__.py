@@ -14,8 +14,11 @@ from homeassistant.helpers import config_validation as config_val, entity_regist
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.storage import STORAGE_DIR
-from homeassistant.helpers.typing import UNDEFINED
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+try:
+    from homeassistant.helpers.typing import Undefined as HA_UNDEFINED  # type: ignore[attr-defined]
+except ImportError:
+    from homeassistant.helpers.typing import UNDEFINED as HA_UNDEFINED
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
 from custom_components.waterkotte_heatpump.pywaterkotte_ha.const import ECOTOUCH, EASYCON
@@ -450,7 +453,7 @@ class WKHPBaseEntity(CustomFriendlyNameEntity):
         If has_entity_name is True, this returns device.name + self.name
         """
         name = self.name
-        if name is UNDEFINED:
+        if name is HA_UNDEFINED:
             name = None
 
         if not self.has_entity_name or not (device_entry := self.device_entry):
