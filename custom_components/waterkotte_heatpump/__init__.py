@@ -14,7 +14,7 @@ from homeassistant.helpers import config_validation as config_val, entity_regist
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.entity import Entity, EntityDescription
 from homeassistant.helpers.storage import STORAGE_DIR
-from homeassistant.helpers.typing import UNDEFINED, UndefinedType
+from homeassistant.helpers.typing import UNDEFINED
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from custom_components.waterkotte_heatpump.pywaterkotte_ha import WaterkotteClient
@@ -395,14 +395,13 @@ class WKHPBaseEntity(CustomFriendlyNameEntity):
         else:
             self.entity_id = f"{entity_type}.wkh_{self._attr_translation_key}".lower()
 
-    def _name_internal(self, device_class_name: str | None,
-                       platform_translations: dict[str, Any], ) -> str | UndefinedType | None:
-        if self.code_generated:
+    def _name_internal(self, device_class_name: str | None, platform_translations: dict[str, Any], ) -> str | None:
+        if self.code_generated and self._attr_translation_key:
             return self._name_internal_code_generated(self._attr_translation_key, platform_translations)
         else:
             return super()._name_internal(device_class_name, platform_translations)
 
-    def _name_internal_code_generated(self, key, platform_translations: dict[str, Any]):
+    def _name_internal_code_generated(self, key: str, platform_translations: dict[str, Any]):
         temp = key.lower().replace('_', ' ')
         temp = temp.replace(' enable', '')
         temp = temp.replace(' value', '')
